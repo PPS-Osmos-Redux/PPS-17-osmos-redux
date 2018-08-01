@@ -19,8 +19,8 @@ task runGradleHello {
     println 'Gradle Hello, World!'
 }
 
-task runMain(type:JavaExec) {
-  main = 'it.unibo.osmos.redux.Hello'
-  classpath = sourceSets.main.runtimeClasspath
-  systemProperties = System.getProperties()
+task runMain(type: JavaExec) {
+    main = 'it.unibo.osmos.redux.main.Hello'
+    classpath = sourceSets.main.runtimeClasspath
+    systemProperties = System.getProperties()
 }
