@@ -1,10 +1,37 @@
 apply plugin: 'java'
 apply plugin: 'scala'
 apply plugin: 'idea'
+apply plugin: 'application'
 
 version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
+
+sourceSets {
+    main {
+        java {
+            srcDirs= ["src/main/java"]
+        }
+        resources {
+            srcDirs= ["src/main/resources"]
+        }
+        scala {
+            srcDirs= ["src/main/scala"]
+        }
+    }
+
+    test {
+        java {
+            srcDirs= ["src/test/java"]
+        }
+        resources {
+            srcDirs= ["src/test/resources"]
+        }
+        scala {
+            srcDirs= ["src/test/scala"]
+        }
+    }
+}
 
 repositories {
     mavenCentral()
