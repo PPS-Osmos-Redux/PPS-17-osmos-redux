@@ -74,5 +74,11 @@ fabric.properties
 .idea/httpRequests
 
 
+
+# Personal config
+
+.idea/*
+
 # Mac OS
 .DS_Store
+
