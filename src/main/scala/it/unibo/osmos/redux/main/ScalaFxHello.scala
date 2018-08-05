@@ -1,7 +1,5 @@
 package it.unibo.osmos.redux.main
 
-import java.awt.BorderLayout
-
 import scalafx.Includes._
 import scalafx.application.JFXApp
 import scalafx.scene.Scene

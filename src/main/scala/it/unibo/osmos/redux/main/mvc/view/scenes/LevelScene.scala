@@ -1,6 +1,5 @@
 package it.unibo.osmos.redux.main.mvc.view.scenes
 
-import scalafx.application.Platform
 import scalafx.stage.Stage
 
 /**
