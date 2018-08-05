@@ -43,7 +43,7 @@ object View {
     }
 
     override def setController(controller: Controller): Unit = {
-      this.controller = Option.apply(controller)
+      this.controller = Option(controller)
     }
 
     override def draw(): Unit = {
