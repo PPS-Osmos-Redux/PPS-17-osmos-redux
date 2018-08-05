@@ -1,6 +1,5 @@
 package it.unibo.osmos.redux.main.mvc.view.menus
 
-import it.unibo.osmos.redux.main.mvc.view.scenes.BaseScene
 import scalafx.geometry.Pos
 import scalafx.scene.control.Button
 import scalafx.scene.layout.VBox
@@ -25,17 +24,17 @@ class MainMenuCenterBox(val listener: MainMenuCenterBoxListener) extends VBox {
 }
 
 /**
-  * Trait which gets notified the MainMenuCenterBox events
+  * Trait which gets notified when a MainMenuCenterBox event occurs
   */
 trait MainMenuCenterBoxListener {
 
   /**
-    * Called when the user click on the play button
+    * Called when the user clicks on the play button
     */
   def onPlayClick()
 
   /**
-    * Called when the user click on the exit button
+    * Called when the user clicks on the exit button
     */
   def onExitClick()
 }
