@@ -9,7 +9,7 @@ class MainMenuBar(val listener: MainMenuBarListener) extends MenuBar {
   /* Settings menu */
   val settingsMenu = new Menu("Settings")
   /* Settings - Fullscreen item */
-  val fullscreenMenuItem = new MenuItem("Enable fullscreen")
+  val fullscreenMenuItem = new MenuItem("Enable Fullscreen")
   fullscreenMenuItem.onAction = e => listener.onFullScreenSettingClick()
   settingsMenu.items = List(fullscreenMenuItem)
 
