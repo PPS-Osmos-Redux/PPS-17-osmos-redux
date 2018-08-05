@@ -5,13 +5,13 @@ import scalafx.scene.layout.BorderPane
 import scalafx.stage.Stage
 
 /**
-  * Opening scene, showing the menu
+  * Opening scene, showing the menu and the menu bar
   */
-class MainScene(override val parentStage: Stage) extends BaseScene(parentStage)
+class MainScene(override val parentStage: Stage, val listener: MainSceneListener) extends BaseScene(parentStage)
   with MainMenuCenterBoxListener with MainMenuBarListener {
 
   /* Requesting a structured layout */
-  val rootLayout: BorderPane = new BorderPane {
+  private val rootLayout: BorderPane = new BorderPane {
     /* Setting the upper MenuBar */
     top = new MainMenuBar(MainScene.this)
     center = new MainMenuCenterBox(MainScene.this)
@@ -20,9 +20,7 @@ class MainScene(override val parentStage: Stage) extends BaseScene(parentStage)
   /* Enabling the layout */
   root = rootLayout
 
-  override def onPlayClick(): Unit = {
-    println("Play clicked")
-  }
+  override def onPlayClick(): Unit = listener.onPlayClick()
 
   override def onExitClick(): Unit = {
     System.exit(0)
@@ -32,3 +30,17 @@ class MainScene(override val parentStage: Stage) extends BaseScene(parentStage)
     parentStage.fullScreen = !parentStage.fullScreen.get()
   }
 }
+
+/**
+  * Trait which gets notified when a MainScene event occurs
+  */
+trait MainSceneListener {
+
+  /**
+    * Called when the user clicks on the play button
+    */
+  def onPlayClick()
+
+}
+
+

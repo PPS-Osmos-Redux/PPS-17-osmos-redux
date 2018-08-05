@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.main.mvc.view.stages
 
 import it.unibo.osmos.redux.main.mvc.view.ViewConstants
-import it.unibo.osmos.redux.main.mvc.view.scenes.MainScene
+import it.unibo.osmos.redux.main.mvc.view.scenes.{LevelScene, MainScene, MainSceneListener}
 import scalafx.application.JFXApp
 
 /**
@@ -25,12 +25,18 @@ object OsmosReduxPrimaryStage {
     * @param windowWidth the window width
     * @param windowHeight the window height
     */
-  class OsmosReduxPrimaryStageImpl(val fullScreenEnabled: Boolean, val windowWidth: Double, val windowHeight: Double) extends JFXApp.PrimaryStage with OsmosReduxPrimaryStage {
+  class OsmosReduxPrimaryStageImpl(val fullScreenEnabled: Boolean, val windowWidth: Double, val windowHeight: Double) extends JFXApp.PrimaryStage
+    with OsmosReduxPrimaryStage with MainSceneListener{
     title = ViewConstants.defaultWindowTitle
     fullScreen = fullScreenEnabled
     width = windowWidth
     height = windowHeight
 
-    scene = new MainScene(this)
+    scene = new MainScene(this, this)
+
+    override def onPlayClick(): Unit = {
+      /* We change scene */
+      scene = new LevelScene(this)
+    }
   }
 }
