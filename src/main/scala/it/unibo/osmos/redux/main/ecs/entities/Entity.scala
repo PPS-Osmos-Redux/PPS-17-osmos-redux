@@ -18,4 +18,5 @@ object Entity {
 
     override def getUUID: UUID = EntityUUID
   }
+
 }
