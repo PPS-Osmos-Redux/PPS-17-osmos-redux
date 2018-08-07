@@ -1,5 +1,7 @@
 package it.unibo.osmos.redux.main.ecs.components
 
+import it.unibo.osmos.redux.main.utils.Point
+
 /**
   * Component Position (coordinates of the sphere's center)
   */

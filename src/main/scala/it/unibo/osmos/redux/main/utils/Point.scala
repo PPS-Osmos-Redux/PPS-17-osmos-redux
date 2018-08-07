@@ -1,4 +1,4 @@
-package it.unibo.osmos.redux.main.ecs.components
+package it.unibo.osmos.redux.main.utils
 
 /**
   * Cartesian point
@@ -9,19 +9,19 @@ trait Point {
     * Getter. Return the x coordinate of the point
     * @return x coordinate
     */
-  def x: Int
+  def x: Double
 
   /**
     * Getter. Return the y coordinate of the point
     * @return y coordinate
     */
-  def y: Int
+  def y: Double
 }
 
 object Point {
-  def apply(x: Int, y: Int): Point = new PointImpl(x,y)
+  def apply(x: Double, y: Double): Point = new PointImpl(x,y)
 
-  private case class PointImpl(override val x: Int, override val y: Int) extends Point {}
+  private case class PointImpl(override val x: Double, override val y: Double) extends Point {}
 }
 
 
