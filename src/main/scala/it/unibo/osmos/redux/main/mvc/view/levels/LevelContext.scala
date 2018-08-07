@@ -1,5 +1,6 @@
 package it.unibo.osmos.redux.main.mvc.view.levels
 
+import it.unibo.osmos.redux.main.mvc.view.drawables.DrawableWrapper
 import javafx.event.EventHandler
 import javafx.scene.input.MouseEvent
 
@@ -14,8 +15,10 @@ trait LevelContext {
 
   /**
     * Called once per frame. Manages the entities that must be drawn
+    * @param playerEntity the player entity. It may be empty
+    * @param entities the other entities
     */
-  def drawEntities()
+  def drawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper])
 
   /**
     * This method register a single mouse event listener
@@ -55,11 +58,7 @@ object LevelContext {
       //TODO: waiting for controller
     }
 
-    override def drawEntities(): Unit = {
-      //TODO: waiting for controller
-      val drawables = Seq()
-      listener.onDrawEntities(drawables)
-    }
+    override def drawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = listener.onDrawEntities(playerEntity, entities)
 
     override def registerMouseEventListener(eventHandler: EventHandler[MouseEvent]): Unit = mouseEventListener = Option(eventHandler)
 
@@ -79,8 +78,9 @@ object LevelContext {
 trait LevelContextListener {
   /**
     * Called when the LevelContext retrieve a collection of entities that must be drawn on the scene
-    * @param drawables a collection of coordinates
+    * @param playerEntity the player entity. It may be empty
+    * @param entities the other entities
     */
   //TODO: modify this according to the controller
-  def onDrawEntities(drawables: Seq[(Double, Double, Double, Double)])
+  def onDrawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper])
 }

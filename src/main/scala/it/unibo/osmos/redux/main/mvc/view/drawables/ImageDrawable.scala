@@ -1,4 +1,5 @@
 package it.unibo.osmos.redux.main.mvc.view.drawables
+import it.unibo.osmos.redux.main.utils.Point
 import scalafx.scene.canvas.GraphicsContext
 import scalafx.scene.image.Image
 
@@ -21,7 +22,7 @@ class ImageDrawable(private var _image: Image, override val graphicsContext: Gra
     */
   def image_= (image: Image): Unit = _image = image
 
-  override def draw(x: Double, y: Double, width: Double, height: Double): Unit = {
-    graphicsContext.drawImage(_image, x, y, width, height)
+  def draw(point: Point, width: Double, height: Double): Unit = {
+    graphicsContext.drawImage(_image, point.x, point.y, width, height)
   }
 }
