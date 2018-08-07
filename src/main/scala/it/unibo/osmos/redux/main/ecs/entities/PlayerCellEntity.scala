@@ -1,4 +1,5 @@
 package it.unibo.osmos.redux.main.ecs.entities
+
 import java.util.UUID
 
 import it.unibo.osmos.redux.main.ecs.components._
@@ -31,4 +32,5 @@ object PlayerCellEntity {
 
     override def getVisibleComponent: Visible = cellEntity.getVisibleComponent
   }
+
 }

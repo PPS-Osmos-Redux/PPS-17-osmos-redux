@@ -16,51 +16,39 @@ object CellEntity {
             speed: Speed,
             visible: Visible): CellEntity = CellEntityImpl(Entity(), acceleration, collidable, dimension, position, speed, visible)
 
-  private case class CellEntityImpl(entity: Entity,
-                                    acceleration: Acceleration,
-                                    collidable: Collidable,
-                                    dimension: Dimension,
-                                    position: Position,
-                                    speed: Speed,
-                                    visible: Visible) extends CellEntity {
-
-    private val accelerationComponent: Acceleration = acceleration
-
-    private val collidableComponent: Collidable = collidable
-
-    private val dimensionComponent: Dimension = dimension
-
-    private val positionComponent: Position = position
-
-    private val speedComponent: Speed = speed
-
-    private val visibleComponent: Visible = visible
+  private case class CellEntityImpl(private val entity: Entity,
+                                    private val acceleration: Acceleration,
+                                    private val collidable: Collidable,
+                                    private val dimension: Dimension,
+                                    private val position: Position,
+                                    private val speed: Speed,
+                                    private val visible: Visible) extends CellEntity {
 
     override def getUUID: UUID = entity.getUUID
 
-    override def getAccelerationComponent: Acceleration = accelerationComponent
+    override def getAccelerationComponent: Acceleration = acceleration
 
-    override def getCollidableComponent: Collidable = collidableComponent
+    override def getCollidableComponent: Collidable = collidable
 
-    override def getDimensionComponent: Dimension = dimensionComponent
+    override def getDimensionComponent: Dimension = dimension
 
-    override def getPositionComponent: Position = positionComponent
+    override def getPositionComponent: Position = position
 
-    override def getSpeedComponent: Speed = speedComponent
+    override def getSpeedComponent: Speed = speed
 
-    override def getVisibleComponent: Visible = visibleComponent
+    override def getVisibleComponent: Visible = visible
   }
 
 }
 
 object TryCellEntity extends App {
-  val a = Acceleration(1,1)
+  val a = Acceleration(1, 1)
   val c = Collidable(true)
   val d = Dimension(5)
-  val p = Position(Point(0,0))
-  val s = Speed(4,0)
+  val p = Position(Point(0, 0))
+  val s = Speed(4, 0)
   val v = Visible(true)
-  val ce = CellEntity(a,c,d,p,s,v)
+  val ce = CellEntity(a, c, d, p, s, v)
 
   println(ce.getUUID)
   println(ce.getCollidableComponent)
