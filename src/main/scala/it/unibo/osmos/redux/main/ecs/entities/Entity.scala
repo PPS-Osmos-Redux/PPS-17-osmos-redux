@@ -7,6 +7,11 @@ import java.util.UUID
   */
 trait Entity {
 
+  /**
+    * Gets the UUID for this entity
+    *
+    * @return the UUID for this entity
+    */
   def getUUID: UUID
 }
 

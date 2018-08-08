@@ -40,16 +40,3 @@ object CellEntity {
   }
 
 }
-
-object TryCellEntity extends App {
-  val a = Acceleration(1, 1)
-  val c = Collidable(true)
-  val d = Dimension(5)
-  val p = Position(Point(0, 0))
-  val s = Speed(4, 0)
-  val v = Visible(true)
-  val ce = CellEntity(a, c, d, p, s, v)
-
-  println(ce.getUUID)
-  println(ce.getCollidableComponent)
-}
