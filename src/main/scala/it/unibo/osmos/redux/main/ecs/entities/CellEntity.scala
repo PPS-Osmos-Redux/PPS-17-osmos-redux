@@ -4,6 +4,9 @@ import java.util.UUID
 
 import it.unibo.osmos.redux.main.ecs.components._
 
+/**
+  * Trait representing a CellEntity
+  */
 trait CellEntity extends AbstractEntity with MovableProperty with CollidableProperty with DrawableProperty {
 
 }
