@@ -12,18 +12,19 @@ object EMEvents {
     * @param entity new entity created
     * @return the creation event
     */
-  def entityCreated(entity: Entity):EntityCreated = EntityCreated(entity)
+  def entityCreated(entity: Property):EntityCreated = EntityCreated(entity)
 
   /**
     * Event of cancellation
     * @param entity the entity deleted
     * @return the delete event
     */
-  def entityDeleted(entity: Entity):EntityDeleted = EntityDeleted(entity)
+  def entityDeleted(entity: Property):EntityDeleted = EntityDeleted(entity)
 
   sealed trait EntityManagerEvent {
-    val entity:Entity
+    val entity:Property
   }
+
   case class EntityCreated(override val entity: Entity) extends EntityManagerEvent
   case class EntityDeleted(override val entity: Entity) extends EntityManagerEvent
 }
@@ -53,26 +54,26 @@ trait Observable {
   * Define the methods for manage an entities collection
   */
 trait EntityManager {
-  type ManagedEntity = Class[_ <: Entity]
+  type ManagedEntity = Class[_ <: Property]
   type ObserverEntry = (Observer, ManagedEntity)
   /**
     * Adds the new entity to the collection
     * @param entity the new entity
     */
-  def add(entity: Entity)
+  def add(entity: Property)
 
   /**
     * Removes the entity from the collection
     * @param entity the entity to be eliminated
     */
-  def delete(entity: Entity)
+  def delete(entity: Property)
 
   /**
     * Gives all the entities which extends managedEntity interface
     * @param entityInterface target entity interface
     * @return a list of entities
     */
-  def filterEntities(entityInterface: ManagedEntity):List[Entity]
+  def filterEntities(entityInterface: ManagedEntity):List[Property]
 }
 
 /**
@@ -80,11 +81,11 @@ trait EntityManager {
   */
 object EntityManager extends EntityManager with Observable {
   private var observers: List[ObserverEntry] = List()
-  private var entities:mutable.Set[Entity] = mutable.Set()
+  private var entities:mutable.Set[Property] = mutable.Set()
 
-  private def getInterfaces(entity: Entity):Array[Class[_]] = entity.getClass.getInterfaces
+  private def getInterfaces(entity: Property):Array[Class[_]] = entity.getClass.getInterfaces
 
-  private def extedsInterface(ent: Entity, entityInt: EntityManager.ManagedEntity):Boolean =
+  private def extedsInterface(ent: Property, entityInt: EntityManager.ManagedEntity):Boolean =
                                               getInterfaces(ent) contains entityInt
 
   @tailrec
@@ -96,12 +97,12 @@ object EntityManager extends EntityManager with Observable {
     case _::t => notifyEvent(t,emEvent)
   }
 
-  override def add(entity: Entity): Unit = {
+  override def add(entity: Property): Unit = {
     entities += entity
     notifyEvent(observers,EMEvents.entityCreated(entity))
   }
 
-  override def delete(entity: Entity): Unit = {
+  override def delete(entity: Property): Unit = {
     entities remove entity
     notifyEvent(observers,EMEvents.entityDeleted(entity))
   }
@@ -109,6 +110,6 @@ object EntityManager extends EntityManager with Observable {
   override def subscribe(observer: Observer, managedEntities: ManagedEntity): Unit =
                           observers = (observer, managedEntities) :: observers
 
-  override def filterEntities(entityInterface: EntityManager.ManagedEntity): List[Entity] =
+  override def filterEntities(entityInterface: EntityManager.ManagedEntity): List[Property] =
     entities.filter(ent => extedsInterface(ent, entityInterface)).toList
 }

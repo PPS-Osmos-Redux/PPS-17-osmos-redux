@@ -5,7 +5,7 @@ import it.unibo.osmos.redux.main.utils.Point
 /**
   * Component Position (coordinates of the sphere's center)
   */
-trait Position {
+trait PositionComponent {
 
   /**
     * Getter. Return the center of the sphere
@@ -20,10 +20,10 @@ trait Position {
   def point_(point: Point): Unit
 }
 
-object Position {
-  def apply(point: Point): Position = new PositionImpl(point)
+object PositionComponent {
+  def apply(point: Point): PositionComponent = new PositionComponentImpl(point)
 
-  private case class PositionImpl(var _point: Point) extends Position {
+  private case class PositionComponentImpl(var _point: Point) extends PositionComponent {
 
     override def point: Point = _point
 

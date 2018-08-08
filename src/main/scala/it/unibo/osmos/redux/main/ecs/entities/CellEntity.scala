@@ -4,39 +4,43 @@ import java.util.UUID
 
 import it.unibo.osmos.redux.main.ecs.components._
 
-trait CellEntity extends Entity with MovementEntity with CollisionEntity with DrawableEntity {
+/**
+  * Trait representing a CellEntity
+  */
+trait CellEntity extends AbstractEntity with MovableProperty with CollidableProperty with DrawableProperty {
 
 }
 
 object CellEntity {
-  def apply(acceleration: Acceleration,
-            collidable: Collidable,
-            dimension: Dimension,
-            position: Position,
-            speed: Speed,
-            visible: Visible): CellEntity = CellEntityImpl(Entity(), acceleration, collidable, dimension, position, speed, visible)
+  def apply(acceleration: AccelerationComponent,
+            collidable: CollidableComponent,
+            dimension: DimensionComponent,
+            position: PositionComponent,
+            speed: SpeedComponent,
+            visible: VisibleComponent): CellEntity = CellEntityImpl(acceleration, collidable, dimension, position, speed, visible)
 
-  private case class CellEntityImpl(private val entity: Entity,
-                                    private val acceleration: Acceleration,
-                                    private val collidable: Collidable,
-                                    private val dimension: Dimension,
-                                    private val position: Position,
-                                    private val speed: Speed,
-                                    private val visible: Visible) extends CellEntity {
+  private case class CellEntityImpl(private val acceleration: AccelerationComponent,
+                                    private val collidable: CollidableComponent,
+                                    private val dimension: DimensionComponent,
+                                    private val position: PositionComponent,
+                                    private val speed: SpeedComponent,
+                                    private val visible: VisibleComponent) extends CellEntity {
 
-    override def getUUID: UUID = entity.getUUID
+    private val EntityUUID: UUID = UUID.randomUUID()
 
-    override def getAccelerationComponent: Acceleration = acceleration
+    override def getUUID: UUID = EntityUUID
 
-    override def getCollidableComponent: Collidable = collidable
+    override def getAccelerationComponent: AccelerationComponent = acceleration
 
-    override def getDimensionComponent: Dimension = dimension
+    override def getCollidableComponent: CollidableComponent = collidable
 
-    override def getPositionComponent: Position = position
+    override def getDimensionComponent: DimensionComponent = dimension
 
-    override def getSpeedComponent: Speed = speed
+    override def getPositionComponent: PositionComponent = position
 
-    override def getVisibleComponent: Visible = visible
+    override def getSpeedComponent: SpeedComponent = speed
+
+    override def getVisibleComponent: VisibleComponent = visible
   }
 
 }

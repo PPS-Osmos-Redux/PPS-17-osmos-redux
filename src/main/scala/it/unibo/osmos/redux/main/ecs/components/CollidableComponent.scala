@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.main.ecs.components
 /**
   * Component for entity able to be collided.
   */
-trait Collidable {
+trait CollidableComponent {
 
   /**
     *
@@ -18,10 +18,10 @@ trait Collidable {
   def setCollidable(collidable: Boolean): Unit
 }
 
-object Collidable {
-  def apply(collidable: Boolean): Collidable = new CollidableImpl(collidable)
+object CollidableComponent {
+  def apply(collidable: Boolean): CollidableComponent = new CollidableComponentImpl(collidable)
 
-  private case class CollidableImpl(var _collidable: Boolean) extends Collidable {
+  private case class CollidableComponentImpl(var _collidable: Boolean) extends CollidableComponent {
 
     override def isCollidable(): Boolean = _collidable
 

@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.main.ecs.components
 /**
   * Component for visible entity
   */
-trait Visible {
+trait VisibleComponent {
 
   /**
     *
@@ -18,10 +18,10 @@ trait Visible {
   def setVisible(visible: Boolean): Unit
 }
 
-object Visible {
-  def apply(visible: Boolean): Visible = new VisibleImpl(visible)
+object VisibleComponent {
+  def apply(visible: Boolean): VisibleComponent = new VisibleComponentImpl(visible)
 
-  private case class VisibleImpl(var _visible: Boolean) extends Visible {
+  private case class VisibleComponentImpl(var _visible: Boolean) extends VisibleComponent {
 
     override def isVisible(): Boolean = _visible
 
