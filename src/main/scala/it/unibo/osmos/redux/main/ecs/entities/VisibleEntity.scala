@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.main.ecs.entities
 
-import it.unibo.osmos.redux.main.ecs.components.Visible
+import it.unibo.osmos.redux.main.ecs.components.VisibleComponent
 
 trait VisibleEntity {
 
@@ -9,5 +9,5 @@ trait VisibleEntity {
     *
     * @return the Visible Component
     */
-  def getVisibleComponent: Visible
+  def getVisibleComponent: VisibleComponent
 }

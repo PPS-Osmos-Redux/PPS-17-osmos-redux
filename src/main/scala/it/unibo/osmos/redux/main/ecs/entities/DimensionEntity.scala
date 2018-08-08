@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.main.ecs.entities
 
-import it.unibo.osmos.redux.main.ecs.components.Dimension
+import it.unibo.osmos.redux.main.ecs.components.DimensionComponent
 
 trait DimensionEntity {
 
@@ -9,5 +9,5 @@ trait DimensionEntity {
     *
     * @return the Dimension Component
     */
-  def getDimensionComponent: Dimension
+  def getDimensionComponent: DimensionComponent
 }

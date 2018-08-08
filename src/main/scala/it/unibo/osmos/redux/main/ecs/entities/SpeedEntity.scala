@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.main.ecs.entities
 
-import it.unibo.osmos.redux.main.ecs.components.Speed
+import it.unibo.osmos.redux.main.ecs.components.SpeedComponent
 
 trait SpeedEntity {
 
@@ -9,5 +9,5 @@ trait SpeedEntity {
     *
     * @return the Speed Component
     */
-  def getSpeedComponent: Speed
+  def getSpeedComponent: SpeedComponent
 }

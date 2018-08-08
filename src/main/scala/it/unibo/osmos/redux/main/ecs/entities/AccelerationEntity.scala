@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.main.ecs.entities
 
-import it.unibo.osmos.redux.main.ecs.components.Acceleration
+import it.unibo.osmos.redux.main.ecs.components.AccelerationComponent
 
 trait AccelerationEntity {
 
@@ -9,5 +9,5 @@ trait AccelerationEntity {
     *
     * @return the Acceleration Component
     */
-  def getAccelerationComponent: Acceleration
+  def getAccelerationComponent: AccelerationComponent
 }

@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.main.ecs.components
 /**
   * Component of the speed vector
   */
-trait Speed {
+trait SpeedComponent {
 
   /**
     * Getter. Return the speed of the x coordinate
@@ -30,10 +30,10 @@ trait Speed {
   def speedY_(speed: Int): Unit
 }
 
-object Speed {
-  def apply(speedX: Int, speedY: Int): Speed = new SpeedImpl(speedX,speedY)
+object SpeedComponent {
+  def apply(speedX: Int, speedY: Int): SpeedComponent = new SpeedComponentImpl(speedX,speedY)
 
-  private case class SpeedImpl(var _speedX: Int, var _speedY: Int) extends Speed {
+  private case class SpeedComponentImpl(var _speedX: Int, var _speedY: Int) extends SpeedComponent {
     override def speedX: Int = _speedX
 
     override def speedY: Int = _speedY

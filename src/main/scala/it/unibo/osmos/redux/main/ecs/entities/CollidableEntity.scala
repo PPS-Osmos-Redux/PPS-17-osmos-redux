@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.main.ecs.entities
 
-import it.unibo.osmos.redux.main.ecs.components.Collidable
+import it.unibo.osmos.redux.main.ecs.components.CollidableComponent
 
 trait CollidableEntity {
 
@@ -9,5 +9,5 @@ trait CollidableEntity {
     *
     * @return the Collidable Component
     */
-  def getCollidableComponent: Collidable
+  def getCollidableComponent: CollidableComponent
 }

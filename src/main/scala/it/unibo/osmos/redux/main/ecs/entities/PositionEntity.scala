@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.main.ecs.entities
 
-import it.unibo.osmos.redux.main.ecs.components.Position
+import it.unibo.osmos.redux.main.ecs.components.PositionComponent
 
 trait PositionEntity {
 
@@ -9,5 +9,5 @@ trait PositionEntity {
     *
     * @return the Position Component
     */
-  def getPositionComponent: Position
+  def getPositionComponent: PositionComponent
 }
