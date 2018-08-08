@@ -24,8 +24,8 @@ object EMEvents {
   sealed trait EntityManagerEvent {
     val entity:Entity
   }
-  private case class EntityCreated(override val entity: Entity) extends EntityManagerEvent
-  private case class EntityDeleted(override val entity: Entity) extends EntityManagerEvent
+  case class EntityCreated(override val entity: Entity) extends EntityManagerEvent
+  case class EntityDeleted(override val entity: Entity) extends EntityManagerEvent
 }
 
 import EMEvents._
