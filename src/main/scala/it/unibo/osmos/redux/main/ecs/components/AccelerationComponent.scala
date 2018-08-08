@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.main.ecs.components
 /**
   * Component of the acceleration vector
   */
-trait Acceleration {
+trait AccelerationComponent {
 
   /**
     * Getter. Return the acceleration of the x coordinate
@@ -30,10 +30,10 @@ trait Acceleration {
   def accelerationY_(acceleration: Int): Unit
 }
 
-object Acceleration {
-  def apply(accelerationX: Int, accelerationY: Int): Acceleration = new AccelerationImpl(accelerationX,accelerationY)
+object AccelerationComponent {
+  def apply(accelerationX: Int, accelerationY: Int): AccelerationComponent = new AccelerationComponentImpl(accelerationX,accelerationY)
 
-  private case class AccelerationImpl(var _accelerationX: Int, var _accelerationY: Int) extends Acceleration {
+  private case class AccelerationComponentImpl(var _accelerationX: Int, var _accelerationY: Int) extends AccelerationComponent {
     override def accelerationX: Int = _accelerationX
 
     override def accelerationY: Int = _accelerationY

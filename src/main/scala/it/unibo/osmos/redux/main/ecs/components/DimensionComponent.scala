@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.main.ecs.components
 /**
   * Component Dimension (radius of the sphere)
   */
-trait Dimension {
+trait DimensionComponent {
 
   /**
     * Getter. Return the radius of the sphere
@@ -18,10 +18,10 @@ trait Dimension {
   def radius_(radius: Int): Unit
 }
 
-object Dimension {
-  def apply(radius: Int): Dimension = new DimensionImpl(radius)
+object DimensionComponent {
+  def apply(radius: Int): DimensionComponent = new DimensionComponentImpl(radius)
 
-  private case class DimensionImpl(var _radius: Int) extends Dimension {
+  private case class DimensionComponentImpl(var _radius: Int) extends DimensionComponent {
     override def radius: Int = _radius
 
     override def radius_(radius: Int): Unit = _radius = radius
