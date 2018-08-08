@@ -4,7 +4,7 @@ import java.util.UUID
 
 import it.unibo.osmos.redux.main.ecs.components._
 
-trait CellEntity extends Entity with MovementEntity with CollisionEntity with DrawableEntity {
+trait CellEntity extends AbstractEntity with MovableProperty with CollidableProperty with DrawableProperty {
 
 }
 
@@ -14,17 +14,18 @@ object CellEntity {
             dimension: DimensionComponent,
             position: PositionComponent,
             speed: SpeedComponent,
-            visible: VisibleComponent): CellEntity = CellEntityImpl(Entity(), acceleration, collidable, dimension, position, speed, visible)
+            visible: VisibleComponent): CellEntity = CellEntityImpl(acceleration, collidable, dimension, position, speed, visible)
 
-  private case class CellEntityImpl(private val entity: Entity,
-                                    private val acceleration: AccelerationComponent,
+  private case class CellEntityImpl(private val acceleration: AccelerationComponent,
                                     private val collidable: CollidableComponent,
                                     private val dimension: DimensionComponent,
                                     private val position: PositionComponent,
                                     private val speed: SpeedComponent,
                                     private val visible: VisibleComponent) extends CellEntity {
 
-    override def getUUID: UUID = entity.getUUID
+    private val EntityUUID: UUID = UUID.randomUUID()
+
+    override def getUUID: UUID = EntityUUID
 
     override def getAccelerationComponent: AccelerationComponent = acceleration
 

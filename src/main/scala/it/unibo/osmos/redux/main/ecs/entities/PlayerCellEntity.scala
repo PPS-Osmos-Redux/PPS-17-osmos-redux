@@ -4,7 +4,7 @@ import java.util.UUID
 
 import it.unibo.osmos.redux.main.ecs.components._
 
-trait PlayerCellEntity extends CellEntity with InputEntity {
+trait PlayerCellEntity extends CellEntity with InputProperty {
 
 }
 

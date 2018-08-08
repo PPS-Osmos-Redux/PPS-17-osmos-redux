@@ -2,7 +2,7 @@ package it.unibo.osmos.redux.main.ecs.entities
 
 import it.unibo.osmos.redux.main.ecs.components.PositionComponent
 
-trait PositionEntity {
+trait Position extends Property {
 
   /**
     * Gets the Position Component

@@ -2,7 +2,7 @@ package it.unibo.osmos.redux.main.ecs.entities
 
 import it.unibo.osmos.redux.main.ecs.components.VisibleComponent
 
-trait VisibleEntity {
+trait Visible extends Property {
 
   /**
     * Gets the Visible Component

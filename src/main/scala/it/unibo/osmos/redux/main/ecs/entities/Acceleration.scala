@@ -2,7 +2,7 @@ package it.unibo.osmos.redux.main.ecs.entities
 
 import it.unibo.osmos.redux.main.ecs.components.AccelerationComponent
 
-trait AccelerationEntity {
+trait Acceleration extends Property {
 
   /**
     * Gets the Acceleration Component
