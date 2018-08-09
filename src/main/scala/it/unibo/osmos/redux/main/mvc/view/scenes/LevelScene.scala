@@ -1,7 +1,6 @@
 package it.unibo.osmos.redux.main.mvc.view.scenes
 
-
-import it.unibo.osmos.redux.main.mvc.view.ViewConstants.Entities.{defaultEntityMaxColor, defaultEntityMinColor}
+import it.unibo.osmos.redux.main.mvc.view.ViewConstants.Entities.{defaultEntityMaxColor, defaultEntityMinColor, defaultPlayerColor}
 import it.unibo.osmos.redux.main.mvc.view.drawables.{CircleDrawable, DrawableWrapper}
 import it.unibo.osmos.redux.main.mvc.view.levels.{LevelContext, LevelContextListener}
 import scalafx.application.Platform
@@ -43,6 +42,11 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     /* We must draw to the screen the entire collection */
     Platform.runLater({
       canvas.graphicsContext2D.clearRect(parentStage.getX, parentStage.getY, parentStage.getWidth, parentStage.getHeight)
+      /* Draw the player */
+      if (playerEntity nonEmpty) {
+        circleDrawable.draw(playerEntity.get center, playerEntity.get radius, playerEntity.get radius, defaultPlayerColor)
+      }
+      //TODO: match types top draw entities differently
       calculateColors(defaultEntityMinColor, defaultEntityMaxColor, entities) foreach( (e) => circleDrawable.draw(e._1.center, e._1.radius, e._1.radius, e._2))
     })
   }
