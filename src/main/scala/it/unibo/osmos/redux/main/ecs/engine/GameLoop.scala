@@ -2,18 +2,16 @@ package it.unibo.osmos.redux.main.ecs.engine
 
 import java.util.concurrent.locks.{Lock, ReentrantLock}
 
-import scala.collection.mutable
-
 /**
   * Implementation of the game loop.
   * @param engine The Game engine.
   * @param systems The list of the systems of the game.
   */
-class GameLoop(val engine: GameEngine, var systems: mutable.ListBuffer[System]) extends Thread {
+class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread {
 
   type GameStatus = GameStatus.Value
 
-  private var lock: Lock = new ReentrantLock()
+  private val lock: Lock = new ReentrantLock()
   private var status: GameStatus = GameStatus.Idle
   private var stopFlag: Boolean = false
   private val tickTime = 1000 / engine.getFps
@@ -29,11 +27,8 @@ class GameLoop(val engine: GameEngine, var systems: mutable.ListBuffer[System]) 
       try {
 
         //TODO: call update methods for all systems (sort by priority before do that)
+        //systems foreach (s => s.update())
 
-      } catch {
-        case e: Throwable =>
-          println("Error occurred inside gameloop:")
-          e.printStackTrace()
       } finally {
         lock.unlock()
       }
@@ -45,8 +40,7 @@ class GameLoop(val engine: GameEngine, var systems: mutable.ListBuffer[System]) 
         try {
           Thread.sleep(sleepTime)
         } catch {
-          case _: InterruptedException =>
-            println("Gameloop was killed while in sleep")
+          case _: Throwable => //do nothing
         }
       }
     }
