@@ -33,8 +33,10 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     * OnMouseClicked handler
     */
   onMouseClicked = mouseEvent => {
-    if (levelContext nonEmpty)
-      levelContext.get pushMouseEvent mouseEvent
+    levelContext match {
+      case Some(lc) => lc pushMouseEvent mouseEvent
+      case _ =>
+    }
   }
 
   override def onDrawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = {
@@ -43,8 +45,9 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     Platform.runLater({
       canvas.graphicsContext2D.clearRect(parentStage.getX, parentStage.getY, parentStage.getWidth, parentStage.getHeight)
       /* Draw the player */
-      if (playerEntity nonEmpty) {
-        circleDrawable.draw(playerEntity.get center, playerEntity.get radius, playerEntity.get radius, defaultPlayerColor)
+      playerEntity match {
+        case Some(pe) => circleDrawable.draw(pe center, pe radius, pe radius, defaultPlayerColor)
+        case _ =>
       }
       //TODO: match types top draw entities differently
       calculateColors(defaultEntityMinColor, defaultEntityMaxColor, entities) foreach( (e) => circleDrawable.draw(e._1.center, e._1.radius, e._1.radius, e._2))
