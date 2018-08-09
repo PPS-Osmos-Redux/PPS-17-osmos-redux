@@ -13,17 +13,20 @@ trait Controller {
 }
 
 
-case class ControllerImpl(/*engine:Engine*/) extends Controller {
+case class ControllerImpl() extends Controller {
+  /*val engine:Engine*/
   override def startLevel(levelContext: LevelContext): Unit = {
     //1) load files
     val entities = loadEntities()
     //2) call init
-    /*engine.init(levelContext,entities)*/
-
+    /*if(engine.isEmpty){
+      engine = new Engine()
+    }
+    engine.init(levelContext,entities)*/
     //3) call start
     /*engine.start()*/
   }
-  
+
   def loadEntities():List[CellEntity] = {
     val a = AccelerationComponent(1, 1)
     val c = CollidableComponent(true)
