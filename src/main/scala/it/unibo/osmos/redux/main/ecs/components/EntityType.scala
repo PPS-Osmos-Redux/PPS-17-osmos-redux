@@ -1,5 +1,12 @@
-package it.unibo.osmos.redux.main.ecs
+package it.unibo.osmos.redux.main.ecs.components
 
+/**
+  * Enumeration which holds the different entity types
+  */
 object EntityType extends Enumeration {
-  val Material = Value
+
+  /**
+    * Basic entity type used by common entities
+    */
+  val Material: EntityType.Value = Value
 }
