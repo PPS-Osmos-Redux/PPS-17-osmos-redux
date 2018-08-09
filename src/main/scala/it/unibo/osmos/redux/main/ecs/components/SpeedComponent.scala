@@ -9,37 +9,37 @@ trait SpeedComponent {
     * Getter. Return the speed of the x coordinate
     * @return the speed
     */
-  def speedX: Int
+  def speedX: Double
 
   /**
     * Getter. Return the speed of the y coordinate
     * @return the speed
     */
-  def speedY: Int
+  def speedY: Double
 
   /**
     * Setter. Set the new speed of the x coordinate
     * @param speed the new speed
     */
-  def speedX_(speed: Int): Unit
+  def speedX_(speed: Double): Unit
 
   /**
     * Setter. Set the new speed of the y coordinate
     * @param speed the new speed
     */
-  def speedY_(speed: Int): Unit
+  def speedY_(speed: Double): Unit
 }
 
 object SpeedComponent {
-  def apply(speedX: Int, speedY: Int): SpeedComponent = new SpeedComponentImpl(speedX,speedY)
+  def apply(speedX: Double, speedY: Double): SpeedComponent = SpeedComponentImpl(speedX,speedY)
 
-  private case class SpeedComponentImpl(var _speedX: Int, var _speedY: Int) extends SpeedComponent {
-    override def speedX: Int = _speedX
+  private case class SpeedComponentImpl(var _speedX: Double, var _speedY: Double) extends SpeedComponent {
+    override def speedX: Double = _speedX
 
-    override def speedY: Int = _speedY
+    override def speedY: Double = _speedY
 
-    override def speedX_(speed: Int): Unit = _speedX = speed
+    override def speedX_(speed: Double): Unit = _speedX = speed
 
-    override def speedY_(speed: Int): Unit = _speedY = speed
+    override def speedY_(speed: Double): Unit = _speedY = speed
   }
 }
