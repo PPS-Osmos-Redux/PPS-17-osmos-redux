@@ -42,6 +42,7 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile 'org.scalatest:scalatest_2.11:3.0.0'
     compile group: 'org.scalafx', name: 'scalafx_2.12', version: '8.0.144-R12'
+    compile 'org.apache.commons:commons-lang3:3.6'
 }
 
 task runGradleHello {
