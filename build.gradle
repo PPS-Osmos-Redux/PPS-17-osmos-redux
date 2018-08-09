@@ -3,8 +3,9 @@ apply plugin: 'scala'
 apply plugin: 'idea'
 apply plugin: 'application'
 
-version '1.0-SNAPSHOT'
+version '1.0'
 
+mainClassName='it.unibo.osmos.redux.main.AppLauncher'
 sourceCompatibility = 1.8
 
 sourceSets {
@@ -44,14 +45,4 @@ dependencies {
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile group: 'org.scalatest', name: 'scalatest_2.12', version: '3.0.5'
-}
-
-task runGradleHello {
-    println 'Gradle Hello, World!'
-}
-
-task runMain(type: JavaExec) {
-    main = 'it.unibo.osmos.redux.main.Hello'
-    classpath = sourceSets.main.runtimeClasspath
-    systemProperties = System.getProperties()
 }
