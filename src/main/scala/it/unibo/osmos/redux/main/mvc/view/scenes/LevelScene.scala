@@ -7,20 +7,36 @@ import it.unibo.osmos.redux.main.mvc.view.levels.{LevelContext, LevelContextList
 import scalafx.application.Platform
 import scalafx.scene.canvas.Canvas
 import scalafx.scene.paint.Color
-import scalafx.scene.shape.Circle
 import scalafx.stage.Stage
 
 /**
   * This scene holds and manages a single level
   */
-class LevelScene(override val parentStage: Stage) extends BaseScene(parentStage)
-  with LevelContextListener{
+class LevelScene(override val parentStage: Stage, val listener: LevelSceneListener) extends BaseScene(parentStage)
+  with LevelContextListener {
 
+  /**
+    * The canvas which will draw the elements on the screen
+    */
   val canvas: Canvas = new Canvas
-  val levelContext: LevelContext = LevelContext(this)
   val circleDrawable: CircleDrawable = new CircleDrawable(canvas.graphicsContext2D)
 
-  onMouseClicked = mouseEvent => levelContext.pushMouseEvent(mouseEvent)
+  /**
+    * The level context, created with the LevelScene. It still needs to be properly setup
+    */
+  private var _levelContext: Option[LevelContext] = Option.empty
+
+  def levelContext: Option[LevelContext] = _levelContext
+
+  def levelContext_= (levelContext: LevelContext): Unit = _levelContext = Option(levelContext)
+
+  /**
+    * OnMouseClicked handler
+    */
+  onMouseClicked = mouseEvent => {
+    if (levelContext nonEmpty)
+      levelContext.get pushMouseEvent mouseEvent
+  }
 
   override def onDrawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = {
 
@@ -55,7 +71,6 @@ class LevelScene(override val parentStage: Stage) extends BaseScene(parentStage)
         (e, minColor.interpolate(maxColor, normalizedRadius))
       }) seq
     } else Seq()
-
   }
 
   /**
@@ -66,5 +81,12 @@ class LevelScene(override val parentStage: Stage) extends BaseScene(parentStage)
     * @return the normalized number between min and max
     */
   private def normalize(number: Double, min: Double, max: Double): Double = (number - min)/(max - min)
+
+}
+
+/**
+  * Trait which gets notified when a LevelScene event occurs
+  */
+trait LevelSceneListener {
 
 }
