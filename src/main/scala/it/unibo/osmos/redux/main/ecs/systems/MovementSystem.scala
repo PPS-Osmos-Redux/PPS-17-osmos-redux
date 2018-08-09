@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.main.ecs.systems
 import it.unibo.osmos.redux.main.ecs.entities.{MovableProperty, Property}
 import it.unibo.osmos.redux.main.utils.Point
 
-case class MovementSystem(priority: Int) extends System[MovableProperty](priority) {
+case class MovementSystem(override val priority: Int) extends System[MovableProperty](priority) {
 
   override def getGroupProperty: Class[_ <: Property] = classOf[MovableProperty]
 
@@ -22,8 +22,10 @@ case class MovementSystem(priority: Int) extends System[MovableProperty](priorit
   }
 
   private def updateEntityPosition(entity: MovableProperty): Unit = {
-    val updatedXPosition = positionComponent.point.x + entity.getSpeedComponent.speedX
-    val updatedYPosition = positionComponent.point.y + entity.getSpeedComponent.speedY
+    val positionComponent = entity.getPositionComponent
+    val speedComponent = entity.getSpeedComponent
+    val updatedXPosition = positionComponent.point.x + speedComponent.speedX
+    val updatedYPosition = positionComponent.point.y + speedComponent.speedY
     entity.getPositionComponent.point_(Point(updatedXPosition, updatedYPosition))
   }
 }
