@@ -8,16 +8,17 @@ import scala.collection.mutable.ListBuffer
 /**
   * Abstract system of generic entity
   */
-abstract class System[T>:Entity] (val entityManager: Observable, val priority: Int) extends Observer{
+abstract class System[T <:Property](val priority: Int) extends Observer{
 
   protected var entities: ListBuffer[T] = ListBuffer()
 
-  entityManager.subscribe(this, Class[T])
+  EntityManager.subscribe(this, getGroupProperty())
+  def getGroupProperty(): Class[_<:Property]
 
   override def notify(event: EMEvents.EntityManagerEvent): Unit = event match {
-    case event: EntityCreated => entities += event.entity
-    case event: EntityDeleted => entities -= event.entity
+    case event: EntityCreated => entities += event.entity.asInstanceOf[T]
+    case event: EntityDeleted => entities -= event.entity.asInstanceOf[T]
   }
 
-  def update()
+  def update(): Unit
 }
