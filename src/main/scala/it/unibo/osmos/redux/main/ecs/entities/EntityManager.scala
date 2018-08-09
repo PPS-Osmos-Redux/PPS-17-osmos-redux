@@ -1,4 +1,5 @@
 package it.unibo.osmos.redux.main.ecs.entities
+import org.apache.commons.lang3.ClassUtils
 
 import scala.annotation.tailrec
 import scala.collection.mutable
@@ -24,8 +25,9 @@ object EMEvents {
   sealed trait EntityManagerEvent {
     val entity:Property
   }
-  private case class EntityCreated(override val entity: Property) extends EntityManagerEvent
-  private case class EntityDeleted(override val entity: Property) extends EntityManagerEvent
+
+  case class EntityCreated(override val entity: Property) extends EntityManagerEvent
+  case class EntityDeleted(override val entity: Property) extends EntityManagerEvent
 }
 
 import EMEvents._
@@ -74,7 +76,7 @@ trait EntityManager {
     */
   def filterEntities(entityInterface: ManagedEntity):List[Property]
 }
-
+import scala.collection.JavaConverters._
 /**
   * Entity manager who manage the system entities and notify events to observers
   */
@@ -82,19 +84,19 @@ object EntityManager extends EntityManager with Observable {
   private var observers: List[ObserverEntry] = List()
   private var entities:mutable.Set[Property] = mutable.Set()
 
-  private def getInterfaces(entity: Property):Array[Class[_]] = entity.getClass.getInterfaces
+  def getInterfaces(entity: Property):List[Class[_]] = ClassUtils.getAllInterfaces(entity.getClass).asScala.toList
 
-  private def extedsInterface(ent: Property, entityInt: EntityManager.ManagedEntity):Boolean =
-                                              getInterfaces(ent) contains entityInt
+  def extendsInterface(ent: Property, entityInt: EntityManager.ManagedEntity):Boolean =
+    getInterfaces(ent) contains entityInt
 
   @tailrec
   private def notifyEvent(observers:List[ObserverEntry],emEvent: EntityManagerEvent):Unit =
     observers match {
-    case Nil =>
-    case (obs,entityInt)::t if extedsInterface(emEvent.entity,entityInt) =>
-                                                    obs.notify(emEvent); notifyEvent(t,emEvent)
-    case _::t => notifyEvent(t,emEvent)
-  }
+      case Nil =>
+      case (obs,entityInt)::t if extendsInterface(emEvent.entity,entityInt) =>
+        obs.notify(emEvent); notifyEvent(t,emEvent)
+      case _::t => notifyEvent(t,emEvent)
+    }
 
   override def add(entity: Property): Unit = {
     entities += entity
@@ -107,8 +109,8 @@ object EntityManager extends EntityManager with Observable {
   }
 
   override def subscribe(observer: Observer, managedEntities: ManagedEntity): Unit =
-                          observers = (observer, managedEntities) :: observers
+    observers = (observer, managedEntities) :: observers
 
   override def filterEntities(entityInterface: EntityManager.ManagedEntity): List[Property] =
-    entities.filter(ent => extedsInterface(ent, entityInterface)).toList
+    entities.filter(ent => extendsInterface(ent, entityInterface)).toList
 }
