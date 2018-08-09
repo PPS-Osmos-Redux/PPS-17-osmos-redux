@@ -61,7 +61,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
       //TODO: test functional approach speed
       entities.sortWith(_.radius < _.radius)
       val endRadius: (Double, Double) = entities match {
-        case head +:  _ :+ tail => (head.radius, tail.radius)
+        case head +: _ :+ tail => (head.radius, tail.radius)
       }
 
       entities map( e => {
