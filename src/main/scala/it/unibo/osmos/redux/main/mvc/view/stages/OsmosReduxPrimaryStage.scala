@@ -8,7 +8,7 @@ import scalafx.application.JFXApp
 /**
   * Primary stage which holds and manages all the different game scenes
   */
-trait OsmosReduxPrimaryStage {
+trait OsmosReduxPrimaryStage extends JFXApp.PrimaryStage {
 
 }
 
@@ -28,8 +28,8 @@ object OsmosReduxPrimaryStage {
     * @param windowWidth the window width
     * @param windowHeight the window height
     */
-  class OsmosReduxPrimaryStageImpl(val listener: PrimaryStageListener, val fullScreenEnabled: Boolean, val windowWidth: Double, val windowHeight: Double) extends JFXApp.PrimaryStage
-    with OsmosReduxPrimaryStage with MainSceneListener with LevelSceneListener {
+  class OsmosReduxPrimaryStageImpl(val listener: PrimaryStageListener, val fullScreenEnabled: Boolean, val windowWidth: Double, val windowHeight: Double) extends OsmosReduxPrimaryStage
+    with MainSceneListener with LevelSceneListener {
 
     title = defaultWindowTitle
     fullScreen = fullScreenEnabled

@@ -1,7 +1,6 @@
 package it.unibo.osmos.redux.main.mvc.view.scenes
 
-
-import it.unibo.osmos.redux.main.mvc.view.ViewConstants.Entities.{defaultEntityMaxColor, defaultEntityMinColor}
+import it.unibo.osmos.redux.main.mvc.view.ViewConstants.Entities.{defaultEntityMaxColor, defaultEntityMinColor, defaultPlayerColor}
 import it.unibo.osmos.redux.main.mvc.view.drawables.{CircleDrawable, DrawableWrapper}
 import it.unibo.osmos.redux.main.mvc.view.levels.{LevelContext, LevelContextListener}
 import scalafx.application.Platform
@@ -34,8 +33,10 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     * OnMouseClicked handler
     */
   onMouseClicked = mouseEvent => {
-    if (levelContext nonEmpty)
-      levelContext.get pushMouseEvent mouseEvent
+    levelContext match {
+      case Some(lc) => lc pushMouseEvent mouseEvent
+      case _ =>
+    }
   }
 
   override def onDrawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = {
@@ -43,6 +44,12 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     /* We must draw to the screen the entire collection */
     Platform.runLater({
       canvas.graphicsContext2D.clearRect(parentStage.getX, parentStage.getY, parentStage.getWidth, parentStage.getHeight)
+      /* Draw the player */
+      playerEntity match {
+        case Some(pe) => circleDrawable.draw(pe center, pe radius, pe radius, defaultPlayerColor)
+        case _ =>
+      }
+      //TODO: match types top draw entities differently
       calculateColors(defaultEntityMinColor, defaultEntityMaxColor, entities) foreach( (e) => circleDrawable.draw(e._1.center, e._1.radius, e._1.radius, e._2))
     })
   }
@@ -61,7 +68,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
       //TODO: test functional approach speed
       entities.sortWith(_.radius < _.radius)
       val endRadius: (Double, Double) = entities match {
-        case head +:  _ :+ tail => (head.radius, tail.radius)
+        case head +: _ :+ tail => (head.radius, tail.radius)
       }
 
       entities map( e => {
