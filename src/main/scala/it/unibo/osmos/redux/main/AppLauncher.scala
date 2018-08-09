@@ -15,7 +15,4 @@ object AppLauncher extends JFXApp {
   val controller: Controller = null
   val view = View(this)
   view.setController(controller)
-  println(Thread.currentThread())
-  view.setup()
-
 }
