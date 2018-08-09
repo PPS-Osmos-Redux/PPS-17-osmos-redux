@@ -23,14 +23,12 @@ object InputEventStack {
     * @return Optional of a event
     */
   def pop(): Option[MouseEvent] = {
-    if (queue.nonEmpty) None() else Some(queue.last)
+    if (queue.nonEmpty) None else Some(queue.last)
   }
 
   /**
     * Pops all events from the stack
     * @return
     */
-  def popAll(): Seq[MouseEvent] = {
-    queue
-  }
+  def popAll(): Seq[MouseEvent] = queue
 }
