@@ -8,14 +8,15 @@ import scala.collection.mutable
   * Singleton that stores all input events.
   */
 object InputEventStack {
-  var queue: mutable.ListBuffer[MouseEvent] = mutable.ListBuffer()
+
+  var stack: mutable.ListBuffer[MouseEvent] = mutable.ListBuffer()
 
   /**
     * Pushes a new event into the stack
     * @param event The event
     */
   def push(event: MouseEvent): Unit = {
-    queue += event
+    stack += event
   }
 
   /**
@@ -23,12 +24,20 @@ object InputEventStack {
     * @return Optional of a event
     */
   def pop(): Option[MouseEvent] = {
-    if (queue.nonEmpty) None else Some(queue.last)
+    if (stack.isEmpty) None else {
+      val last = Some(stack.last)
+      stack = stack.dropRight(1)
+      last
+    }
   }
 
   /**
     * Pops all events from the stack
-    * @return
+    * @return The list of all saved events
     */
-  def popAll(): Seq[MouseEvent] = queue
+  def popAll(): Seq[MouseEvent] = {
+    val copy = stack.clone
+    stack.clear
+    copy
+  }
 }
