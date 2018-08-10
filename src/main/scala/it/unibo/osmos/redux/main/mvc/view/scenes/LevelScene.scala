@@ -7,6 +7,7 @@ import it.unibo.osmos.redux.main.utils.MathUtils._
 import scalafx.application.Platform
 import scalafx.scene.canvas.Canvas
 import scalafx.scene.paint.Color
+import scalafx.scene.shape.Rectangle
 import scalafx.stage.Stage
 
 /**
@@ -18,8 +19,10 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   /**
     * The canvas which will draw the elements on the screen
     */
-  val canvas: Canvas = new Canvas
+  val canvas: Canvas = new Canvas(parentStage.getWidth, parentStage.getHeight)
   val circleDrawable: CircleDrawable = new CircleDrawable(canvas.graphicsContext2D)
+
+  content = canvas
 
   /**
     * The level context, created with the LevelScene. It still needs to be properly setup

@@ -11,6 +11,8 @@ class CircleDrawable(override val graphicsContext: GraphicsContext) extends Base
 
   def draw(point: Point, width: Double, height: Double, color: Color): Unit = {
     graphicsContext.fill = color
-    graphicsContext.fillOval(point.x, point.y, width, height)
+    graphicsContext.fillOval(point.x - width, point.y - height, width, height)
+    //graphicsContext.fillOval(200, 200, 1000, 1000)
+    graphicsContext.strokeOval(point.x - width, point.y - height, width, height)
   }
 }
