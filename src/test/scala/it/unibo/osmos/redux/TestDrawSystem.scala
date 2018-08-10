@@ -40,11 +40,11 @@ class TestDrawSystem extends FunSuite {
   val acceleration = AccelerationComponent(1, 1)
   val collidable = CollidableComponent(true)
   val speed = SpeedComponent(4, 0)
-  val playerDimension = DimensionComponent(5)
-  val playerPosition = PositionComponent(Point(0, 0))
+  val dimension = DimensionComponent(5)
+  val position = PositionComponent(Point(0, 0))
   val visible = VisibleComponent(true)
   val notVisible = VisibleComponent(false)
-  val typePlayer = TypeComponent(EntityType.Material)
+  val typeEntity = TypeComponent(EntityType.Material)
 
   test("PlayerCellEntity not present"){
     val spy = DrawSystemSpy()
@@ -63,7 +63,7 @@ class TestDrawSystem extends FunSuite {
   test("PlayerCellEntity is present, but not visible"){
     val spy = DrawSystemSpy()
     val system = DrawSystem(spy, 1)
-    val pce = PlayerCellEntity(acceleration,collidable,playerDimension,playerPosition,speed,notVisible,typePlayer)
+    val pce = PlayerCellEntity(acceleration,collidable,dimension,position,speed,notVisible,typeEntity)
     EntityManager.add(pce)
     system.update()
     assert(spy.player.isEmpty)
@@ -72,7 +72,7 @@ class TestDrawSystem extends FunSuite {
   test("PlayerCellEntity is present and visible"){
     val spy = DrawSystemSpy()
     val system = DrawSystem(spy, 1)
-    val pce = PlayerCellEntity(acceleration,collidable,playerDimension,playerPosition,speed,visible,typePlayer)
+    val pce = PlayerCellEntity(acceleration,collidable,dimension,position,speed,visible,typeEntity)
     EntityManager.add(pce)
     system.update()
     assert(spy.player.isDefined)
@@ -81,12 +81,12 @@ class TestDrawSystem extends FunSuite {
   test("PlayerCellEntity correctly wrapped"){
     val spy = DrawSystemSpy()
     val system = DrawSystem(spy, 1)
-    val pce = PlayerCellEntity(acceleration,collidable,playerDimension,playerPosition,speed,visible,typePlayer)
+    val pce = PlayerCellEntity(acceleration,collidable,dimension,position,speed,visible,typeEntity)
     EntityManager.add(pce)
     system.update()
     val playerWrapped = spy.player.get
-    assert(playerWrapped.center.equals(playerPosition.point))
-    assert(playerWrapped.radius.equals(playerDimension.radius))
-    playerWrapped.entityType.equals(typePlayer.typeEntity)
+    assert(playerWrapped.center.equals(pce.getPositionComponent.point))
+    assert(playerWrapped.radius.equals(pce.getDimensionComponent.radius))
+    playerWrapped.entityType.equals(pce.getTypeComponent.typeEntity)
   }
 }
