@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.main.utils
 
-import scalafx.scene.input.MouseEvent
+import it.unibo.osmos.redux.main.mvc.view.events.MouseEventWrapper
 
 import scala.collection.mutable
 
@@ -9,13 +9,13 @@ import scala.collection.mutable
   */
 object InputEventStack {
 
-  var stack: mutable.ListBuffer[MouseEvent] = mutable.ListBuffer()
+  var stack: mutable.ListBuffer[MouseEventWrapper] = mutable.ListBuffer()
 
   /**
     * Pushes a new event into the stack
     * @param event The event
     */
-  def push(event: MouseEvent): Unit = {
+  def push(event: MouseEventWrapper): Unit = {
     stack += event
   }
 
@@ -23,7 +23,7 @@ object InputEventStack {
     * Pops the last event from the stack
     * @return Optional of a event
     */
-  def pop(): Option[MouseEvent] = {
+  def pop(): Option[MouseEventWrapper] = {
     if (stack.isEmpty) None else {
       val last = Some(stack.last)
       stack = stack.dropRight(1)
@@ -35,7 +35,7 @@ object InputEventStack {
     * Pops all events from the stack
     * @return The list of all saved events
     */
-  def popAll(): Seq[MouseEvent] = {
+  def popAll(): Seq[MouseEventWrapper] = {
     val copy = stack.clone
     stack.clear
     copy
