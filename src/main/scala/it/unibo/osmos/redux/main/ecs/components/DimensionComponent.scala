@@ -9,21 +9,21 @@ trait DimensionComponent {
     * Getter. Return the radius of the sphere
     * @return the radius
     */
-  def radius: Int
+  def radius: Double
 
   /**
     * Setter. Set the new value of the radius
     * @param radius the new radius
     */
-  def radius_(radius: Int): Unit
+  def radius_(radius: Double): Unit
 }
 
 object DimensionComponent {
-  def apply(radius: Int): DimensionComponent = new DimensionComponentImpl(radius)
+  def apply(radius: Double): DimensionComponent = DimensionComponentImpl(radius)
 
-  private case class DimensionComponentImpl(var _radius: Int) extends DimensionComponent {
-    override def radius: Int = _radius
+  private case class DimensionComponentImpl(var _radius: Double) extends DimensionComponent {
+    override def radius: Double = _radius
 
-    override def radius_(radius: Int): Unit = _radius = radius
+    override def radius_(radius: Double): Unit = _radius = radius
   }
 }
