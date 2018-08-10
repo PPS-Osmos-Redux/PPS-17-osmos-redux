@@ -7,7 +7,6 @@ import it.unibo.osmos.redux.main.utils.MathUtils._
 import scalafx.application.Platform
 import scalafx.scene.canvas.Canvas
 import scalafx.scene.paint.Color
-import scalafx.scene.shape.Rectangle
 import scalafx.stage.Stage
 
 /**
@@ -113,7 +112,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
           case e =>
             /* The entity is larger than the player so it's color hue will approach the max one */
             val normalizedRadius = normalize(e.radius, playerEntity.radius, endRadius._2)
-            (e, playerColor.interpolate(playerColor, normalizedRadius))
+            (e, playerColor.interpolate(maxColor, normalizedRadius))
         } seq
 
     }
@@ -126,9 +125,9 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     */
   private def getEntitiesExtremeRadiusValues(entities: Seq[DrawableWrapper]): (Double, Double) = {
     /* Sorting the entities */
-    entities.sortWith(_.radius < _.radius)
+    val sorted = entities.sortWith(_.radius < _.radius)
     /* Retrieving the min and the max radius values */
-    entities match {
+    sorted match {
       case head +: _ :+ tail => (head.radius, tail.radius)
       case _ => throw new IllegalArgumentException("Could not determine the min and max radius from an empty sequence of entities")
     }

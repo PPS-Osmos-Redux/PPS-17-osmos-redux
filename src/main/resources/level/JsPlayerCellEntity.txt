@@ -15,11 +15,11 @@
   "position": {
     "point": {
       "x": 0.0,
-      "y": 0.0
+      "y": 200.0
     }
   },
   "dimension": {
-    "radius": 5
+    "radius": 20
   },
   "speed": {
     "speedX": 3,
