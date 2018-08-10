@@ -77,4 +77,16 @@ class TestDrawSystem extends FunSuite {
     system.update()
     assert(spy.player.isDefined)
   }
+
+  test("PlayerCellEntity correctly wrapped"){
+    val spy = DrawSystemSpy()
+    val system = DrawSystem(spy, 1)
+    val pce = PlayerCellEntity(acceleration,collidable,playerDimension,playerPosition,speed,visible,typePlayer)
+    EntityManager.add(pce)
+    system.update()
+    val playerWrapped = spy.player.get
+    assert(playerWrapped.center.equals(playerPosition.point))
+    assert(playerWrapped.radius.equals(playerDimension.radius))
+    playerWrapped.entityType.equals(typePlayer.typeEntity)
+  }
 }
