@@ -35,6 +35,9 @@ case class DrawSystemSpy() extends LevelContext {
   override def pushMouseEvent(mouseEvent: MouseEvent): Unit = ???
 }
 
+/**
+  * Test for DrawSystem
+  */
 class TestDrawSystem extends FunSuite {
 
   val acceleration = AccelerationComponent(1, 1)
