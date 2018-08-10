@@ -21,7 +21,7 @@ trait PositionComponent {
 }
 
 object PositionComponent {
-  def apply(point: Point): PositionComponent = new PositionComponentImpl(point)
+  def apply(point: Point): PositionComponent = PositionComponentImpl(point)
 
   private case class PositionComponentImpl(var _point: Point) extends PositionComponent {
 
