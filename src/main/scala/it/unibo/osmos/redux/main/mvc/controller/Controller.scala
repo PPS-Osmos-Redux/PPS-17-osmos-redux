@@ -1,9 +1,14 @@
 package it.unibo.osmos.redux.main.mvc.controller
 import spray.json._
 import DefaultJsonProtocol._
+import com.sun.xml.internal.ws.api.pipe.Engine
+import it.unibo.osmos.redux.main.ecs.engine.GameEngine
+
 import scala.io.Source
 import it.unibo.osmos.redux.main.mvc.view.levels.LevelContext
 import it.unibo.osmos.redux.main.ecs.entities.CellEntity
+import it.unibo.osmos.redux.main.ecs.engine.GameEngine
+
 import scala.util.Try
 
 /**
@@ -15,18 +20,19 @@ trait Controller {
 
 
 case class ControllerImpl() extends Controller {
-  /*val engine:Engine*/
+  var engine:Option[GameEngine] = None
   override def startLevel(levelContext: LevelContext): Unit = {
     //1) load files
     val map:Map[String,String] = Map(JsCellEntity.getClass.getName -> "/level/JsCellEntity.txt", JsPlayerCellEntity.getClass.getName -> "/level/JsPlayerCellEntity.txt")
-    var entities = loadEntities(map)
+    val entities = loadEntities(map)
     //2) call init
-    /*if(engine.isEmpty){
-      engine = new Engine(levelContext, entities)
+    engine match {
+      case None => engine = Some(GameEngine())
+      case _ =>
     }
-    engine.init(levelContext,entities)*/
+    engine.get.init(levelContext,entities)
     //3) call start
-    /*engine.start()*/
+    engine.get.start()
   }
 
   def loadEntities(filesToLoad:Map[String,String]):List[CellEntity] =  {
