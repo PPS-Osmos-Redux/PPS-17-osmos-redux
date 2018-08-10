@@ -37,6 +37,15 @@ case class DrawSystemSpy() extends LevelContext {
 
 class TestDrawSystem extends FunSuite {
 
+  val acceleration = AccelerationComponent(1, 1)
+  val collidable = CollidableComponent(true)
+  val speed = SpeedComponent(4, 0)
+  val playerDimension = DimensionComponent(5)
+  val playerPosition = PositionComponent(Point(0, 0))
+  val visible = VisibleComponent(true)
+  val notVisible = VisibleComponent(false)
+  val typePlayer = TypeComponent(EntityType.Material)
+
   test("PlayerCellEntity not present"){
     val spy = DrawSystemSpy()
     val system = DrawSystem(spy, 1)
@@ -49,5 +58,14 @@ class TestDrawSystem extends FunSuite {
     val system = DrawSystem(spy, 1)
     system.update()
     assert(spy.entities.isEmpty)
+  }
+
+  test("PlayerCellEntity is present, but not visible"){
+    val spy = DrawSystemSpy()
+    val system = DrawSystem(spy, 1)
+    val pce = PlayerCellEntity(acceleration,collidable,playerDimension,playerPosition,speed,notVisible,typePlayer)
+    EntityManager.add(pce)
+    system.update()
+    assert(spy.player.isEmpty)
   }
 }
