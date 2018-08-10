@@ -75,6 +75,11 @@ trait EntityManager {
     * @return a list of entities
     */
   def filterEntities(entityInterface: ManagedEntity):List[Property]
+
+  /**
+    * Clear internal collections for starting new level
+    */
+  def clear()
 }
 import scala.collection.JavaConverters._
 /**
@@ -84,10 +89,11 @@ object EntityManager extends EntityManager with Observable {
   private var observers: List[ObserverEntry] = List()
   private var entities:mutable.Set[Property] = mutable.Set()
 
-  def getInterfaces(entity: Property):List[Class[_]] = ClassUtils.getAllInterfaces(entity.getClass).asScala.toList
+  def getInterfaces(entity: Property):List[Class[_]] =
+                                ClassUtils.getAllInterfaces(entity.getClass).asScala.toList
 
   def extendsInterface(ent: Property, entityInt: EntityManager.ManagedEntity):Boolean =
-    getInterfaces(ent) contains entityInt
+                                getInterfaces(ent) contains entityInt
 
   @tailrec
   private def notifyEvent(observers:List[ObserverEntry],emEvent: EntityManagerEvent):Unit =
@@ -113,4 +119,9 @@ object EntityManager extends EntityManager with Observable {
 
   override def filterEntities(entityInterface: EntityManager.ManagedEntity): List[Property] =
     entities.filter(ent => extendsInterface(ent, entityInterface)).toList
+
+  override def clear(): Unit = {
+    observers = List()
+    entities.clear()
+  }
 }
