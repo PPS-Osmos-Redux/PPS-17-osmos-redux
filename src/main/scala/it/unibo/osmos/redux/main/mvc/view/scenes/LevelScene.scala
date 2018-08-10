@@ -3,7 +3,6 @@ package it.unibo.osmos.redux.main.mvc.view.scenes
 import it.unibo.osmos.redux.main.mvc.view.ViewConstants.Entities._
 import it.unibo.osmos.redux.main.mvc.view.drawables._
 import it.unibo.osmos.redux.main.mvc.view.levels.{LevelContext, LevelContextListener}
-import it.unibo.osmos.redux.main.mvc.view.levels._
 import it.unibo.osmos.redux.main.utils.MathUtils._
 import scalafx.application.Platform
 import scalafx.scene.canvas.Canvas
