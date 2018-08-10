@@ -43,4 +43,11 @@ class TestDrawSystem extends FunSuite {
     system.update()
     assert(spy.player.isEmpty)
   }
+
+  test("CellEntity enemies not present"){
+    val spy = DrawSystemSpy()
+    val system = DrawSystem(spy, 1)
+    system.update()
+    assert(spy.entities.isEmpty)
+  }
 }
