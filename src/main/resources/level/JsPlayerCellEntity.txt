@@ -1,7 +1,7 @@
 [{
   "acceleration": {
-    "accelerationX": 1,
-    "accelerationY": 1
+    "accelerationX": 0.0,
+    "accelerationY": 0.0
   },
   "jsTypeEntity": {
     "typeEntity": "Material"
@@ -22,7 +22,7 @@
     "radius": 5
   },
   "speed": {
-    "speedX": 4,
+    "speedX": 3,
     "speedY": 0
   }
 }]
