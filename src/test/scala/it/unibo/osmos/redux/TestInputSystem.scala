@@ -6,7 +6,7 @@ import it.unibo.osmos.redux.main.ecs.systems.InputSystem
 import it.unibo.osmos.redux.main.mvc.view.levels.LevelContext
 import it.unibo.osmos.redux.main.utils.{InputEventStack, Point}
 import org.scalatest.FunSuite
-import scalafx.scene.input.{MouseButton, MouseEvent}
+import scalafx.scene.input.{MouseButton, MouseEvent, PickResult}
 
 class TestInputSystem extends FunSuite {
 
@@ -18,10 +18,9 @@ class TestInputSystem extends FunSuite {
   val visibility = Seq(VisibleComponent(true), VisibleComponent(false), VisibleComponent(false))
   val typeEntity = Seq(TypeComponent(EntityType.Material), TypeComponent(EntityType.Material), TypeComponent(EntityType.Material))
 
-  val dummyEvent = new MouseEvent(MouseEvent.MouseClicked, 1.0, 1.0, 1.0, 1.0, MouseButton.Primary,
-    1, false, false, false, false, false,
-    false, false, false, false, false, null)
-
+  val dummyEvent = new MouseEvent(MouseEvent.MouseClicked, 1.0, 1.0, 1.0, 1.0, MouseButton.Primary, 1,
+    false, false, false, false, false, false,
+    false, false, false, false, new PickResult(null, 1, 1))
 
   test("InputSystem priority must match the one passed at his constructor") {
     val priority = 0
@@ -42,6 +41,9 @@ class TestInputSystem extends FunSuite {
     val pce = PlayerCellEntity(acceleration(0), collidable(0), dimension(0), position(0), speed(0), visibility(0), typeEntity(0))
     EntityManager.add(pce)
 
+    //save original acceleration value
+    val originalAccel = AccelerationComponent(acceleration(0).accelerationX, acceleration(0).accelerationY)
+
     //add mouse event to Input event stack
     InputEventStack.push(dummyEvent)
     InputEventStack.push(dummyEvent)
@@ -50,8 +52,8 @@ class TestInputSystem extends FunSuite {
     //call system update
     system.update()
 
-    assert(pce.getAccelerationComponent.accelerationX > acceleration(0).accelerationX - (system.accelCoefficient*3) &&
-      pce.getAccelerationComponent.accelerationY == acceleration(0).accelerationY - (system.accelCoefficient*3))
+    assert(pce.getAccelerationComponent.accelerationX == (originalAccel.accelerationX - (system.accelCoefficient*3)) &&
+      pce.getAccelerationComponent.accelerationY == (originalAccel.accelerationY - (system.accelCoefficient*3)))
   }
 
   test("InputSystem should update only entities with input property") {
@@ -69,14 +71,18 @@ class TestInputSystem extends FunSuite {
     EntityManager.add(pce)
     EntityManager.add(ce)
 
+    //save original acceleration value
+    val originalAccel0 = AccelerationComponent(acceleration(0).accelerationX, acceleration(0).accelerationY)
+    val originalAccel1 = AccelerationComponent(acceleration(1).accelerationX, acceleration(1).accelerationY)
+
     //add mouse event to Input event stack
     InputEventStack.push(dummyEvent)
 
     //call system update
     system.update()
 
-    assert(pce.getAccelerationComponent.accelerationX == -system.accelCoefficient &&
-      pce.getAccelerationComponent.accelerationY == -system.accelCoefficient &&
-      ce.getAccelerationComponent == acceleration(1))
+    assert(pce.getAccelerationComponent.accelerationX == (originalAccel0.accelerationX - system.accelCoefficient) &&
+      pce.getAccelerationComponent.accelerationY == (originalAccel0.accelerationX - system.accelCoefficient) &&
+      ce.getAccelerationComponent == originalAccel1)
   }
 }
