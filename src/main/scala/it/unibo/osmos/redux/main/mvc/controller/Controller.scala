@@ -1,32 +1,28 @@
 package it.unibo.osmos.redux.main.mvc.controller
 import spray.json._
 import DefaultJsonProtocol._
-
 import scala.io.Source
 import it.unibo.osmos.redux.main.mvc.view.levels.LevelContext
 import it.unibo.osmos.redux.main.ecs.entities.CellEntity
-import it.unibo.osmos.redux.main.mvc.controller.Converters.getClass
-
-import scala.collection.mutable
 import scala.util.Try
 
 /**
   * Controller base trait
   */
 trait Controller {
-  def startLevel(/*levelContext:LevelContext*/)
+  def startLevel(levelContext:LevelContext)
 }
 
 
 case class ControllerImpl() extends Controller {
   /*val engine:Engine*/
-  override def startLevel(/*levelContext: LevelContext*/): Unit = {
+  override def startLevel(levelContext: LevelContext): Unit = {
     //1) load files
     val map:Map[String,String] = Map(JsCellEntity.getClass.getName -> "/level/JsCellEntity.txt", JsPlayerCellEntity.getClass.getName -> "/level/JsPlayerCellEntity.txt")
     var entities = loadEntities(map)
     //2) call init
     /*if(engine.isEmpty){
-      engine = new Engine()
+      engine = new Engine(levelContext, entities)
     }
     engine.init(levelContext,entities)*/
     //3) call start
