@@ -9,10 +9,15 @@ import scalafx.scene.paint.Color
   */
 class CircleDrawable(override val graphicsContext: GraphicsContext) extends BaseDrawable(graphicsContext) {
 
-  def draw(point: Point, width: Double, height: Double, color: Color): Unit = {
+  /**
+    * Draws a circle on the canvas
+    * @param point the center of the circle
+    * @param radius the radius of the circle
+    * @param color the color of the circle
+    */
+  def draw(point: Point, radius: Double, color: Color): Unit = {
     graphicsContext.fill = color
-    graphicsContext.fillOval(point.x - width, point.y - height, width, height)
-    //graphicsContext.fillOval(200, 200, 1000, 1000)
-    graphicsContext.strokeOval(point.x - width, point.y - height, width, height)
+    graphicsContext.fillOval(point.x - radius, point.y - radius, radius * 2, radius * 2)
+    graphicsContext.strokeOval(point.x - radius, point.y - radius, radius * 2, radius * 2)
   }
 }

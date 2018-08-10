@@ -22,6 +22,9 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   val canvas: Canvas = new Canvas(parentStage.getWidth, parentStage.getHeight)
   val circleDrawable: CircleDrawable = new CircleDrawable(canvas.graphicsContext2D)
 
+  /**
+    * The content of the scene being set to the canvas
+    */
   content = canvas
 
   /**
@@ -47,14 +50,14 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
 
     /* We must draw to the screen the entire collection */
     Platform.runLater({
-      canvas.graphicsContext2D.clearRect(parentStage.getX, parentStage.getY, parentStage.getWidth, parentStage.getHeight)
+      canvas.graphicsContext2D.clearRect(0, 0, parentStage.getWidth, parentStage.getHeight)
       /* Draw the player */
       //TODO: match types top draw entities differently
       playerEntity match {
         /* The player is present */
-        case Some(pe) => calculateColors(defaultEntityMinColor, defaultEntityMaxColor, defaultPlayerColor, pe, entities) foreach(e => circleDrawable.draw(e._1.center, e._1.radius, e._1.radius, e._2))
+        case Some(pe) => calculateColors(defaultEntityMinColor, defaultEntityMaxColor, defaultPlayerColor, pe, entities) foreach(e => circleDrawable.draw(e._1.center, e._1.radius, e._2))
         /* The player is not present */
-        case _ => calculateColors(defaultEntityMinColor, defaultEntityMaxColor, entities) foreach( (e) => circleDrawable.draw(e._1.center, e._1.radius, e._1.radius, e._2))
+        case _ => calculateColors(defaultEntityMinColor, defaultEntityMaxColor, entities) foreach(e => circleDrawable.draw(e._1.center,e._1.radius, e._2))
       }
     })
   }
@@ -97,9 +100,10 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
       case Nil => Seq()
       case _ =>
         /* Calculate the min and max radius among the entities, considering the player */
-        val endRadius = getEntitiesExtremeRadiusValues(entities :+ playerEntity)
+        val allEntities = entities :+ playerEntity
+        val endRadius = getEntitiesExtremeRadiusValues(allEntities)
 
-        entities map {
+        allEntities map {
           /* The entity has the same radius of the player so it will have the same color */
           case e if e.radius == playerEntity.radius => (e, playerColor)
           case e if e.radius < playerEntity.radius =>
