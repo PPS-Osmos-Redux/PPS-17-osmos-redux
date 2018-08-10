@@ -1,22 +1,12 @@
 package it.unibo.osmos.redux.main.mvc.controller
-import it.unibo.osmos.redux.main.ecs.components._
 import spray.json._
 import DefaultJsonProtocol._
-import it.unibo.osmos.redux.main.ecs.components.AccelerationComponent.AccelerationComponentImpl
-import it.unibo.osmos.redux.main.ecs.components.CollidableComponent.CollidableComponentImpl
-import it.unibo.osmos.redux.main.ecs.components.DimensionComponent.DimensionComponentImpl
-import it.unibo.osmos.redux.main.ecs.components.PositionComponent.PositionComponentImpl
-import it.unibo.osmos.redux.main.ecs.components.SpeedComponent.SpeedComponentImpl
-import it.unibo.osmos.redux.main.ecs.components.VisibleComponent.VisibleComponentImpl
 
 import scala.io.Source
-import it.unibo.osmos.redux.main.ecs.components._
-import it.unibo.osmos.redux.main.ecs.entities.CellEntity.CellEntityImpl
-import it.unibo.osmos.redux.main.ecs.entities.{CellEntity, PlayerCellEntity}
-import it.unibo.osmos.redux.main.mvc.controller
+import it.unibo.osmos.redux.main.ecs.components.{EntityType, _}
+import it.unibo.osmos.redux.main.ecs.entities.CellEntity
 import it.unibo.osmos.redux.main.mvc.view.levels.LevelContext
 import it.unibo.osmos.redux.main.utils.Point
-import it.unibo.osmos.redux.main.utils.Point.PointImpl
 
 /**
   * Controller base trait
@@ -74,8 +64,9 @@ object Translators {
   implicit val positionFormatter: RootJsonFormat[JsPosition] = jsonFormat1(JsPosition)
   implicit val speedFormatter: RootJsonFormat[JsSpeed] = jsonFormat2(JsSpeed)
   implicit val visibleFormatter: RootJsonFormat[JsVisible] = jsonFormat1(JsVisible)
-  implicit val accelerationComponent: RootJsonFormat[JsAcceleration] = jsonFormat2(JsAcceleration)
-  implicit val cellEntityFormatter:RootJsonFormat[JsCellEntity] = jsonFormat6(JsCellEntity)
+  implicit val accelerationFormatter: RootJsonFormat[JsAcceleration] = jsonFormat2(JsAcceleration)
+  implicit val cellTypeFormatter: RootJsonFormat[JsTypeEntity] = jsonFormat1(JsTypeEntity)
+  implicit val cellEntityFormatter:RootJsonFormat[JsCellEntity] = jsonFormat7(JsCellEntity)
 }
 
 case class JsAcceleration(accelerationX: Int, accelerationY: Int) {
@@ -105,11 +96,24 @@ case class JsVisible(visible: Boolean){
   def toVisible = VisibleComponent(visible)
 }
 
-case class JsCellEntity(acceleration: JsAcceleration, collidable: JsCollidable,
-                        dimension: JsDimension, position: JsPosition,
-                        speed: JsSpeed, visible: JsVisible) {
-  def toCellEntity = CellEntity(acceleration.toAcceleration, collidable.toCollidableComponent,
-    dimension.toDimensionComponent, position.toPosition, speed.toSpeed, visible.toVisible)
+case class JsTypeEntity(typeEntity: String){
+  def toEntityType = TypeComponent(EntityType.withName(typeEntity))
+}
+
+case class JsCellEntity(acceleration: JsAcceleration,
+                        collidable: JsCollidable,
+                        dimension: JsDimension,
+                        position: JsPosition,
+                        speed: JsSpeed, visible: JsVisible,
+                        jsTypeEntity: JsTypeEntity) {
+
+  def toCellEntity = CellEntity(acceleration.toAcceleration,
+                                collidable.toCollidableComponent,
+                                dimension.toDimensionComponent,
+                                position.toPosition,
+                                speed.toSpeed,
+                                visible.toVisible,
+                                jsTypeEntity.toEntityType)
 }
 
 //object app extends App {
@@ -119,13 +123,14 @@ case class JsCellEntity(acceleration: JsAcceleration, collidable: JsCollidable,
 //  val p = JsPosition(JsPoint(0, 0))
 //  val s = JsSpeed(4, 0)
 //  val v = JsVisible(true)
-//  val ce = JsCellEntity(a, c, d, p, s, v)
+//  val ct = JsTypeEntity("Material")
+//  val ce = JsCellEntity(a, c, d, p, s, v, ct)
 //  //val pce = PlayerCellEntity(a,c,d,p,s,v)
 //
 //  import Translators._
-//  val toJson = ce.toJson
-//  println(toJson)
-//  val fromJson = toJson.convertTo[JsCellEntity]
-//  println(fromJson)
-//
+//  val cellToJson = ce.toJson
+//  println(cellToJson)
+//  val cellFromJson = cellToJson.convertTo[JsCellEntity]
+//  println(cellFromJson)
+//  println(cellFromJson.toCellEntity)
 //}
