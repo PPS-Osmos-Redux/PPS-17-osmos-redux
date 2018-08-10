@@ -29,7 +29,7 @@ class GameLoop(val engine: GameEngine, var systems: List[System[_ <: Property]])
 
       try {
         //let game progress by updating all systems
-        systems foreach (s => s.update())
+        systems foreach (_.update())
       } finally {
         lock.unlock()
       }
