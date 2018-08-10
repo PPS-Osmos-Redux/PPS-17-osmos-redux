@@ -19,7 +19,7 @@ trait VisibleComponent {
 }
 
 object VisibleComponent {
-  def apply(visible: Boolean): VisibleComponent = new VisibleComponentImpl(visible)
+  def apply(visible: Boolean): VisibleComponent = VisibleComponentImpl(visible)
 
   private case class VisibleComponentImpl(var _visible: Boolean) extends VisibleComponent {
 

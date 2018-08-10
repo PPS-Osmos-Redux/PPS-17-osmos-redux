@@ -12,8 +12,8 @@ abstract class System[T <:Property](val priority: Int) extends Observer{
 
   protected var entities: ListBuffer[T] = ListBuffer()
 
-  EntityManager.subscribe(this, getGroupProperty())
-  def getGroupProperty(): Class[_<:Property]
+  EntityManager.subscribe(this, getGroupProperty)
+  def getGroupProperty: Class[_<:Property]
 
   override def notify(event: EMEvents.EntityManagerEvent): Unit = event match {
     case event: EntityCreated => entities += event.entity.asInstanceOf[T]
