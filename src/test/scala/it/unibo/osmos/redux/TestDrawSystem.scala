@@ -18,8 +18,8 @@ case class DrawSystemSpy() extends LevelContext {
   private var _player: Option[DrawableWrapper] = None
   private var _entities: Seq[DrawableWrapper] = Seq()
 
-  def player = _player
-  def entities = _entities
+  def player: Option[DrawableWrapper] = _player
+  def entities: Seq[DrawableWrapper] = _entities
 
   override def setupLevel(): Unit = ???
 
