@@ -89,7 +89,7 @@ class TestDrawSystem extends FunSuite {
     val playerWrapped = spy.player.get
     assert(playerWrapped.center.equals(pce.getPositionComponent.point))
     assert(playerWrapped.radius.equals(pce.getDimensionComponent.radius))
-    playerWrapped.entityType.equals(pce.getTypeComponent.typeEntity)
+    assert(playerWrapped.entityType.equals(pce.getTypeComponent.typeEntity))
   }
 
   test("filter visible CellEntity"){
