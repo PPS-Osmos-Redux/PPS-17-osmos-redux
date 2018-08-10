@@ -36,8 +36,9 @@ object View {
       this.controller = Option(controller)
     }
 
-    override def onLevelContextSetup(levelContext: LevelContext): Unit = if (controller.nonEmpty) {
-      //TODO: send the context to the controller
+    override def onLevelContextSetup(levelContext: LevelContext): Unit = controller match {
+      case Some(c) => c.startLevel(levelContext)
+      case _ =>
     }
   }
 
