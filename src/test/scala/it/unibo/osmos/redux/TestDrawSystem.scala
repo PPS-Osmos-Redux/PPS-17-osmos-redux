@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.main.ecs.components._
-import it.unibo.osmos.redux.main.ecs.entities.{CellEntity, EntityManager, PlayerCellEntity}
+import it.unibo.osmos.redux.main.ecs.entities.{CellEntity, DrawableProperty, EntityManager, PlayerCellEntity}
 import it.unibo.osmos.redux.main.mvc.view.drawables.DrawableWrapper
 import it.unibo.osmos.redux.main.mvc.view.events.MouseEventListener
 import it.unibo.osmos.redux.main.mvc.view.levels.LevelContext
@@ -101,5 +101,23 @@ class TestDrawSystem extends FunSuite {
     EntityManager.add(notVisibleCE)
     system.update()
     assert(spy.entities.size == 1)
+  }
+
+  test("CellEntity enemies correctly wrapped"){
+    val spy = DrawSystemSpy()
+    val system = DrawSystem(spy, 1)
+    val visibleCE = CellEntity(acceleration,collidable,dimension,position,speed,visible,typeEntity)
+    val visibleCE1 = CellEntity(acceleration,collidable,dimension1,position1,speed,visible,typeEntity)
+    EntityManager.add(visibleCE)
+    EntityManager.add(visibleCE1)
+    system.update()
+    checkEnemies(spy.entities, visibleCE)
+    checkEnemies(spy.entities, visibleCE1)
+  }
+
+  private def checkEnemies(enemiesWrapped: Seq[DrawableWrapper], enemy: DrawableProperty): Unit = {
+    assert(enemiesWrapped.exists(p => p.center.equals(enemy.getPositionComponent.point) &&
+      p.radius.equals(enemy.getDimensionComponent.radius) &&
+      p.entityType.equals(enemy.getTypeComponent.typeEntity)))
   }
 }
