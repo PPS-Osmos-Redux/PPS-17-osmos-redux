@@ -1,8 +1,10 @@
 package it.unibo.osmos.redux.main.mvc.view.scenes
 
-import it.unibo.osmos.redux.main.mvc.view.ViewConstants.Entities.{defaultEntityMaxColor, defaultEntityMinColor, defaultPlayerColor}
-import it.unibo.osmos.redux.main.mvc.view.drawables.{CircleDrawable, DrawableWrapper}
+import it.unibo.osmos.redux.main.mvc.view.ViewConstants.Entities._
+import it.unibo.osmos.redux.main.mvc.view.drawables._
 import it.unibo.osmos.redux.main.mvc.view.levels.{LevelContext, LevelContextListener}
+import it.unibo.osmos.redux.main.mvc.view.levels._
+import it.unibo.osmos.redux.main.utils.MathUtils._
 import scalafx.application.Platform
 import scalafx.scene.canvas.Canvas
 import scalafx.scene.paint.Color
@@ -67,12 +69,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
       case Nil => Seq()
       case _ =>
       /* Calculate the min and max radius among the entities */
-      /* Sort the list in ascending order */
-      //TODO: test functional approach speed
-      entities.sortWith(_.radius < _.radius)
-      val endRadius: (Double, Double) = entities match {
-        case head +: _ :+ tail => (head.radius, tail.radius)
-      }
+      val endRadius = getEntitiesExtremeRadiusValues(entities)
 
       entities map( e => {
         /* Normalize the entity radius */
@@ -97,37 +94,39 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     entities match {
       case Nil => Seq()
       case _ =>
-        /* Calculate the min and max radius among the entities, adding the player to the collection */
-        /* Sort the list in ascending order */
-        (entities :+ playerEntity).sortWith(_.radius < _.radius)
-        val endRadius: (Double, Double) = entities match {
-          case head +: _ :+ tail => (head.radius, tail.radius)
-        }
+        /* Calculate the min and max radius among the entities, considering the player */
+        val endRadius = getEntitiesExtremeRadiusValues(entities :+ playerEntity)
 
-        entities map( e => e match {
+        entities map {
           /* The entity has the same radius of the player so it will have the same color */
-          case e.radius == playerEntity.radius => (e, playerColor)
-          case e.radius < playerEntity.radius =>
+          case e if e.radius == playerEntity.radius => (e, playerColor)
+          case e if e.radius < playerEntity.radius =>
             /* The entity is smaller than the player so it's color hue will approach the min one */
             val normalizedRadius = normalize(e.radius, endRadius._1, playerEntity.radius)
             (e, minColor.interpolate(playerColor, normalizedRadius))
-          case e.radius > playerEntity.radius =>
+          case e =>
             /* The entity is larger than the player so it's color hue will approach the max one */
             val normalizedRadius = normalize(e.radius, playerEntity.radius, endRadius._2)
             (e, playerColor.interpolate(playerColor, normalizedRadius))
-        }) seq
+        } seq
 
     }
   }
 
   /**
-    * Returns the normalized value of a number between a min and a max
-    * @param number the number
-    * @param min the min number
-    * @param max the max number
-    * @return the normalized number between min and max
+    * This method returns a pair consisting of the min and the max radius found in the entities sequence
+    * @param entities a DrawableWrapper sequence
+    * @return a pair consisting of the min and the max radius found; an IllegalArgumentException on empty sequence
     */
-  private def normalize(number: Double, min: Double, max: Double): Double = (number - min)/(max - min)
+  private def getEntitiesExtremeRadiusValues(entities: Seq[DrawableWrapper]): (Double, Double) = {
+    /* Sorting the entities */
+    entities.sortWith(_.radius < _.radius)
+    /* Retrieving the min and the max radius values */
+    entities match {
+      case head +: _ :+ tail => (head.radius, tail.radius)
+      case _ => throw new IllegalArgumentException("Could not determine the min and max radius from an empty sequence of entities")
+    }
+  }
 
 }
 
