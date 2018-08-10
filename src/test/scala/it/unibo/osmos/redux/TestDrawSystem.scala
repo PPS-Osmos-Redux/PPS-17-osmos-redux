@@ -68,4 +68,13 @@ class TestDrawSystem extends FunSuite {
     system.update()
     assert(spy.player.isEmpty)
   }
+
+  test("PlayerCellEntity is present and visible"){
+    val spy = DrawSystemSpy()
+    val system = DrawSystem(spy, 1)
+    val pce = PlayerCellEntity(acceleration,collidable,playerDimension,playerPosition,speed,visible,typePlayer)
+    EntityManager.add(pce)
+    system.update()
+    assert(spy.player.isDefined)
+  }
 }
