@@ -2,12 +2,15 @@ package it.unibo.osmos.redux.main.ecs.engine
 
 import java.util.concurrent.locks.{Lock, ReentrantLock}
 
+import it.unibo.osmos.redux.main.ecs.entities.Property
+import it.unibo.osmos.redux.main.ecs.systems._
+
 /**
   * Implementation of the game loop.
   * @param engine The Game engine.
   * @param systems The list of the systems of the game.
   */
-class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread {
+class GameLoop(val engine: GameEngine, var systems: List[System[_ <: Property]]) extends Thread {
 
   type GameStatus = GameStatus.Value
 
@@ -25,10 +28,8 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
       val startTick = System.currentTimeMillis()
 
       try {
-
-        //TODO: call update methods for all systems (sort by priority before do that)
-        //systems foreach (s => s.update())
-
+        //let game progress by updating all systems
+        systems foreach (s => s.update())
       } finally {
         lock.unlock()
       }

@@ -1,7 +1,9 @@
 package it.unibo.osmos.redux.main.ecs.engine
 
 import it.unibo.osmos.redux.main.ecs.entities.{CellEntity, EntityManager}
+import it.unibo.osmos.redux.main.ecs.systems.{DrawSystem, InputSystem, MovementSystem}
 import it.unibo.osmos.redux.main.mvc.view.levels.LevelContext
+import it.unibo.osmos.redux.main.utils.InputEventStack
 
 /**
   * Game engine, the game loop manager.
@@ -76,14 +78,17 @@ object GameEngine {
       //clear all
       clear()
 
-      //create systems and add to the list
-      val systems = List[System]()
+      //register InputEventStack to the mouse event listener to collect input events
+      levelContext.registerMouseEventListener(e => { InputEventStack.push(e)})
 
-      //TODO: register InputSystem to the levelContext.registerMouseEventListener()
-      //TODO: pass levelContext to all systems constructors
-      //TODO: sort systems list by priority
+      //create systems, add to list and sort by priority
+      val systems = List(
+        InputSystem(0),
+        MovementSystem(1),
+        DrawSystem(levelContext, 2)
+      ).sortBy(_.priority)
 
-      //add all
+      //add all entities in the entity manager (systems are subscribed to EntityManager event when created)
       entities foreach( e => EntityManager.add(e))
 
       //init the gameloop
@@ -122,8 +127,9 @@ object GameEngine {
     }
 
     override def clear(): Unit = {
-      //TODO: uncomment
-      //EntityManager.clear()
+
+      EntityManager.clear()
+      InputEventStack.popAll()
 
       gameLoop match {
         case Some(i) => i.getStatus match {
