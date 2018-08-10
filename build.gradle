@@ -47,4 +47,5 @@ dependencies {
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile group: 'org.scalatest', name: 'scalatest_2.12', version: '3.0.5'
+    testCompile group: 'org.scalamock', name: 'scalamock-scalatest-support_2.12', version: '3.6.0'
 }

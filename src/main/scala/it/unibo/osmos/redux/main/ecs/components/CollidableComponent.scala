@@ -19,7 +19,7 @@ trait CollidableComponent {
 }
 
 object CollidableComponent {
-  def apply(collidable: Boolean): CollidableComponent = new CollidableComponentImpl(collidable)
+  def apply(collidable: Boolean): CollidableComponent = CollidableComponentImpl(collidable)
 
   private case class CollidableComponentImpl(var _collidable: Boolean) extends CollidableComponent {
 
