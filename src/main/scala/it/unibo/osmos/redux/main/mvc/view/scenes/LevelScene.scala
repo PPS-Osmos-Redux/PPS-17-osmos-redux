@@ -1,11 +1,13 @@
 package it.unibo.osmos.redux.main.mvc.view.scenes
 
-import it.unibo.osmos.redux.main.mvc.view.ViewConstants.Entities.{defaultEntityMaxColor, defaultEntityMinColor, defaultPlayerColor}
-import it.unibo.osmos.redux.main.mvc.view.drawables.{CircleDrawable, DrawableWrapper}
+import it.unibo.osmos.redux.main.mvc.view.ViewConstants.Entities._
+import it.unibo.osmos.redux.main.mvc.view.drawables._
 import it.unibo.osmos.redux.main.mvc.view.levels.{LevelContext, LevelContextListener}
+import it.unibo.osmos.redux.main.utils.MathUtils._
 import scalafx.application.Platform
 import scalafx.scene.canvas.Canvas
 import scalafx.scene.paint.Color
+import scalafx.scene.shape.Rectangle
 import scalafx.stage.Stage
 
 /**
@@ -17,8 +19,13 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   /**
     * The canvas which will draw the elements on the screen
     */
-  val canvas: Canvas = new Canvas
+  val canvas: Canvas = new Canvas(parentStage.getWidth, parentStage.getHeight)
   val circleDrawable: CircleDrawable = new CircleDrawable(canvas.graphicsContext2D)
+
+  /**
+    * The content of the scene being set to the canvas
+    */
+  content = canvas
 
   /**
     * The level context, created with the LevelScene. It still needs to be properly setup
@@ -43,14 +50,15 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
 
     /* We must draw to the screen the entire collection */
     Platform.runLater({
-      canvas.graphicsContext2D.clearRect(parentStage.getX, parentStage.getY, parentStage.getWidth, parentStage.getHeight)
+      canvas.graphicsContext2D.clearRect(0, 0, parentStage.getWidth, parentStage.getHeight)
       /* Draw the player */
-      playerEntity match {
-        case Some(pe) => circleDrawable.draw(pe center, pe radius, pe radius, defaultPlayerColor)
-        case _ =>
-      }
       //TODO: match types top draw entities differently
-      calculateColors(defaultEntityMinColor, defaultEntityMaxColor, entities) foreach( (e) => circleDrawable.draw(e._1.center, e._1.radius, e._1.radius, e._2))
+      playerEntity match {
+        /* The player is present */
+        case Some(pe) => calculateColors(defaultEntityMinColor, defaultEntityMaxColor, defaultPlayerColor, pe, entities) foreach(e => circleDrawable.draw(e._1.center, e._1.radius, e._2))
+        /* The player is not present */
+        case _ => calculateColors(defaultEntityMinColor, defaultEntityMaxColor, entities) foreach(e => circleDrawable.draw(e._1.center,e._1.radius, e._2))
+      }
     })
   }
 
@@ -61,15 +69,12 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     * @param entities the input entities
     * @return the sequence of pair where the first field is the entity and the second is the color
     */
-  private def calculateColors( minColor: Color, maxColor: Color, entities: Seq[DrawableWrapper]): Seq[(DrawableWrapper, Color)] = {
-    if (entities.nonEmpty) {
+  private def calculateColors(minColor: Color, maxColor: Color, entities: Seq[DrawableWrapper]): Seq[(DrawableWrapper, Color)] = {
+    entities match {
+      case Nil => Seq()
+      case _ =>
       /* Calculate the min and max radius among the entities */
-      /* Sort the list in ascending order */
-      //TODO: test functional approach speed
-      entities.sortWith(_.radius < _.radius)
-      val endRadius: (Double, Double) = entities match {
-        case head +: _ :+ tail => (head.radius, tail.radius)
-      }
+      val endRadius = getEntitiesExtremeRadiusValues(entities)
 
       entities map( e => {
         /* Normalize the entity radius */
@@ -77,17 +82,57 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
         /* Create a pair where the second value is the interpolated color between the two base colors */
         (e, minColor.interpolate(maxColor, normalizedRadius))
       }) seq
-    } else Seq()
+    }
   }
 
   /**
-    * Returns the normalized value of a number between a min and a max
-    * @param number the number
-    * @param min the min number
-    * @param max the max number
-    * @return the normalized number between min and max
+    * This method calculates the color of the input entities, interpolating and normalizing it according to the entities size
+    *
+    * @param minColor the base lower Color
+    * @param maxColor the base upper Color
+    * @param playerColor the base player Color
+    * @param playerEntity the player entity
+    * @param entities the input entities
+    * @return the sequence of pair where the first field is the entity and the second is the color
     */
-  private def normalize(number: Double, min: Double, max: Double): Double = (number - min)/(max - min)
+  private def calculateColors(minColor: Color, maxColor: Color, playerColor: Color, playerEntity: DrawableWrapper, entities: Seq[DrawableWrapper]): Seq[(DrawableWrapper, Color)] = {
+    entities match {
+      case Nil => Seq()
+      case _ =>
+        /* Calculate the min and max radius among the entities, considering the player */
+        val allEntities = entities :+ playerEntity
+        val endRadius = getEntitiesExtremeRadiusValues(allEntities)
+
+        allEntities map {
+          /* The entity has the same radius of the player so it will have the same color */
+          case e if e.radius == playerEntity.radius => (e, playerColor)
+          case e if e.radius < playerEntity.radius =>
+            /* The entity is smaller than the player so it's color hue will approach the min one */
+            val normalizedRadius = normalize(e.radius, endRadius._1, playerEntity.radius)
+            (e, minColor.interpolate(playerColor, normalizedRadius))
+          case e =>
+            /* The entity is larger than the player so it's color hue will approach the max one */
+            val normalizedRadius = normalize(e.radius, playerEntity.radius, endRadius._2)
+            (e, playerColor.interpolate(playerColor, normalizedRadius))
+        } seq
+
+    }
+  }
+
+  /**
+    * This method returns a pair consisting of the min and the max radius found in the entities sequence
+    * @param entities a DrawableWrapper sequence
+    * @return a pair consisting of the min and the max radius found; an IllegalArgumentException on empty sequence
+    */
+  private def getEntitiesExtremeRadiusValues(entities: Seq[DrawableWrapper]): (Double, Double) = {
+    /* Sorting the entities */
+    entities.sortWith(_.radius < _.radius)
+    /* Retrieving the min and the max radius values */
+    entities match {
+      case head +: _ :+ tail => (head.radius, tail.radius)
+      case _ => throw new IllegalArgumentException("Could not determine the min and max radius from an empty sequence of entities")
+    }
+  }
 
 }
 
