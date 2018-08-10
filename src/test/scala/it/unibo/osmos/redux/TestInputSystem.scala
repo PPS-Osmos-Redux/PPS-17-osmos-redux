@@ -4,9 +4,9 @@ import it.unibo.osmos.redux.main.ecs.components._
 import it.unibo.osmos.redux.main.ecs.entities.{CellEntity, EntityManager, PlayerCellEntity}
 import it.unibo.osmos.redux.main.ecs.systems.InputSystem
 import it.unibo.osmos.redux.main.mvc.view.levels.LevelContext
+import it.unibo.osmos.redux.main.mvc.view.events.MouseEventWrapper
 import it.unibo.osmos.redux.main.utils.{InputEventStack, Point}
 import org.scalatest.FunSuite
-import scalafx.scene.input.{MouseButton, MouseEvent, PickResult}
 
 class TestInputSystem extends FunSuite {
 
@@ -18,9 +18,7 @@ class TestInputSystem extends FunSuite {
   val visibility = Seq(VisibleComponent(true), VisibleComponent(false), VisibleComponent(false))
   val typeEntity = Seq(TypeComponent(EntityType.Material), TypeComponent(EntityType.Material), TypeComponent(EntityType.Material))
 
-  val dummyEvent = new MouseEvent(MouseEvent.MouseClicked, 1.0, 1.0, 1.0, 1.0, MouseButton.Primary, 1,
-    false, false, false, false, false, false,
-    false, false, false, false, new PickResult(null, 1, 1))
+  val dummyEvent = MouseEventWrapper(Point(1,1))
 
   test("InputSystem priority must match the one passed at his constructor") {
     val priority = 0
@@ -35,7 +33,7 @@ class TestInputSystem extends FunSuite {
     levelContext.setupLevel()
 
     //setup input system
-    val system = new InputSystem(0)
+    val system = InputSystem(0)
 
     //add entities to the system using entity manager
     val pce = PlayerCellEntity(acceleration(0), collidable(0), dimension(0), position(0), speed(0), visibility(0), typeEntity(0))
@@ -63,7 +61,7 @@ class TestInputSystem extends FunSuite {
     levelContext.setupLevel()
 
     //setup input system
-    val system = new InputSystem(0)
+    val system = InputSystem(0)
 
     //add entities to the system using entity manager
     val pce = PlayerCellEntity(acceleration(0), collidable(0), dimension(0), position(0), speed(0), visibility(0), typeEntity(0))

@@ -1,15 +1,12 @@
 package it.unibo.osmos.redux
 
-import it.unibo.osmos.redux.main.utils.InputEventStack
+import it.unibo.osmos.redux.main.utils.{InputEventStack, Point}
+import it.unibo.osmos.redux.main.mvc.view.events.MouseEventWrapper
 import org.scalatest.FunSuite
-import scalafx.scene.input.{MouseButton, MouseEvent, PickResult}
 
 class TestInputEventStack extends FunSuite {
 
-  val dummyEvent = new MouseEvent(MouseEvent.MouseClicked, 1.0, 1.0, 1.0, 1.0, MouseButton.Primary,
-    1, false, false, false, false, false,
-    false, false, false, false, false,
-    new PickResult(null, 1, 1))
+  val dummyEvent = MouseEventWrapper(Point(1,1))
 
   test("InputEventStack should be empty at launch") {
     assert(InputEventStack.pop().isEmpty)
