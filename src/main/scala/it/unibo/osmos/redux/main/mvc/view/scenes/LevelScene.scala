@@ -45,12 +45,13 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     Platform.runLater({
       canvas.graphicsContext2D.clearRect(parentStage.getX, parentStage.getY, parentStage.getWidth, parentStage.getHeight)
       /* Draw the player */
-      playerEntity match {
-        case Some(pe) => circleDrawable.draw(pe center, pe radius, pe radius, defaultPlayerColor)
-        case _ =>
-      }
       //TODO: match types top draw entities differently
-      calculateColors(defaultEntityMinColor, defaultEntityMaxColor, entities) foreach( (e) => circleDrawable.draw(e._1.center, e._1.radius, e._1.radius, e._2))
+      playerEntity match {
+        /* The player is present */
+        case Some(pe) => calculateColors(defaultEntityMinColor, defaultEntityMaxColor, defaultPlayerColor, pe, entities) foreach(e => circleDrawable.draw(e._1.center, e._1.radius, e._1.radius, e._2))
+        /* The player is not present */
+        case _ => calculateColors(defaultEntityMinColor, defaultEntityMaxColor, entities) foreach( (e) => circleDrawable.draw(e._1.center, e._1.radius, e._1.radius, e._2))
+      }
     })
   }
 
@@ -61,8 +62,10 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     * @param entities the input entities
     * @return the sequence of pair where the first field is the entity and the second is the color
     */
-  private def calculateColors( minColor: Color, maxColor: Color, entities: Seq[DrawableWrapper]): Seq[(DrawableWrapper, Color)] = {
-    if (entities.nonEmpty) {
+  private def calculateColors(minColor: Color, maxColor: Color, entities: Seq[DrawableWrapper]): Seq[(DrawableWrapper, Color)] = {
+    entities match {
+      case Nil => Seq()
+      case _ =>
       /* Calculate the min and max radius among the entities */
       /* Sort the list in ascending order */
       //TODO: test functional approach speed
@@ -77,7 +80,44 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
         /* Create a pair where the second value is the interpolated color between the two base colors */
         (e, minColor.interpolate(maxColor, normalizedRadius))
       }) seq
-    } else Seq()
+    }
+  }
+
+  /**
+    * This method calculates the color of the input entities, interpolating and normalizing it according to the entities size
+    *
+    * @param minColor the base lower Color
+    * @param maxColor the base upper Color
+    * @param playerColor the base player Color
+    * @param playerEntity the player entity
+    * @param entities the input entities
+    * @return the sequence of pair where the first field is the entity and the second is the color
+    */
+  private def calculateColors(minColor: Color, maxColor: Color, playerColor: Color, playerEntity: DrawableWrapper, entities: Seq[DrawableWrapper]): Seq[(DrawableWrapper, Color)] = {
+    entities match {
+      case Nil => Seq()
+      case _ =>
+        /* Calculate the min and max radius among the entities, adding the player to the collection */
+        /* Sort the list in ascending order */
+        (entities :+ playerEntity).sortWith(_.radius < _.radius)
+        val endRadius: (Double, Double) = entities match {
+          case head +: _ :+ tail => (head.radius, tail.radius)
+        }
+
+        entities map( e => e match {
+          /* The entity has the same radius of the player so it will have the same color */
+          case e.radius == playerEntity.radius => (e, playerColor)
+          case e.radius < playerEntity.radius =>
+            /* The entity is smaller than the player so it's color hue will approach the min one */
+            val normalizedRadius = normalize(e.radius, endRadius._1, playerEntity.radius)
+            (e, minColor.interpolate(playerColor, normalizedRadius))
+          case e.radius > playerEntity.radius =>
+            /* The entity is larger than the player so it's color hue will approach the max one */
+            val normalizedRadius = normalize(e.radius, playerEntity.radius, endRadius._2)
+            (e, playerColor.interpolate(playerColor, normalizedRadius))
+        }) seq
+
+    }
   }
 
   /**
