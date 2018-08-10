@@ -45,6 +45,8 @@ class TestDrawSystem extends FunSuite {
   val visible = VisibleComponent(true)
   val notVisible = VisibleComponent(false)
   val typeEntity = TypeComponent(EntityType.Material)
+  val dimension1 = DimensionComponent(3)
+  val position1 = PositionComponent(Point(3, 4))
 
   test("PlayerCellEntity not present"){
     val spy = DrawSystemSpy()
@@ -88,5 +90,16 @@ class TestDrawSystem extends FunSuite {
     assert(playerWrapped.center.equals(pce.getPositionComponent.point))
     assert(playerWrapped.radius.equals(pce.getDimensionComponent.radius))
     playerWrapped.entityType.equals(pce.getTypeComponent.typeEntity)
+  }
+
+  test("filter visible CellEntity"){
+    val spy = DrawSystemSpy()
+    val system = DrawSystem(spy, 1)
+    val visibleCE = CellEntity(acceleration,collidable,dimension,position,speed,visible,typeEntity)
+    val notVisibleCE = CellEntity(acceleration,collidable,dimension1,position1,speed,notVisible,typeEntity)
+    EntityManager.add(visibleCE)
+    EntityManager.add(notVisibleCE)
+    system.update()
+    assert(spy.entities.size == 1)
   }
 }
