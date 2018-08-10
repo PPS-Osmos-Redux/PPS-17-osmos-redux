@@ -1,9 +1,14 @@
 package it.unibo.osmos.redux
 
+import it.unibo.osmos.redux.main.ecs.components._
+import it.unibo.osmos.redux.main.ecs.entities.{CellEntity, EntityManager, PlayerCellEntity}
 import it.unibo.osmos.redux.main.mvc.view.drawables.DrawableWrapper
 import it.unibo.osmos.redux.main.mvc.view.events.MouseEventListener
 import it.unibo.osmos.redux.main.mvc.view.levels.LevelContext
+import it.unibo.osmos.redux.main.ecs.systems.DrawSystem
+import it.unibo.osmos.redux.main.utils.Point
 import javafx.scene.input.MouseEvent
+import org.scalatest.FunSuite
 
 /**
   * Spy class to capture the indirect output of DrawSystem
@@ -30,6 +35,12 @@ case class DrawSystemSpy() extends LevelContext {
   override def pushMouseEvent(mouseEvent: MouseEvent): Unit = ???
 }
 
-class TestDrawSystem {
+class TestDrawSystem extends FunSuite {
 
+  test("PlayerCellEntity not present"){
+    val spy = DrawSystemSpy()
+    val system = DrawSystem(spy, 1)
+    system.update()
+    assert(spy.player.isEmpty)
+  }
 }
