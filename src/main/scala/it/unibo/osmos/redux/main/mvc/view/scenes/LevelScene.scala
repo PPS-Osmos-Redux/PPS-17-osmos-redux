@@ -1,32 +1,55 @@
 package it.unibo.osmos.redux.main.mvc.view.scenes
 
-
-import it.unibo.osmos.redux.main.mvc.view.ViewConstants.Entities.{defaultEntityMaxColor, defaultEntityMinColor}
+import it.unibo.osmos.redux.main.mvc.view.ViewConstants.Entities.{defaultEntityMaxColor, defaultEntityMinColor, defaultPlayerColor}
 import it.unibo.osmos.redux.main.mvc.view.drawables.{CircleDrawable, DrawableWrapper}
 import it.unibo.osmos.redux.main.mvc.view.levels.{LevelContext, LevelContextListener}
 import scalafx.application.Platform
 import scalafx.scene.canvas.Canvas
 import scalafx.scene.paint.Color
-import scalafx.scene.shape.Circle
 import scalafx.stage.Stage
 
 /**
   * This scene holds and manages a single level
   */
-class LevelScene(override val parentStage: Stage) extends BaseScene(parentStage)
-  with LevelContextListener{
+class LevelScene(override val parentStage: Stage, val listener: LevelSceneListener) extends BaseScene(parentStage)
+  with LevelContextListener {
 
+  /**
+    * The canvas which will draw the elements on the screen
+    */
   val canvas: Canvas = new Canvas
-  val levelContext: LevelContext = LevelContext(this)
   val circleDrawable: CircleDrawable = new CircleDrawable(canvas.graphicsContext2D)
 
-  onMouseClicked = mouseEvent => levelContext.pushMouseEvent(mouseEvent)
+  /**
+    * The level context, created with the LevelScene. It still needs to be properly setup
+    */
+  private var _levelContext: Option[LevelContext] = Option.empty
+
+  def levelContext: Option[LevelContext] = _levelContext
+
+  def levelContext_= (levelContext: LevelContext): Unit = _levelContext = Option(levelContext)
+
+  /**
+    * OnMouseClicked handler
+    */
+  onMouseClicked = mouseEvent => {
+    levelContext match {
+      case Some(lc) => lc pushMouseEvent mouseEvent
+      case _ =>
+    }
+  }
 
   override def onDrawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = {
 
     /* We must draw to the screen the entire collection */
     Platform.runLater({
       canvas.graphicsContext2D.clearRect(parentStage.getX, parentStage.getY, parentStage.getWidth, parentStage.getHeight)
+      /* Draw the player */
+      playerEntity match {
+        case Some(pe) => circleDrawable.draw(pe center, pe radius, pe radius, defaultPlayerColor)
+        case _ =>
+      }
+      //TODO: match types top draw entities differently
       calculateColors(defaultEntityMinColor, defaultEntityMaxColor, entities) foreach( (e) => circleDrawable.draw(e._1.center, e._1.radius, e._1.radius, e._2))
     })
   }
@@ -45,7 +68,7 @@ class LevelScene(override val parentStage: Stage) extends BaseScene(parentStage)
       //TODO: test functional approach speed
       entities.sortWith(_.radius < _.radius)
       val endRadius: (Double, Double) = entities match {
-        case head +:  _ :+ tail => (head.radius, tail.radius)
+        case head +: _ :+ tail => (head.radius, tail.radius)
       }
 
       entities map( e => {
@@ -55,7 +78,6 @@ class LevelScene(override val parentStage: Stage) extends BaseScene(parentStage)
         (e, minColor.interpolate(maxColor, normalizedRadius))
       }) seq
     } else Seq()
-
   }
 
   /**
@@ -66,5 +88,12 @@ class LevelScene(override val parentStage: Stage) extends BaseScene(parentStage)
     * @return the normalized number between min and max
     */
   private def normalize(number: Double, min: Double, max: Double): Double = (number - min)/(max - min)
+
+}
+
+/**
+  * Trait which gets notified when a LevelScene event occurs
+  */
+trait LevelSceneListener {
 
 }

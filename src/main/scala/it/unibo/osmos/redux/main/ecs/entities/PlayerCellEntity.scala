@@ -14,7 +14,8 @@ object PlayerCellEntity {
             dimension: DimensionComponent,
             position: PositionComponent,
             speed: SpeedComponent,
-            visible: VisibleComponent): PlayerCellEntity = PlayerCellEntityImpl(CellEntity(acceleration, collidable, dimension, position, speed, visible))
+            visible: VisibleComponent,
+            typeEntity: TypeComponent): PlayerCellEntity = PlayerCellEntityImpl(CellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity))
 
   private case class PlayerCellEntityImpl(cellEntity: CellEntity) extends PlayerCellEntity {
 
@@ -31,6 +32,8 @@ object PlayerCellEntity {
     override def getSpeedComponent: SpeedComponent = cellEntity.getSpeedComponent
 
     override def getVisibleComponent: VisibleComponent = cellEntity.getVisibleComponent
+
+    override def getTypeComponent: TypeComponent = cellEntity.getTypeComponent
   }
 
 }

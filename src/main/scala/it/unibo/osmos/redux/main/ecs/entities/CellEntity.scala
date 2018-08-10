@@ -17,14 +17,16 @@ object CellEntity {
             dimension: DimensionComponent,
             position: PositionComponent,
             speed: SpeedComponent,
-            visible: VisibleComponent): CellEntity = CellEntityImpl(acceleration, collidable, dimension, position, speed, visible)
+            visible: VisibleComponent,
+            typeEntity: TypeComponent): CellEntity = CellEntityImpl(acceleration, collidable, dimension, position, speed, visible, typeEntity)
 
   private case class CellEntityImpl(private val acceleration: AccelerationComponent,
                                     private val collidable: CollidableComponent,
                                     private val dimension: DimensionComponent,
                                     private val position: PositionComponent,
                                     private val speed: SpeedComponent,
-                                    private val visible: VisibleComponent) extends CellEntity {
+                                    private val visible: VisibleComponent,
+                                    private val typeEntity: TypeComponent) extends CellEntity {
 
     private val EntityUUID: UUID = UUID.randomUUID()
 
@@ -41,6 +43,8 @@ object CellEntity {
     override def getSpeedComponent: SpeedComponent = speed
 
     override def getVisibleComponent: VisibleComponent = visible
+
+    override def getTypeComponent: TypeComponent = typeEntity
   }
 
 }

@@ -1,7 +1,8 @@
 package it.unibo.osmos.redux.main.mvc.view
 
 import it.unibo.osmos.redux.main.mvc.controller.Controller
-import it.unibo.osmos.redux.main.mvc.view.stages.OsmosReduxPrimaryStage
+import it.unibo.osmos.redux.main.mvc.view.levels.LevelContext
+import it.unibo.osmos.redux.main.mvc.view.stages.{OsmosReduxPrimaryStage, PrimaryStageListener}
 import scalafx.application.JFXApp
 
 /**
@@ -9,20 +10,12 @@ import scalafx.application.JFXApp
   */
 trait View {
 
-  /**
-    * This method sets the view parameters
-    */
-  def setup()
+
   /**
     * Setter. This method sets the reference to the Controller instance
     * @param controller the Controller instance
     */
   def setController(controller: Controller)
-
-  /**
-    * This method orders the draw to update the visible scene
-    */
-  def draw(): Unit
 
 }
 
@@ -34,20 +27,17 @@ object View {
     * View implementation, holding the main stage and the current scene
     * @param app a reference to the JFXApp, necessary to the correct setup of the whole application
     */
-  class ViewImpl(private val app: JFXApp) extends View {
+  class ViewImpl(private val app: JFXApp) extends View with PrimaryStageListener {
 
+    app.stage = OsmosReduxPrimaryStage(this)
     private var controller: Option[Controller] = Option.empty
-
-    override def setup(): Unit = {
-      app.stage = OsmosReduxPrimaryStage()
-    }
 
     override def setController(controller: Controller): Unit = {
       this.controller = Option(controller)
     }
 
-    override def draw(): Unit = {
-
+    override def onLevelContextSetup(levelContext: LevelContext): Unit = if (controller.nonEmpty) {
+      //TODO: send the context to the controller
     }
   }
 
