@@ -9,6 +9,8 @@ import scala.collection.mutable
   */
 object InputEventStack {
 
+  //TODO: handle race conditions (pops and pushes must be synchronized, but can effect performances)
+
   var stack: mutable.ListBuffer[MouseEventWrapper] = mutable.ListBuffer()
 
   /**

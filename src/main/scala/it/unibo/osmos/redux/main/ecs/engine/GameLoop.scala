@@ -36,6 +36,9 @@ class GameLoop(val engine: GameEngine, var systems: List[System[_ <: Property]])
 
       //game loop iteration must last exactly tickTime, so sleep if the tickTime hasn't been reached yet
       val execTime = System.currentTimeMillis() - startTick
+
+      //println("Execution time: " + execTime + "ms")
+
       if (!stopFlag) {
         if (execTime < tickTime) {
           val sleepTime = tickTime - execTime
@@ -45,9 +48,14 @@ class GameLoop(val engine: GameEngine, var systems: List[System[_ <: Property]])
             case _: Throwable => //do nothing
           }
         } else {
-          status = GameStatus.Stopped
-          throw ExceededTickTimeException("Game loop overrun tick time of " + tickTime +
-            "ms (" + engine.getFps + " fps) by " + math.abs(tickTime - execTime) + "ms.")
+
+          try {
+            //TODO: should not block the game, for now catch and print error
+            throw ExceededTickTimeException("[Game loop] overrun tick time of " + tickTime +
+              "ms (" + engine.getFps + " fps) by " + math.abs(tickTime - execTime) + "ms.")
+          } catch {
+            case t: Throwable => println(t getMessage)
+          }
         }
       }
     }

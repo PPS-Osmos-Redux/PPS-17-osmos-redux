@@ -69,10 +69,11 @@ object GameEngine {
     * The Game engine class implementation.
     * @param framerate The frame rate of the game.
     */
-  private case class GameEngineImpl(private val framerate: Int = 30) extends GameEngine {
+  private case class GameEngineImpl(private val framerate: Int = 60) extends GameEngine {
 
     private var gameLoop: Option[GameLoop] = _
 
+    //TODO: add framerate parameter
     override def init(levelContext: LevelContext, entities: List[CellEntity]): Unit = {
 
       //clear all
@@ -89,7 +90,7 @@ object GameEngine {
       ).sortBy(_.priority)
 
       //add all entities in the entity manager (systems are subscribed to EntityManager event when created)
-      entities foreach( e => EntityManager.add(e))
+      entities foreach(EntityManager add _)
 
       //init the gameloop
       gameLoop = Some(new GameLoop(this, systems))

@@ -14,4 +14,13 @@ object MathUtils {
     */
   def normalize(number: Double, min: Double, max: Double): Double = (number - min)/(max - min)
 
+  /**
+    * Returns the normalized point
+    * @param point The point to normalize
+    * @return The normalized point
+    */
+  def normalizePoint(point: Point): Point = {
+    val mod = math.sqrt(math.pow(point.x, 2) + math.pow(point.y, 2))
+    Point(point.x / mod, point.y / mod)
+  }
 }
