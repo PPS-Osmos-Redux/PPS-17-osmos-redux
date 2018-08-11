@@ -83,6 +83,5 @@ trait LevelContextListener {
     * @param playerEntity the player entity. It may be empty
     * @param entities the other entities
     */
-  //TODO: modify this according to the controller
   def onDrawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper])
 }

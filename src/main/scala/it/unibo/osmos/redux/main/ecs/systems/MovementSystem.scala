@@ -19,6 +19,8 @@ case class MovementSystem(override val priority: Int) extends System[MovableProp
     val speedComponent = entity.getSpeedComponent
     speedComponent.speedX_(speedComponent.speedX + accelerationComponent.accelerationX)
     speedComponent.speedY_(speedComponent.speedY + accelerationComponent.accelerationY)
+    accelerationComponent.accelerationX_(0.0)
+    accelerationComponent.accelerationY_(0.0)
   }
 
   private def updateEntityPosition(entity: MovableProperty): Unit = {

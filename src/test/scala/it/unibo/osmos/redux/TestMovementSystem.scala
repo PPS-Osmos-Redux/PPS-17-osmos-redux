@@ -40,8 +40,10 @@ class TestMovementSystem extends FunSuite with MockFactory with Matchers {
 
     assert(cellEntity.getSpeedComponent == SpeedComponent(5.0, 1.0))
     assert(cellEntity.getPositionComponent.point == Point(5.0, 1.0))
+    assert(cellEntity.getAccelerationComponent == AccelerationComponent(0.0, 0.0))
 
     assert(playerCellEntity.getSpeedComponent == SpeedComponent(0.0, -1.0))
     assert(playerCellEntity.getPositionComponent.point == Point(-4.0, 5.0))
+    assert(playerCellEntity.getAccelerationComponent == AccelerationComponent(0.0, 0.0))
   }
 }
