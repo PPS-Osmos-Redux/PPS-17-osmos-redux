@@ -23,7 +23,7 @@ case class ControllerImpl() extends Controller {
   var engine:Option[GameEngine] = None
   override def startLevel(levelContext: LevelContext): Unit = {
     //1) load files
-    val map:Map[String,String] = Map(JsCellEntity.getClass.getName -> "/level/JsCellEntity.txt", JsPlayerCellEntity.getClass.getName -> "/level/JsPlayerCellEntity.txt")
+    val map:Map[String,String] = Map(JsCellEntity.getClass.getName -> "/level/CellEntityDefinition.json", JsPlayerCellEntity.getClass.getName -> "/level/PlayerCellEntityDefinition.json")
     val entities = loadEntities(map)
     //2) call init
     engine match {
