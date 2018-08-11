@@ -12,12 +12,6 @@ class TestInputEventStack extends FunSuite {
     assert(InputEventStack.pop().isEmpty)
   }
 
-  test("InputEventStack should not be empty after a push") {
-    InputEventStack.push(dummyEvent)
-    assert(InputEventStack.pop().nonEmpty)
-    assert(InputEventStack.pop().isEmpty)
-  }
-
   test("InputEventStack should be empty after a single push and a single pop") {
     InputEventStack.push(dummyEvent)
     assert(InputEventStack.pop().nonEmpty)
