@@ -10,7 +10,7 @@ import it.unibo.osmos.redux.main.mvc.view.drawables.DrawableWrapper
   * @param levelContext levelContext for communicate the entities to the view
   * @param priority system priority
   */
-case class DrawSystem(levelContext: LevelContext, override val priority: Int) extends System[DrawableProperty](priority) {
+case class DrawSystem(levelContext: LevelContext, override val priority: Int) extends AbstractSystem[DrawableProperty](priority) {
 
   private var player: Option[DrawableProperty] = None
 

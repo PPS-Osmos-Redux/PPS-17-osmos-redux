@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.main.ecs.systems
 import it.unibo.osmos.redux.main.ecs.entities.{MovableProperty, Property}
 import it.unibo.osmos.redux.main.utils.Point
 
-case class MovementSystem(override val priority: Int) extends System[MovableProperty](priority) {
+case class MovementSystem(override val priority: Int) extends AbstractSystem[MovableProperty](priority) {
 
   override def getGroupProperty: Class[_ <: Property] = classOf[MovableProperty]
 

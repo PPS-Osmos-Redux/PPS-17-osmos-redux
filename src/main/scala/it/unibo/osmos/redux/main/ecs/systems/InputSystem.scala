@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.main.ecs.systems
 import it.unibo.osmos.redux.main.ecs.entities.{InputProperty, Property}
 import it.unibo.osmos.redux.main.utils.{InputEventStack, MathUtils, Point}
 
-case class InputSystem(override val priority: Int) extends System[InputProperty](priority) {
+case class InputSystem(override val priority: Int) extends AbstractSystem[InputProperty](priority) {
 
   /**
     * Acceleration coefficient to apply to each input movement

@@ -10,7 +10,7 @@ import it.unibo.osmos.redux.main.ecs.systems._
   * @param engine The Game engine.
   * @param systems The list of the systems of the game.
   */
-class GameLoop(val engine: GameEngine, var systems: List[System[_ <: Property]]) extends Thread {
+class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread {
 
   type GameStatus = GameStatus.Value
 
