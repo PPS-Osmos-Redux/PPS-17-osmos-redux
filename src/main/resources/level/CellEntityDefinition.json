@@ -1,0 +1,112 @@
+[{
+  "acceleration": {
+    "accelerationX": 0.0,
+    "accelerationY": 0.0
+  },
+  "jsTypeEntity": {
+    "typeEntity": "Material"
+  },
+  "visible": {
+    "visible": true
+  },
+  "collidable": {
+    "collidable": true
+  },
+  "position": {
+    "point": {
+      "x": 0.0,
+      "y": 0.0
+    }
+  },
+  "dimension": {
+    "radius": 50
+  },
+  "speed": {
+    "speedX": 2,
+    "speedY": 1.5
+  }
+},
+{
+  "acceleration": {
+    "accelerationX": 0.0,
+    "accelerationY": 0.0
+  },
+  "jsTypeEntity": {
+    "typeEntity": "Material"
+  },
+  "visible": {
+    "visible": true
+  },
+  "collidable": {
+    "collidable": true
+  },
+  "position": {
+    "point": {
+      "x": 0.0,
+      "y": 0.0
+    }
+  },
+  "dimension": {
+    "radius": 5
+  },
+  "speed": {
+    "speedX": 1,
+    "speedY": 2
+  }
+},
+{
+  "acceleration": {
+    "accelerationX": 0.0,
+    "accelerationY": 0.0
+  },
+  "jsTypeEntity": {
+    "typeEntity": "Material"
+  },
+  "visible": {
+    "visible": true
+  },
+  "collidable": {
+    "collidable": true
+  },
+  "position": {
+    "point": {
+      "x": 0.0,
+      "y": 0.0
+    }
+  },
+  "dimension": {
+    "radius": 10
+  },
+  "speed": {
+    "speedX": 2,
+    "speedY": 3
+  }
+},
+{
+  "acceleration": {
+    "accelerationX": 0.0,
+    "accelerationY": 0.0
+  },
+  "jsTypeEntity": {
+    "typeEntity": "Material"
+  },
+  "visible": {
+    "visible": true
+  },
+  "collidable": {
+    "collidable": true
+  },
+  "position": {
+    "point": {
+      "x": 0.0,
+      "y": 0.0
+    }
+  },
+  "dimension": {
+    "radius": 35
+  },
+  "speed": {
+    "speedX": 2.5,
+    "speedY": 0.5
+  }
+}]
