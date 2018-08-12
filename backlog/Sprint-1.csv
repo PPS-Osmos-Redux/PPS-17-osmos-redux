@@ -1,26 +1,26 @@
 Item,Sprint Task,Volunteer,Initial Estimate of Effort,Remaining Effort
-Design e creazione architettura di base del sistema,Definizione componenti di base,Andrea Placuzzi,2,
-,Definizione entità di base,Giacomo Venturini,6,
-,Design entità e gerarchia di interfacce per ISP,Andrea Placuzzi + Marco Galassi,5,
-,Design Entity manager,Andrea Procucci,10,
-,Definizione sistema di base,Andrea Placuzzi,7,
-,Definizione MVC,Andrea Procucci,6,
-,Definizione Engine e Game Loop,Davide GIacomini,8,
-Interfaccia menù principale,Creazione scena principale,Marco Galassi,4,
-,Creazione pulsanti inizializzazione livello,Marco Galassi,1,
-,Creazione opzioni,Marco Galassi,1,
-Visualizzazione cellule del livello,Creazione contesto livello,Marco Galassi,3,
-,Design meccanismo comunicazione entità a view + Test,Marco Galassi,4,
-,Gestione canvas,Marco Galassi,1,
-,Design algoritmo elaborazione colori,Marco Galassi,5,
-Gestione movimento cellule del livello,Aggiornamento velocità considerando accelerazione entità,Giacomo Venturini,3,
-,Aggiornamento posizione entità,Giacomo Venturini,1,
-,Gestione margini livello con rimbalzo,Giacomo Venturini,6,
-,Test,Giacomo Venturini,1,
-Cellule devono reagire a input utente,Reindirizzamento eventi di input da view a ECS,Davide Giacomini,1,
-,Gestione bufferizzata eventi,Davide Giacomini,2,
-,Creazione sistema gestione input,Davide Giacomini,4,
-,Test,Davide Giacomini,1,
-Caricamento definizione livello e cellule da file,Studio librerie,Andrea Procucci,6,
-,Design model class,Andrea Procucci,1,
-,Creazione utility serializzazione/deserializzazione,Andrea Procucci,1,
+Design e creazione architettura di base del sistema,Definizione componenti di base,Andrea Placuzzi,2,0
+,Definizione entità di base,Giacomo Venturini,6,0
+,Design entità e gerarchia di interfacce per ISP,Andrea Placuzzi + Marco Galassi,5,0
+,Design Entity manager,Andrea Procucci,10,0
+,Definizione sistema di base,Andrea Placuzzi,7,0
+,Definizione MVC,Andrea Procucci,6,0
+,Definizione Engine e Game Loop,Davide GIacomini,8,0
+Interfaccia menù principale,Creazione scena principale,Marco Galassi,4,0
+,Creazione pulsanti inizializzazione livello,Marco Galassi,1,0
+,Creazione opzioni,Marco Galassi,1,1
+Visualizzazione cellule del livello,Creazione contesto livello,Marco Galassi,3,0
+,Design meccanismo comunicazione entità a view + Test,Marco Galassi,4,0
+,Gestione canvas,Marco Galassi,1,0
+,Design algoritmo elaborazione colori,Marco Galassi,5,0
+Gestione movimento cellule del livello,Aggiornamento velocità considerando accelerazione entità,Giacomo Venturini,3,0
+,Aggiornamento posizione entità,Giacomo Venturini,1,0
+,Gestione margini livello con rimbalzo,Giacomo Venturini,6,6
+,Test,Giacomo Venturini,1,0
+Cellule devono reagire a input utente,Reindirizzamento eventi di input da view a ECS,Davide Giacomini,1,0
+,Gestione bufferizzata eventi,Davide Giacomini,2,0
+,Creazione sistema gestione input,Davide Giacomini,4,0
+,Test,Davide Giacomini,1,0
+Caricamento definizione livello e cellule da file,Studio librerie,Andrea Procucci,6,3
+,Design model class,Andrea Procucci,1,1
+,Creazione utility serializzazione/deserializzazione,Andrea Procucci,1,0
