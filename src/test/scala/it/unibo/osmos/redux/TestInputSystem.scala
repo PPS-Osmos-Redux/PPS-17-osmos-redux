@@ -1,11 +1,11 @@
 package it.unibo.osmos.redux
 
-import it.unibo.osmos.redux.main.ecs.components._
-import it.unibo.osmos.redux.main.ecs.entities.{CellEntity, EntityManager, PlayerCellEntity}
-import it.unibo.osmos.redux.main.ecs.systems.InputSystem
-import it.unibo.osmos.redux.main.mvc.view.levels.LevelContext
-import it.unibo.osmos.redux.main.mvc.view.events.MouseEventWrapper
-import it.unibo.osmos.redux.main.utils.{InputEventStack, MathUtils, Point}
+import it.unibo.osmos.redux.ecs.components._
+import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager, PlayerCellEntity}
+import it.unibo.osmos.redux.ecs.systems.InputSystem
+import it.unibo.osmos.redux.mvc.view.levels.LevelContext
+import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
+import it.unibo.osmos.redux.utils.{InputEventStack, MathUtils, Point}
 import org.scalatest.FunSuite
 
 class TestInputSystem extends FunSuite {

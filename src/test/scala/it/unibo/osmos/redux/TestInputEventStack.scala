@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux
 
-import it.unibo.osmos.redux.main.utils.{InputEventStack, Point}
-import it.unibo.osmos.redux.main.mvc.view.events.MouseEventWrapper
+import it.unibo.osmos.redux.utils.{InputEventStack, Point}
+import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
 import org.scalatest.FunSuite
 
 class TestInputEventStack extends FunSuite {

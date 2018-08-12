@@ -1,9 +1,9 @@
 package it.unibo.osmos.redux
 
-import it.unibo.osmos.redux.main.ecs.components._
-import it.unibo.osmos.redux.main.ecs.entities.{CellEntity, EntityManager, PlayerCellEntity}
-import it.unibo.osmos.redux.main.ecs.systems.MovementSystem
-import it.unibo.osmos.redux.main.utils.Point
+import it.unibo.osmos.redux.ecs.components._
+import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager, PlayerCellEntity}
+import it.unibo.osmos.redux.ecs.systems.MovementSystem
+import it.unibo.osmos.redux.utils.Point
 import org.scalamock.matchers.Matchers
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.FunSuite

@@ -1,12 +1,12 @@
 package it.unibo.osmos.redux
 
-import it.unibo.osmos.redux.main.ecs.components._
-import it.unibo.osmos.redux.main.ecs.entities.{CellEntity, DrawableProperty, EntityManager, PlayerCellEntity}
-import it.unibo.osmos.redux.main.mvc.view.drawables.DrawableWrapper
-import it.unibo.osmos.redux.main.mvc.view.events.MouseEventListener
-import it.unibo.osmos.redux.main.mvc.view.levels.LevelContext
-import it.unibo.osmos.redux.main.ecs.systems.DrawSystem
-import it.unibo.osmos.redux.main.utils.Point
+import it.unibo.osmos.redux.ecs.components._
+import it.unibo.osmos.redux.ecs.entities.{CellEntity, DrawableProperty, EntityManager, PlayerCellEntity}
+import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
+import it.unibo.osmos.redux.mvc.view.events.MouseEventListener
+import it.unibo.osmos.redux.mvc.view.levels.LevelContext
+import it.unibo.osmos.redux.ecs.systems.DrawSystem
+import it.unibo.osmos.redux.utils.Point
 import javafx.scene.input.MouseEvent
 import org.scalatest.FunSuite
 
