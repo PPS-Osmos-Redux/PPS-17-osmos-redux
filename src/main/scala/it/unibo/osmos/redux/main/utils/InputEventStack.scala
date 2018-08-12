@@ -9,7 +9,7 @@ import scala.collection.mutable
   */
 object InputEventStack {
 
-  //TODO: handle race conditions (pops and pushes must be synchronized, but can effect performances)
+  //TODO: handle race conditions (pops and pushes should be synchronized, but can effect performances)
 
   var stack: mutable.ListBuffer[MouseEventWrapper] = mutable.ListBuffer()
 
@@ -19,6 +19,14 @@ object InputEventStack {
     */
   def push(event: MouseEventWrapper): Unit = {
     stack += event
+  }
+
+  /**
+    * Pushes multiple events into the stack (following the order of the input collection)
+    * @param events The collection of events
+    */
+  def pushAll(events: MouseEventWrapper*): Unit = {
+    events foreach push
   }
 
   /**
