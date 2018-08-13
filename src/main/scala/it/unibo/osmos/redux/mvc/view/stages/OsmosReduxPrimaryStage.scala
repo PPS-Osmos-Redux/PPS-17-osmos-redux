@@ -53,6 +53,9 @@ object OsmosReduxPrimaryStage {
       listener.onLevelContextSetup(levelContext)
     }
 
+    /* Stopping the game when the user closes the window */
+    onCloseRequest = _ => System.exit(0)
+
   }
 }
 

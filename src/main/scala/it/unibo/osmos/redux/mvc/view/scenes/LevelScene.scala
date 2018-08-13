@@ -26,7 +26,6 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     */
   content = canvas
 
-
   /**
     * The level context, created with the LevelScene. It still needs to be properly setup
     */
