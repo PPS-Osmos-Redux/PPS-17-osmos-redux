@@ -48,7 +48,7 @@ class LevelNode(val listener: LevelNodeListener, val level: Int, val available: 
     /* Button handlers */
     simulationButton.onAction = e => listener.onLevelPlayClick(level, simulation = true)
     playButton.onAction = e => listener.onLevelPlayClick(level, simulation = false)
-
+    /* Setting all the components */
     children = Seq(simulationButton, imageView, playButton)
   } else {
     effect = new SepiaTone
