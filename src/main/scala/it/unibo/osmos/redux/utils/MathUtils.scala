@@ -23,4 +23,6 @@ object MathUtils {
     val mod = math.sqrt(math.pow(point.x, 2) + math.pow(point.y, 2))
     Point(point.x / mod, point.y / mod)
   }
+
+  def euclideanDistance(point1: Point, point2: Point): Double = Math.sqrt(Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2))
 }
