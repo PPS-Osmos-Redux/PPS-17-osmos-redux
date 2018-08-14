@@ -8,7 +8,7 @@ case class InputSystem(override val priority: Int) extends AbstractSystem[InputP
   /**
     * Acceleration coefficient to apply to each input movement
     */
-  val accelCoefficient: Double = 0.1
+  val accelCoefficient: Double = 0.2
 
   override def getGroupProperty(): Class[_ <: Property] = classOf[InputProperty]
 
