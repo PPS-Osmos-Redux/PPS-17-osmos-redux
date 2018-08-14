@@ -6,6 +6,7 @@ import it.unibo.osmos.redux.mvc.view.levels.{LevelContext, LevelContextListener}
 import it.unibo.osmos.redux.utils.MathUtils._
 import scalafx.application.Platform
 import scalafx.scene.canvas.Canvas
+import scalafx.scene.image.Image
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.Circle
 import scalafx.stage.Stage
@@ -20,7 +21,11 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     * The canvas which will draw the elements on the screen
     */
   val canvas: Canvas = new Canvas(parentStage.getWidth, parentStage.getHeight)
-  val circleDrawable: CircleDrawable = new CircleDrawable(canvas.graphicsContext2D)
+
+  /**
+    * The image used to draw cells
+    */
+  val cellDrawable: ImageDrawable = new ImageDrawable(new Image("/textures/cell.png"), canvas.graphicsContext2D)
 
   /**
     * The content of the scene being set to the canvas
@@ -61,7 +66,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     Platform.runLater({
       canvas.graphicsContext2D.clearRect(0, 0, parentStage.getWidth, parentStage.getHeight)
       /* Draw the entities */
-      entitiesWrappers foreach(e => circleDrawable.draw(e._1.center,e._1.radius, e._2))
+      entitiesWrappers foreach(e => cellDrawable.draw(e._1.center,e._1.radius, e._2))
     })
   }
 
@@ -118,7 +123,6 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
             val normalizedRadius = normalize(e.radius, playerEntity.radius, endRadius._2)
             (e, playerColor.interpolate(maxColor, normalizedRadius))
         } seq
-
     }
   }
 

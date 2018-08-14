@@ -1,6 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.drawables
 import it.unibo.osmos.redux.utils.Point
 import scalafx.scene.canvas.GraphicsContext
+import scalafx.scene.effect.Effect
 import scalafx.scene.image.Image
 import scalafx.scene.paint.Color
 
@@ -31,9 +32,8 @@ class ImageDrawable(private var _image: Image, override val graphicsContext: Gra
     */
   override def draw(point: Point, radius: Double, color: Color): Unit = {
     graphicsContext.fill = color
-    graphicsContext.drawImage(image, point.x - radius, point.y - radius, radius * 2, radius * 2)
-    /*graphicsContext.fill = color
     graphicsContext.fillOval(point.x - radius, point.y - radius, radius * 2, radius * 2)
-    graphicsContext.strokeOval(point.x - radius, point.y - radius, radius * 2, radius * 2)*/
+    graphicsContext.strokeOval(point.x - radius, point.y - radius, radius * 2, radius * 2)
+    graphicsContext.drawImage(image, point.x - radius, point.y - radius, radius * 2, radius * 2)
   }
 }
