@@ -1,5 +1,7 @@
 package it.unibo.osmos.redux.ecs.components
 
+import it.unibo.osmos.redux.utils.MathUtils
+
 /**
   * Component for entity's mass
   */
@@ -19,6 +21,6 @@ object MassComponent {
 
   case class MassComponentImpl(dimension: DimensionComponent, specificWeight: SpecificWeightComponent) extends MassComponent {
 
-    override def mass: Double = dimension.radius * specificWeight.specificWeight
+    override def mass: Double = MathUtils.circleArea(dimension.radius) * specificWeight.specificWeight
   }
 }
