@@ -7,7 +7,8 @@ case class CollisionSystem(override val priority: Int) extends AbstractSystem[Co
 
   //the percentage of mass that an entity can acquire from another during a collision in a tick
   protected val massExchangeRate = 0.02
-  protected val decelerationAmount = 0.1
+  //constants that controls how much deceleration is applied to an entity when colliding with another one
+  protected val decelerationAmount = 0.08
 
   override def getGroupProperty: Class[_ <: Property] = classOf[CollidableProperty]
 
