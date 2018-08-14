@@ -3,6 +3,7 @@ package it.unibo.osmos.redux.mvc.view.scenes
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities._
 import it.unibo.osmos.redux.mvc.view.drawables._
 import it.unibo.osmos.redux.mvc.view.levels.{LevelContext, LevelContextListener}
+import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import it.unibo.osmos.redux.utils.MathUtils._
 import scalafx.application.Platform
 import scalafx.scene.canvas.Canvas
@@ -18,13 +19,22 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   /**
     * The canvas which will draw the elements on the screen
     */
-  val canvas: Canvas = new Canvas(parentStage.getWidth, parentStage.getHeight)
-  val circleDrawable: CircleDrawable = new CircleDrawable(canvas.graphicsContext2D)
+  val canvas: Canvas = new Canvas(parentStage.getWidth, parentStage.getHeight) {
+    width <== parentStage.width
+    height <== parentStage.height
+    cache = true
+  }
+
+  /**
+    * The images used to draw cells
+    */
+  val cellDrawable: ImageDrawable = new ImageDrawable(ImageLoader.getImage("/textures/cell.png"), canvas.graphicsContext2D)
+  val backgroundDrawable: ImageDrawable = new ImageDrawable(ImageLoader.getImage("/textures/background.png"), canvas.graphicsContext2D)
 
   /**
     * The content of the scene being set to the canvas
     */
-  content = canvas
+  content = Seq(canvas)
 
   /**
     * The level context, created with the LevelScene. It still needs to be properly setup
@@ -47,17 +57,23 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
 
   override def onDrawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = {
 
+    var entitiesWrappers : Seq[(DrawableWrapper, Color)] = Seq()
+
+    playerEntity match {
+      /* The player is present */
+      case Some(pe) => entitiesWrappers = calculateColors(defaultEntityMinColor, defaultEntityMaxColor, defaultPlayerColor, pe, entities)
+      /* The player is not present */
+      case _ => entitiesWrappers = calculateColors(defaultEntityMinColor, defaultEntityMaxColor, entities)
+    }
+
     /* We must draw to the screen the entire collection */
     Platform.runLater({
-      canvas.graphicsContext2D.clearRect(0, 0, parentStage.getWidth, parentStage.getHeight)
-      /* Draw the player */
-      //TODO: match types top draw entities differently
-      playerEntity match {
-        /* The player is present */
-        case Some(pe) => calculateColors(defaultEntityMinColor, defaultEntityMaxColor, defaultPlayerColor, pe, entities) foreach(e => circleDrawable.draw(e._1.center, e._1.radius, e._2))
-        /* The player is not present */
-        case _ => calculateColors(defaultEntityMinColor, defaultEntityMaxColor, entities) foreach(e => circleDrawable.draw(e._1.center,e._1.radius, e._2))
-      }
+      /* Clear the screen */
+      canvas.graphicsContext2D.clearRect(0, 0, width.value, height.value)
+      /* Draw the background */
+      canvas.graphicsContext2D.drawImage(backgroundDrawable.image, 0, 0, width.value, height.value)
+      /* Draw the entities */
+      entitiesWrappers foreach(e => cellDrawable.draw(e._1.center,e._1.radius, e._2))
     })
   }
 
@@ -114,7 +130,6 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
             val normalizedRadius = normalize(e.radius, playerEntity.radius, endRadius._2)
             (e, playerColor.interpolate(maxColor, normalizedRadius))
         } seq
-
     }
   }
 
