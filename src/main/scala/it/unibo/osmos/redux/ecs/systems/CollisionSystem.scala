@@ -8,7 +8,9 @@ case class CollisionSystem(override val priority: Int) extends AbstractSystem[Co
   //the percentage of mass that an entity can acquire from another during a collision in a tick
   protected val massExchangeRate = 0.02
   //constants that controls how much deceleration is applied to an entity when colliding with another one
-  protected val decelerationAmount = 0.08
+  protected val decelerationAmount = 0.1
+  //constant that define the initial acceleration of a steady entity when a collision occurs
+  protected val initialAcceleration = 0.001
 
   override def getGroupProperty: Class[_ <: Property] = classOf[CollidableProperty]
 
@@ -53,10 +55,8 @@ case class CollisionSystem(override val priority: Int) extends AbstractSystem[Co
     exchangeMass(bigEntity, smallEntity)
 
     //apply deceleration to both entities, proportionally to their size
-    val smallDecelerationAmount = (bigEntity.getDimensionComponent.radius / smallEntity.getDimensionComponent.radius) * decelerationAmount
-    val bigDecelerationAmount = (smallEntity.getDimensionComponent.radius / bigEntity.getDimensionComponent.radius) * decelerationAmount
-    decelerateEntity(smallEntity, smallDecelerationAmount)
-    decelerateEntity(bigEntity, bigDecelerationAmount)
+    decelerateEntity(smallEntity, decelerationAmount)
+    decelerateEntity(bigEntity, decelerationAmount)
   }
 
   /**
@@ -81,10 +81,10 @@ case class CollisionSystem(override val priority: Int) extends AbstractSystem[Co
     val accel = entity.getAccelerationComponent
 
     //gain acceleration even if the entity is still
-    if (accel.accelerationX == 0) entity.getAccelerationComponent.accelerationX_(percentage) else {
+    if (accel.accelerationX == 0) entity.getAccelerationComponent.accelerationX_(initialAcceleration * percentage) else {
       entity.getAccelerationComponent.accelerationX_(accel.accelerationX - accel.accelerationX * percentage)
     }
-    if (accel.accelerationY == 0) entity.getAccelerationComponent.accelerationY_(percentage) else {
+    if (accel.accelerationY == 0) entity.getAccelerationComponent.accelerationY_(initialAcceleration * percentage) else {
       entity.getAccelerationComponent.accelerationY_(accel.accelerationY - accel.accelerationY * percentage)
     }
   }
