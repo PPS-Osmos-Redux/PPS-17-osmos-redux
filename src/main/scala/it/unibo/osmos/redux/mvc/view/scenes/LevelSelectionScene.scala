@@ -23,7 +23,7 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
         prefRows = 1
         minHeight <== parentStage.height
         //TODO: parse actual available values
-        for (i <- 1 to numLevels) children.add(new LevelNode(LevelSelectionScene.this, i, if (i % 2 != 0) true else false))
+        for (i <- 1 to numLevels) children.add(new LevelNode(LevelSelectionScene.this, i, if (i == 1) true else false))
       }
     )
   }
