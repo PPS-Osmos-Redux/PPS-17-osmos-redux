@@ -2,31 +2,70 @@ package it.unibo.osmos.redux.mvc.view.menus
 
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import scalafx.Includes._
-import scalafx.geometry.Insets
+import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.Button
+import scalafx.scene.effect.{DropShadow, SepiaTone}
 import scalafx.scene.image.ImageView
-import scalafx.scene.layout.Pane
+import scalafx.scene.layout.VBox
+import scalafx.scene.paint.Color
 
 /**
   * This node represents a single selectable level from the menu
-  * @param requestedWidth the node width
-  * @param requestedHeight the node height
+  * @param listener the LevelNodeListener
+  * @param level the level index
+  * @param available true if the level is currently available, false otherwise
   */
-class LevelNode(val requestedWidth: Double, val requestedHeight: Double, val level: Int, val levelVisible: Boolean) extends Pane {
+class LevelNode(val listener: LevelNodeListener, val level: Int, val available: Boolean) extends VBox {
 
-  padding = Insets(20)
+  alignment = Pos.Center
+  padding = Insets(30)
 
+  /* Hover event handlers */
+  scaleX <== when(hover) choose 1.2 otherwise 1
+  scaleY <== when(hover) choose 1.2 otherwise 1
+
+  /* The level image */
   val imageView: ImageView = new ImageView(ImageLoader.getImage(s"/textures/menu_level_$level.png")) {
-    fitWidth = requestedWidth
-    fitHeight = requestedHeight
+    margin = Insets(20)
   }
 
-  translateY = - this.height.get() / 2
-
+  /* The button to start the simulation in this level */
   val simulationButton: Button = new Button("Simulation") {
     visible <== when(LevelNode.this.hover) choose true otherwise false
   }
 
-  children = Seq(imageView, simulationButton)
+  /* The button to start the level normally */
+  val playButton: Button = new Button("Play") {
+    visible <== when(LevelNode.this.hover) choose true otherwise false
+    alignment = Pos.BottomLeft
+  }
 
+  /* We must prevent the user to select unavailable levels */
+  if (available) {
+    effect = new DropShadow {
+      color = Color.Blue
+    }
+    /* Button handlers */
+    simulationButton.onAction = e => listener.onLevelPlayClick(level, simulation = true)
+    playButton.onAction = e => listener.onLevelPlayClick(level, simulation = false)
+
+    children = Seq(simulationButton, imageView, playButton)
+  } else {
+    effect = new SepiaTone
+    children = imageView
+  }
+
+}
+
+/**
+  * Trait which gets notified when a LevelNode event occurs
+  */
+trait LevelNodeListener {
+
+  /**
+    * This method gets called when an available level buttons get clicked
+    * @param level the level index
+    * @param simulation true if the level must be started as a simulation, false otherwise
+    */
+  def onLevelPlayClick(level: Int, simulation: Boolean)
 }
