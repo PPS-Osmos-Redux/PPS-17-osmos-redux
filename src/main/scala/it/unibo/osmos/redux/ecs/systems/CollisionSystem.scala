@@ -47,9 +47,12 @@ case class CollisionSystem(override val priority: Int) extends AbstractSystem[Co
     * @param e2 The second entity
     */
   protected def applyCollisionEffects(e1: CollidableProperty, e2: CollidableProperty): Unit = {
-    val (bigEntity, smallEntity) = if (e1.getDimensionComponent.radius > e2.getDimensionComponent.radius) (e1,e2) else (e2,e1)
+    val (bigEntity, smallEntity) = if (e1.getDimensionComponent.radius > e2.getDimensionComponent.radius) (e1, e2) else (e2, e1)
+
+    //bigger entity should gain size while the other loses it
     exchangeMass(bigEntity, smallEntity)
 
+    //apply deceleration to both entities, proportionally to their size
     val smallDecelerationAmount = (bigEntity.getDimensionComponent.radius / smallEntity.getDimensionComponent.radius) * decelerationAmount
     val bigDecelerationAmount = (smallEntity.getDimensionComponent.radius / bigEntity.getDimensionComponent.radius) * decelerationAmount
     decelerateEntity(smallEntity, smallDecelerationAmount)
@@ -76,7 +79,13 @@ case class CollisionSystem(override val priority: Int) extends AbstractSystem[Co
     */
   protected def decelerateEntity(entity: CollidableProperty, percentage: Double): Unit = {
     val accel = entity.getAccelerationComponent
-    entity.getAccelerationComponent.accelerationX_(accel.accelerationX - accel.accelerationX * percentage)
-    entity.getAccelerationComponent.accelerationY_(accel.accelerationY - accel.accelerationY * percentage)
+
+    //gain acceleration even if the entity is still
+    if (accel.accelerationX == 0) entity.getAccelerationComponent.accelerationX_(percentage) else {
+      entity.getAccelerationComponent.accelerationX_(accel.accelerationX - accel.accelerationX * percentage)
+    }
+    if (accel.accelerationY == 0) entity.getAccelerationComponent.accelerationY_(percentage) else {
+      entity.getAccelerationComponent.accelerationY_(accel.accelerationY - accel.accelerationY * percentage)
+    }
   }
 }
