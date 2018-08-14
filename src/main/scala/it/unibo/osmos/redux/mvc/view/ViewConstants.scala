@@ -12,8 +12,8 @@ object ViewConstants {
     */
   object Window {
     val defaultWindowTitle: String = "Osmos-Redux"
-    val defaultWindowWidth: Double = 800
-    val defaultWindowHeight: Double = 600
+    val defaultWindowWidth: Double = 1366
+    val defaultWindowHeight: Double = 768
   }
 
   object Entities {

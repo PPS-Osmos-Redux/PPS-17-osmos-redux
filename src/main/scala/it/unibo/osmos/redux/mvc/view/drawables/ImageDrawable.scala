@@ -1,7 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.drawables
 import it.unibo.osmos.redux.utils.Point
 import scalafx.scene.canvas.GraphicsContext
-import scalafx.scene.effect.Effect
 import scalafx.scene.image.Image
 import scalafx.scene.paint.Color
 
