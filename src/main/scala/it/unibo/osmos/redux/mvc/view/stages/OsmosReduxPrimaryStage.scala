@@ -2,7 +2,7 @@ package it.unibo.osmos.redux.mvc.view.stages
 
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
 import it.unibo.osmos.redux.mvc.view.levels.LevelContext
-import it.unibo.osmos.redux.mvc.view.scenes.{LevelScene, LevelSceneListener, MainScene, MainSceneListener}
+import it.unibo.osmos.redux.mvc.view.scenes._
 import scalafx.application.JFXApp
 
 /**
@@ -41,17 +41,19 @@ object OsmosReduxPrimaryStage {
       */
     scene = new MainScene(this, this)
 
-    override def onPlayClick(): Unit = {
-      /* Creating a new level scene */
+    /*override def onPlayClick(): Unit = {
+      // Creating a new level scene
       val levelScene = new LevelScene(this, this)
-      /* Creating a new LevelContext and setting it to the scene */
+      // Creating a new LevelContext and setting it to the scene
       val levelContext = LevelContext(levelScene)
       levelScene.levelContext = levelContext
-      /* Changing scene scene */
+      // Changing scene scene
       scene = levelScene
-      /* Notify the view the new context */
+      // Notify the view the new context
       listener.onLevelContextSetup(levelContext)
-    }
+    }*/
+
+    override def onPlayClick(): Unit = scene = new LevelSelectionScene(this)
 
     /* Stopping the game when the user closes the window */
     onCloseRequest = _ => System.exit(0)
