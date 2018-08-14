@@ -24,5 +24,19 @@ object MathUtils {
     Point(point.x / mod, point.y / mod)
   }
 
-  def euclideanDistance(point1: Point, point2: Point): Double = Math.sqrt(Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2))
+  /**
+    * Returns the Euclidean distance in 2D space
+    * @param point1 first point
+    * @param point2 second point
+    * @return Euclidean distance
+    */
+  def euclideanDistance(point1: Point, point2: Point): Double =
+    Math.sqrt(Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2))
+
+  /**
+    * Returns the area of a circle of a given radius
+    * @param radius the radius
+    * @return area
+    */
+  def circleArea(radius: Double): Double = Math.pow(radius, 2) * Math.PI
 }
