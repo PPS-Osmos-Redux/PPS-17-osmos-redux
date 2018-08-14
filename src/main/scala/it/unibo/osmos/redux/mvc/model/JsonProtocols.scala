@@ -152,7 +152,8 @@ object JsonProtocols {
             position.convertTo[PositionComponent],
             speed.convertTo[SpeedComponent],
             visible.convertTo[VisibleComponent],
-            typeEntity.convertTo[TypeComponent])
+            typeEntity.convertTo[TypeComponent],
+            SpawnerComponent(false))
         case _ => throw DeserializationException("Player cell entity expected")
       }
     }

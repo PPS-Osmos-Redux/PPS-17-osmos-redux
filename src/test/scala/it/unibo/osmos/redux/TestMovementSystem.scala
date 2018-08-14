@@ -31,7 +31,8 @@ class TestMovementSystem extends FunSuite with MockFactory with Matchers {
     val pcs = SpeedComponent(4, 0)
     val pcv = VisibleComponent(true)
     val pct = TypeComponent(EntityType.Material)
-    val playerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv, pct)
+    val spw = SpawnerComponent(false)
+    val playerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv, pct, spw)
 
     EntityManager.add(cellEntity)
     EntityManager.add(playerCellEntity)
