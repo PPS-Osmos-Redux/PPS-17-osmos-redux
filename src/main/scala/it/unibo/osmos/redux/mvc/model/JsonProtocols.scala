@@ -6,6 +6,9 @@ import it.unibo.osmos.redux.ecs.entities.{CellEntity, PlayerCellEntity}
 import it.unibo.osmos.redux.utils.Point
 import org.apache.commons.lang3.SerializationException
 
+/**
+  * Json implicit stategies for: convert json to Level or convert Level to json
+  */
 object JsonProtocols {
   implicit object AccelerationFormatter extends RootJsonFormat[AccelerationComponent] {
     def write(acceleration: AccelerationComponent) = JsObject(
