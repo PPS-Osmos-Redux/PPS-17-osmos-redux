@@ -3,6 +3,7 @@ package it.unibo.osmos.redux.mvc.view.scenes
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities._
 import it.unibo.osmos.redux.mvc.view.drawables._
 import it.unibo.osmos.redux.mvc.view.levels.{LevelContext, LevelContextListener}
+import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import it.unibo.osmos.redux.utils.MathUtils._
 import scalafx.application.Platform
 import scalafx.scene.canvas.Canvas
@@ -25,7 +26,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   /**
     * The image used to draw cells
     */
-  val cellDrawable: ImageDrawable = new ImageDrawable(new Image("/textures/cell.png"), canvas.graphicsContext2D)
+  val cellDrawable: ImageDrawable = new ImageDrawable(ImageLoader.getImage("/textures/cell.png"), canvas.graphicsContext2D)
 
   /**
     * The content of the scene being set to the canvas
