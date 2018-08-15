@@ -29,7 +29,7 @@ class TestInputSystem extends FunSuite {
   test("InputSystem updates entities acceleration correctly") {
 
     //setup level context
-    val levelContext = LevelContext(null)
+    val levelContext = LevelContext(null,true)
     levelContext.setupLevel()
 
     //setup input system
@@ -57,7 +57,7 @@ class TestInputSystem extends FunSuite {
   test("InputSystem should update only entities with input property") {
 
     //setup level context
-    val levelContext = LevelContext(null)
+    val levelContext = LevelContext(null,true)
     levelContext.setupLevel()
 
     //setup input system
