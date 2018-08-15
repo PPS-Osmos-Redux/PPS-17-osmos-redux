@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.ecs.engine
 
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager}
-import it.unibo.osmos.redux.ecs.systems.{CollisionSystem, DrawSystem, InputSystem, MovementSystem}
+import it.unibo.osmos.redux.ecs.systems._
 import it.unibo.osmos.redux.mvc.view.levels.LevelContext
 import it.unibo.osmos.redux.utils.InputEventQueue
 
@@ -87,7 +87,8 @@ object GameEngine {
         InputSystem(0),
         CollisionSystem(1),
         MovementSystem(2),
-        DrawSystem(levelContext, 3)
+        DrawSystem(levelContext, 3),
+        CellsEliminationSystem(4)
       )/*.sortBy(_.priority)*/
 
       //add all entities in the entity manager (systems are subscribed to EntityManager event when created)
