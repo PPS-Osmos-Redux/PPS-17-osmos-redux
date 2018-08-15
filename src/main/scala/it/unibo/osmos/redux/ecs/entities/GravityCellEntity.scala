@@ -22,7 +22,7 @@ object GravityCellEntity {
             specificWeight: SpecificWeightComponent): GravityCellEntity =
     GravityCellEntityImpl(CellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity), MassComponent(dimension,specificWeight))
 
-  case class GravityCellEntityImpl(cellEntity: CellEntity, mass: MassComponent) extends GravityCellEntity {
+  private case class GravityCellEntityImpl(cellEntity: CellEntity, mass: MassComponent) extends GravityCellEntity {
 
     override def getPositionComponent: PositionComponent = cellEntity.getPositionComponent
 
