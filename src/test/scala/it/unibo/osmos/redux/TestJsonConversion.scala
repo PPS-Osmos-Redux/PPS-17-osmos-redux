@@ -16,9 +16,10 @@ class TestJsonConversion extends FunSuite{
   val s = SpeedComponent(4, 0)
   val v = VisibleComponent(true)
   val et = TypeComponent(EntityType.Material)
+  val sp = SpawnerComponent(false)
   //Entities
   val ce = CellEntity(a, c, d, p, s, v, et)
-  val pce = PlayerCellEntity(a,c,d,p,s,v, et)
+  val pce = PlayerCellEntity(a, c, d, p, s, v, et, sp)
   val listCell:List[CellEntity] = List(ce, pce)
   //LevelMap
   val rectangle:MapShape = Rectangle(10.1,5.6)

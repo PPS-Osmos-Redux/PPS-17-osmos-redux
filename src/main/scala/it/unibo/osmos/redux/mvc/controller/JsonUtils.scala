@@ -82,5 +82,6 @@ case class JsPlayerCellEntity(acceleration: JsAcceleration,
                                             position.toPosition,
                                             speed.toSpeed,
                                             visible.toVisible,
-                                            jsTypeEntity.toEntityType)
+                                            jsTypeEntity.toEntityType,
+                                            SpawnerComponent(false))
 }
