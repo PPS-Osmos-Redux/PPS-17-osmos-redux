@@ -1,9 +1,9 @@
 package it.unibo.osmos.redux
 
-import it.unibo.osmos.redux.main.ecs.components._
-import it.unibo.osmos.redux.main.ecs.entities.{CellEntity, EntityManager, PlayerCellEntity}
-import it.unibo.osmos.redux.main.ecs.systems.MovementSystem
-import it.unibo.osmos.redux.main.utils.Point
+import it.unibo.osmos.redux.ecs.components._
+import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager, PlayerCellEntity}
+import it.unibo.osmos.redux.ecs.systems.MovementSystem
+import it.unibo.osmos.redux.utils.Point
 import org.scalamock.matchers.Matchers
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.FunSuite
@@ -21,7 +21,8 @@ class TestMovementSystem extends FunSuite with MockFactory with Matchers {
     val cp = PositionComponent(Point(0, 0))
     val cs = SpeedComponent(4, 0)
     val cv = VisibleComponent(true)
-    val cellEntity = CellEntity(ca, cc, cd, cp, cs, cv)
+    val ct = TypeComponent(EntityType.Material)
+    val cellEntity = CellEntity(ca, cc, cd, cp, cs, cv, ct)
 
     val pca = AccelerationComponent(-4, -1)
     val pcc = CollidableComponent(true)
@@ -29,17 +30,21 @@ class TestMovementSystem extends FunSuite with MockFactory with Matchers {
     val pcp = PositionComponent(Point(-4, 6))
     val pcs = SpeedComponent(4, 0)
     val pcv = VisibleComponent(true)
-    val palyerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv)
+    val pct = TypeComponent(EntityType.Material)
+    val spw = SpawnerComponent(false)
+    val playerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv, pct, spw)
 
     EntityManager.add(cellEntity)
-    EntityManager.add(palyerCellEntity)
+    EntityManager.add(playerCellEntity)
 
     movementSystem.update()
 
     assert(cellEntity.getSpeedComponent == SpeedComponent(5.0, 1.0))
     assert(cellEntity.getPositionComponent.point == Point(5.0, 1.0))
+    assert(cellEntity.getAccelerationComponent == AccelerationComponent(0.0, 0.0))
 
-    assert(palyerCellEntity.getSpeedComponent == SpeedComponent(0.0, -1.0))
-    assert(palyerCellEntity.getPositionComponent.point == Point(-4.0, 5.0))
+    assert(playerCellEntity.getSpeedComponent == SpeedComponent(0.0, -1.0))
+    assert(playerCellEntity.getPositionComponent.point == Point(-4.0, 5.0))
+    assert(playerCellEntity.getAccelerationComponent == AccelerationComponent(0.0, 0.0))
   }
 }
