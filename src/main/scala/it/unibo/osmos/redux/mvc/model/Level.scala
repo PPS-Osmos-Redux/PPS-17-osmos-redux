@@ -2,6 +2,14 @@ package it.unibo.osmos.redux.mvc.model
 import it.unibo.osmos.redux.ecs.entities.CellEntity
 
 /**
+  * List of cell types
+  */
+object CellType {
+  val playerCell = "playerCell"
+  val basicCell = "basicCell"
+}
+
+/**
   * Map edges collision rules
   */
 object CollisionRules extends Enumeration {
