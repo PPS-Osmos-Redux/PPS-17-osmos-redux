@@ -1,12 +1,12 @@
 package it.unibo.osmos.redux
 
-import it.unibo.osmos.redux.main.ecs.components._
-import it.unibo.osmos.redux.main.ecs.entities.{CellEntity, DrawableProperty, EntityManager, PlayerCellEntity}
-import it.unibo.osmos.redux.main.mvc.view.drawables.DrawableWrapper
-import it.unibo.osmos.redux.main.mvc.view.events.MouseEventListener
-import it.unibo.osmos.redux.main.mvc.view.levels.LevelContext
-import it.unibo.osmos.redux.main.ecs.systems.DrawSystem
-import it.unibo.osmos.redux.main.utils.Point
+import it.unibo.osmos.redux.ecs.components._
+import it.unibo.osmos.redux.ecs.entities.{CellEntity, DrawableProperty, EntityManager, PlayerCellEntity}
+import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
+import it.unibo.osmos.redux.mvc.view.events.MouseEventListener
+import it.unibo.osmos.redux.mvc.view.levels.LevelContext
+import it.unibo.osmos.redux.ecs.systems.DrawSystem
+import it.unibo.osmos.redux.utils.Point
 import javafx.scene.input.MouseEvent
 import org.scalatest.FunSuite
 
@@ -50,6 +50,7 @@ class TestDrawSystem extends FunSuite {
   val typeEntity = TypeComponent(EntityType.Material)
   val dimension1 = DimensionComponent(3)
   val position1 = PositionComponent(Point(3, 4))
+  val spawner = SpawnerComponent(false)
 
   test("PlayerCellEntity not present"){
     val spy = DrawSystemSpy()
@@ -68,7 +69,7 @@ class TestDrawSystem extends FunSuite {
   test("PlayerCellEntity is present, but not visible"){
     val spy = DrawSystemSpy()
     val system = DrawSystem(spy, 1)
-    val pce = PlayerCellEntity(acceleration,collidable,dimension,position,speed,notVisible,typeEntity)
+    val pce = PlayerCellEntity(acceleration,collidable,dimension,position,speed,notVisible,typeEntity,spawner)
     EntityManager.add(pce)
     system.update()
     assert(spy.player.isEmpty)
@@ -77,7 +78,7 @@ class TestDrawSystem extends FunSuite {
   test("PlayerCellEntity is present and visible"){
     val spy = DrawSystemSpy()
     val system = DrawSystem(spy, 1)
-    val pce = PlayerCellEntity(acceleration,collidable,dimension,position,speed,visible,typeEntity)
+    val pce = PlayerCellEntity(acceleration,collidable,dimension,position,speed,visible,typeEntity,spawner)
     EntityManager.add(pce)
     system.update()
     assert(spy.player.isDefined)
@@ -86,7 +87,7 @@ class TestDrawSystem extends FunSuite {
   test("PlayerCellEntity correctly wrapped"){
     val spy = DrawSystemSpy()
     val system = DrawSystem(spy, 1)
-    val pce = PlayerCellEntity(acceleration,collidable,dimension,position,speed,visible,typeEntity)
+    val pce = PlayerCellEntity(acceleration,collidable,dimension,position,speed,visible,typeEntity,spawner)
     EntityManager.add(pce)
     system.update()
     val playerWrapped = spy.player.get
