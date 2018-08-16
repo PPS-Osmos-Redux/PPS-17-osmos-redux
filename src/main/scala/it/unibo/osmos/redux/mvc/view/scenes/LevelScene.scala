@@ -106,15 +106,19 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   override def onPause(): Unit = {
     pauseScreen.visible = true
     canvas.opacity = 0.5
+
+    listener.onPauseLevel()
   }
 
   override def onResume(): Unit = {
     pauseScreen.visible = false
     canvas.opacity = 1
+
+    listener.onResumeLevel()
   }
 
   override def onExit(): Unit = {
-    //TODO: add proper behaviour
+    listener.onStopLevel()
   }
 
   /**
@@ -237,5 +241,20 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   * Trait which gets notified when a LevelScene event occurs
   */
 trait LevelSceneListener {
+
+  /**
+    * Called when the level gets paused
+    */
+  def onPauseLevel()
+
+  /**
+    * Called when the level gets resumed
+    */
+  def onResumeLevel()
+
+  /**
+    * Called when the level gets stopped
+    */
+  def onStopLevel()
 
 }
