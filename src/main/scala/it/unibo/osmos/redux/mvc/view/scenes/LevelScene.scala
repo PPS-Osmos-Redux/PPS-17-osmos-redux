@@ -1,15 +1,19 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities._
+import it.unibo.osmos.redux.mvc.view.components.{LevelStateBox, LevelStateBoxListener}
 import it.unibo.osmos.redux.mvc.view.drawables._
 import it.unibo.osmos.redux.mvc.view.levels.{LevelContext, LevelContextListener}
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import it.unibo.osmos.redux.utils.MathUtils._
 import scalafx.animation.FadeTransition
 import scalafx.application.Platform
+import scalafx.geometry.Pos
 import scalafx.scene.canvas.Canvas
+import scalafx.scene.layout.VBox
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.Circle
+import scalafx.scene.text.{Font, Text}
 import scalafx.stage.Stage
 import scalafx.util.Duration
 
@@ -17,7 +21,7 @@ import scalafx.util.Duration
   * This scene holds and manages a single level
   */
 class LevelScene(override val parentStage: Stage, val listener: LevelSceneListener) extends BaseScene(parentStage)
-  with LevelContextListener {
+  with LevelContextListener with LevelStateBoxListener {
 
   /**
     * The canvas which will draw the elements on the screen
@@ -29,15 +33,30 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   }
 
   /**
+    * The screen showed when the game is paused
+    */
+  val pauseScreen : VBox = new VBox(){
+    prefWidth <== parentStage.width
+    prefHeight <== parentStage.height
+    alignment = Pos.Center
+    visible = false
+
+    children = Seq(new Text("Game paused") {
+      font = Font.font("Verdana", 20)
+      fill = Color.White
+    })
+  }
+
+  /**
     * The images used to draw cells
     */
   val cellDrawable: ImageDrawable = new ImageDrawable(ImageLoader.getImage("/textures/cell.png"), canvas.graphicsContext2D)
   val backgroundDrawable: ImageDrawable = new ImageDrawable(ImageLoader.getImage("/textures/background.png"), canvas.graphicsContext2D)
 
   /**
-    * The content of the scene being set to the canvas
+    * The content of the whole scene
     */
-  content = Seq(canvas)
+  content = Seq(canvas, pauseScreen, new LevelStateBox(this,4.0))
 
   /**
     * The level context, created with the LevelScene. It still needs to be properly setup
@@ -47,6 +66,20 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   def levelContext: Option[LevelContext] = _levelContext
 
   def levelContext_= (levelContext: LevelContext): Unit = _levelContext = Option(levelContext)
+
+  override def onPause(): Unit = {
+    pauseScreen.visible = true
+    canvas.opacity = 0.5
+  }
+
+  override def onResume(): Unit = {
+    pauseScreen.visible = false
+    canvas.opacity = 1
+  }
+
+  override def onExit(): Unit = {
+    //TODO: add proper behaviour
+  }
 
   /**
     * OnMouseClicked handler
