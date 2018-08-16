@@ -2,6 +2,8 @@ package it.unibo.osmos.redux.ecs.engine
 
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager}
 import it.unibo.osmos.redux.ecs.systems.{CollisionSystem, DrawSystem, InputSystem, MovementSystem}
+import it.unibo.osmos.redux.mvc.model.MapShape.Rectangle
+import it.unibo.osmos.redux.mvc.model.{CollisionRules, Level, LevelMap, VictoryRules}
 import it.unibo.osmos.redux.mvc.view.levels.LevelContext
 import it.unibo.osmos.redux.utils.InputEventQueue
 
@@ -72,6 +74,13 @@ object GameEngine {
   private case class GameEngineImpl(private val framerate: Int = 30) extends GameEngine {
 
     private var gameLoop: Option[GameLoop] = _
+    // TODO: mock initialization, should be changed
+    private val levelInfo: Level = Level(1,
+      LevelMap(Rectangle(170, 100), CollisionRules.instantDeath),
+      //LevelMap(Circle(10), CollisionRules.bouncing),
+      null,
+      VictoryRules.becomeTheBiggest,
+      false)
 
     //TODO: add framerate parameter
     override def init(levelContext: LevelContext, entities: List[CellEntity]): Unit = {
@@ -86,7 +95,7 @@ object GameEngine {
       val systems = List(
         InputSystem(0),
         CollisionSystem(1),
-        MovementSystem(2),
+        MovementSystem(2, levelInfo),
         DrawSystem(levelContext, 3)
       )/*.sortBy(_.priority)*/
 
