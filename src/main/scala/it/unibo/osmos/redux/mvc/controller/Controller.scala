@@ -1,60 +1,52 @@
 package it.unibo.osmos.redux.mvc.controller
-import spray.json._
-import DefaultJsonProtocol._
-import com.sun.xml.internal.ws.api.pipe.Engine
 import it.unibo.osmos.redux.ecs.engine.GameEngine
+import it.unibo.osmos.redux.mvc.model.{CampaignLevels, Level}
+import it.unibo.osmos.redux.mvc.view.levels.LevelContext
+import spray.json._
 
 import scala.io.Source
-import it.unibo.osmos.redux.mvc.view.levels.LevelContext
-import it.unibo.osmos.redux.ecs.entities.CellEntity
-import it.unibo.osmos.redux.ecs.engine.GameEngine
-
 import scala.util.Try
 
 /**
   * Controller base trait
   */
 trait Controller {
-  def startLevel(levelContext:LevelContext)
+  def startLevel(levelContext: LevelContext,
+                 choosedLevel:Int,
+                 isSimulation:Boolean)
+  def getCampaignLevels:List[(Int,Boolean)] = CampaignLevels.levels.toList
 }
-
 
 case class ControllerImpl() extends Controller {
   var engine:Option[GameEngine] = None
-  override def startLevel(levelContext: LevelContext): Unit = {
-    //1) load files
-    val map:Map[String,String] = Map(JsCellEntity.getClass.getName -> "/level/CellEntityDefinition.json", JsPlayerCellEntity.getClass.getName -> "/level/PlayerCellEntityDefinition.json")
-    val entities = loadEntities(map)
-    //2) call init
-    engine match {
-      case None => engine = Some(GameEngine())
-      case _ =>
-    }
-    engine.get.init(levelContext,entities)
-    //3) call start
-    engine.get.start()
-  }
 
-  def loadEntities(filesToLoad:Map[String,String]):List[CellEntity] =  {
-    var cellEntities:List[CellEntity] = List()
-    filesToLoad.foreach(tuple => {
-      val textFile = "" + FileManager.loadResource(tuple._2).getOrElse(println("File not found! Controller cannot load: ", tuple._2))
-      import Converters._
-      if(tuple._1.equals(JsPlayerCellEntity.getClass.getName)){
-        cellEntities = textFile.parseJson.convertTo[List[JsPlayerCellEntity]].map(jsEntity => jsEntity.toPlayerCellEntity) ::: cellEntities
-      } else if (tuple._1.equals( JsCellEntity.getClass.getName)){
-        cellEntities = textFile.parseJson.convertTo[List[JsCellEntity]].map(jsEntity => jsEntity.toCellEntity) ::: cellEntities
-      }
-    })
-    cellEntities
+  override def startLevel(levelContext: LevelContext,
+                          choosedLevel:Int,
+                          isSimulation:Boolean): Unit = {
+
+    val text:Try[String] = FileManager.loadResource(isSimulation, choosedLevel)
+    import it.unibo.osmos.redux.mvc.model.JsonProtocols._
+    val loadedLevel = text.get.parseJson.convertTo[Level]
+    if (isSimulation) loadedLevel.isSimulation = true
+    if(engine.isEmpty) engine = Some(GameEngine())
+    engine.get.init(levelContext,loadedLevel)
+    engine.get.start()
   }
 }
 
 object FileManager {
+  val separator:String = "/"
+  val levelStartPath:String = separator + "levels" + separator
+  val jsonExtension = ".json"
+
   /**
     * Reads a file from the resources folder
-    * @param filename the name of the file
-    * @return Content of the file
+    * @param isSimulation if i have to load a simulation or a playable levels
+    * @param choosedLevel levels id
+    * @return content of file wrapped into a Try
     */
-  def loadResource(filename: String): Try[String] = Try(Source.fromInputStream(getClass.getResourceAsStream(filename)).mkString)
+  def loadResource(isSimulation:Boolean, choosedLevel:Int): Try[String] ={
+    val fileName = (levelStartPath + choosedLevel + jsonExtension).toLowerCase
+    Try(Source.fromInputStream(getClass.getResourceAsStream(fileName)).mkString)
+  }
 }
