@@ -21,6 +21,8 @@ object PlayerCellEntity {
 
   def apply(cell: CellEntity, spawner: SpawnerComponent): PlayerCellEntity = PlayerCellEntityImpl(cell, spawner)
 
+  def apply(builder: CellBuilder, spawner: SpawnerComponent): PlayerCellEntity = PlayerCellEntityImpl(builder.build, spawner)
+
   private case class PlayerCellEntityImpl(cellEntity: CellEntity, private val spawner: SpawnerComponent) extends PlayerCellEntity {
 
     override def getUUID: UUID = cellEntity.getUUID
