@@ -45,6 +45,13 @@ object OsmosReduxPrimaryStage {
 
     override def onLevelContextSetup(levelContext: LevelContext, level: Int, simulation: Boolean): Unit = listener.onLevelContextSetup(levelContext, level, simulation)
 
+    override def onPauseLevel(): Unit = listener.onPauseLevel()
+
+    override def onResumeLevel(): Unit = listener.onResumeLevel()
+
+    override def onStopLevel(): Unit = listener.onStopLevel()
+
+
     /* Stopping the game when the user closes the window */
     onCloseRequest = _ => System.exit(0)
 
@@ -54,14 +61,6 @@ object OsmosReduxPrimaryStage {
 /**
   * Listener that manages all the events managed by the primary scene
   */
-trait PrimaryStageListener {
+trait PrimaryStageListener extends LevelSelectionSceneListener{
 
-  /**
-    * This method called when the level context has been created
-    *
-    * @param levelContext the new level context
-    * @param level the new level index
-    * @param simulation true if the new level must be started as a simulation, false otherwise
-    */
-  def onLevelContextSetup(levelContext: LevelContext, level: Int, simulation: Boolean)
 }
