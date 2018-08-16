@@ -4,12 +4,13 @@ import it.unibo.osmos.redux.ecs.entities.EMEvents.{EntityCreated, EntityDeleted}
 import it.unibo.osmos.redux.ecs.entities._
 
 import scala.collection.mutable.ListBuffer
+import scala.reflect.ClassTag
 
 /**
   * Abstract system with two type of generic entity.
   * The lists of entity are not exclusive
   */
-abstract class AbstractSystemWithTwoTypeOfEntity[T <:Property, R <:Property](override val priority: Int)
+abstract class AbstractSystemWithTwoTypeOfEntity[T <:Property, R <:Property: ClassTag](override val priority: Int)
           extends AbstractSystem[T](priority) with Observer with System {
 
   protected var entitiesSecondType: ListBuffer[R] = ListBuffer()
@@ -19,18 +20,14 @@ abstract class AbstractSystemWithTwoTypeOfEntity[T <:Property, R <:Property](ove
 
   override def notify(event: EMEvents.EntityManagerEvent): Unit = {
     event.entity match {
-      case _:R if !entitiesSecondType.contains(event.entity)=>
+      case _:R =>
         event match {
-          case event: EntityCreated => entitiesSecondType += event.entity.asInstanceOf[R]
-          case event: EntityDeleted => entitiesSecondType -= event.entity.asInstanceOf[R]
+          case event: EntityCreated if !entitiesSecondType.contains(event.entity) => entitiesSecondType += event.entity.asInstanceOf[R]
+          case event: EntityDeleted if entitiesSecondType.contains(event.entity)=> entitiesSecondType -= event.entity.asInstanceOf[R]
+          //the event is already managed so the event is duplicated, perhaps it is for the other type of entity
+          case _ => super.notify(event)
         }
       case _ => super.notify(event)
     }
   }
-
-  /*event match {
-    case event: EntityCreated if event.entity.isInstanceOf[R] => entitiesSecondType += event.entity.asInstanceOf[R]; println("Wrong:" )
-    case event: EntityDeleted if event.entity.isInstanceOf[R] => entitiesSecondType -= event.entity.asInstanceOf[R]
-    case _ => super.notify(event)
-  }*/
 }
