@@ -30,8 +30,8 @@ case class GravitySystem(override val priority: Int) extends AbstractSystem[Mova
   override def getGroupProperty: Class[_ <: Property] = classOf[MovableProperty]
 
   override def update(): Unit = for (
-    entity <- entities; //for each movable entity
     gravityEntity <- gravityEntities; //for each gravity entity
+    entity <- entities; //for each movable entity
     if !entity.equals(gravityEntity); //with entity not equal gravityEntity
     if !entity.getPositionComponent.point.equals(gravityEntity.getPositionComponent.point) //with center of entity not equal of center of gravityEntity(theory impossible)
   ) yield updateAcceleration(gravityEntity, entity)
