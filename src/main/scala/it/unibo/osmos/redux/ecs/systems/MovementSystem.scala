@@ -60,6 +60,7 @@ case class MovementSystem(override val priority: Int, levelInfo: Level) extends 
           case p if p.x > maxHorizontalPoint =>
             speedComponent.speedX_(-speedComponent.speedX)
             val newXPosition = maxHorizontalPoint - (p.x - maxHorizontalPoint)
+            //println(maxHorizontalPoint + " " + p.x)
             positionComponent.point_(Point(newXPosition, p.y))
           case _ => // no collision, do nothing
         }
