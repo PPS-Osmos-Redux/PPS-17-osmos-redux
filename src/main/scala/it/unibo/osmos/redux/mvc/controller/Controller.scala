@@ -12,7 +12,7 @@ import scala.util.Try
   */
 trait Controller {
   def startLevel(levelContext: LevelContext,
-                 choosedLevel:Int,
+                 chosenLevel:Int,
                  isSimulation:Boolean)
   def getCampaignLevels:List[(Int,Boolean)] = CampaignLevels.levels.toList
 }
