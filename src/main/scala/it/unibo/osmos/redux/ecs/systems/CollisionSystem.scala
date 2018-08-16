@@ -6,11 +6,11 @@ import it.unibo.osmos.redux.utils.MathUtils
 case class CollisionSystem(override val priority: Int) extends AbstractSystem[CollidableProperty](priority) {
 
   //the percentage of mass that an entity can acquire from another during a collision in a tick
-  protected val massExchangeRate = 0.02
+  private val massExchangeRate = 0.02
   //constants that controls how much deceleration is applied to an entity when colliding with another one
-  protected val decelerationAmount = 0.1
+  private val decelerationAmount = 0.1
   //constant that define the initial acceleration of a steady entity when a collision occurs
-  protected val initialAcceleration = 0.001
+  private val initialAcceleration = 0.001
 
   override def getGroupProperty: Class[_ <: Property] = classOf[CollidableProperty]
 
@@ -30,7 +30,7 @@ case class CollisionSystem(override val priority: Int) extends AbstractSystem[Co
     * @param e2 The second entity
     * @return The overlap amount.
     */
-  protected def computeOverlap(e1: CollidableProperty, e2: CollidableProperty): Double = {
+  private def computeOverlap(e1: CollidableProperty, e2: CollidableProperty): Double = {
     val maxDist = MathUtils.distanceBetweenPoints(e1.getPositionComponent.point, e2.getPositionComponent.point)
     val currDist = e1.getDimensionComponent.radius + e2.getDimensionComponent.radius
     if (maxDist < currDist) currDist - maxDist else 0
@@ -42,7 +42,7 @@ case class CollisionSystem(override val priority: Int) extends AbstractSystem[Co
     * @param e2 The second entity
     * @param overlap The overlap amount
     */
-  protected def applyCollisionEffects(e1: CollidableProperty, e2: CollidableProperty, overlap: Double): Unit = {
+  private def applyCollisionEffects(e1: CollidableProperty, e2: CollidableProperty, overlap: Double): Unit = {
     val (bigEntity, smallEntity) = if (e1.getDimensionComponent.radius > e2.getDimensionComponent.radius) (e1, e2) else (e2, e1)
 
     //exchange mass between the two entities
@@ -59,7 +59,7 @@ case class CollisionSystem(override val priority: Int) extends AbstractSystem[Co
     * @param smallEntity The small entity
     * @param overlap The overlap amount
     */
-  protected def exchangeMass(bigEntity: CollidableProperty, smallEntity: CollidableProperty, overlap: Double): Unit = {
+  private def exchangeMass(bigEntity: CollidableProperty, smallEntity: CollidableProperty, overlap: Double): Unit = {
     //decrease small entity radius by the overlap amount
     smallEntity.getDimensionComponent.radius_(smallEntity.getDimensionComponent.radius - overlap)
 
@@ -77,7 +77,7 @@ case class CollisionSystem(override val priority: Int) extends AbstractSystem[Co
     * @param entity The entity to slow down
     * @param percentage The percentage of deceleration to apply
     */
-  protected def decelerateEntity(entity: CollidableProperty, percentage: Double): Unit = {
+  private def decelerateEntity(entity: CollidableProperty, percentage: Double): Unit = {
     val accel = entity.getAccelerationComponent
 
     //gain acceleration even if the entity is still
