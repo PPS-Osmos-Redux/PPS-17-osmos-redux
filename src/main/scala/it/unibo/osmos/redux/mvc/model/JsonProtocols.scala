@@ -226,5 +226,5 @@ object JsonProtocols {
     }
   }
 
-  implicit val levelFormatter:RootJsonFormat[Level] = jsonFormat5(Level)
+  implicit val levelFormatter:RootJsonFormat[Level] = jsonFormat4(Level)
 }

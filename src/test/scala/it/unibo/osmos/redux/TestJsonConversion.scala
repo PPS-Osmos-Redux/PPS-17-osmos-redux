@@ -30,8 +30,7 @@ class TestJsonConversion extends FunSuite{
   val level:Level = Level(levelId = 1,
     levelMap,
     listCell,
-    VictoryRules.becomeTheBiggest,
-    isSimulation = false)
+    VictoryRules.becomeTheBiggest)
 
   import spray.json._
   import DefaultJsonProtocol._
@@ -58,8 +57,6 @@ class TestJsonConversion extends FunSuite{
     val jsCellEntity = ce.toJson
     assert(jsCellEntity.convertTo[CellEntity].equals(ce))
     val jsPlayerCellEntity = pce.toJson
-    println(pce)
-    println(jsPlayerCellEntity)
     assert(jsPlayerCellEntity.convertTo[PlayerCellEntity].equals(pce))
     val jsListCellEntities = listCell.toJson
     val convertedCellList = jsListCellEntities.convertTo[List[CellEntity]]
@@ -84,7 +81,6 @@ class TestJsonConversion extends FunSuite{
     val convertedLevel = jsLevel.convertTo[Level]
     assert(convertedLevel.levelId.equals(level.levelId))
     assert(convertedLevel.levelMap.equals(level.levelMap))
-    assert(convertedLevel.isSimulation.equals(level.isSimulation))
     assert(convertedLevel.victoryRule.equals(level.victoryRule))
     assert(convertedLevel.entities.size.equals(level.entities.size))
   }
