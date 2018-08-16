@@ -8,9 +8,8 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 
 import scala.collection.mutable.ListBuffer
 
-
-case class FakeSystemWithTwoTypeOfEntity(override val priority: Int)
-  extends AbstractSystemWithTwoTypeOfEntity[MovableProperty, InputProperty](priority) {
+case class FakeSystemWithTwoTypeOfEntity()
+  extends AbstractSystemWithTwoTypeOfEntity[MovableProperty, InputProperty] {
 
   override protected def getGroupProperty: Class[_ <: Property] = classOf[MovableProperty]
 
@@ -37,13 +36,13 @@ class TestSystemWithTwoTypeOfEntity extends FunSuite with BeforeAndAfter {
   after(EntityManager.clear())
 
   test("A system initially has no entity"){
-    val fakeSystem = FakeSystemWithTwoTypeOfEntity(1)
+    val fakeSystem = FakeSystemWithTwoTypeOfEntity()
     assert(fakeSystem.getEntitiesOfFirstType.isEmpty)
     assert(fakeSystem.getEntitiesOfSecondType.isEmpty)
   }
 
   test("After add one entity of first type, the system have one entity of first type"){
-    val fakeSystem = FakeSystemWithTwoTypeOfEntity(1)
+    val fakeSystem = FakeSystemWithTwoTypeOfEntity()
     val ce = CellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity)
     EntityManager.add(ce)
     assert(fakeSystem.getEntitiesOfFirstType.size == 1)
@@ -51,7 +50,7 @@ class TestSystemWithTwoTypeOfEntity extends FunSuite with BeforeAndAfter {
   }
 
   test("An entity of both types is found in both lists"){
-    val fakeSystem = FakeSystemWithTwoTypeOfEntity(1)
+    val fakeSystem = FakeSystemWithTwoTypeOfEntity()
     EntityManager.add(PlayerCellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity,spawner))
     assert(fakeSystem.getEntitiesOfFirstType.size == 1)
     assert(fakeSystem.getEntitiesOfSecondType.size == 1)

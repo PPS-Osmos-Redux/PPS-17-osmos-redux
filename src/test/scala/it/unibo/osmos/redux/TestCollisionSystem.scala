@@ -13,15 +13,8 @@ class TestCollisionSystem extends FunSuite {
   val entity2 = CellEntity(AccelerationComponent(0,0), CollidableComponent(true), DimensionComponent(2),
     PositionComponent(Point(60, 80)), SpeedComponent(0, 0), VisibleComponent(true), TypeComponent(EntityType.Material))
 
-  test("CollisionSystem priority must match the one passed at his constructor") {
-    val priority = 0
-    val system = CollisionSystem(priority)
-    assert(system.priority == priority)
-  }
-
   test("CollisionSystem should not collide the entity with herself") {
-    val priority = 0
-    val system = CollisionSystem(priority)
+    val system = CollisionSystem()
 
     val originalDim = entity1.getDimensionComponent
     val originalAccel = entity1.getAccelerationComponent
@@ -34,8 +27,7 @@ class TestCollisionSystem extends FunSuite {
   }
 
   test("CollisionSystem should not consider entities that do not have CollisionProperty") {
-    val priority = 0
-    val system = CollisionSystem(priority)
+    val system = CollisionSystem()
 
     val position = Point(60, 80)
     entity1.getPositionComponent.point_(position)
@@ -58,8 +50,7 @@ class TestCollisionSystem extends FunSuite {
   }
 
   test("CollisionSystem should not collide two entities if the distance between the centers is greater than the sum of their radii") {
-    val priority = 0
-    val system = CollisionSystem(priority)
+    val system = CollisionSystem()
 
     val originalDim1 = entity1.getDimensionComponent
     val originalAccel1 = entity1.getAccelerationComponent
@@ -76,8 +67,7 @@ class TestCollisionSystem extends FunSuite {
   }
 
   test("CollisionSystem should collide two entities if the distance between the centers is less than the sum of their radii") {
-    val priority = 0
-    val system = CollisionSystem(priority)
+    val system = CollisionSystem()
 
     entity1.getDimensionComponent.radius_(5)
     entity1.getPositionComponent.point_(Point(60, 80))

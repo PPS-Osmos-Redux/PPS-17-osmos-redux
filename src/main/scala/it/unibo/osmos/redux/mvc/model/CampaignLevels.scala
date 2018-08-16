@@ -1,5 +1,5 @@
 package it.unibo.osmos.redux.mvc.model
 
 object CampaignLevels {
-  val levels:Map[String,Boolean] = Map(1.toString -> true)
+  val levels:Map[Int,Boolean] = Map(1 -> true, 2 -> true, 3 -> false)
 }
