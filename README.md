@@ -1,6 +1,6 @@
 # Osmos Redux
 
-[![Build Status](https://api.travis-ci.org/PPS-Osmos-Redux/Osmos-Redux.svg?branch=master)](https://api.travis-ci.org/PPS-Osmos-Redux/Osmos-Redux.svg?branch=master)
+[![Build Status](https://api.travis-ci.org/PPS-Osmos-Redux/Osmos-Redux.png?branch=develop)](https://travis-ci.org/PPS-Osmos-Redux/Osmos-Redux)
 
 Revisiting of Osmos game using Scala
 
