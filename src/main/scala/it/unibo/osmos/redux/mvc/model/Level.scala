@@ -5,6 +5,7 @@ import it.unibo.osmos.redux.ecs.entities.CellEntity
   * List of cell types
   */
 object CellType {
+  val gravityCell = "gravityCell"
   val playerCell = "playerCell"
   val basicCell = "basicCell"
 }

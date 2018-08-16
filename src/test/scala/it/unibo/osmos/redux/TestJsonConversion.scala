@@ -17,10 +17,12 @@ class TestJsonConversion extends FunSuite{
   val v = VisibleComponent(true)
   val et = TypeComponent(EntityType.Material)
   val sp = SpawnerComponent(true)
+  val sw = SpecificWeightComponent(1)
   //Entities
   val ce = CellEntity(a, c, d, p, s, v, et)
   val pce = PlayerCellEntity(a, c, d, p, s, v, et, sp)
-  val listCell:List[CellEntity] = List(ce, pce)
+  val gc = GravityCellEntity(a, c, d, p, s, v, et, sw)
+  val listCell:List[CellEntity] = List(ce, pce, gc)
   //LevelMap
   val rectangle:MapShape = Rectangle(10.1,5.6)
   val circle:MapShape = Circle(5.7)
@@ -51,6 +53,8 @@ class TestJsonConversion extends FunSuite{
     assert(jsVisible.convertTo[VisibleComponent].equals(v))
     val jsEntityType = et.toJson
     assert(jsEntityType.convertTo[TypeComponent].equals(et))
+    val jsSpecificWeight = sw.toJson
+    assert(jsSpecificWeight.convertTo[SpecificWeightComponent].equals(sw))
   }
 
   test("Cells conversion") {
@@ -58,11 +62,15 @@ class TestJsonConversion extends FunSuite{
     assert(jsCellEntity.convertTo[CellEntity].equals(ce))
     val jsPlayerCellEntity = pce.toJson
     assert(jsPlayerCellEntity.convertTo[PlayerCellEntity].equals(pce))
+    val jsGravityCell = gc.toJson
+    assert(jsGravityCell.convertTo[GravityCellEntity].equals(gc))
     val jsListCellEntities = listCell.toJson
     val convertedCellList = jsListCellEntities.convertTo[List[CellEntity]]
     assert(convertedCellList.size == listCell.size)
     assert(convertedCellList(1).getClass.equals(pce.getClass))
     assert(!convertedCellList.head.getClass.equals(pce.getClass))
+    assert(convertedCellList(2).getClass.equals(gc.getClass))
+    assert(!convertedCellList.head.getClass.equals(gc.getClass))
   }
 
   test("Map conversion") {
