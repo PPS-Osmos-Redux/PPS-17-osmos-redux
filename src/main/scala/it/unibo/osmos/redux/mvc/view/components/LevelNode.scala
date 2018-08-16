@@ -1,13 +1,16 @@
-package it.unibo.osmos.redux.mvc.view.menus
+package it.unibo.osmos.redux.mvc.view.components
 
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import scalafx.Includes._
+import scalafx.animation.{FadeTransition, Transition}
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.Button
 import scalafx.scene.effect.{DropShadow, SepiaTone}
 import scalafx.scene.image.ImageView
 import scalafx.scene.layout.VBox
 import scalafx.scene.paint.Color
+import scalafx.scene.text.Text
+import scalafx.util.Duration
 
 /**
   * This node represents a single selectable level from the menu
@@ -18,15 +21,36 @@ import scalafx.scene.paint.Color
 class LevelNode(val listener: LevelNodeListener, val level: Int, val available: Boolean) extends VBox {
 
   alignment = Pos.Center
-  padding = Insets(30)
+  padding = Insets(0, 30, 30, 30)
 
   /* Hover event handlers */
   scaleX <== when(hover) choose 1.2 otherwise 1
   scaleY <== when(hover) choose 1.2 otherwise 1
 
+  /* The upper text */
+  val textField: Text = new Text() {
+    margin = Insets(0, 0, 20, 0)
+    style = "-fx-font-size: 12pt"
+    visible = false
+  }
+
+  val fadeInTransition: Transition = new FadeTransition(Duration.apply(2000), textField) {
+    fromValue = 0.0
+    toValue = 1.0
+  }
+
+  val fadeOutTransition: Transition = new FadeTransition(Duration.apply(1000), textField) {
+    fromValue = 1.0
+    toValue = 0.0
+    onFinished = _ => textField.visible = false
+  }
+
   /* The level image */
   val imageView: ImageView = new ImageView(ImageLoader.getImage(s"/textures/menu_level_$level.png")) {
     margin = Insets(20)
+    onMouseEntered = _ => {textField.visible = true; fadeInTransition.play()}
+    onMouseExited = _ => {fadeOutTransition.play()}
+
   }
 
   /* The button to start the simulation in this level */
@@ -45,14 +69,17 @@ class LevelNode(val listener: LevelNodeListener, val level: Int, val available: 
     effect = new DropShadow {
       color = Color.Blue
     }
+    /* Text */
+    textField.text = s"Level $level"
     /* Button handlers */
     simulationButton.onAction = e => listener.onLevelPlayClick(level, simulation = true)
     playButton.onAction = e => listener.onLevelPlayClick(level, simulation = false)
     /* Setting all the components */
-    children = Seq(simulationButton, imageView, playButton)
+    children = Seq(textField, simulationButton, imageView, playButton)
   } else {
     effect = new SepiaTone
-    children = imageView
+    textField.text = "Unlock previous level"
+    children = Seq(textField, imageView)
   }
 
 }
