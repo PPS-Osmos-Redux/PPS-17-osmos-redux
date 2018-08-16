@@ -39,7 +39,7 @@ case class CollisionSystem(override val priority: Int) extends AbstractSystem[Co
     * @return True, if the entities collide; otherwise false
     */
   protected def checkCollision(e1: CollidableProperty, e2: CollidableProperty): Boolean = {
-    val dist = MathUtils.distanceBetweenPoints(e1.getPositionComponent.point, e2.getPositionComponent.point)
+    val dist = MathUtils.euclideanDistance(e1.getPositionComponent.point, e2.getPositionComponent.point)
     dist < (e1.getDimensionComponent.radius + e2.getDimensionComponent.radius)
   }
 
