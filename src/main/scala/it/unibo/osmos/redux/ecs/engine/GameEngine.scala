@@ -86,9 +86,10 @@ object GameEngine {
       val systems = List(
         InputSystem(0),
         GravitySystem(1),
-        CollisionSystem(2),
-        MovementSystem(3),
-        DrawSystem(levelContext, 4)
+        MovementSystem(2),
+        CollisionSystem(3),
+        DrawSystem(levelContext, 4),
+        CellsEliminationSystem(5)
       )/*.sortBy(_.priority)*/
 
       //add all entities in the entity manager (systems are subscribed to EntityManager event when created)
