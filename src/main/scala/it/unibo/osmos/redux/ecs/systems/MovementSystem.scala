@@ -1,5 +1,6 @@
 package it.unibo.osmos.redux.ecs.systems
 
+import it.unibo.osmos.redux.ecs.components.SpeedComponent
 import it.unibo.osmos.redux.ecs.entities.{EntityManager, MovableProperty, Property}
 import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.mvc.model._
@@ -115,9 +116,20 @@ case class MovementSystem(override val priority: Int, levelInfo: Level) extends 
       collisionRule match {
         case CollisionRules.bouncing =>
           positionComponent.point_(computePositionAfterBounce(currentPosition, precPosition, levelRadius, levelCenter))
-          // TODO: compute new speedX and speedY
+          // TODO: test correctness
+          // http://stackoverflow.com/questions/573084/bounce-angle
+          val n = SpeedComponent(currentPosition.x-levelCenter.x, currentPosition.y-levelCenter.y)
+          val n_len = Math.sqrt(Math.pow(n.speedX,2)+Math.pow(n.speedY,2))
+          val n_normalized = SpeedComponent(n.speedX/n_len,n.speedY/n_len)
+          val dot = speedComponent.speedX * n_normalized.speedX + speedComponent.speedY * n_normalized.speedY
+          val u = SpeedComponent(n_normalized.speedX * dot, n_normalized.speedY * dot)
+          val w = SpeedComponent(speedComponent.speedX - u.speedX, speedComponent.speedY - u.speedY)
+          val v_after = SpeedComponent(w.speedX - u.speedX, w.speedY - u.speedY)
+          val reflection = SpeedComponent(v_after.speedX - speedComponent.speedX, v_after.speedY - speedComponent.speedY)
+          speedComponent.speedX_(speedComponent.speedX + reflection.speedX)
+          speedComponent.speedY_(speedComponent.speedY + reflection.speedY)
         case CollisionRules.instantDeath =>
-          // TODO: implement annihilation case
+        // TODO: implement annihilation case
         case _ => throw new IllegalArgumentException
       }
     }
