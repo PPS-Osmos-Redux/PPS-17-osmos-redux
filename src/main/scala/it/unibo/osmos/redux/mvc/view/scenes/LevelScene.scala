@@ -201,10 +201,9 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
       case Nil => Seq()
       case _ =>
         /* Calculate the min and max radius among the entities, considering the player */
-        val allEntities = entities :+ playerEntity
-        val endRadius = getEntitiesExtremeRadiusValues(allEntities)
+        val endRadius = getEntitiesExtremeRadiusValues(entities)
 
-        allEntities map {
+        entities map {
           /* The entity has the same radius of the player so it will have the same color */
           case e if e.radius == playerEntity.radius => (e, playerColor)
           case e if e.radius < playerEntity.radius =>
