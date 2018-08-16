@@ -8,7 +8,7 @@ import scala.collection.mutable.ListBuffer
 /**
   * Abstract system of generic entity
   */
-abstract class AbstractSystem[T <:Property](override val priority: Int) extends Observer with System {
+abstract class AbstractSystem[T <:Property]() extends Observer with System {
 
   protected var entities: ListBuffer[T] = ListBuffer()
 

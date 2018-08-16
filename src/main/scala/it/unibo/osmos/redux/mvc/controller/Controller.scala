@@ -29,7 +29,7 @@ case class ControllerImpl() extends Controller {
     val loadedLevel = text.get.parseJson.convertTo[Level]
     if (isSimulation) loadedLevel.isSimulation = true
     if(engine.isEmpty) engine = Some(GameEngine())
-    engine.get.init(levelContext,loadedLevel)
+    engine.get.init(loadedLevel, levelContext)
     engine.get.start()
   }
 }

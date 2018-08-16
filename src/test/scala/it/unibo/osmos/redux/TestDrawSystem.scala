@@ -54,21 +54,21 @@ class TestDrawSystem extends FunSuite {
 
   test("PlayerCellEntity not present"){
     val spy = DrawSystemSpy()
-    val system = DrawSystem(spy, 1)
+    val system = DrawSystem(spy)
     system.update()
     assert(spy.player.isEmpty)
   }
 
   test("CellEntity enemies not present"){
     val spy = DrawSystemSpy()
-    val system = DrawSystem(spy, 1)
+    val system = DrawSystem(spy)
     system.update()
     assert(spy.entities.isEmpty)
   }
 
   test("PlayerCellEntity is present, but not visible"){
     val spy = DrawSystemSpy()
-    val system = DrawSystem(spy, 1)
+    val system = DrawSystem(spy)
     val pce = PlayerCellEntity(acceleration,collidable,dimension,position,speed,notVisible,typeEntity,spawner)
     EntityManager.add(pce)
     system.update()
@@ -77,7 +77,7 @@ class TestDrawSystem extends FunSuite {
 
   test("PlayerCellEntity is present and visible"){
     val spy = DrawSystemSpy()
-    val system = DrawSystem(spy, 1)
+    val system = DrawSystem(spy)
     val pce = PlayerCellEntity(acceleration,collidable,dimension,position,speed,visible,typeEntity,spawner)
     EntityManager.add(pce)
     system.update()
@@ -86,7 +86,7 @@ class TestDrawSystem extends FunSuite {
 
   test("PlayerCellEntity correctly wrapped"){
     val spy = DrawSystemSpy()
-    val system = DrawSystem(spy, 1)
+    val system = DrawSystem(spy)
     val pce = PlayerCellEntity(acceleration,collidable,dimension,position,speed,visible,typeEntity,spawner)
     EntityManager.add(pce)
     system.update()
@@ -98,7 +98,7 @@ class TestDrawSystem extends FunSuite {
 
   test("filter visible CellEntity"){
     val spy = DrawSystemSpy()
-    val system = DrawSystem(spy, 1)
+    val system = DrawSystem(spy)
     val visibleCE = CellEntity(acceleration,collidable,dimension,position,speed,visible,typeEntity)
     val notVisibleCE = CellEntity(acceleration,collidable,dimension1,position1,speed,notVisible,typeEntity)
     EntityManager.add(visibleCE)
@@ -109,7 +109,7 @@ class TestDrawSystem extends FunSuite {
 
   test("CellEntity enemies correctly wrapped"){
     val spy = DrawSystemSpy()
-    val system = DrawSystem(spy, 1)
+    val system = DrawSystem(spy)
     val visibleCE = CellEntity(acceleration,collidable,dimension,position,speed,visible,typeEntity)
     val visibleCE1 = CellEntity(acceleration,collidable,dimension1,position1,speed,visible,typeEntity)
     EntityManager.add(visibleCE)
