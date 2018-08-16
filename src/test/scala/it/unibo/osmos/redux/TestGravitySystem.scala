@@ -10,7 +10,7 @@ import org.scalactic.Tolerance._
 class TestGravitySystem extends FunSuite with BeforeAndAfter{
 
   val TOLERANCE = 0.03
-  val acceleration = AccelerationComponent(1, 1)
+  val acceleration = AccelerationComponent(0, 0)
   val collidable = CollidableComponent(true)
   val speed = SpeedComponent(4, 0)
   val dimension = DimensionComponent(3)
@@ -21,6 +21,8 @@ class TestGravitySystem extends FunSuite with BeforeAndAfter{
 
   val dimension1 = DimensionComponent(5)
   val position1 = PositionComponent(Point(3, 4))
+
+  after(EntityManager.clear())
 
   test("check mass calculation") {
     val gravityCellEntity = GravityCellEntity(acceleration,collidable,dimension,position,speed,visible,typeEntity,specificWeight)
@@ -37,5 +39,14 @@ class TestGravitySystem extends FunSuite with BeforeAndAfter{
     assert(cellEntity.getAccelerationComponent.accelerationX === originalAcceleration.accelerationX)
   }
 
-
+  test("GravityCellEntity should change acceleration of CellEntity") {
+    val cellEntity = CellEntity(acceleration,collidable,dimension1,position1,speed,visible,typeEntity)
+    val gravity = GravityCellEntity(acceleration,collidable,dimension,position,speed,visible,typeEntity,specificWeight)
+    val system = GravitySystem(0)
+    EntityManager.add(cellEntity)
+    EntityManager.add(gravity)
+    system.update()
+    assert(cellEntity.getAccelerationComponent.accelerationX === -1.017 +- TOLERANCE)
+    assert(cellEntity.getAccelerationComponent.accelerationY === -1.357 +- TOLERANCE)
+  }
 }
