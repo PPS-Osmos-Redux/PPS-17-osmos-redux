@@ -39,7 +39,7 @@ class TestGravitySystem extends FunSuite with BeforeAndAfter{
 
   test("Acceleration of CellEntity should not change without GravityCellEntity") {
     val cellEntity = CellEntity(acceleration,collidable,dimension,position,speed,visible,baseTypeEntity)
-    val gravitySystem = GravitySystem(0)
+    val gravitySystem = GravitySystem()
     EntityManager.add(cellEntity)
     val originalAcceleration = AccelerationComponent(cellEntity.getAccelerationComponent.accelerationX, cellEntity.getAccelerationComponent.accelerationY)
     gravitySystem.update()
@@ -49,7 +49,7 @@ class TestGravitySystem extends FunSuite with BeforeAndAfter{
   test("Attractive GravityCellEntity should change acceleration of CellEntity to attract") {
     val cellEntity = CellEntity(acceleration,collidable,dimension1,position1,speed,visible,baseTypeEntity)
     val gravity = GravityCellEntity(acceleration,collidable,dimension,position,speed,visible,attractiveTypeEntity,specificWeight)
-    val system = GravitySystem(0)
+    val system = GravitySystem()
     EntityManager.add(cellEntity)
     EntityManager.add(gravity)
     system.update()
@@ -60,7 +60,7 @@ class TestGravitySystem extends FunSuite with BeforeAndAfter{
   test("Repulse GravityCellEntity should change acceleration of CellEntity to repulse") {
     val cellEntity = CellEntity(acceleration,collidable,dimension1,position1,speed,visible,baseTypeEntity)
     val gravity = GravityCellEntity(acceleration,collidable,repulseDimension,repulsePosition,speed,visible,repulseTypeEntity,repulseSpecificWeight)
-    val system = GravitySystem(0)
+    val system = GravitySystem()
     EntityManager.add(cellEntity)
     EntityManager.add(gravity)
     system.update()
@@ -72,7 +72,7 @@ class TestGravitySystem extends FunSuite with BeforeAndAfter{
     val cellEntity = CellEntity(acceleration,collidable,dimension1,position1,speed,visible,baseTypeEntity)
     val gravityAttractive = GravityCellEntity(AccelerationComponent(0,0),collidable,dimension,position,speed,visible,attractiveTypeEntity,specificWeight)
     val gravityRepulse = GravityCellEntity(AccelerationComponent(1,1),collidable,repulseDimension,repulsePosition,speed,visible,repulseTypeEntity,repulseSpecificWeight)
-    val system = GravitySystem(0)
+    val system = GravitySystem()
     EntityManager.add(cellEntity)
     EntityManager.add(gravityAttractive)
     EntityManager.add(gravityRepulse)

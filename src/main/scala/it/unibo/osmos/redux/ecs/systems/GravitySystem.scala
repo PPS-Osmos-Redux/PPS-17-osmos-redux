@@ -7,30 +7,14 @@ import it.unibo.osmos.redux.utils.{MathUtils, Point}
 
 import scala.collection.mutable.ListBuffer
 
-case class GravitySystem(override val priority: Int) extends AbstractSystem[MovableProperty](priority) {
-
-  //TODO: da qui in giù dovrebbe essere estratto in un sistema astratto con due tipi di entità
-  private val gravityEntities: ListBuffer[GravityProperty] = ListBuffer()
-
-  EntityManager.subscribe(this, classOf[GravityProperty])
-
-  override def notify(event: EMEvents.EntityManagerEvent): Unit = {
-    event.entity match {
-      case _:GravityProperty =>
-        event match {
-          case event: EntityCreated if !gravityEntities.contains(event.entity) => gravityEntities += event.entity.asInstanceOf[GravityProperty]
-          case event: EntityDeleted if gravityEntities.contains(event.entity)=> gravityEntities -= event.entity.asInstanceOf[GravityProperty]
-          case _ => super.notify(event)
-        }
-      case _ => super.notify(event)
-    }
-  }
-  //TODO: fine parte da estrarre
+case class GravitySystem() extends AbstractSystemWithTwoTypeOfEntity[MovableProperty, GravityProperty]() {
 
   override def getGroupProperty: Class[_ <: Property] = classOf[MovableProperty]
 
+  override protected def getGroupPropertySecondType: Class[_ <: Property] = classOf[GravityProperty]
+
   override def update(): Unit = for (
-    gravityEntity <- gravityEntities; //for each gravity entity
+    gravityEntity <- entitiesSecondType; //for each gravity entity
     entity <- entities; //for each movable entity
     if !entity.equals(gravityEntity); //with entity not equal gravityEntity
     if !entity.getPositionComponent.point.equals(gravityEntity.getPositionComponent.point) //with center of entity not equal of center of gravityEntity(theory impossible)
