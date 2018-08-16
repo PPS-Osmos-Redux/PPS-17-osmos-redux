@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.{CellBuilder, EntityManager, PlayerCellEntity, Position}
+import it.unibo.osmos.redux.ecs.entities._
 import it.unibo.osmos.redux.ecs.systems.SpawnSystem
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.FunSuite
@@ -9,6 +9,8 @@ import org.scalatest.FunSuite
 class TestSpawnSystem extends FunSuite {
 
   test("SpawnSystem should not spawn entities if the spawner is disabled") {
+    EntityManager.clear()
+
     val system = SpawnSystem()
     val pce = PlayerCellEntity(CellBuilder(), SpawnerComponent(true))
 
@@ -20,6 +22,8 @@ class TestSpawnSystem extends FunSuite {
   }
 
   test("SpawnSystem should not spawn entities if the are now spawn actions") {
+    EntityManager.clear()
+
     val system = SpawnSystem()
     val pce = PlayerCellEntity(CellBuilder(), SpawnerComponent(true))
 
@@ -31,9 +35,10 @@ class TestSpawnSystem extends FunSuite {
   }
 
   test("SpawnSystem should spawn entities with the correct components") {
-    val system = SpawnSystem()
-    val pce = PlayerCellEntity(CellBuilder(), SpawnerComponent(false))
+    EntityManager.clear()
 
+    val system = SpawnSystem()
+    val pce = PlayerCellEntity(CellBuilder(), SpawnerComponent(true))
 
     val pos = PositionComponent(Point(100,0))
     val speed = SpeedComponent(34, 12)
@@ -43,9 +48,13 @@ class TestSpawnSystem extends FunSuite {
     EntityManager.add(pce)
     system.update()
 
-    val entities = EntityManager.filterEntities(classOf[Position])
+    val entities = EntityManager.filterEntities(classOf[CellEntity])
+    val spawnedEntity = entities.filterNot(e => e.isInstanceOf[PlayerCellEntity]).map(_.asInstanceOf[CellEntity]).headOption
 
-    assert(EntityManager.filterEntities(classOf[Position]).size == 2)
+    assert(entities.size == 2 && spawnedEntity.isDefined &&
+      spawnedEntity.get.getPositionComponent == pos &&
+      spawnedEntity.get.getSpeedComponent == speed &&
+      spawnedEntity.get.getDimensionComponent == dim)
   }
 
 }
