@@ -1,4 +1,4 @@
-package it.unibo.osmos.redux.mvc.view.menus
+package it.unibo.osmos.redux.mvc.view.components
 
 import scalafx.scene.control.{Menu, MenuBar, MenuItem}
 
