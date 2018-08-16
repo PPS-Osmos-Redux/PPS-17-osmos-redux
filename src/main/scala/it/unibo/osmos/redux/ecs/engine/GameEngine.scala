@@ -85,8 +85,8 @@ object GameEngine {
       //create systems, add to list and sort by priority
       val systems = List(
         InputSystem(0),
-        CollisionSystem(1),
-        MovementSystem(2),
+        MovementSystem(1),
+        CollisionSystem(2),
         DrawSystem(levelContext, 3)
       )/*.sortBy(_.priority)*/
 
