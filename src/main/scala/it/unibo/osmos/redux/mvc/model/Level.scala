@@ -2,6 +2,14 @@ package it.unibo.osmos.redux.mvc.model
 import it.unibo.osmos.redux.ecs.entities.CellEntity
 
 /**
+  * List of cell types
+  */
+object CellType {
+  val playerCell = "playerCell"
+  val basicCell = "basicCell"
+}
+
+/**
   * Map edges collision rules
   */
 object CollisionRules extends Enumeration {
@@ -46,10 +54,9 @@ case class LevelMap(mapShape:MapShape, collisionRule:CollisionRules.Value)
   * @param levelMap level map
   * @param entities list of level entities
   * @param victoryRule victory rule
-  * @param isSimulation true if it's a simulation
+  * @param isSimulation if it's a simulation
   */
-case class Level(levelId:Int,
-                 levelMap:LevelMap,
-                 entities:List[CellEntity],
-                 victoryRule:VictoryRules.Value,
-                 isSimulation:Boolean)
+  case class Level(levelId:Int,
+                   levelMap:LevelMap,
+                   entities:List[CellEntity],
+                   victoryRule:VictoryRules.Value, var isSimulation:Boolean = false)

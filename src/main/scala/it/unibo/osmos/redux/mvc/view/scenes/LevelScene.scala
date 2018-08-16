@@ -1,20 +1,27 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities._
+import it.unibo.osmos.redux.mvc.view.components.{LevelStateBox, LevelStateBoxListener}
 import it.unibo.osmos.redux.mvc.view.drawables._
 import it.unibo.osmos.redux.mvc.view.levels.{LevelContext, LevelContextListener}
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import it.unibo.osmos.redux.utils.MathUtils._
+import scalafx.animation.FadeTransition
 import scalafx.application.Platform
+import scalafx.geometry.Pos
 import scalafx.scene.canvas.Canvas
+import scalafx.scene.layout.VBox
 import scalafx.scene.paint.Color
+import scalafx.scene.shape.Circle
+import scalafx.scene.text.{Font, Text}
 import scalafx.stage.Stage
+import scalafx.util.Duration
 
 /**
   * This scene holds and manages a single level
   */
 class LevelScene(override val parentStage: Stage, val listener: LevelSceneListener) extends BaseScene(parentStage)
-  with LevelContextListener {
+  with LevelContextListener with LevelStateBoxListener {
 
   /**
     * The canvas which will draw the elements on the screen
@@ -23,6 +30,57 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     width <== parentStage.width
     height <== parentStage.height
     cache = true
+    opacity = 0.0
+  }
+
+  /**
+    * The screen showed when the game is paused
+    */
+  val pauseScreen : VBox = new VBox(){
+    prefWidth <== parentStage.width
+    prefHeight <== parentStage.height
+    alignment = Pos.Center
+    visible = false
+
+    children = Seq(new Text("Game paused") {
+      font = Font.font("Verdana", 20)
+      fill = Color.White
+    })
+  }
+
+  /**
+    * The splash screen showed when the game is paused
+    */
+  val splashScreen : VBox = new VBox(){
+    prefWidth <== parentStage.width
+    prefHeight <== parentStage.height
+    alignment = Pos.Center
+    fill = Color.Black
+
+    children = Seq(new Text("Become the opposite of small") {
+      font = Font.font("Verdana", 40)
+      fill = Color.White
+    })
+
+    /* Splash screen animation, starting with a FadeIn */
+    new FadeTransition(Duration.apply(2000), this) {
+      fromValue = 0.0
+      toValue = 1.0
+      autoReverse = true
+      /* FadeOut */
+      onFinished = _ => new FadeTransition(Duration.apply(1000), splashScreen) {
+        fromValue = 1.0
+        toValue = 0.0
+        autoReverse = true
+        /* Showing the canvas */
+        onFinished = _ => new FadeTransition(Duration.apply(3000), canvas) {
+          fromValue = 0.0
+          toValue = 1.0
+          /* Removing the splash screen to reduce the load */
+          onFinished = _ => content.remove(splashScreen)
+        }.play()
+      }.play()
+    }.play()
   }
 
   /**
@@ -32,9 +90,9 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   val backgroundDrawable: ImageDrawable = new ImageDrawable(ImageLoader.getImage("/textures/background.png"), canvas.graphicsContext2D)
 
   /**
-    * The content of the scene being set to the canvas
+    * The content of the whole scene
     */
-  content = Seq(canvas)
+  content = Seq(canvas, pauseScreen, new LevelStateBox(this,4.0), splashScreen)
 
   /**
     * The level context, created with the LevelScene. It still needs to be properly setup
@@ -45,10 +103,34 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
 
   def levelContext_= (levelContext: LevelContext): Unit = _levelContext = Option(levelContext)
 
+  override def onPause(): Unit = {
+    pauseScreen.visible = true
+    canvas.opacity = 0.5
+  }
+
+  override def onResume(): Unit = {
+    pauseScreen.visible = false
+    canvas.opacity = 1
+  }
+
+  override def onExit(): Unit = {
+    //TODO: add proper behaviour
+  }
+
   /**
     * OnMouseClicked handler
     */
   onMouseClicked = mouseEvent => {
+    /* Creating a circle representing the player click */
+    val clickCircle = Circle(mouseEvent.getX, mouseEvent.getY, 2.0, defaultPlayerColor)
+    content.add(clickCircle)
+    val fadeOutTransition = new FadeTransition(Duration.apply(2000), clickCircle) {
+      fromValue = 1.0
+      toValue = 0.0
+      onFinished = _ => content.remove(clickCircle)
+    }
+    fadeOutTransition.play()
+
     levelContext match {
       case Some(lc) => lc pushMouseEvent mouseEvent
       case _ =>
@@ -73,7 +155,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
       /* Draw the background */
       canvas.graphicsContext2D.drawImage(backgroundDrawable.image, 0, 0, width.value, height.value)
       /* Draw the entities */
-      entitiesWrappers foreach(e => cellDrawable.draw(e._1.center,e._1.radius, e._2))
+      entitiesWrappers foreach(e => cellDrawable.draw(e._1, e._2))
     })
   }
 
@@ -115,10 +197,9 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
       case Nil => Seq()
       case _ =>
         /* Calculate the min and max radius among the entities, considering the player */
-        val allEntities = entities :+ playerEntity
-        val endRadius = getEntitiesExtremeRadiusValues(allEntities)
+        val endRadius = getEntitiesExtremeRadiusValues(entities)
 
-        allEntities map {
+        entities map {
           /* The entity has the same radius of the player so it will have the same color */
           case e if e.radius == playerEntity.radius => (e, playerColor)
           case e if e.radius < playerEntity.radius =>
@@ -144,6 +225,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     /* Retrieving the min and the max radius values */
     sorted match {
       case head +: _ :+ tail => (head.radius, tail.radius)
+      case head +: _ => (head.radius, head.radius)
       case _ => throw new IllegalArgumentException("Could not determine the min and max radius from an empty sequence of entities")
     }
   }
