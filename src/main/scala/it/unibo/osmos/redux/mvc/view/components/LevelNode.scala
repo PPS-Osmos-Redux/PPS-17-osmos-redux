@@ -1,4 +1,4 @@
-package it.unibo.osmos.redux.mvc.view.menus
+package it.unibo.osmos.redux.mvc.view.components
 
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import scalafx.Includes._
@@ -28,8 +28,9 @@ class LevelNode(val listener: LevelNodeListener, val level: Int, val available: 
   scaleY <== when(hover) choose 1.2 otherwise 1
 
   /* The upper text */
-  val textField: Text = new Text("yeeeee") {
+  val textField: Text = new Text() {
     margin = Insets(0, 0, 20, 0)
+    style = "-fx-font-size: 12pt"
     visible = false
   }
 
