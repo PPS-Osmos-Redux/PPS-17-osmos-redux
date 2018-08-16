@@ -5,10 +5,13 @@ import it.unibo.osmos.redux.mvc.view.drawables._
 import it.unibo.osmos.redux.mvc.view.levels.{LevelContext, LevelContextListener}
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import it.unibo.osmos.redux.utils.MathUtils._
+import scalafx.animation.FadeTransition
 import scalafx.application.Platform
 import scalafx.scene.canvas.Canvas
 import scalafx.scene.paint.Color
+import scalafx.scene.shape.Circle
 import scalafx.stage.Stage
+import scalafx.util.Duration
 
 /**
   * This scene holds and manages a single level
@@ -49,6 +52,16 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     * OnMouseClicked handler
     */
   onMouseClicked = mouseEvent => {
+    /* Creating a circle representing the player click */
+    val clickCircle = Circle(mouseEvent.getX, mouseEvent.getY, 2.0, defaultPlayerColor)
+    content.add(clickCircle)
+    val fadeOutTransition = new FadeTransition(Duration.apply(2000), clickCircle) {
+      fromValue = 1.0
+      toValue = 0.0
+      onFinished = _ => content.remove(clickCircle)
+    }
+    fadeOutTransition.play()
+
     levelContext match {
       case Some(lc) => lc pushMouseEvent mouseEvent
       case _ =>
