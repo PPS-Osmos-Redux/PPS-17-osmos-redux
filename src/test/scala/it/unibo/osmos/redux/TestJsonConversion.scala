@@ -16,7 +16,7 @@ class TestJsonConversion extends FunSuite{
   val s = SpeedComponent(4, 0)
   val v = VisibleComponent(true)
   val et = TypeComponent(EntityType.Material)
-  val sp = SpawnerComponent(false)
+  val sp = SpawnerComponent(true)
   //Entities
   val ce = CellEntity(a, c, d, p, s, v, et)
   val pce = PlayerCellEntity(a, c, d, p, s, v, et, sp)
@@ -28,10 +28,9 @@ class TestJsonConversion extends FunSuite{
   val levelMap:LevelMap = LevelMap(rectangle, CollisionRules.bouncing)
   //Level
   val level:Level = Level(levelId = 1,
-                          levelMap,
-                          listCell,
-                          VictoryRules.becomeTheBiggest,
-                          isSimulation = false)
+    levelMap,
+    listCell,
+    VictoryRules.becomeTheBiggest)
 
   import spray.json._
   import DefaultJsonProtocol._
@@ -60,7 +59,10 @@ class TestJsonConversion extends FunSuite{
     val jsPlayerCellEntity = pce.toJson
     assert(jsPlayerCellEntity.convertTo[PlayerCellEntity].equals(pce))
     val jsListCellEntities = listCell.toJson
-    assert( jsListCellEntities.convertTo[List[CellEntity]].size == listCell.size)
+    val convertedCellList = jsListCellEntities.convertTo[List[CellEntity]]
+    assert(convertedCellList.size == listCell.size)
+    assert(convertedCellList(1).getClass.equals(pce.getClass))
+    assert(!convertedCellList.head.getClass.equals(pce.getClass))
   }
 
   test("Map conversion") {
@@ -79,7 +81,6 @@ class TestJsonConversion extends FunSuite{
     val convertedLevel = jsLevel.convertTo[Level]
     assert(convertedLevel.levelId.equals(level.levelId))
     assert(convertedLevel.levelMap.equals(level.levelMap))
-    assert(convertedLevel.isSimulation.equals(level.isSimulation))
     assert(convertedLevel.victoryRule.equals(level.victoryRule))
     assert(convertedLevel.entities.size.equals(level.entities.size))
   }
