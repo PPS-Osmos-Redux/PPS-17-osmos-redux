@@ -25,7 +25,7 @@ case class DrawSystem(levelContext: LevelContext) extends AbstractSystem[Drawabl
     }
   }
 
-  override def getGroupProperty(): Class[_ <: Property] = classOf[DrawableProperty]
+  override def getGroupProperty: Class[_ <: Property] = classOf[DrawableProperty]
 
   override def update(): Unit = levelContext.drawEntities(getPlayerEntity, getEntities)
 
@@ -33,10 +33,11 @@ case class DrawSystem(levelContext: LevelContext) extends AbstractSystem[Drawabl
     player filter(p => p.getVisibleComponent.isVisible()) map(p => drawablePropertyToDrawableWrapper(p))
 
   private def getEntities: List[DrawableWrapper] =
-    entities filter(e => e.getVisibleComponent.isVisible()) map(e => drawablePropertyToDrawableWrapper(e)) toList
+    entities.filter(e => e.getVisibleComponent.isVisible()).map(e => drawablePropertyToDrawableWrapper(e)).toList
 
   private def drawablePropertyToDrawableWrapper(entity: DrawableProperty): DrawableWrapper =
     DrawableWrapper(entity.getPositionComponent.point,
                     entity.getDimensionComponent.radius,
+                    (entity.getSpeedComponent.speedX, entity.getSpeedComponent.speedY),
                     entity.getTypeComponent.typeEntity)
 }
