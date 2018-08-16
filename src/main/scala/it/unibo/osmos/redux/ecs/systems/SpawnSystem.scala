@@ -2,7 +2,7 @@ package it.unibo.osmos.redux.ecs.systems
 
 import it.unibo.osmos.redux.ecs.entities.{Property, Spawner}
 
-case class SpawnSystem(override val priority: Int) extends AbstractSystem[Spawner](priority) {
+case class SpawnSystem() extends AbstractSystem[Spawner] {
 
   override def getGroupProperty: Class[_ <: Property] = classOf[Spawner]
 

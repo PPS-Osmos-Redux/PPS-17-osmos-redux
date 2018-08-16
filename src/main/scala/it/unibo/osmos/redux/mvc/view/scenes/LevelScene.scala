@@ -63,17 +63,17 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     })
 
     /* Splash screen animation, starting with a FadeIn */
-    new FadeTransition(Duration.apply(3000), this) {
+    new FadeTransition(Duration.apply(2000), this) {
       fromValue = 0.0
       toValue = 1.0
       autoReverse = true
       /* FadeOut */
-      onFinished = _ => new FadeTransition(Duration.apply(1500), splashScreen) {
+      onFinished = _ => new FadeTransition(Duration.apply(1000), splashScreen) {
         fromValue = 1.0
         toValue = 0.0
         autoReverse = true
         /* Showing the canvas */
-        onFinished = _ => new FadeTransition(Duration.apply(5000), canvas) {
+        onFinished = _ => new FadeTransition(Duration.apply(3000), canvas) {
           fromValue = 0.0
           toValue = 1.0
           /* Removing the splash screen to reduce the load */
@@ -226,6 +226,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     /* Retrieving the min and the max radius values */
     sorted match {
       case head +: _ :+ tail => (head.radius, tail.radius)
+      case head +: _ => (head.radius, head.radius)
       case _ => throw new IllegalArgumentException("Could not determine the min and max radius from an empty sequence of entities")
     }
   }
