@@ -98,45 +98,27 @@ object JsonProtocols {
     }
   }
 
-  implicit object CellEntityFormatter extends RootJsonFormat[CellEntity] {
-    def write(cellEntity: CellEntity) = JsObject(
-      "acceleration" -> cellEntity.getAccelerationComponent.toJson,
-      "collidable" -> cellEntity.getCollidableComponent.toJson,
-      "dimension" -> cellEntity.getDimensionComponent.toJson,
-      "position" -> cellEntity.getPositionComponent.toJson,
-      "speed" -> cellEntity.getSpeedComponent.toJson,
-      "visible" -> cellEntity.getVisibleComponent.toJson,
-      "typeEntity" -> cellEntity.getTypeComponent.toJson)
-    def read(value: JsValue): CellEntity = {
-      value.asJsObject.getFields("acceleration",
-        "collidable",
-        "dimension",
-        "position",
-        "speed",
-        "visible",
-        "typeEntity") match {
-        case Seq(acceleration, collidable, dimension, position, speed, visible, typeEntity) =>
-          CellEntity.apply(acceleration.convertTo[AccelerationComponent],
-            collidable.convertTo[CollidableComponent],
-            dimension.convertTo[DimensionComponent],
-            position.convertTo[PositionComponent],
-            speed.convertTo[SpeedComponent],
-            visible.convertTo[VisibleComponent],
-            typeEntity.convertTo[TypeComponent])
-        case _ => throw DeserializationException("Cell entity expected")
+  implicit object SpawnerFormatter extends RootJsonFormat[SpawnerComponent] {
+    def write(spawner: SpawnerComponent) = JsObject("canSpawn" -> JsBoolean(spawner.canSpawn))
+    def read(value: JsValue): SpawnerComponent = {
+      value.asJsObject.getFields("canSpawn") match {
+        case Seq(JsBoolean(canSpawn)) => SpawnerComponent.apply(canSpawn)
+        case _ => throw DeserializationException("Spawner expected")
       }
     }
   }
 
   implicit object PlayerCellEntityFormatter extends RootJsonFormat[PlayerCellEntity] {
     def write(playerCell: PlayerCellEntity) = JsObject(
+      "cellType" -> JsString(CellType.playerCell),
       "acceleration" -> playerCell.getAccelerationComponent.toJson,
       "collidable" -> playerCell.getCollidableComponent.toJson,
       "dimension" -> playerCell.getDimensionComponent.toJson,
       "position" -> playerCell.getPositionComponent.toJson,
       "speed" -> playerCell.getSpeedComponent.toJson,
       "visible" -> playerCell.getVisibleComponent.toJson,
-      "typeEntity" -> playerCell.getTypeComponent.toJson)
+      "typeEntity" -> playerCell.getTypeComponent.toJson,
+      "spawner" -> playerCell.getSpawnerComponent.toJson)
     def read(value: JsValue): PlayerCellEntity = {
       value.asJsObject.getFields("acceleration",
         "collidable",
@@ -144,8 +126,9 @@ object JsonProtocols {
         "position",
         "speed",
         "visible",
-        "typeEntity") match {
-        case Seq(acceleration, collidable, dimension, position, speed, visible, typeEntity) =>
+        "typeEntity",
+        "spawner") match {
+        case Seq(acceleration, collidable, dimension, position, speed, visible, typeEntity, spawner) =>
           PlayerCellEntity.apply(acceleration.convertTo[AccelerationComponent],
             collidable.convertTo[CollidableComponent],
             dimension.convertTo[DimensionComponent],
@@ -153,8 +136,49 @@ object JsonProtocols {
             speed.convertTo[SpeedComponent],
             visible.convertTo[VisibleComponent],
             typeEntity.convertTo[TypeComponent],
-            SpawnerComponent(false))
+            spawner.convertTo[SpawnerComponent])
         case _ => throw DeserializationException("Player cell entity expected")
+      }
+    }
+  }
+
+  implicit object CellEntityFormatter extends RootJsonFormat[CellEntity] {
+    def write(cellEntity: CellEntity): JsValue = cellEntity match {
+      case pce : PlayerCellEntity => pce.toJson
+      case _ : CellEntity => JsObject( "cellType" -> JsString(CellType.basicCell),
+        "acceleration" -> cellEntity.getAccelerationComponent.toJson,
+        "collidable" -> cellEntity.getCollidableComponent.toJson,
+        "dimension" -> cellEntity.getDimensionComponent.toJson,
+        "position" -> cellEntity.getPositionComponent.toJson,
+        "speed" -> cellEntity.getSpeedComponent.toJson,
+        "visible" -> cellEntity.getVisibleComponent.toJson,
+        "typeEntity" -> cellEntity.getTypeComponent.toJson)
+      case _ => println("Cell ", cellEntity, " currently is not managed!"); JsObject()
+    }
+
+
+    def read(value: JsValue): CellEntity = {
+      value.asJsObject.getFields("cellType",
+        "acceleration",
+        "collidable",
+        "dimension",
+        "position",
+        "speed",
+        "visible",
+        "typeEntity",
+        "spawner") match {
+        case Seq(JsString(CellType.basicCell),acceleration,
+        collidable, dimension, position, speed, visible, typeEntity) =>
+          CellEntity.apply(acceleration.convertTo[AccelerationComponent],
+            collidable.convertTo[CollidableComponent],
+            dimension.convertTo[DimensionComponent],
+            position.convertTo[PositionComponent],
+            speed.convertTo[SpeedComponent],
+            visible.convertTo[VisibleComponent],
+            typeEntity.convertTo[TypeComponent])
+        case Seq(JsString(CellType.playerCell),_, _, _, _, _, _,_,_) =>
+          value.convertTo[PlayerCellEntity]
+        case _ => throw DeserializationException("Cell entity expected")
       }
     }
   }
@@ -202,5 +226,5 @@ object JsonProtocols {
     }
   }
 
-  implicit val levelFormatter:RootJsonFormat[Level] = jsonFormat5(Level)
+  implicit val levelFormatter:RootJsonFormat[Level] = jsonFormat4(Level)
 }

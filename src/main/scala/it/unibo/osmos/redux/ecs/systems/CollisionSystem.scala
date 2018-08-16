@@ -46,7 +46,7 @@ case class CollisionSystem(override val priority: Int) extends AbstractSystem[Co
     val (bigEntity, smallEntity) = if (e1.getDimensionComponent.radius > e2.getDimensionComponent.radius) (e1, e2) else (e2, e1)
 
     //exchange mass between the two entities
-    exchangeMass(_, _, overlap)
+    exchangeMass(bigEntity, smallEntity, overlap)
 
     //apply deceleration to both entities, proportionally to their size
     decelerateEntity(smallEntity, decelerationAmount)

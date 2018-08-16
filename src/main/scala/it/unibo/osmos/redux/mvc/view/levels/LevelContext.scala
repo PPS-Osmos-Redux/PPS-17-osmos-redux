@@ -42,13 +42,13 @@ trait LevelContext {
 
 object LevelContext {
 
-  def apply(listener: LevelContextListener): LevelContext = new LevelContextImpl(listener)
+  def apply(listener: LevelContextListener, simulation: Boolean): LevelContext = new LevelContextImpl(listener, simulation)
 
   /**
     * Implementation of the LevelContext trait
     * @param listener the LevelContextListener instance
     */
-  private class LevelContextImpl(private val listener: LevelContextListener) extends LevelContext {
+  private class LevelContextImpl(private val listener: LevelContextListener, val simulation: Boolean) extends LevelContext {
 
     /**
       * A reference to the mouse event listener

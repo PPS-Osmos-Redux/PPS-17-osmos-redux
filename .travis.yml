@@ -19,6 +19,7 @@ branches:
   - master
   - develop
   - release
+  - /feature-*/
 
 script:
 - './gradlew clean build'
