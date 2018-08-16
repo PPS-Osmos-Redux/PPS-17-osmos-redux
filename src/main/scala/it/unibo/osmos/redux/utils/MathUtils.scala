@@ -15,7 +15,7 @@ object MathUtils {
   def normalize(number: Double, min: Double, max: Double): Double = (number - min)/(max - min)
 
   /**
-    * Returns the normalized point
+    * Returns the normalized point.
     * @param point The point to normalize
     * @return The normalized point
     */
@@ -23,4 +23,15 @@ object MathUtils {
     val mod = math.sqrt(math.pow(point.x, 2) + math.pow(point.y, 2))
     Point(point.x / mod, point.y / mod)
   }
+
+  /**
+    * Returns the distance between two points.
+    * @param p1 The first point
+    * @param p2 The second point
+    * @return The distance
+    */
+  def distanceBetweenPoints(p1: Point, p2: Point): Double = {
+    math.sqrt(math.pow(p2.x - p1.x, 2) + math.pow(p2.y - p1.y, 2))
+  }
+
 }

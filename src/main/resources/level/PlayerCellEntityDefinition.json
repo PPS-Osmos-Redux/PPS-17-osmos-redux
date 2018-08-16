@@ -14,7 +14,7 @@
   },
   "position": {
     "point": {
-      "x": 0.0,
+      "x": 90.0,
       "y": 200.0
     }
   },
@@ -22,7 +22,7 @@
     "radius": 20
   },
   "speed": {
-    "speedX": 3,
+    "speedX": 0,
     "speedY": 0
   }
 }]

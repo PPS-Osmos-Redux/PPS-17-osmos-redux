@@ -8,7 +8,7 @@ import it.unibo.osmos.redux.mvc.view.levels.LevelContext
 import it.unibo.osmos.redux.ecs.systems.DrawSystem
 import it.unibo.osmos.redux.utils.Point
 import javafx.scene.input.MouseEvent
-import org.scalatest.FunSuite
+import org.scalatest.{BeforeAndAfter, FunSuite}
 
 /**
   * Spy class to capture the indirect output of DrawSystem
@@ -38,11 +38,12 @@ case class DrawSystemSpy() extends LevelContext {
 /**
   * Test for DrawSystem
   */
-class TestDrawSystem extends FunSuite {
+class TestDrawSystem extends FunSuite with BeforeAndAfter{
 
   val acceleration = AccelerationComponent(1, 1)
   val collidable = CollidableComponent(true)
   val speed = SpeedComponent(4, 0)
+  val speed1 = SpeedComponent(3, 2)
   val dimension = DimensionComponent(5)
   val position = PositionComponent(Point(0, 0))
   val visible = VisibleComponent(true)
@@ -50,6 +51,9 @@ class TestDrawSystem extends FunSuite {
   val typeEntity = TypeComponent(EntityType.Material)
   val dimension1 = DimensionComponent(3)
   val position1 = PositionComponent(Point(3, 4))
+  val spawner = SpawnerComponent(false)
+
+  after(EntityManager.clear())
 
   test("PlayerCellEntity not present"){
     val spy = DrawSystemSpy()
@@ -68,7 +72,7 @@ class TestDrawSystem extends FunSuite {
   test("PlayerCellEntity is present, but not visible"){
     val spy = DrawSystemSpy()
     val system = DrawSystem(spy, 1)
-    val pce = PlayerCellEntity(acceleration,collidable,dimension,position,speed,notVisible,typeEntity)
+    val pce = PlayerCellEntity(acceleration,collidable,dimension,position,speed,notVisible,typeEntity,spawner)
     EntityManager.add(pce)
     system.update()
     assert(spy.player.isEmpty)
@@ -77,7 +81,7 @@ class TestDrawSystem extends FunSuite {
   test("PlayerCellEntity is present and visible"){
     val spy = DrawSystemSpy()
     val system = DrawSystem(spy, 1)
-    val pce = PlayerCellEntity(acceleration,collidable,dimension,position,speed,visible,typeEntity)
+    val pce = PlayerCellEntity(acceleration,collidable,dimension,position,speed,visible,typeEntity,spawner)
     EntityManager.add(pce)
     system.update()
     assert(spy.player.isDefined)
@@ -86,13 +90,15 @@ class TestDrawSystem extends FunSuite {
   test("PlayerCellEntity correctly wrapped"){
     val spy = DrawSystemSpy()
     val system = DrawSystem(spy, 1)
-    val pce = PlayerCellEntity(acceleration,collidable,dimension,position,speed,visible,typeEntity)
+    val pce = PlayerCellEntity(acceleration,collidable,dimension,position,speed,visible,typeEntity,spawner)
     EntityManager.add(pce)
     system.update()
     val playerWrapped = spy.player.get
     assert(playerWrapped.center.equals(pce.getPositionComponent.point))
     assert(playerWrapped.radius.equals(pce.getDimensionComponent.radius))
     assert(playerWrapped.entityType.equals(pce.getTypeComponent.typeEntity))
+    assert(playerWrapped.speed._1 === speed.speedX)
+    assert(playerWrapped.speed._2 === speed.speedY)
   }
 
   test("filter visible CellEntity"){
@@ -110,7 +116,7 @@ class TestDrawSystem extends FunSuite {
     val spy = DrawSystemSpy()
     val system = DrawSystem(spy, 1)
     val visibleCE = CellEntity(acceleration,collidable,dimension,position,speed,visible,typeEntity)
-    val visibleCE1 = CellEntity(acceleration,collidable,dimension1,position1,speed,visible,typeEntity)
+    val visibleCE1 = CellEntity(acceleration,collidable,dimension1,position1,speed1,visible,typeEntity)
     EntityManager.add(visibleCE)
     EntityManager.add(visibleCE1)
     system.update()
@@ -121,6 +127,8 @@ class TestDrawSystem extends FunSuite {
   private def checkEnemies(enemiesWrapped: Seq[DrawableWrapper], enemy: DrawableProperty): Unit = {
     assert(enemiesWrapped.exists(p => p.center.equals(enemy.getPositionComponent.point) &&
       p.radius.equals(enemy.getDimensionComponent.radius) &&
-      p.entityType.equals(enemy.getTypeComponent.typeEntity)))
+      p.entityType.equals(enemy.getTypeComponent.typeEntity) &&
+      p.speed._1 === enemy.getSpeedComponent.speedX &&
+      p.speed._2 === enemy.getSpeedComponent.speedY))
   }
 }
