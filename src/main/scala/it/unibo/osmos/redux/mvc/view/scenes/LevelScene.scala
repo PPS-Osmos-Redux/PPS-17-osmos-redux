@@ -155,7 +155,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
       /* Draw the background */
       canvas.graphicsContext2D.drawImage(backgroundDrawable.image, 0, 0, width.value, height.value)
       /* Draw the entities */
-      entitiesWrappers foreach(e => cellDrawable.draw(e._1.center,e._1.radius, e._2))
+      entitiesWrappers foreach(e => cellDrawable.draw(e._1, e._2))
     })
   }
 

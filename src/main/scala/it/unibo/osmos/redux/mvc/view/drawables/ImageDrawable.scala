@@ -1,5 +1,4 @@
 package it.unibo.osmos.redux.mvc.view.drawables
-import it.unibo.osmos.redux.utils.Point
 import scalafx.scene.canvas.GraphicsContext
 import scalafx.scene.image.Image
 import scalafx.scene.paint.Color
@@ -25,14 +24,22 @@ class ImageDrawable(private var _image: Image, override val graphicsContext: Gra
 
   /**
     * Draws the circular image on the canvas
-    * @param point the center of the image
-    * @param radius the radius of the circle
+    * @param dw the drawable wrapper containing the drawable info
     * @param color the color of the circle
     */
-  override def draw(point: Point, radius: Double, color: Color): Unit = {
+  override def draw(dw: DrawableWrapper, color: Color): Unit = {
     graphicsContext.fill = color
-    graphicsContext.fillOval(point.x - radius, point.y - radius, radius * 2, radius * 2)
-    graphicsContext.strokeOval(point.x - radius, point.y - radius, radius * 2, radius * 2)
-    graphicsContext.drawImage(image, point.x - radius, point.y - radius, radius * 2, radius * 2)
+    /* Line */
+    graphicsContext.stroke = color
+    //graphicsContext.strokeArc(dw.center.x, dw.center.y,20, 20, -45, 240, ArcType.Open)
+    graphicsContext.lineWidth = 2
+    //TODO: find a better way
+    graphicsContext.strokeLine(dw.center.x, dw.center.y, dw.center.x + dw.speed._1 * dw.radius, dw.center.y + dw.speed._2 * dw.radius)
+
+    graphicsContext.stroke = Color.Black
+    graphicsContext.lineWidth = 1
+    graphicsContext.fillOval(dw.center.x - dw.radius, dw.center.y - dw.radius, dw.radius * 2, dw.radius * 2)
+    graphicsContext.strokeOval(dw.center.x - dw.radius, dw.center.y - dw.radius, dw.radius * 2, dw.radius * 2)
+    graphicsContext.drawImage(image, dw.center.x - dw.radius, dw.center.y - dw.radius, dw.radius * 2, dw.radius * 2)
   }
 }
