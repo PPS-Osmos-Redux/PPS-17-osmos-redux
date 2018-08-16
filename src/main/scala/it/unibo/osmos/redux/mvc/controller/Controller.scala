@@ -12,8 +12,11 @@ import scala.util.Try
   */
 trait Controller {
   def startLevel(levelContext: LevelContext,
-                 choosedLevel:Int,
+                 chosenLevel:Int,
                  isSimulation:Boolean)
+  def stopLevel()
+  def pauseLevel()
+  def resumeLevel()
   def getCampaignLevels:List[(Int,Boolean)] = CampaignLevels.levels.toList
 }
 
@@ -32,6 +35,12 @@ case class ControllerImpl() extends Controller {
     engine.get.init(levelContext,loadedLevel)
     engine.get.start()
   }
+
+  override def stopLevel(): Unit = if (engine.isDefined) engine.get.stop()
+
+  override def pauseLevel(): Unit = if (engine.isDefined) engine.get.pause()
+
+  override def resumeLevel(): Unit = if (engine.isDefined) engine.get.resume()
 }
 
 object FileManager {
