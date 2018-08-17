@@ -11,37 +11,6 @@
       "collidable": true
     },
     "typeEntity": {
-      "entity_type": "Attractive"
-    },
-    "position": {
-      "point": {
-        "x": 500.0,
-        "y": 300.0
-      }
-    },
-    "cellType": "gravityCell",
-    "dimension": {
-      "radius": 40.0
-    },
-    "specificWeight": {
-      "specificWeight": 0.03
-    },
-    "speed": {
-      "speedX": 0.0,
-      "speedY": 0.0
-    }
-  },{
-    "acceleration": {
-      "accelerationX": 0.0,
-      "accelerationY": 0.0
-    },
-    "visible": {
-      "visible": true
-    },
-    "collidable": {
-      "collidable": true
-    },
-    "typeEntity": {
       "entity_type": "Material"
     },
     "position": {
@@ -52,7 +21,7 @@
     },
     "cellType": "basicCell",
     "dimension": {
-      "radius": 5.0
+      "radius": 20.0
     },
     "speed": {
       "speedX": 0.1,
@@ -74,8 +43,8 @@
     },
     "position": {
       "point": {
-        "x": 100.0,
-        "y": 90.0
+        "x": 200.0,
+        "y": 30.0
       }
     },
     "cellType": "basicCell",
@@ -102,8 +71,8 @@
     },
     "position": {
       "point": {
-        "x": 10.0,
-        "y": 100.0
+        "x": 400.0,
+        "y": 50.0
       }
     },
     "cellType": "basicCell",
@@ -130,8 +99,8 @@
     },
     "position": {
       "point": {
-        "x": 8.0,
-        "y": 80.0
+        "x": 50.0,
+        "y": 50.0
       }
     },
     "cellType": "basicCell",
@@ -217,13 +186,13 @@
     },
     "position": {
       "point": {
-        "x": 300.0,
-        "y": 300.0
+        "x": 200.0,
+        "y": 200.0
       }
     },
     "cellType": "playerCell",
     "dimension": {
-      "radius": 40.0
+      "radius": 50.0
     },
     "speed": {
       "speedX": 0.0,
@@ -238,10 +207,10 @@
   "levelMap": {
     "mapShape": {
       "mapShape": "RECTANGLE",
-      "height": 300.1,
-      "base": 300.6,
-      "centerX": 400.0,
-      "centerY": 400.0
+      "height": 10.1,
+      "base": 5.6,
+      "centerX": 800.0,
+      "centerY": 800.0
     },
     "collisionRule": "Bouncing",
     "isSimulation":false
