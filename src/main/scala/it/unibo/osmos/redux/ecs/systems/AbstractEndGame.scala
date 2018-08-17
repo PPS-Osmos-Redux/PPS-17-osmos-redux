@@ -24,17 +24,14 @@ case class BecomeTheBiggestValuesImpl(player: DeathProperty, entities: ListBuffe
 
 abstract class AbstractEndGame[A <: Values] {
 
-  abstract def victoryCondition(values: A): Unit
+  protected def victoryCondition(values: A): Boolean
 }
 
 case class BecomeTheBiggestEndGame() extends AbstractEndGame[BecomeTheBiggestValues[DeathProperty]] {
 
-  override def victoryCondition(values: BecomeTheBiggestValues[DeathProperty]): Unit = {
+  override def victoryCondition(values: BecomeTheBiggestValues[DeathProperty]): Boolean = {
     val playerCellEntity = values.getPlayerCellEntity
     val playerRadius = playerCellEntity.getDimensionComponent.radius
-    val result = values.getEntityList filter (entity => !entity.eq(playerCellEntity)) forall (entity => entity.getDimensionComponent.radius < playerRadius)
-    if (result) {
-      // levelStatus = LevelStatus.Completed
-    }
+    values.getEntityList filter (entity => !entity.eq(playerCellEntity)) forall (entity => entity.getDimensionComponent.radius < playerRadius)
   }
 }
