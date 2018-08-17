@@ -79,13 +79,6 @@ object GameEngine {
   private case class GameEngineImpl(private val framerate: Int = 30) extends GameEngine {
 
     private var gameLoop: Option[GameLoop] = _
-    // TODO: mock initialization, should be changed
-    private val levelInfo: Level = Level(1,
-      LevelMap(Rectangle((85,50),170, 100), CollisionRules.instantDeath),
-      //LevelMap(Circle(10), CollisionRules.bouncing),
-      null,
-      VictoryRules.becomeTheBiggest,
-      false)
 
     override def init(level: Level, levelContext: LevelContext): Unit = {
 
@@ -98,7 +91,7 @@ object GameEngine {
       //create systems, add to list, the order in this collection is the final system order in the game loop
       val systems = ListBuffer[System]()
       if (!level.isSimulation) systems += InputSystem()
-      systems ++= List(GravitySystem(), MovementSystem(levelInfo), CollisionSystem(), SpawnSystem(), DrawSystem(levelContext), CellsEliminationSystem())
+      systems ++= List(GravitySystem(), MovementSystem(level), CollisionSystem(), SpawnSystem(), DrawSystem(levelContext), CellsEliminationSystem())
       if(!level.isSimulation) systems += EndGameSystem(levelContext, level.victoryRule)
 
       //add all entities in the entity manager (systems are subscribed to EntityManager event when created)
