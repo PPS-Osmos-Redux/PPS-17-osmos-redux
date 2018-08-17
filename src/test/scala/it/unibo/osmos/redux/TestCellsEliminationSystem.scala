@@ -21,7 +21,7 @@ class TestCellsEliminationSystem extends FunSuite{
   val pce = PlayerCellEntity(acceleration,collidable,dimensionGreater,position,speed,notVisible,typeEntity,spawner)
   val ce = CellEntity(acceleration,collidable,dimensionLower,position,speed,notVisible,typeEntity)
   test("Cell elimination") {
-    val system = CellsEliminationSystem(0)
+    val system = CellsEliminationSystem()
     pce.getDimensionComponent.radius_(system.radiusThreshold+1)
     ce.getDimensionComponent.radius_(system.radiusThreshold-1)
     assert(system.entitiesSize == 0)

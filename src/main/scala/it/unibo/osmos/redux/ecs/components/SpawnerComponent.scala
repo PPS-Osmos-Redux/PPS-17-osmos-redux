@@ -37,6 +37,12 @@ trait SpawnerComponent {
   def dequeueAction(): Option[SpawnAction]
 
   /**
+    * Gets all spawn actions to perform.
+    * @return The spawn actions list.
+    */
+  def dequeueActions(): List[SpawnAction]
+
+  /**
     * Clears all queued spawn actions.
     */
   def clearActions(): Unit
@@ -54,6 +60,8 @@ object SpawnerComponent {
     override def enqueueActions(actions: SpawnAction*): Unit = actionQueue.enqueue(actions: _*)
 
     override def dequeueAction(): Option[SpawnAction] = if (actionQueue.nonEmpty) Some(actionQueue.dequeue()) else None
+
+    override def dequeueActions(): List[SpawnAction] = actionQueue.dequeueAll(_ => true).toList
 
     override def clearActions(): Unit = actionQueue.clear()
   }

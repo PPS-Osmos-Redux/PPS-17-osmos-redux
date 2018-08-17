@@ -57,6 +57,7 @@ object LevelContext {
 
     override def setupLevel(): Unit = {
       //TODO: waiting for controller
+      println("Level started")
     }
 
     override def drawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = listener.onDrawEntities(playerEntity, entities)

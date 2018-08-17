@@ -5,6 +5,7 @@ import it.unibo.osmos.redux.ecs.entities.CellEntity
   * List of cell types
   */
 object CellType {
+  val gravityCell = "gravityCell"
   val playerCell = "playerCell"
   val basicCell = "basicCell"
 }
@@ -54,8 +55,9 @@ case class LevelMap(mapShape:MapShape, collisionRule:CollisionRules.Value)
   * @param levelMap level map
   * @param entities list of level entities
   * @param victoryRule victory rule
+  * @param isSimulation if it's a simulation
   */
-case class Level(levelId:Int,
-                 levelMap:LevelMap,
-                 entities:List[CellEntity],
-                 victoryRule:VictoryRules.Value)
+  case class Level(levelId:Int,
+                   levelMap:LevelMap,
+                   entities:List[CellEntity],
+                   victoryRule:VictoryRules.Value, var isSimulation:Boolean = false)

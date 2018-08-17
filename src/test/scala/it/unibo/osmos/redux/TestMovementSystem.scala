@@ -12,7 +12,7 @@ class TestMovementSystem extends FunSuite with MockFactory with Matchers {
 
   test(" Test movement system behaviour ") {
 
-    val movementSystem = MovementSystem(0)
+    val movementSystem = MovementSystem()
     EntityManager.subscribe(movementSystem, null)
 
     val ca = AccelerationComponent(1, 1)

@@ -1,8 +1,8 @@
 package it.unibo.osmos.redux.ecs.systems
 
-import it.unibo.osmos.redux.ecs.entities.{Property, Spawner}
+import it.unibo.osmos.redux.ecs.entities._
 
-case class SpawnSystem(override val priority: Int) extends AbstractSystem[Spawner](priority) {
+case class SpawnSystem() extends AbstractSystem[Spawner] {
 
   override def getGroupProperty: Class[_ <: Property] = classOf[Spawner]
 
@@ -11,6 +11,17 @@ case class SpawnSystem(override val priority: Int) extends AbstractSystem[Spawne
     */
   override def update(): Unit = {
     //TODO: for each Spawner get all SpawnActions and spawn entities
-    //entities foreach(_ => _)
+    entities foreach(e => {
+      e.getSpawnerComponent.dequeueActions() foreach (a => {
+        EntityManager.add(
+          CellBuilder()
+            .collidable(true)
+            .visible(true)
+            .withSpeed(a.speed)
+            .withDimension(a.dimension)
+            .withPosition(a.position)
+            .build)
+      })
+    })
   }
 }
