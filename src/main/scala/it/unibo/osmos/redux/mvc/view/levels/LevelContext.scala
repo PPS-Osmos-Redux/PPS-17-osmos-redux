@@ -1,14 +1,12 @@
 package it.unibo.osmos.redux.mvc.view.levels
 
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
-import it.unibo.osmos.redux.mvc.view.events.{MouseEventListener, MouseEventWrapper}
-import it.unibo.osmos.redux.utils.Point
-import javafx.scene.input.MouseEvent
+import it.unibo.osmos.redux.mvc.view.events.{EventWrapperListener, EventWrapperSource, MouseEventWrapper}
 
 /**
   * Trait modelling the context of a level
   */
-trait LevelContext {
+trait LevelContext extends EventWrapperSource[MouseEventWrapper]{
   /**
     * Called once at the beginning at the level. Manages the context creation
     */
@@ -20,24 +18,6 @@ trait LevelContext {
     * @param entities the other entities
     */
   def drawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper])
-
-  /**
-    * This method register a single mouse event listener
-    * @param mouseEventListener the listener
-    */
-  def registerMouseEventListener(mouseEventListener: MouseEventListener)
-
-  /**
-    * This method unregister a single mouse event listener
-    * @param mouseEventListener the listener
-    */
-  def unregisterMouseEventListener(mouseEventListener: MouseEventListener)
-
-  /**
-    * This method pushes a mouse event to the registered listener
-    * @param mouseEvent the mouse event
-    */
-  def pushMouseEvent(mouseEvent: MouseEvent)
 }
 
 object LevelContext {
@@ -53,7 +33,7 @@ object LevelContext {
     /**
       * A reference to the mouse event listener
       */
-    private var mouseEventListener: Option[MouseEventListener] = Option.empty
+    private var mouseEventListener: Option[EventWrapperListener[MouseEventWrapper]] = Option.empty
 
     override def setupLevel(): Unit = {
       //TODO: waiting for controller
@@ -62,17 +42,19 @@ object LevelContext {
 
     override def drawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = listener.onDrawEntities(playerEntity, entities)
 
-    override def registerMouseEventListener(eventHandler: MouseEventListener): Unit = mouseEventListener = Option(eventHandler)
+    override def registerEventListener(eventListener: EventWrapperListener[MouseEventWrapper]): Unit = mouseEventListener = Option(eventListener)
 
-    override def unregisterMouseEventListener(eventHandler: MouseEventListener): Unit = mouseEventListener = Option.empty
+    override def unregisterEventListener(eventListener: EventWrapperListener[MouseEventWrapper]): Unit = mouseEventListener = Option.empty
 
-    override def pushMouseEvent(mouseEvent: MouseEvent): Unit = {
+    override def pushEvent(event: MouseEventWrapper): Unit = {
       mouseEventListener match {
-        case Some(e) => e.onEvent(MouseEventWrapper(Point(mouseEvent.getX, mouseEvent.getSceneY)))
+        case Some(e) => e.onEvent(event)
         case _ =>
       }
     }
+
   }
+
 }
 
 /**
