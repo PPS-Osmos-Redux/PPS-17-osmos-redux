@@ -1,5 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.levels
 
+import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.drawables.{DrawableWrapper, EntitiesDrawer}
 import it.unibo.osmos.redux.mvc.view.events._
 
@@ -41,8 +42,6 @@ object LevelContext {
     private var mouseEventListener: Option[EventWrapperListener[MouseEventWrapper]] = Option.empty
 
     override def setupLevel(): Unit = {
-      //TODO: waiting for controller
-      println("Level started")
     }
 
     override def drawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = listener.onDrawEntities(playerEntity, entities)
