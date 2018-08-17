@@ -2,6 +2,7 @@ package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities._
+import it.unibo.osmos.redux.mvc.controller.FileManager
 import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.mvc.model.MapShape._
 import it.unibo.osmos.redux.utils.Point
@@ -86,6 +87,18 @@ class TestJsonConversion extends FunSuite{
 
   test("Level conversion") {
     val jsLevel = level.toJson
+    val convertedLevel = jsLevel.convertTo[Level]
+    assert(convertedLevel.levelId.equals(level.levelId))
+    assert(convertedLevel.levelMap.equals(level.levelMap))
+    assert(convertedLevel.victoryRule.equals(level.victoryRule))
+    assert(convertedLevel.entities.size.equals(level.entities.size))
+  }
+
+  test("File reading and conversion") {
+    val fileContent = FileManager.loadResource(isSimulation = false,1)
+    assert(fileContent.isSuccess)
+    val jsLevel = fileContent.get.parseJson
+    assert(jsLevel.equals(jsLevel))
     val convertedLevel = jsLevel.convertTo[Level]
     assert(convertedLevel.levelId.equals(level.levelId))
     assert(convertedLevel.levelMap.equals(level.levelMap))

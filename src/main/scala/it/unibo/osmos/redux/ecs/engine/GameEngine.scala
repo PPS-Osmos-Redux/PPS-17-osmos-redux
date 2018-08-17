@@ -125,10 +125,10 @@ object GameEngine {
         case Some(g) => g.kill()
         case None => throw new IllegalStateException("Unable to stop game loop because it hasn't been initialized yet")
       }
+      gameLoop = None
     }
 
     override def clear(): Unit = {
-
       EntityManager.clear()
       InputEventQueue.dequeueAll()
 
@@ -139,6 +139,7 @@ object GameEngine {
         }
         case _ => //do nothing if it's not present
       }
+      gameLoop = None
     }
 
     override def getStatus: GameStatus = {
