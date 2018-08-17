@@ -1,16 +1,28 @@
 package it.unibo.osmos.redux.mvc.view.levels
 
 import it.unibo.osmos.redux.mvc.view.drawables.{DrawableWrapper, EntitiesDrawer}
-import it.unibo.osmos.redux.mvc.view.events.{EventWrapperListener, EventWrapperSource, MouseEventWrapper}
+import it.unibo.osmos.redux.mvc.view.events._
 
 /**
   * Trait modelling the context of a level
   */
-trait LevelContext extends EventWrapperSource[MouseEventWrapper] with EntitiesDrawer {
+trait LevelContext extends EventWrapperSource[MouseEventWrapper] with EntitiesDrawer with GameStateHolder {
   /**
     * Called once at the beginning at the level. Manages the context creation
     */
   def setupLevel()
+}
+
+/**
+  * Trait modelling an object which holds the current game state and reacts when it gets changed
+  */
+trait GameStateHolder extends EventWrapperListener[GameStateEventWrapper] {
+
+  /**
+    * A generic definition of the game state
+    * @return a GameStateEventWrapper
+    */
+  def gameCurrentState: GameStateEventWrapper
 }
 
 object LevelContext {
@@ -46,7 +58,24 @@ object LevelContext {
       }
     }
 
-  }
+    /**
+      * The current game state
+      */
+    private[this] var _gameCurrentState: GameStateEventWrapper = GamePending
+
+    def gameCurrentState: GameStateEventWrapper = _gameCurrentState
+
+    def gameCurrentState_=(value: GameStateEventWrapper): Unit = {
+      _gameCurrentState = value
+    }
+
+    /**
+      * Called on a event T type
+      *
+      * @param event the event
+      */
+    override def onEvent(event: GameStateEventWrapper): Unit = gameCurrentState_=(event)
+}
 
 }
 
