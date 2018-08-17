@@ -33,7 +33,6 @@ case class ControllerImpl() extends Controller {
     if (isSimulation) loadedLevel.isSimulation = true
     if(engine.isEmpty) engine = Some(GameEngine())
     engine.get.init(loadedLevel, levelContext)
-    engine.get.start()
   }
 
   override def stopLevel(): Unit = if (engine.isDefined) engine.get.stop()
