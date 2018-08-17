@@ -9,9 +9,10 @@ import it.unibo.osmos.redux.mvc.view.events._
   */
 trait LevelContext extends EventWrapperSource[MouseEventWrapper] with EntitiesDrawer with GameStateHolder {
   /**
-    * Called once at the beginning at the level. Manages the context creation
+    * Called once at the beginning at the level. Manages the context setup
+    * @param mapShape the level shape
     */
-  def setupLevel()
+  def setupLevel(mapShape: MapShape)
 }
 
 /**
@@ -41,7 +42,7 @@ object LevelContext {
       */
     private var mouseEventListener: Option[EventWrapperListener[MouseEventWrapper]] = Option.empty
 
-    override def setupLevel(): Unit = {
+    override def setupLevel(mapShape: MapShape): Unit = {
     }
 
     override def drawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = listener.onDrawEntities(playerEntity, entities)
@@ -89,4 +90,10 @@ trait LevelContextListener {
     * @param entities the other entities
     */
   def onDrawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper])
+
+  /**
+    * Called once. Manages the context setup communicating the level shape
+    * @param mapShape the level shape
+    */
+  def onLevelSetup(mapShape: MapShape)
 }

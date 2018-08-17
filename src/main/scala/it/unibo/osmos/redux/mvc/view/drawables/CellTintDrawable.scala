@@ -4,7 +4,12 @@ import scalafx.scene.canvas.GraphicsContext
 import scalafx.scene.image.Image
 import scalafx.scene.paint.Color
 
-class CellTintDrawable(private var _image: Image, override val graphicsContext: GraphicsContext) extends ImageDrawable(_image, graphicsContext) {
+/**
+  * Drawable implementation that shows a tintable cell on the screen
+  * @param _image the image
+  * @param graphicsContext the GraphicContext on which the Image will be drawn on
+  */
+class CellTintDrawable(private var _image: Image, override val graphicsContext: GraphicsContext) extends CellDrawable(_image, graphicsContext) {
 
   /**
     * Draws the cell on the canvas

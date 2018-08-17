@@ -1,6 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.ecs.components.EntityType
+import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities._
 import it.unibo.osmos.redux.mvc.view.components.{LevelStateBox, LevelStateBoxListener}
 import it.unibo.osmos.redux.mvc.view.drawables._
@@ -87,10 +88,11 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   }
 
   /**
-    * The images used to draw cells
+    * The images used to draw cells, background and level
     */
   val cellDrawable: CellTintDrawable = new CellTintDrawable(ImageLoader.getImage("/textures/cell.png"), canvas.graphicsContext2D)
-  val backgroundDrawable: ImageDrawable = new ImageDrawable(ImageLoader.getImage("/textures/background.png"), canvas.graphicsContext2D)
+  val backgroundDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage("/textures/background.png"), canvas.graphicsContext2D)
+  var mapDrawable: Option[CellDrawable] = Option.empty
 
   /**
     * The content of the whole scene
@@ -141,6 +143,16 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     levelContext match {
       case Some(lc) => lc pushEvent MouseEventWrapper(Point(mouseEvent.getX, mouseEvent.getY))
       case _ =>
+    }
+  }
+
+  override def onLevelSetup(mapShape: MapShape): Unit = mapDrawable match {
+    case Some(e) => throw new IllegalStateException("Map has already been set")
+    case _ => {
+      mapShape match {
+        case c: MapShape.Circle => mapDrawable = Option(new CellDrawable(ImageLoader.getImage("/textures/cell.png"), canvas.graphicsContext2D))
+        case r: MapShape.Rectangle => mapDrawable = Option(new CellDrawable(ImageLoader.getImage("/textures/cell.png"), canvas.graphicsContext2D))
+      }
     }
   }
 
