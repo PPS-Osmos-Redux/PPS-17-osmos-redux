@@ -1,8 +1,8 @@
 {
   "entities": [{
     "acceleration": {
-      "accelerationX": 0.0,
-      "accelerationY": 0.0
+      "accelerationX": 1.0,
+      "accelerationY": 1.0
     },
     "visible": {
       "visible": true
@@ -15,162 +15,22 @@
     },
     "position": {
       "point": {
-        "x": 150.0,
-        "y": 30.0
+        "x": 0.0,
+        "y": 0.0
       }
     },
     "cellType": "basicCell",
     "dimension": {
-      "radius": 20.0
+      "radius": 5.0
     },
     "speed": {
-      "speedX": 0.1,
-      "speedY": 0.5
+      "speedX": 4.0,
+      "speedY": 0.0
     }
   }, {
     "acceleration": {
-      "accelerationX": 0.0,
-      "accelerationY": 0.0
-    },
-    "visible": {
-      "visible": true
-    },
-    "collidable": {
-      "collidable": true
-    },
-    "typeEntity": {
-      "entity_type": "Material"
-    },
-    "position": {
-      "point": {
-        "x": 200.0,
-        "y": 30.0
-      }
-    },
-    "cellType": "basicCell",
-    "dimension": {
-      "radius": 15.0
-    },
-    "speed": {
-      "speedX": 0.1,
-      "speedY": 0.25
-    }
-  }, {
-    "acceleration": {
-      "accelerationX": 0.0,
-      "accelerationY": 0.0
-    },
-    "visible": {
-      "visible": true
-    },
-    "collidable": {
-      "collidable": true
-    },
-    "typeEntity": {
-      "entity_type": "Material"
-    },
-    "position": {
-      "point": {
-        "x": 400.0,
-        "y": 50.0
-      }
-    },
-    "cellType": "basicCell",
-    "dimension": {
-      "radius": 10.0
-    },
-    "speed": {
-      "speedX": 0.2,
-      "speedY": 0.1
-    }
-  }, {
-    "acceleration": {
-      "accelerationX": 0.0,
-      "accelerationY": 0.0
-    },
-    "visible": {
-      "visible": true
-    },
-    "collidable": {
-      "collidable": true
-    },
-    "typeEntity": {
-      "entity_type": "Material"
-    },
-    "position": {
-      "point": {
-        "x": 50.0,
-        "y": 50.0
-      }
-    },
-    "cellType": "basicCell",
-    "dimension": {
-      "radius": 35.0
-    },
-    "speed": {
-      "speedX": 0.3,
-      "speedY": 0.5
-    }
-  }, {
-    "acceleration": {
-      "accelerationX": 0.0,
-      "accelerationY": 0.0
-    },
-    "visible": {
-      "visible": true
-    },
-    "collidable": {
-      "collidable": true
-    },
-    "typeEntity": {
-      "entity_type": "Material"
-    },
-    "position": {
-      "point": {
-        "x": 40.0,
-        "y": 25.0
-      }
-    },
-    "cellType": "basicCell",
-    "dimension": {
-      "radius": 10.0
-    },
-    "speed": {
-      "speedX": 0.1,
-      "speedY": 0.99
-    }
-  }, {
-    "acceleration": {
-      "accelerationX": 0.0,
-      "accelerationY": 0.0
-    },
-    "visible": {
-      "visible": true
-    },
-    "collidable": {
-      "collidable": true
-    },
-    "typeEntity": {
-      "entity_type": "Material"
-    },
-    "position": {
-      "point": {
-        "x": 10.0,
-        "y": 30.0
-      }
-    },
-    "cellType": "basicCell",
-    "dimension": {
-      "radius": 8.0
-    },
-    "speed": {
-      "speedX": 0.3,
-      "speedY": 0.8
-    }
-  }, {
-    "acceleration": {
-      "accelerationX": 0.0,
-      "accelerationY": 0.0
+      "accelerationX": 1.0,
+      "accelerationY": 1.0
     },
     "visible": {
       "visible": true
@@ -186,16 +46,47 @@
     },
     "position": {
       "point": {
-        "x": 200.0,
-        "y": 200.0
+        "x": 0.0,
+        "y": 0.0
       }
     },
     "cellType": "playerCell",
     "dimension": {
-      "radius": 50.0
+      "radius": 5.0
     },
     "speed": {
-      "speedX": 0.0,
+      "speedX": 4.0,
+      "speedY": 0.0
+    }
+  }, {
+    "acceleration": {
+      "accelerationX": 1.0,
+      "accelerationY": 1.0
+    },
+    "specificWeight": {
+      "specificWeight": 1.0
+    },
+    "visible": {
+      "visible": true
+    },
+    "collidable": {
+      "collidable": true
+    },
+    "typeEntity": {
+      "entity_type": "Material"
+    },
+    "position": {
+      "point": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    },
+    "cellType": "gravityCell",
+    "dimension": {
+      "radius": 5.0
+    },
+    "speed": {
+      "speedX": 4.0,
       "speedY": 0.0
     }
   }],
@@ -206,11 +97,11 @@
   },
   "levelMap": {
     "mapShape": {
-      "mapShape": "RECTANGLE",
-      "height": 10.1,
-      "base": 5.6
+      "centerX": 50.1,
+      "centerY": 50.2,
+      "mapShape": "CIRCLE",
+      "radius": 250
     },
-    "collisionRule": "Bouncing",
-    "isSimulation":false
+    "collisionRule": "Bouncing"
   }
 }

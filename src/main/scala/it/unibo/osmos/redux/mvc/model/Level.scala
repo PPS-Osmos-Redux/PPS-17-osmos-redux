@@ -30,14 +30,16 @@ object VictoryRules extends Enumeration {
   */
 sealed trait MapShape {
   val mapShape:String
+  val center:(Double,Double)
 }
 object MapShape {
   val rectangle:String = "RECTANGLE"
   val circle:String = "CIRCLE"
-  case class Rectangle(height:Double, base:Double) extends MapShape {
+  case class Rectangle(override val center: (Double, Double), height:Double, base:Double)
+                                                                          extends MapShape {
     override val mapShape: String = MapShape.rectangle
   }
-  case class Circle(radius:Double) extends MapShape {
+  case class Circle(override val center: (Double, Double), radius:Double) extends MapShape {
     override val mapShape: String = MapShape.circle
   }
 }
