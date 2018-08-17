@@ -20,6 +20,8 @@ object ViewConstants {
     val defaultPlayerColor: Color = Color.Green
     val defaultEntityMaxColor: Color = Color.DarkRed
     val defaultEntityMinColor: Color = Color.LightBlue
+    val attractiveCellColor: Color = Color.White
+    val repulsiveCellColor: Color = Color.Black
   }
 
 }
