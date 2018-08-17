@@ -1,5 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
+import it.unibo.osmos.redux.ecs.components.EntityType
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities._
 import it.unibo.osmos.redux.mvc.view.components.{LevelStateBox, LevelStateBoxListener}
 import it.unibo.osmos.redux.mvc.view.drawables._
@@ -88,7 +89,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   /**
     * The images used to draw cells
     */
-  val cellDrawable: ImageDrawable = new ImageDrawable(ImageLoader.getImage("/textures/cell.png"), canvas.graphicsContext2D)
+  val cellDrawable: CellTintDrawable = new CellTintDrawable(ImageLoader.getImage("/textures/cell.png"), canvas.graphicsContext2D)
   val backgroundDrawable: ImageDrawable = new ImageDrawable(ImageLoader.getImage("/textures/background.png"), canvas.graphicsContext2D)
 
   /**
@@ -146,6 +147,10 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   override def onDrawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = {
 
     var entitiesWrappers : Seq[(DrawableWrapper, Color)] = Seq()
+    var specialWrappers : Seq[(DrawableWrapper, Color)] = entities filter(e => e.entityType.equals(EntityType.Attractive) || e.entityType.equals(EntityType.Repulse)) map(e => e.entityType match {
+      case EntityType.Attractive => (e, Color.White)
+      case EntityType.Repulse => (e, Color.Black)
+    }) toSeq
 
     playerEntity match {
       /* The player is present */
@@ -161,7 +166,8 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
       /* Draw the background */
       canvas.graphicsContext2D.drawImage(backgroundDrawable.image, 0, 0, width.value, height.value)
       /* Draw the entities */
-      entitiesWrappers foreach(e => cellDrawable.draw(e._1, e._2))
+      (entitiesWrappers ++ specialWrappers)foreach(e => cellDrawable.draw(e._1, e._2))
+
     })
   }
 
