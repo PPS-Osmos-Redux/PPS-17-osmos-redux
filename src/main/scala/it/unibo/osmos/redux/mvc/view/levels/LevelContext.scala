@@ -23,6 +23,12 @@ trait GameStateHolder extends EventWrapperListener[GameStateEventWrapper] {
     * @return a GameStateEventWrapper
     */
   def gameCurrentState: GameStateEventWrapper
+
+  /**
+    *
+    * @param value
+    */
+  def gameCurrentState_=(value: GameStateEventWrapper): Unit
 }
 
 object LevelContext {
