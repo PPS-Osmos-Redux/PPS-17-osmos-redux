@@ -1,43 +1,28 @@
 package it.unibo.osmos.redux.mvc.view.levels
 
-import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
-import it.unibo.osmos.redux.mvc.view.events.{MouseEventListener, MouseEventWrapper}
-import it.unibo.osmos.redux.utils.Point
-import javafx.scene.input.MouseEvent
+import it.unibo.osmos.redux.mvc.view.drawables.{DrawableWrapper, EntitiesDrawer}
+import it.unibo.osmos.redux.mvc.view.events._
 
 /**
   * Trait modelling the context of a level
   */
-trait LevelContext {
+trait LevelContext extends EventWrapperSource[MouseEventWrapper] with EntitiesDrawer with GameStateHolder {
   /**
     * Called once at the beginning at the level. Manages the context creation
     */
   def setupLevel()
+}
+
+/**
+  * Trait modelling an object which holds the current game state and reacts when it gets changed
+  */
+trait GameStateHolder extends EventWrapperListener[GameStateEventWrapper] {
 
   /**
-    * Called once per frame. Manages the entities that must be drawn
-    * @param playerEntity the player entity. It may be empty
-    * @param entities the other entities
+    * A generic definition of the game state
+    * @return a GameStateEventWrapper
     */
-  def drawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper])
-
-  /**
-    * This method register a single mouse event listener
-    * @param mouseEventListener the listener
-    */
-  def registerMouseEventListener(mouseEventListener: MouseEventListener)
-
-  /**
-    * This method unregister a single mouse event listener
-    * @param mouseEventListener the listener
-    */
-  def unregisterMouseEventListener(mouseEventListener: MouseEventListener)
-
-  /**
-    * This method pushes a mouse event to the registered listener
-    * @param mouseEvent the mouse event
-    */
-  def pushMouseEvent(mouseEvent: MouseEvent)
+  def gameCurrentState: GameStateEventWrapper
 }
 
 object LevelContext {
@@ -53,7 +38,7 @@ object LevelContext {
     /**
       * A reference to the mouse event listener
       */
-    private var mouseEventListener: Option[MouseEventListener] = Option.empty
+    private var mouseEventListener: Option[EventWrapperListener[MouseEventWrapper]] = Option.empty
 
     override def setupLevel(): Unit = {
       //TODO: waiting for controller
@@ -62,17 +47,37 @@ object LevelContext {
 
     override def drawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = listener.onDrawEntities(playerEntity, entities)
 
-    override def registerMouseEventListener(eventHandler: MouseEventListener): Unit = mouseEventListener = Option(eventHandler)
+    override def registerEventListener(eventListener: EventWrapperListener[MouseEventWrapper]): Unit = mouseEventListener = Option(eventListener)
 
-    override def unregisterMouseEventListener(eventHandler: MouseEventListener): Unit = mouseEventListener = Option.empty
+    override def unregisterEventListener(eventListener: EventWrapperListener[MouseEventWrapper]): Unit = mouseEventListener = Option.empty
 
-    override def pushMouseEvent(mouseEvent: MouseEvent): Unit = {
+    override def pushEvent(event: MouseEventWrapper): Unit = {
       mouseEventListener match {
-        case Some(e) => e.onEvent(MouseEventWrapper(Point(mouseEvent.getX, mouseEvent.getSceneY)))
+        case Some(e) => e.onEvent(event)
         case _ =>
       }
     }
+
+    /**
+      * The current game state
+      */
+    private[this] var _gameCurrentState: GameStateEventWrapper = GamePending
+
+    def gameCurrentState: GameStateEventWrapper = _gameCurrentState
+
+    def gameCurrentState_=(value: GameStateEventWrapper): Unit = {
+      _gameCurrentState = value
+    }
+
+    /**
+      * Called on a event T type
+      *
+      * @param event the event
+      */
+    //TODO: react properly to events (showing screen)
+    override def onEvent(event: GameStateEventWrapper): Unit = gameCurrentState_=(event)
   }
+
 }
 
 /**
