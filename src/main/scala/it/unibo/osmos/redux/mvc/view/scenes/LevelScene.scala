@@ -150,7 +150,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     var specialWrappers : Seq[(DrawableWrapper, Color)] = entities filter(e => e.entityType.equals(EntityType.Attractive) || e.entityType.equals(EntityType.Repulse)) map(e => e.entityType match {
       case EntityType.Attractive => (e, Color.White)
       case EntityType.Repulse => (e, Color.Black)
-    }) toSeq
+    })
 
     playerEntity match {
       /* The player is present */
