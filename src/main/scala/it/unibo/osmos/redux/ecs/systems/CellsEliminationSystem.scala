@@ -11,6 +11,4 @@ case class CellsEliminationSystem() extends AbstractSystem[DeathProperty] {
     entities.filter(_.getDimensionComponent.radius < radiusThreshold)
             .foreach(EntityManager.delete(_))
   }
-
-  def entitiesSize:Int = entities.size
 }

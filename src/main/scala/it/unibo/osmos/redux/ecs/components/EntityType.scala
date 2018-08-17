@@ -8,5 +8,5 @@ object EntityType extends Enumeration {
   /**
     * Basic entity type used by common entities
     */
-  val Material: EntityType.Value = Value
+  val Material, Attractive, Repulse: EntityType.Value = Value
 }
