@@ -13,7 +13,7 @@ class CellDrawable(override val image: Image, override val graphicsContext: Grap
   /**
     * Draws the circular image on the canvas
     * @param dw the drawable wrapper containing the drawable info
-    * @param color the color of the circle, currenly unused
+    * @param color the color of the circle, currently unused
     */
   override def draw(dw: DrawableWrapper, color: Color): Unit = {
     graphicsContext.stroke = Color.Black
