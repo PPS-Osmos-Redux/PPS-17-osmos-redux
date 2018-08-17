@@ -1,5 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
+import it.unibo.osmos.redux.ecs.components.EntityType
+import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities._
 import it.unibo.osmos.redux.mvc.view.components.{LevelStateBox, LevelStateBoxListener}
 import it.unibo.osmos.redux.mvc.view.drawables._
@@ -64,8 +66,14 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
       fill = Color.White
     })
 
+  }
+
+  /* We start the level */
+  def startLevel(): Unit = {
+    /* The level gets immediately stopped */
+    listener.onPauseLevel()
     /* Splash screen animation, starting with a FadeIn */
-    new FadeTransition(Duration.apply(2000), this) {
+    new FadeTransition(Duration.apply(2000), splashScreen) {
       fromValue = 0.0
       toValue = 1.0
       autoReverse = true
@@ -78,18 +86,19 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
         onFinished = _ => new FadeTransition(Duration.apply(3000), canvas) {
           fromValue = 0.0
           toValue = 1.0
-          /* Removing the splash screen to reduce the load */
-          onFinished = _ => content.remove(splashScreen)
+          /* Removing the splash screen to reduce the load. Then the level is resumed */
+          onFinished = _ => content.remove(splashScreen); listener.onResumeLevel()
         }.play()
       }.play()
     }.play()
   }
 
   /**
-    * The images used to draw cells
+    * The images used to draw cells, background and level
     */
-  val cellDrawable: ImageDrawable = new ImageDrawable(ImageLoader.getImage("/textures/cell.png"), canvas.graphicsContext2D)
-  val backgroundDrawable: ImageDrawable = new ImageDrawable(ImageLoader.getImage("/textures/background.png"), canvas.graphicsContext2D)
+  val cellDrawable: CellTintDrawable = new CellTintDrawable(ImageLoader.getImage("/textures/cell.png"), canvas.graphicsContext2D)
+  val backgroundDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage("/textures/background.png"), canvas.graphicsContext2D)
+  var mapDrawable: Option[StaticImageDrawable] = Option.empty
 
   /**
     * The content of the whole scene
@@ -143,9 +152,26 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     }
   }
 
+  override def onLevelSetup(mapShape: MapShape): Unit = mapDrawable match {
+    case Some(e) => throw new IllegalStateException("Map has already been set")
+    case _ =>
+      val center = Point(mapShape.center._1, mapShape.center._2)
+      mapShape match {
+        case c: MapShape.Circle => mapDrawable = Option(new StaticImageDrawable(ImageLoader.getImage("/textures/cell.png"), center, c.radius, c.radius, canvas.graphicsContext2D))
+        case r: MapShape.Rectangle => mapDrawable = Option(new StaticImageDrawable(ImageLoader.getImage("/textures/cell.png"), center, r.base, r.height, canvas.graphicsContext2D))
+      }
+
+      /* Starting the level */
+      startLevel()
+  }
+
   override def onDrawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = {
 
     var entitiesWrappers : Seq[(DrawableWrapper, Color)] = Seq()
+    var specialWrappers : Seq[(DrawableWrapper, Color)] = entities filter(e => e.entityType.equals(EntityType.Attractive) || e.entityType.equals(EntityType.Repulse)) map(e => e.entityType match {
+      case EntityType.Attractive => (e, attractiveCellColor)
+      case EntityType.Repulse => (e, repulsiveCellColor)
+    })
 
     playerEntity match {
       /* The player is present */
@@ -161,7 +187,12 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
       /* Draw the background */
       canvas.graphicsContext2D.drawImage(backgroundDrawable.image, 0, 0, width.value, height.value)
       /* Draw the entities */
-      entitiesWrappers foreach(e => cellDrawable.draw(e._1, e._2))
+      (entitiesWrappers ++ specialWrappers)foreach(e => cellDrawable.draw(e._1, e._2))
+      /* Draw the map */
+      mapDrawable match {
+        case Some(map) => map.draw()
+        case _ =>
+      }
     })
   }
 

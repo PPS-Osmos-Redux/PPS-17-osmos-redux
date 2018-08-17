@@ -11,17 +11,48 @@
       "collidable": true
     },
     "typeEntity": {
-      "entity_type": "Attractive"
+      "entity_type": "Repulse"
     },
     "position": {
       "point": {
-        "x": 500.0,
+        "x": 1000.0,
         "y": 300.0
       }
     },
     "cellType": "gravityCell",
     "dimension": {
-      "radius": 40.0
+      "radius": 25.0
+    },
+    "specificWeight": {
+      "specificWeight": 0.05
+    },
+    "speed": {
+      "speedX": 0.0,
+      "speedY": 0.0
+    }
+  }, {
+    "acceleration": {
+      "accelerationX": 0.0,
+      "accelerationY": 0.0
+    },
+    "visible": {
+      "visible": true
+    },
+    "collidable": {
+      "collidable": true
+    },
+    "typeEntity": {
+      "entity_type": "Attractive"
+    },
+    "position": {
+      "point": {
+        "x": 700.0,
+        "y": 300.0
+      }
+    },
+    "cellType": "gravityCell",
+    "dimension": {
+      "radius": 20.0
     },
     "specificWeight": {
       "specificWeight": 0.03
@@ -30,7 +61,38 @@
       "speedX": 0.0,
       "speedY": 0.0
     }
-  },{
+  }, {
+    "acceleration": {
+      "accelerationX": 0.0,
+      "accelerationY": 0.0
+    },
+    "visible": {
+      "visible": true
+    },
+    "collidable": {
+      "collidable": true
+    },
+    "typeEntity": {
+      "entity_type": "Repulse"
+    },
+    "position": {
+      "point": {
+        "x": 400.0,
+        "y": 300.0
+      }
+    },
+    "cellType": "gravityCell",
+    "dimension": {
+      "radius": 25.0
+    },
+    "specificWeight": {
+      "specificWeight": 0.05
+    },
+    "speed": {
+      "speedX": 0.0,
+      "speedY": 0.0
+    }
+  }, {
     "acceleration": {
       "accelerationX": 0.0,
       "accelerationY": 0.0
