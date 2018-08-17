@@ -7,7 +7,7 @@ import scalafx.scene.paint.Color
   * Drawable implementation that shows a circle on the screen
   * @param graphicsContext the GraphicContext on which the circle will be drawn on
   */
-class CircleDrawable(override val graphicsContext: GraphicsContext) extends BaseDrawable(graphicsContext) {
+class CircleDrawable(val graphicsContext: GraphicsContext) extends Drawable {
 
   /**
     * Draws a circle on the canvas

@@ -27,8 +27,8 @@ trait GameStateHolder extends EventWrapperListener[GameStateEventWrapper] {
   def gameCurrentState: GameStateEventWrapper
 
   /**
-    *
-    * @param value
+    * Setter of the GameStateEventWrapper
+    * @param value a GameStateEventWrapper instance
     */
   def gameCurrentState_=(value: GameStateEventWrapper): Unit
 }
@@ -48,8 +48,7 @@ object LevelContext {
       */
     private var mouseEventListener: Option[EventWrapperListener[MouseEventWrapper]] = Option.empty
 
-    override def setupLevel(mapShape: MapShape): Unit = {
-    }
+    override def setupLevel(mapShape: MapShape): Unit = listener.onLevelSetup(mapShape)
 
     override def drawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = listener.onDrawEntities(playerEntity, entities)
 

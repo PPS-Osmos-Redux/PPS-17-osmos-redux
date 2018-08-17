@@ -155,9 +155,10 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   override def onLevelSetup(mapShape: MapShape): Unit = mapDrawable match {
     case Some(e) => throw new IllegalStateException("Map has already been set")
     case _ =>
+      val center = Point(mapShape.center._1, mapShape.center._2)
       mapShape match {
-        case c: MapShape.Circle => mapDrawable = Option(new StaticImageDrawable(ImageLoader.getImage("/textures/cell.png"),Point(null, null), c.radius, c.radius, canvas.graphicsContext2D))
-        case r: MapShape.Rectangle => mapDrawable = Option(new StaticImageDrawable(ImageLoader.getImage("/textures/cell.png"),Point(null, null), r.base, r.height, canvas.graphicsContext2D))
+        case c: MapShape.Circle => mapDrawable = Option(new StaticImageDrawable(ImageLoader.getImage("/textures/cell.png"), center, c.radius, c.radius, canvas.graphicsContext2D))
+        case r: MapShape.Rectangle => mapDrawable = Option(new StaticImageDrawable(ImageLoader.getImage("/textures/cell.png"), center, r.base, r.height, canvas.graphicsContext2D))
       }
 
       /* Starting the level */
