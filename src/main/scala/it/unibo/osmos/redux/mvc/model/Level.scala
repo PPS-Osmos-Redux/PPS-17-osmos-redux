@@ -2,6 +2,15 @@ package it.unibo.osmos.redux.mvc.model
 import it.unibo.osmos.redux.ecs.entities.CellEntity
 
 /**
+  * List of cell types
+  */
+object CellType {
+  val gravityCell = "gravityCell"
+  val playerCell = "playerCell"
+  val basicCell = "basicCell"
+}
+
+/**
   * Map edges collision rules
   */
 object CollisionRules extends Enumeration {
@@ -21,14 +30,16 @@ object VictoryRules extends Enumeration {
   */
 sealed trait MapShape {
   val mapShape:String
+  val center:(Double,Double)
 }
 object MapShape {
   val rectangle:String = "RECTANGLE"
   val circle:String = "CIRCLE"
-  case class Rectangle(height:Double, base:Double) extends MapShape {
+  case class Rectangle(override val center: (Double, Double), height:Double, base:Double)
+                                                                          extends MapShape {
     override val mapShape: String = MapShape.rectangle
   }
-  case class Circle(radius:Double) extends MapShape {
+  case class Circle(override val center: (Double, Double), radius:Double) extends MapShape {
     override val mapShape: String = MapShape.circle
   }
 }
@@ -46,10 +57,9 @@ case class LevelMap(mapShape:MapShape, collisionRule:CollisionRules.Value)
   * @param levelMap level map
   * @param entities list of level entities
   * @param victoryRule victory rule
-  * @param isSimulation true if it's a simulation
+  * @param isSimulation if it's a simulation
   */
-case class Level(levelId:Int,
-                 levelMap:LevelMap,
-                 entities:List[CellEntity],
-                 victoryRule:VictoryRules.Value,
-                 isSimulation:Boolean)
+  case class Level(levelId:Int,
+                   levelMap:LevelMap,
+                   entities:List[CellEntity],
+                   victoryRule:VictoryRules.Value, var isSimulation:Boolean = false)

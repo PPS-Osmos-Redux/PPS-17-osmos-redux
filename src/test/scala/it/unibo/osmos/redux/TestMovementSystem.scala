@@ -10,11 +10,11 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 
 class TestMovementSystem extends FunSuite with BeforeAndAfter {
   private val levelInfo: Level = Level(1,
-    LevelMap(Rectangle(100, 150), CollisionRules.bouncing),
+    LevelMap(Rectangle((50, 75), 100, 150), CollisionRules.bouncing),
     null,
     VictoryRules.becomeTheBiggest,
     false)
-  val movementSystem: MovementSystem = MovementSystem(0, levelInfo)
+  val movementSystem: MovementSystem = MovementSystem(levelInfo)
 
   before {
     EntityManager.subscribe(movementSystem, null)
@@ -107,10 +107,10 @@ class TestMovementSystem extends FunSuite with BeforeAndAfter {
     assert(rightCollisionCellEntity.getPositionComponent.point == Point(142.0, 40.0))
 
     assert(topCollisionCellEntity.getSpeedComponent == SpeedComponent(6.0, 4.0))
-    assert(topCollisionCellEntity.getPositionComponent.point == Point(86.0,10.0))
+    assert(topCollisionCellEntity.getPositionComponent.point == Point(86.0, 10.0))
 
     assert(bottomCollisionCellEntity.getSpeedComponent == SpeedComponent(-2.0, -7.0))
-    assert(bottomCollisionCellEntity.getPositionComponent.point == Point(33.0,89.0))
+    assert(bottomCollisionCellEntity.getPositionComponent.point == Point(33.0, 89.0))
   }
 
   test("Test circular shape field bouncing") {

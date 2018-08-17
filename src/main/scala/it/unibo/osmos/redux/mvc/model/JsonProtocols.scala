@@ -2,7 +2,7 @@ package it.unibo.osmos.redux.mvc.model
 import spray.json._
 import DefaultJsonProtocol._
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.{CellEntity, PlayerCellEntity}
+import it.unibo.osmos.redux.ecs.entities.{CellEntity, GravityCellEntity, PlayerCellEntity}
 import it.unibo.osmos.redux.utils.Point
 import org.apache.commons.lang3.SerializationException
 
@@ -18,7 +18,7 @@ object JsonProtocols {
     def read(value: JsValue): AccelerationComponent = {
       value.asJsObject.getFields("accelerationX", "accelerationY") match {
         case Seq(JsNumber(accelerationX), JsNumber(accelerationY)) =>
-          AccelerationComponent.apply(accelerationX.toDouble,accelerationY.toDouble)
+          AccelerationComponent(accelerationX.toDouble,accelerationY.toDouble)
         case _ => throw DeserializationException("Acceleration component expected")
       }
     }
@@ -29,7 +29,7 @@ object JsonProtocols {
       JsObject("collidable" -> JsBoolean(collidable.isCollidable()))
     def read(value: JsValue): CollidableComponent = {
       value.asJsObject.getFields("collidable") match {
-        case Seq(JsBoolean(collidable)) => CollidableComponent.apply(collidable)
+        case Seq(JsBoolean(collidable)) => CollidableComponent(collidable)
         case _ => throw DeserializationException("Collidable component expected")
       }
     }
@@ -39,7 +39,7 @@ object JsonProtocols {
     def write(visible: VisibleComponent) = JsObject("visible" -> JsBoolean(visible.isVisible()))
     def read(value: JsValue): VisibleComponent = {
       value.asJsObject.getFields("visible") match {
-        case Seq(JsBoolean(visible)) => VisibleComponent.apply(visible)
+        case Seq(JsBoolean(visible)) => VisibleComponent(visible)
         case _ => throw DeserializationException("Collidable component expected")
       }
     }
@@ -49,7 +49,7 @@ object JsonProtocols {
     def write(dimension: DimensionComponent) = JsObject("radius" -> JsNumber(dimension.radius))
     def read(value: JsValue): DimensionComponent = {
       value.asJsObject.getFields("radius") match {
-        case Seq(JsNumber(radius)) => DimensionComponent.apply(radius.toDouble)
+        case Seq(JsNumber(radius)) => DimensionComponent(radius.toDouble)
         case _ => throw DeserializationException("Dimension component expected")
       }
     }
@@ -59,7 +59,7 @@ object JsonProtocols {
     def write(point: Point) = JsObject("x" -> JsNumber(point.x), "y" -> JsNumber(point.y))
     def read(value: JsValue): Point = {
       value.asJsObject.getFields("x","y") match {
-        case Seq(JsNumber(x), JsNumber(y)) => Point.apply(x.toDouble,y.toDouble)
+        case Seq(JsNumber(x), JsNumber(y)) => Point(x.toDouble,y.toDouble)
         case _ => throw DeserializationException("Point expected")
       }
     }
@@ -69,7 +69,7 @@ object JsonProtocols {
     def write(position: PositionComponent) = JsObject("point" -> position.point.toJson)
     def read(value: JsValue): PositionComponent = {
       value.asJsObject.getFields("point") match {
-        case Seq(point) => PositionComponent.apply(point.convertTo[Point])
+        case Seq(point) => PositionComponent(point.convertTo[Point])
         case _ => throw DeserializationException("Position component expected")
       }
     }
@@ -81,7 +81,7 @@ object JsonProtocols {
     def read(value: JsValue): SpeedComponent = {
       value.asJsObject.getFields("speedX","speedY") match {
         case Seq(JsNumber(speedX), JsNumber(speedY)) =>
-          SpeedComponent.apply(speedX.toDouble,speedY.toDouble)
+          SpeedComponent(speedX.toDouble,speedY.toDouble)
         case _ => throw DeserializationException("Speed component expected")
       }
     }
@@ -92,51 +92,70 @@ object JsonProtocols {
       JsObject("entity_type" ->  JsString(entityType.typeEntity.toString))
     def read(value: JsValue): TypeComponent = {
       value.asJsObject.getFields("entity_type") match {
-        case Seq(JsString(entityType)) => TypeComponent.apply(EntityType.withName(entityType))
+        case Seq(JsString(entityType)) => TypeComponent(EntityType.withName(entityType))
         case _ => throw DeserializationException("Type component component expected")
       }
     }
   }
 
-  implicit object CellEntityFormatter extends RootJsonFormat[CellEntity] {
-    def write(cellEntity: CellEntity) = JsObject(
-      "acceleration" -> cellEntity.getAccelerationComponent.toJson,
-      "collidable" -> cellEntity.getCollidableComponent.toJson,
-      "dimension" -> cellEntity.getDimensionComponent.toJson,
-      "position" -> cellEntity.getPositionComponent.toJson,
-      "speed" -> cellEntity.getSpeedComponent.toJson,
-      "visible" -> cellEntity.getVisibleComponent.toJson,
-      "typeEntity" -> cellEntity.getTypeComponent.toJson)
-    def read(value: JsValue): CellEntity = {
+  implicit object SpawnerFormatter extends RootJsonFormat[SpawnerComponent] {
+    def write(spawner: SpawnerComponent) = JsObject("canSpawn" -> JsBoolean(spawner.canSpawn))
+    def read(value: JsValue): SpawnerComponent = {
+      value.asJsObject.getFields("canSpawn") match {
+        case Seq(JsBoolean(canSpawn)) => SpawnerComponent(canSpawn)
+        case _ => throw DeserializationException("Spawner expected")
+      }
+    }
+  }
+
+  implicit val specificWeightFormatter:RootJsonFormat[SpecificWeightComponent] =
+                                  jsonFormat1(SpecificWeightComponent)
+
+  implicit object GravityCellEntityFormatter extends RootJsonFormat[GravityCellEntity] {
+    def write(gravityCell: GravityCellEntity) = JsObject(
+      "cellType" -> JsString(CellType.gravityCell),
+      "acceleration" -> gravityCell.getAccelerationComponent.toJson,
+      "collidable" -> gravityCell.getCollidableComponent.toJson,
+      "dimension" -> gravityCell.getDimensionComponent.toJson,
+      "position" -> gravityCell.getPositionComponent.toJson,
+      "speed" -> gravityCell.getSpeedComponent.toJson,
+      "visible" -> gravityCell.getVisibleComponent.toJson,
+      "typeEntity" -> gravityCell.getTypeComponent.toJson,
+      "specificWeight" -> gravityCell.getSpecificWeightComponent.toJson)
+    def read(value: JsValue): GravityCellEntity = {
       value.asJsObject.getFields("acceleration",
         "collidable",
         "dimension",
         "position",
         "speed",
         "visible",
-        "typeEntity") match {
-        case Seq(acceleration, collidable, dimension, position, speed, visible, typeEntity) =>
-          CellEntity.apply(acceleration.convertTo[AccelerationComponent],
+        "typeEntity",
+        "specificWeight") match {
+        case Seq(acceleration, collidable, dimension, position, speed, visible, typeEntity, specificWeight) =>
+          GravityCellEntity(acceleration.convertTo[AccelerationComponent],
             collidable.convertTo[CollidableComponent],
             dimension.convertTo[DimensionComponent],
             position.convertTo[PositionComponent],
             speed.convertTo[SpeedComponent],
             visible.convertTo[VisibleComponent],
-            typeEntity.convertTo[TypeComponent])
-        case _ => throw DeserializationException("Cell entity expected")
+            typeEntity.convertTo[TypeComponent],
+            specificWeight.convertTo[SpecificWeightComponent])
+        case _ => throw DeserializationException("Gravity cell entity expected")
       }
     }
   }
 
   implicit object PlayerCellEntityFormatter extends RootJsonFormat[PlayerCellEntity] {
     def write(playerCell: PlayerCellEntity) = JsObject(
+      "cellType" -> JsString(CellType.playerCell),
       "acceleration" -> playerCell.getAccelerationComponent.toJson,
       "collidable" -> playerCell.getCollidableComponent.toJson,
       "dimension" -> playerCell.getDimensionComponent.toJson,
       "position" -> playerCell.getPositionComponent.toJson,
       "speed" -> playerCell.getSpeedComponent.toJson,
       "visible" -> playerCell.getVisibleComponent.toJson,
-      "typeEntity" -> playerCell.getTypeComponent.toJson)
+      "typeEntity" -> playerCell.getTypeComponent.toJson,
+      "spawner" -> playerCell.getSpawnerComponent.toJson)
     def read(value: JsValue): PlayerCellEntity = {
       value.asJsObject.getFields("acceleration",
         "collidable",
@@ -144,36 +163,90 @@ object JsonProtocols {
         "position",
         "speed",
         "visible",
-        "typeEntity") match {
-        case Seq(acceleration, collidable, dimension, position, speed, visible, typeEntity) =>
-          PlayerCellEntity.apply(acceleration.convertTo[AccelerationComponent],
+        "typeEntity",
+        "spawner") match {
+        case Seq(acceleration, collidable, dimension, position, speed, visible, typeEntity, spawner) =>
+          PlayerCellEntity(acceleration.convertTo[AccelerationComponent],
             collidable.convertTo[CollidableComponent],
             dimension.convertTo[DimensionComponent],
             position.convertTo[PositionComponent],
             speed.convertTo[SpeedComponent],
             visible.convertTo[VisibleComponent],
             typeEntity.convertTo[TypeComponent],
-            SpawnerComponent(false))
+            spawner.convertTo[SpawnerComponent])
         case _ => throw DeserializationException("Player cell entity expected")
+      }
+    }
+  }
+
+  implicit object CellEntityFormatter extends RootJsonFormat[CellEntity] {
+    def write(cellEntity: CellEntity): JsValue = cellEntity match {
+      case gc : GravityCellEntity => gc.toJson
+      case pce : PlayerCellEntity => pce.toJson
+      case _ : CellEntity => JsObject( "cellType" -> JsString(CellType.basicCell),
+        "acceleration" -> cellEntity.getAccelerationComponent.toJson,
+        "collidable" -> cellEntity.getCollidableComponent.toJson,
+        "dimension" -> cellEntity.getDimensionComponent.toJson,
+        "position" -> cellEntity.getPositionComponent.toJson,
+        "speed" -> cellEntity.getSpeedComponent.toJson,
+        "visible" -> cellEntity.getVisibleComponent.toJson,
+        "typeEntity" -> cellEntity.getTypeComponent.toJson)
+      case _ => println("Cell ", cellEntity, " currently is not managed!"); JsObject()
+    }
+
+    def read(value: JsValue): CellEntity = {
+      value.asJsObject.getFields("cellType",
+        "acceleration",
+        "collidable",
+        "dimension",
+        "position",
+        "speed",
+        "visible",
+        "typeEntity") match {
+        case Seq(JsString(CellType.basicCell), acceleration,
+        collidable, dimension, position, speed, visible, typeEntity) =>
+          CellEntity(acceleration.convertTo[AccelerationComponent],
+            collidable.convertTo[CollidableComponent],
+            dimension.convertTo[DimensionComponent],
+            position.convertTo[PositionComponent],
+            speed.convertTo[SpeedComponent],
+            visible.convertTo[VisibleComponent],
+            typeEntity.convertTo[TypeComponent])
+        case Seq(JsString(CellType.gravityCell), _, _, _, _, _, _, _) =>
+          value.convertTo[GravityCellEntity]
+        case Seq(JsString(CellType.playerCell), _, _, _, _, _, _, _) =>
+          value.convertTo[PlayerCellEntity]
+        case _ => throw DeserializationException("Cell entity expected")
       }
     }
   }
 
   implicit object MapShapeFormatter extends RootJsonFormat[MapShape] {
     def write(mapShape: MapShape): JsObject = mapShape match {
-      case mapShape:MapShape.Rectangle => JsObject("mapShape" -> JsString(mapShape.mapShape),
+      case mapShape:MapShape.Rectangle => JsObject("centerX" -> JsNumber(mapShape.center._1),
+        "centerY" -> JsNumber(mapShape.center._2),
+        "mapShape" -> JsString(mapShape.mapShape),
         "height" -> JsNumber(mapShape.height),
         "base" -> JsNumber(mapShape.base))
-      case mapShape:MapShape.Circle => JsObject("mapShape" -> JsString(mapShape.mapShape),
+      case mapShape:MapShape.Circle => JsObject("centerX" -> JsNumber(mapShape.center._1),
+        "centerY" -> JsNumber(mapShape.center._2),
+        "mapShape" -> JsString(mapShape.mapShape),
         "radius" -> JsNumber(mapShape.radius))
       case _ => throw new SerializationException("Shape " + mapShape.mapShape + " not managed!")
     }
 
     def read(value: JsValue): MapShape = {
-      value.asJsObject.getFields("mapShape", "height", "base", "radius") match {
-        case Seq(JsString(MapShape.rectangle), JsNumber(height), JsNumber(base)) =>
-          MapShape.Rectangle(height.toDouble, base.toDouble)
-        case Seq(JsString(MapShape.circle), JsNumber(radius)) => MapShape.Circle(radius.toDouble)
+      value.asJsObject.getFields("centerX",
+        "centerY",
+        "mapShape",
+        "height",
+        "base",
+        "radius") match {
+        case Seq(JsNumber(centerX),JsNumber(centerY),JsString(MapShape.rectangle),
+        JsNumber(height), JsNumber(base)) =>
+          MapShape.Rectangle((centerX.toDouble, centerY.toDouble), height.toDouble, base.toDouble)
+        case Seq(JsNumber(centerX),JsNumber(centerY),JsString(MapShape.circle), JsNumber(radius)) =>
+          MapShape.Circle((centerX.toDouble, centerY.toDouble),radius.toDouble)
         case _ => throw DeserializationException("Map shape expected")
       }
     }

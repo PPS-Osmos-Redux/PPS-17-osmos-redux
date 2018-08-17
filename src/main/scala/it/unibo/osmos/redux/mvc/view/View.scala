@@ -36,8 +36,23 @@ object View {
       this.controller = Option(controller)
     }
 
-    override def onLevelContextSetup(levelContext: LevelContext): Unit = controller match {
-      case Some(c) => c.startLevel(levelContext)
+    override def onLevelContextSetup(levelContext: LevelContext, level: Int, simulation: Boolean): Unit = controller match {
+      case Some(c) => c.startLevel(levelContext, level, simulation)
+      case _ =>
+    }
+
+    override def onPauseLevel(): Unit = controller match {
+      case Some(c) => c.pauseLevel()
+      case _ =>
+    }
+
+    override def onResumeLevel(): Unit = controller match {
+      case Some(c) => c.resumeLevel()
+      case _ =>
+    }
+
+    override def onStopLevel(): Unit = controller match {
+      case Some(c) => c.stopLevel()
       case _ =>
     }
   }

@@ -6,7 +6,7 @@ import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.utils.{MathUtils, Point}
 
-case class MovementSystem(override val priority: Int, levelInfo: Level) extends AbstractSystem[MovableProperty](priority) {
+case class MovementSystem(levelInfo: Level) extends AbstractSystem[MovableProperty] {
 
   private val mapShape = levelInfo.levelMap.mapShape
   private val collisionRule = levelInfo.levelMap.collisionRule
@@ -111,7 +111,7 @@ case class MovementSystem(override val priority: Int, levelInfo: Level) extends 
     // TODO: consider adding data structure that keeps in memory prec position
     val precPosition = Point(currentPosition.x - speedComponent.speedX, currentPosition.y - speedComponent.speedY)
     val maxReachableDistance = levelRadius - entity.getDimensionComponent.radius
-    val currentDistanceFromCenter = MathUtils.distanceBetweenPoints(levelCenter, currentPosition)
+    val currentDistanceFromCenter = MathUtils.euclideanDistance(levelCenter, currentPosition)
 
     if (currentDistanceFromCenter > maxReachableDistance) {
       collisionRule match {
