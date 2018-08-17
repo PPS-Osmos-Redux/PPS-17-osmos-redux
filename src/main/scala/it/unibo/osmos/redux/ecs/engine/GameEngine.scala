@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.ecs.engine
 
-import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager}
+import it.unibo.osmos.redux.ecs.entities.EntityManager
 import it.unibo.osmos.redux.ecs.systems._
 import it.unibo.osmos.redux.mvc.model.Level
 import it.unibo.osmos.redux.mvc.view.levels.LevelContext
@@ -82,7 +82,7 @@ object GameEngine {
       clear()
 
       //register InputEventStack to the mouse event listener to collect input events
-      levelContext.registerMouseEventListener(e => { InputEventQueue.enqueue(e)})
+      levelContext.registerEventListener(e => { InputEventQueue.enqueue(e)})
 
       //create systems, add to list, the order in this collection is the final system order in the game loop
       val systems = ListBuffer[System]()
