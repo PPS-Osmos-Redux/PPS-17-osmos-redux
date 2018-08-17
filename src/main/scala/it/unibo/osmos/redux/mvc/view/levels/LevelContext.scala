@@ -74,6 +74,7 @@ object LevelContext {
       *
       * @param event the event
       */
+    //TODO: react properly to events (showing screen)
     override def onEvent(event: GameStateEventWrapper): Unit = gameCurrentState_=(event)
 }
 
