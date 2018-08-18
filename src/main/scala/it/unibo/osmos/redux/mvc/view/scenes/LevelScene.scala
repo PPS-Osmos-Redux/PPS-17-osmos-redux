@@ -187,11 +187,13 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
       /* Draw the background */
       canvas.graphicsContext2D.drawImage(backgroundImage, 0, 0, width.value, height.value)
       /* Draw the entities */
-      val player : DrawableWrapper = playerEntity.get
-      (entitiesWrappers ++ specialWrappers)foreach(e => e._1 match {
-        case `player` => playerCellDrawable.draw(e._1, e._2)
-        case _ => cellDrawable.draw(e._1, e._2)
-      })
+      playerEntity match  {
+        case Some(pe) => (entitiesWrappers ++ specialWrappers) foreach(e => e._1 match {
+          case `pe` => playerCellDrawable.draw(e._1, e._2)
+          case _ => cellDrawable.draw(e._1, e._2)
+        })
+        case _ => (entitiesWrappers ++ specialWrappers) foreach(e => cellDrawable.draw(e._1, e._2))
+      }
       /* Draw the map */
       mapDrawable match {
         case Some(map) => map.draw()
