@@ -8,8 +8,8 @@ import it.unibo.osmos.redux.utils.Point
 case class MovementSystem(levelInfo: Level) extends AbstractSystem[MovableProperty] {
 
   private val bounceRule = levelInfo.levelMap.mapShape match {
-    case shape: Rectangle => RectangularBorder(shape.base, shape.height)
-    case shape: Circle => CircularBorder(shape.radius)
+    case shape: Rectangle => RectangularBorder(Point(shape.center._1, shape.center._2), shape.base, shape.height)
+    case shape: Circle => CircularBorder(Point(shape.center._1, shape.center._2), shape.radius)
     case _ => throw new IllegalArgumentException
   }
   private val collisionRule = levelInfo.levelMap.collisionRule

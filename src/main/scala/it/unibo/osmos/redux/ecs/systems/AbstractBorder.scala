@@ -5,27 +5,29 @@ import it.unibo.osmos.redux.ecs.entities.{MovableProperty, Property}
 import it.unibo.osmos.redux.mvc.model.CollisionRules
 import it.unibo.osmos.redux.utils.{MathUtils, Point}
 
-abstract class AbstractBorder[A <: Property] {
+abstract class AbstractBorder[A <: Property](levelCenter: Point) {
 
   def checkCollision(entity: A, collisionRule: CollisionRules.Value): Unit
 }
 
-case class RectangularBorder(base: Double, height: Double) extends AbstractBorder[MovableProperty] {
+case class RectangularBorder(levelCenter: Point, base: Double, height: Double) extends AbstractBorder[MovableProperty](levelCenter) {
 
   override def checkCollision(entity: MovableProperty, collisionRule: CollisionRules.Value): Unit = {
     val dimensionComponent = entity.getDimensionComponent
     val entityRadius = dimensionComponent.radius
     val speedComponent = entity.getSpeedComponent
-    val maxHorizontalPoint = base - entityRadius
-    val maxVerticalPoint = height - entityRadius
+    val minHorizontalPoint = levelCenter.x - base / 2 + entityRadius
+    val minVerticalPoint = levelCenter.y - height / 2 + entityRadius
+    val maxHorizontalPoint = levelCenter.x + base / 2 - entityRadius
+    val maxVerticalPoint = levelCenter.y + height / 2 - entityRadius
     val positionComponent = entity.getPositionComponent
 
     collisionRule match {
       case CollisionRules.bouncing =>
         positionComponent.point match {
-          case p if p.x < entityRadius =>
+          case p if p.x < minHorizontalPoint =>
             speedComponent.speedX_(-speedComponent.speedX)
-            val newXPosition = entityRadius - (p.x - entityRadius)
+            val newXPosition = minHorizontalPoint - (p.x - minHorizontalPoint)
             positionComponent.point_(Point(newXPosition, p.y))
           case p if p.x > maxHorizontalPoint =>
             speedComponent.speedX_(-speedComponent.speedX)
@@ -34,9 +36,9 @@ case class RectangularBorder(base: Double, height: Double) extends AbstractBorde
           case _ => // no border collision, do nothing
         }
         positionComponent.point match {
-          case p if p.y < entityRadius =>
+          case p if p.y < minVerticalPoint =>
             speedComponent.speedY_(-speedComponent.speedY)
-            val newYPosition = entityRadius - (p.y - entityRadius)
+            val newYPosition = minVerticalPoint - (p.y - minVerticalPoint)
             positionComponent.point_(Point(p.x, newYPosition))
           case p if p.y > maxVerticalPoint =>
             speedComponent.speedY_(-speedComponent.speedY)
@@ -46,15 +48,15 @@ case class RectangularBorder(base: Double, height: Double) extends AbstractBorde
         }
       case CollisionRules.instantDeath =>
         positionComponent.point match {
-          case p if p.x < entityRadius =>
-            dimensionComponent.radius_(entityRadius - (entityRadius - p.x))
+          case p if p.x < minHorizontalPoint =>
+            dimensionComponent.radius_(entityRadius - (minHorizontalPoint - p.x))
           case p if p.x > maxHorizontalPoint =>
             dimensionComponent.radius_(entityRadius - (p.x - maxHorizontalPoint))
           case _ => // no border collision, do nothing
         }
         positionComponent.point match {
-          case p if p.y < entityRadius =>
-            dimensionComponent.radius_(entityRadius - (entityRadius - p.y))
+          case p if p.y < minVerticalPoint =>
+            dimensionComponent.radius_(entityRadius - (minVerticalPoint - p.y))
           case p if p.y > maxVerticalPoint =>
             dimensionComponent.radius_(entityRadius - (p.y - maxVerticalPoint))
           case _ => // no border collision, do nothing
@@ -64,7 +66,7 @@ case class RectangularBorder(base: Double, height: Double) extends AbstractBorde
   }
 }
 
-case class CircularBorder(levelRadius: Double) extends AbstractBorder[MovableProperty] {
+case class CircularBorder(levelCenter: Point, levelRadius: Double) extends AbstractBorder[MovableProperty](levelCenter) {
 
   private val cellElasticity: Double = 1.0
   private val borderElasticity: Double = 1.0
@@ -75,7 +77,7 @@ case class CircularBorder(levelRadius: Double) extends AbstractBorder[MovablePro
     val positionComponent = entity.getPositionComponent
     val currentPosition = positionComponent.point
 
-    val levelCenter = Point(levelRadius, levelRadius)
+    //val levelCenter = Point(levelRadius, levelRadius)
     // TODO: possible code repetition, add in MathUtils method to sum point to vector
     // TODO: consider adding data structure that keeps in memory prec position
     val precPosition = Point(currentPosition.x - speedComponent.speedX, currentPosition.y - speedComponent.speedY)
@@ -89,6 +91,7 @@ case class CircularBorder(levelRadius: Double) extends AbstractBorder[MovablePro
           // TODO: probably method name should be refactored to "computeNewPosition"
           // For better understanding see
           // http://gamedev.stackexchange.com/a/29658
+          println("levelradius ", levelRadius)
           val newPosition = find_contact_point(levelRadius, entity)
           positionComponent.point_(newPosition)
           // For better understanding see second answer
@@ -105,7 +108,7 @@ case class CircularBorder(levelRadius: Double) extends AbstractBorder[MovablePro
 
   private def find_contact_point(levelRadius: Double, entity: MovableProperty): Point = {
     val positionComponent = entity.getPositionComponent
-    val A = Point(levelRadius, levelRadius)
+    val A = levelCenter
     val B = Point(positionComponent.point.x - entity.getSpeedComponent.speedX, positionComponent.point.y - entity.getSpeedComponent.speedY)
     val C = positionComponent.point
     val R = levelRadius
