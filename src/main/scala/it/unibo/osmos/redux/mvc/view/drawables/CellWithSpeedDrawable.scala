@@ -9,7 +9,7 @@ import scalafx.scene.paint.Color
   * @param _image the image
   * @param graphicsContext the GraphicContext on which the Image will be drawn on
   */
-class CellTintDrawable(private var _image: Image, override val graphicsContext: GraphicsContext) extends CellDrawable(_image, graphicsContext) {
+class CellWithSpeedDrawable(private var _image: Image, override val graphicsContext: GraphicsContext) extends CellDrawable(_image, graphicsContext) {
 
   /**
     * Draws the cell on the canvas
@@ -24,7 +24,6 @@ class CellTintDrawable(private var _image: Image, override val graphicsContext: 
     //TODO: find a better way
     graphicsContext.strokeLine(dw.center.x, dw.center.y, dw.center.x + dw.speed._1 * dw.radius, dw.center.y + dw.speed._2 * dw.radius)
 
-    graphicsContext.fill = color
     /* Calling the super */
     super.draw(dw, color)
   }

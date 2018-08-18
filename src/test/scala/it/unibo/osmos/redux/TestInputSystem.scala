@@ -24,7 +24,6 @@ class TestInputSystem extends FunSuite {
 
     //setup level context
     val levelContext = LevelContext(null, true)
-    levelContext.setupLevel()
 
     //setup input system
     val system = InputSystem()
@@ -52,7 +51,6 @@ class TestInputSystem extends FunSuite {
 
     //setup level context
     val levelContext = LevelContext(null, true)
-    levelContext.setupLevel()
 
     //setup input system
     val system = InputSystem()

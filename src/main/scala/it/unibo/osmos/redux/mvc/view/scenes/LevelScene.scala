@@ -14,6 +14,7 @@ import scalafx.animation.FadeTransition
 import scalafx.application.Platform
 import scalafx.geometry.Pos
 import scalafx.scene.canvas.Canvas
+import scalafx.scene.image.Image
 import scalafx.scene.layout.VBox
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.Circle
@@ -70,8 +71,6 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
 
   /* We start the level */
   def startLevel(): Unit = {
-    /* The level gets immediately stopped */
-    listener.onPauseLevel()
     /* Splash screen animation, starting with a FadeIn */
     new FadeTransition(Duration.apply(2000), splashScreen) {
       fromValue = 0.0
@@ -86,8 +85,8 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
         onFinished = _ => new FadeTransition(Duration.apply(3000), canvas) {
           fromValue = 0.0
           toValue = 1.0
-          /* Removing the splash screen to reduce the load. Then the level is resumed */
-          onFinished = _ => content.remove(splashScreen); listener.onResumeLevel()
+          /* Removing the splash screen to reduce the load. Then the level is starte */
+          onFinished = _ => content.remove(splashScreen); listener.onStartLevel()
         }.play()
       }.play()
     }.play()
@@ -96,8 +95,9 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   /**
     * The images used to draw cells, background and level
     */
-  val cellDrawable: CellTintDrawable = new CellTintDrawable(ImageLoader.getImage("/textures/cell.png"), canvas.graphicsContext2D)
-  val backgroundDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage("/textures/background.png"), canvas.graphicsContext2D)
+  val cellDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage("/textures/cell.png"), canvas.graphicsContext2D)
+  val playerCellDrawable: CellDrawable = new CellWithSpeedDrawable(ImageLoader.getImage("/textures/cell.png"), canvas.graphicsContext2D)
+  val backgroundImage: Image = ImageLoader.getImage("/textures/background.png")
   var mapDrawable: Option[StaticImageDrawable] = Option.empty
 
   /**
@@ -185,9 +185,15 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
       /* Clear the screen */
       canvas.graphicsContext2D.clearRect(0, 0, width.value, height.value)
       /* Draw the background */
-      canvas.graphicsContext2D.drawImage(backgroundDrawable.image, 0, 0, width.value, height.value)
+      canvas.graphicsContext2D.drawImage(backgroundImage, 0, 0, width.value, height.value)
       /* Draw the entities */
-      (entitiesWrappers ++ specialWrappers)foreach(e => cellDrawable.draw(e._1, e._2))
+      playerEntity match  {
+        case Some(pe) => (entitiesWrappers ++ specialWrappers) foreach(e => e._1 match {
+          case `pe` => playerCellDrawable.draw(e._1, e._2)
+          case _ => cellDrawable.draw(e._1, e._2)
+        })
+        case _ => (entitiesWrappers ++ specialWrappers) foreach(e => cellDrawable.draw(e._1, e._2))
+      }
       /* Draw the map */
       mapDrawable match {
         case Some(map) => map.draw()
@@ -273,6 +279,11 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   * Trait which gets notified when a LevelScene event occurs
   */
 trait LevelSceneListener {
+
+  /**
+    * Called when the level gets started
+    */
+  def onStartLevel()
 
   /**
     * Called when the level gets paused

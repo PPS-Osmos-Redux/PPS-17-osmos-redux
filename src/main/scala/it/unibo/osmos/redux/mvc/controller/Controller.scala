@@ -11,9 +11,10 @@ import scala.util.Try
   * Controller base trait
   */
 trait Controller {
-  def startLevel(levelContext: LevelContext,
+  def initLevel(levelContext: LevelContext,
                  chosenLevel:Int,
                  isSimulation:Boolean)
+  def startLevel()
   def stopLevel()
   def pauseLevel()
   def resumeLevel()
@@ -23,7 +24,7 @@ trait Controller {
 case class ControllerImpl() extends Controller {
   var engine:Option[GameEngine] = None
 
-  override def startLevel(levelContext: LevelContext,
+  override def initLevel(levelContext: LevelContext,
                           chosenLevel:Int,
                           isSimulation:Boolean): Unit = {
 
@@ -33,7 +34,10 @@ case class ControllerImpl() extends Controller {
     if (isSimulation) loadedLevel.isSimulation = true
     if(engine.isEmpty) engine = Some(GameEngine())
     engine.get.init(loadedLevel, levelContext)
+    levelContext.setupLevel(loadedLevel.levelMap.mapShape)
   }
+
+  override def startLevel(): Unit = if (engine.isDefined) engine.get.start()
 
   override def stopLevel(): Unit = if (engine.isDefined) engine.get.stop()
 
