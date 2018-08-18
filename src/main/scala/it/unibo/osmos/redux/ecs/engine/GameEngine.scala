@@ -1,5 +1,9 @@
 package it.unibo.osmos.redux.ecs.engine
 
+import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager}
+import it.unibo.osmos.redux.ecs.systems.{CollisionSystem, DrawSystem, InputSystem, MovementSystem}
+import it.unibo.osmos.redux.mvc.model.MapShape.Rectangle
+import it.unibo.osmos.redux.mvc.model.{CollisionRules, Level, LevelMap, VictoryRules}
 import it.unibo.osmos.redux.ecs.entities.EntityManager
 import it.unibo.osmos.redux.ecs.systems._
 import it.unibo.osmos.redux.mvc.model.Level
@@ -87,7 +91,7 @@ object GameEngine {
       //create systems, add to list, the order in this collection is the final system order in the game loop
       val systems = ListBuffer[System]()
       if (!level.isSimulation) systems += InputSystem()
-      systems ++= List(GravitySystem(), MovementSystem(), CollisionSystem(), SpawnSystem(), DrawSystem(levelContext), CellsEliminationSystem())
+      systems ++= List(GravitySystem(), MovementSystem(level), CollisionSystem(), SpawnSystem(), DrawSystem(levelContext), CellsEliminationSystem())
       if(!level.isSimulation) systems += EndGameSystem(levelContext, level.victoryRule)
 
       //add all entities in the entity manager (systems are subscribed to EntityManager event when created)

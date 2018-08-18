@@ -5,31 +5,31 @@ apply plugin: 'application'
 
 version '1.0'
 
-mainClassName='it.unibo.osmos.redux.main.AppLauncher'
+mainClassName = 'it.unibo.osmos.redux.main.AppLauncher'
 sourceCompatibility = 1.8
 
 sourceSets {
     main {
         java {
-            srcDirs= ["src/main/java"]
+            srcDirs = ["src/main/java"]
         }
         resources {
-            srcDirs= ["src/main/resources"]
+            srcDirs = ["src/main/resources"]
         }
         scala {
-            srcDirs= ["src/main/scala"]
+            srcDirs = ["src/main/scala"]
         }
     }
 
     test {
         java {
-            srcDirs= ["src/test/java"]
+            srcDirs = ["src/test/java"]
         }
         resources {
-            srcDirs= ["src/test/resources"]
+            srcDirs = ["src/test/resources"]
         }
         scala {
-            srcDirs= ["src/test/scala"]
+            srcDirs = ["src/test/scala"]
         }
     }
 }

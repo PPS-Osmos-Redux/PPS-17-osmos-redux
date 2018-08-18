@@ -7,15 +7,17 @@ object MathUtils {
 
   /**
     * Returns the normalized value of a number between a min and a max
+    *
     * @param number the number
-    * @param min the min number
-    * @param max the max number
+    * @param min    the min number
+    * @param max    the max number
     * @return the normalized number between min and max
     */
-  def normalize(number: Double, min: Double, max: Double): Double = (number - min)/(max - min)
+  def normalize(number: Double, min: Double, max: Double): Double = (number - min) / (max - min)
 
   /**
     * Returns the normalized point.
+    *
     * @param point The point to normalize
     * @return The normalized point
     */
@@ -39,4 +41,9 @@ object MathUtils {
     * @return area
     */
   def circleArea(radius: Double): Double = Math.pow(radius, 2) * Math.PI
+
+  def isPointBetweenPoints(p: Point, p1: Point, p2: Point): Boolean = {
+    val distance = MathUtils.euclideanDistance(p1, p2)
+    MathUtils.euclideanDistance(p, p1) < distance && MathUtils.euclideanDistance(p, p2) < distance
+  }
 }
