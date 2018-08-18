@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.ecs.systems
 
-import it.unibo.osmos.redux.ecs.components.SpeedComponent
+import it.unibo.osmos.redux.ecs.components.{SpeedComponent, VectorComponent}
 import it.unibo.osmos.redux.ecs.entities.{MovableProperty, Property}
 import it.unibo.osmos.redux.mvc.model.CollisionRules
 import it.unibo.osmos.redux.utils.{MathUtils, Point}
@@ -66,6 +66,10 @@ case class RectangularBorder(base: Double, height: Double) extends AbstractBorde
 
 case class CircularBorder(levelRadius: Double) extends AbstractBorder[MovableProperty] {
 
+  private val cellElasticity: Double = 1.0
+  private val borderElasticity: Double = 1.0
+  private val restitution = cellElasticity * borderElasticity
+
   override def checkCollision(entity: MovableProperty, collisionRule: CollisionRules.Value): Unit = {
     val speedComponent = entity.getSpeedComponent
     val positionComponent = entity.getPositionComponent
@@ -81,23 +85,56 @@ case class CircularBorder(levelRadius: Double) extends AbstractBorder[MovablePro
     if (currentDistanceFromCenter > maxReachableDistance) {
       collisionRule match {
         case CollisionRules.bouncing =>
-          positionComponent.point_(computePositionAfterBounce(currentPosition, precPosition, levelRadius, levelCenter))
-          // TODO: test correctness
-          // http://stackoverflow.com/questions/573084/bounce-angle
-          val n = SpeedComponent(currentPosition.x - levelCenter.x, currentPosition.y - levelCenter.y)
-          val n_len = Math.sqrt(Math.pow(n.speedX, 2) + Math.pow(n.speedY, 2))
-          val n_normalized = SpeedComponent(n.speedX / n_len, n.speedY / n_len)
-          val dot = speedComponent.speedX * n_normalized.speedX + speedComponent.speedY * n_normalized.speedY
-          val u = SpeedComponent(n_normalized.speedX * dot, n_normalized.speedY * dot)
-          val w = SpeedComponent(speedComponent.speedX - u.speedX, speedComponent.speedY - u.speedY)
-          val v_after = SpeedComponent(w.speedX - u.speedX, w.speedY - u.speedY)
-          val reflection = SpeedComponent(v_after.speedX - speedComponent.speedX, v_after.speedY - speedComponent.speedY)
-          speedComponent.speedX_(speedComponent.speedX + reflection.speedX)
-          speedComponent.speedY_(speedComponent.speedY + reflection.speedY)
+          // positionComponent.point_(computePositionAfterBounce(currentPosition, precPosition, levelRadius, levelCenter))
+          // TODO: probably method name should be refactored to "computeNewPosition"
+          // For better understanding see
+          // http://gamedev.stackexchange.com/a/29658
+          val newPosition = find_contact_point(levelRadius, entity)
+          positionComponent.point_(newPosition)
+          // For better understanding see second answer
+          // https://stackoverflow.com/questions/573084/bounce-angle
+          val newSpeed = computeNewSpeed(positionComponent.point, levelCenter, speedComponent)
+          entity.getSpeedComponent.speedX_(newSpeed.speedX)
+          entity.getSpeedComponent.speedX_(newSpeed.speedY)
         case CollisionRules.instantDeath =>
         // TODO: implement annihilation case
         case _ => throw new IllegalArgumentException
       }
+    }
+  }
+
+  private def find_contact_point(levelRadius: Double, entity: MovableProperty): Point = {
+    val positionComponent = entity.getPositionComponent
+    val A = Point(levelRadius, levelRadius)
+    val B = Point(positionComponent.point.x - entity.getSpeedComponent.speedX, positionComponent.point.y - entity.getSpeedComponent.speedY)
+    val C = positionComponent.point
+    val R = levelRadius
+    val r = entity.getDimensionComponent.radius
+
+    val AB = VectorComponent(A.x - B.x, A.y - B.y)
+    val BC = VectorComponent(B.x - C.x, B.y - C.y)
+    val AB_len = AB.get_length
+    val BC_len = BC.get_length
+
+    if (BC_len == 0) {
+      C
+    } else {
+      val b = AB.dot(BC) / Math.pow(BC_len, 2) * -1
+      val c = (Math.pow(AB_len, 2) - Math.pow(R - r, 2)) / Math.pow(BC_len, 2)
+      val d = b * b - c
+      var k = b - Math.sqrt(d)
+
+      if (k < 0) {
+        k = b + Math.sqrt(d)
+      }
+
+      val BD = C.subtract(B)
+      val BD_len = BC_len * k
+      BD.set_length(BD_len)
+
+      // D
+      // B.add(BD)
+      Point(B.x + BD.getX, B.y + BD.getY)
     }
   }
 
@@ -146,4 +183,13 @@ case class CircularBorder(levelRadius: Double) extends AbstractBorder[MovablePro
     Point(2 * midPointX - currentPosition.x, 2 * midPointY - currentPosition.y)
   }
 
+  private def computeNewSpeed(currentPosition: Point, levelCenter: Point, speedComponent: SpeedComponent): SpeedComponent = {
+    val n = currentPosition.subtract(levelCenter).normalized()
+
+    val u = n.multiply(speedComponent.dot(n))
+    val w = currentPosition.subtract(u)
+    val v_after = w.subtract(u)
+    val reflection = v_after.subtract(currentPosition).multiply(restitution)
+    SpeedComponent(speedComponent.speedX + reflection.getX, speedComponent.speedY + reflection.getY)
+  }
 }
