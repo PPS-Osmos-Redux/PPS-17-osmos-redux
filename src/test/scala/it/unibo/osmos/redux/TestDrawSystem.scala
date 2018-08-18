@@ -3,6 +3,7 @@ package it.unibo.osmos.redux
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, DrawableProperty, EntityManager, PlayerCellEntity}
 import it.unibo.osmos.redux.ecs.systems.DrawSystem
+import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
 import it.unibo.osmos.redux.mvc.view.events.{EventWrapperListener, GameStateEventWrapper, MouseEventWrapper}
 import it.unibo.osmos.redux.mvc.view.levels.LevelContext
@@ -21,7 +22,7 @@ case class DrawSystemSpy() extends LevelContext {
 
   def entities: Seq[DrawableWrapper] = _entities
 
-  override def setupLevel(): Unit = ???
+  override def setupLevel(mapShape: MapShape): Unit = ???
 
   override def drawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = {
     _player = playerEntity

@@ -36,7 +36,7 @@ object View {
       this.controller = Option(controller)
     }
 
-    override def onLevelContextSetup(levelContext: LevelContext, level: Int, simulation: Boolean): Unit = controller match {
+    override def onLevelContextCreated(levelContext: LevelContext, level: Int, simulation: Boolean): Unit = controller match {
       case Some(c) => c.startLevel(levelContext, level, simulation)
       case _ =>
     }

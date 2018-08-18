@@ -41,7 +41,7 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
     // Changing scene scene
     parentStage.scene = levelScene
     // Notify the view the new context
-    listener.onLevelContextSetup(levelContext, level, simulation)
+    listener.onLevelContextCreated(levelContext, level, simulation)
   }
 
   override def onPauseLevel(): Unit = listener.onPauseLevel()
@@ -60,7 +60,7 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
 /**
   * Trait which gets notified when a LevelSelectionSceneListener event occurs
   */
-trait LevelSelectionSceneListener extends LevelSceneListener{
+trait LevelSelectionSceneListener extends LevelSceneListener {
 
   /**
     * This method called when the level context has been created
@@ -68,5 +68,5 @@ trait LevelSelectionSceneListener extends LevelSceneListener{
     * @param level the new level index
     * @param simulation true if the new level must be started as a simulation, false otherwise
     */
-  def onLevelContextSetup(levelContext: LevelContext, level: Int, simulation: Boolean)
+  def onLevelContextCreated(levelContext: LevelContext, level: Int, simulation: Boolean)
 }

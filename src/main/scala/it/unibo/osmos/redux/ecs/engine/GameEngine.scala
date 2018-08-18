@@ -95,6 +95,12 @@ object GameEngine {
 
       //init the gameloop
       gameLoop = Some(new GameLoop(this, systems.toList))
+
+      //start the loop
+      start()
+
+      //setup the level, passing the shape
+      levelContext.setupLevel(level.levelMap.mapShape)
     }
 
     override def start(): Unit = {
