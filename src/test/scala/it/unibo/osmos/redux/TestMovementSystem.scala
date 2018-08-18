@@ -4,23 +4,31 @@ import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager, PlayerCellEntity}
 import it.unibo.osmos.redux.ecs.systems.MovementSystem
 import it.unibo.osmos.redux.mvc.model.MapShape.Rectangle
-import it.unibo.osmos.redux.mvc.model.{CollisionRules, Level, LevelMap, VictoryRules}
+import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 class TestMovementSystem extends FunSuite with BeforeAndAfter {
-  private val levelInfo: Level = Level(1,
-    LevelMap(Rectangle((50, 75), 100, 150), CollisionRules.bouncing),
-    null,
-    VictoryRules.becomeTheBiggest,
-    false)
-  val movementSystem: MovementSystem = MovementSystem(levelInfo)
 
-  before {
+  var movementSystem: MovementSystem = _
+
+  after {
+    EntityManager.clear()
+  }
+
+  private def initEntityManager(mapShape: MapShape, collisionRules: CollisionRules.Value){
+    val levelInfo = Level(1,
+      LevelMap(mapShape, collisionRules),
+      null,
+      VictoryRules.becomeTheBiggest,
+      false)
+    movementSystem = MovementSystem(levelInfo)
     EntityManager.subscribe(movementSystem, null)
   }
 
   test("Test speed and position update") {
+    val mapShape = Rectangle((100, 150), 100, 150)
+    initEntityManager(mapShape, CollisionRules.bouncing)
 
     val ca = AccelerationComponent(1, 1)
     val cc = CollidableComponent(true)
@@ -56,11 +64,17 @@ class TestMovementSystem extends FunSuite with BeforeAndAfter {
   }
 
   test("Test rectangular shape field bouncing") {
+    val mapShape = Rectangle((160, 100), 100, 160)
+    initEntityManager(mapShape, CollisionRules.bouncing)
 
+    /*println(mapShape.base)
+    println(mapShape.height)
+    println(mapShape.center._1)
+    println(mapShape.center._2)*/
     val lcca = AccelerationComponent(0, 0)
     val lccc = CollidableComponent(true)
     val lccd = DimensionComponent(2)
-    val lccp = PositionComponent(Point(3, 6))
+    val lccp = PositionComponent(Point(83, 56))
     val lccs = SpeedComponent(-4, 2)
     val lccv = VisibleComponent(true)
     val lcct = TypeComponent(EntityType.Material)
@@ -69,8 +83,8 @@ class TestMovementSystem extends FunSuite with BeforeAndAfter {
     val rcca = AccelerationComponent(0, 0)
     val rccc = CollidableComponent(true)
     val rccd = DimensionComponent(7)
-    val rccp = PositionComponent(Point(140, 40))
-    val rccs = SpeedComponent(4, 0)
+    val rccp = PositionComponent(Point(231, 90))
+    val rccs = SpeedComponent(6, 0)
     val rccv = VisibleComponent(true)
     val rcct = TypeComponent(EntityType.Material)
     val rightCollisionCellEntity = CellEntity(rcca, rccc, rccd, rccp, rccs, rccv, rcct)
@@ -78,7 +92,7 @@ class TestMovementSystem extends FunSuite with BeforeAndAfter {
     val tcca = AccelerationComponent(0, 0)
     val tccc = CollidableComponent(true)
     val tccd = DimensionComponent(8)
-    val tccp = PositionComponent(Point(80, 10))
+    val tccp = PositionComponent(Point(160, 60))
     val tccs = SpeedComponent(6, -4)
     val tccv = VisibleComponent(true)
     val tcct = TypeComponent(EntityType.Material)
@@ -87,7 +101,7 @@ class TestMovementSystem extends FunSuite with BeforeAndAfter {
     val bcca = AccelerationComponent(0, 0)
     val bccc = CollidableComponent(true)
     val bccd = DimensionComponent(5)
-    val bccp = PositionComponent(Point(35, 94))
+    val bccp = PositionComponent(Point(115, 144))
     val bccs = SpeedComponent(-2, 7)
     val bccv = VisibleComponent(true)
     val bcct = TypeComponent(EntityType.Material)
@@ -100,17 +114,17 @@ class TestMovementSystem extends FunSuite with BeforeAndAfter {
 
     movementSystem.update()
 
-    assert(leftCollisionCellEntity.getSpeedComponent == SpeedComponent(4.0, 2.0))
-    assert(leftCollisionCellEntity.getPositionComponent.point == Point(5.0, 8.0))
+   assert(leftCollisionCellEntity.getSpeedComponent == SpeedComponent(4.0, 2.0))
+   assert(leftCollisionCellEntity.getPositionComponent.point == Point(85.0, 58.0))
 
-    assert(rightCollisionCellEntity.getSpeedComponent == SpeedComponent(-4.0, 0.0))
-    assert(rightCollisionCellEntity.getPositionComponent.point == Point(142.0, 40.0))
+    assert(rightCollisionCellEntity.getSpeedComponent == SpeedComponent(-6.0, 0.0))
+    assert(rightCollisionCellEntity.getPositionComponent.point == Point(229.0, 90.0))
 
     assert(topCollisionCellEntity.getSpeedComponent == SpeedComponent(6.0, 4.0))
-    assert(topCollisionCellEntity.getPositionComponent.point == Point(86.0, 10.0))
+    assert(topCollisionCellEntity.getPositionComponent.point == Point(166.0, 60.0))
 
     assert(bottomCollisionCellEntity.getSpeedComponent == SpeedComponent(-2.0, -7.0))
-    assert(bottomCollisionCellEntity.getPositionComponent.point == Point(33.0, 89.0))
+    assert(bottomCollisionCellEntity.getPositionComponent.point == Point(113.0, 139.0))
   }
 
   test("Test circular shape field bouncing") {
