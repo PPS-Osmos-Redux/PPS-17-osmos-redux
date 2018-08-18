@@ -71,8 +71,6 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
 
   /* We start the level */
   def startLevel(): Unit = {
-    /* The level gets immediately stopped */
-    listener.onPauseLevel()
     /* Splash screen animation, starting with a FadeIn */
     new FadeTransition(Duration.apply(2000), splashScreen) {
       fromValue = 0.0
@@ -87,8 +85,8 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
         onFinished = _ => new FadeTransition(Duration.apply(3000), canvas) {
           fromValue = 0.0
           toValue = 1.0
-          /* Removing the splash screen to reduce the load. Then the level is resumed */
-          onFinished = _ => content.remove(splashScreen); listener.onResumeLevel()
+          /* Removing the splash screen to reduce the load. Then the level is starte */
+          onFinished = _ => content.remove(splashScreen); listener.onStartLevel()
         }.play()
       }.play()
     }.play()
@@ -279,6 +277,11 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   * Trait which gets notified when a LevelScene event occurs
   */
 trait LevelSceneListener {
+
+  /**
+    * Called when the level gets started
+    */
+  def onStartLevel()
 
   /**
     * Called when the level gets paused

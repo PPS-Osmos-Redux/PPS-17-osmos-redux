@@ -44,6 +44,8 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
     listener.onLevelContextCreated(levelContext, level, simulation)
   }
 
+  override def onStartLevel(): Unit = listener.onStartLevel()
+
   override def onPauseLevel(): Unit = listener.onPauseLevel()
 
   override def onResumeLevel(): Unit = listener.onResumeLevel()
