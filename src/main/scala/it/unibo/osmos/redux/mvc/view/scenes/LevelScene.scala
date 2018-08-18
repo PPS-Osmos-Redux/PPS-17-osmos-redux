@@ -147,7 +147,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     fadeOutTransition.play()
 
     levelContext match {
-      case Some(lc) => lc pushEvent MouseEventWrapper(Point(mouseEvent.getX, mouseEvent.getY))
+      case Some(lc) => lc notifyMouseEvent MouseEventWrapper(Point(mouseEvent.getX, mouseEvent.getY))
       case _ =>
     }
   }

@@ -4,7 +4,7 @@ import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, DrawableProperty, EntityManager, PlayerCellEntity}
 import it.unibo.osmos.redux.ecs.systems.DrawSystem
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
-import it.unibo.osmos.redux.mvc.view.events.{EventWrapperListener, GameStateEventWrapper, MouseEventWrapper}
+import it.unibo.osmos.redux.mvc.view.events.{EventWrapperObserver, GameStateEventWrapper, MouseEventWrapper}
 import it.unibo.osmos.redux.mvc.view.levels.LevelContext
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.{BeforeAndAfter, FunSuite}
@@ -30,9 +30,9 @@ case class DrawSystemSpy() extends LevelContext {
 
   override def gameCurrentState: GameStateEventWrapper = ???
 
-  override def registerEventListener(eventListener: EventWrapperListener[MouseEventWrapper]): Unit = ???
+  override def registerEventListener(eventListener: EventWrapperObserver[MouseEventWrapper]): Unit = ???
 
-  override def unregisterEventListener(eventListener: EventWrapperListener[MouseEventWrapper]): Unit = ???
+  override def unregisterEventListener(eventListener: EventWrapperObserver[MouseEventWrapper]): Unit = ???
 
 
   override def pushEvent(event: MouseEventWrapper): Unit = ???
