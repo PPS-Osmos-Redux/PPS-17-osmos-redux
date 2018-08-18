@@ -1,11 +1,15 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
+import it.unibo.osmos.redux.ecs.components.EntityType
+import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities._
 import it.unibo.osmos.redux.mvc.view.components.{LevelStateBox, LevelStateBoxListener}
 import it.unibo.osmos.redux.mvc.view.drawables._
+import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
 import it.unibo.osmos.redux.mvc.view.levels.{LevelContext, LevelContextListener}
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import it.unibo.osmos.redux.utils.MathUtils._
+import it.unibo.osmos.redux.utils.Point
 import scalafx.animation.FadeTransition
 import scalafx.application.Platform
 import scalafx.geometry.Pos
@@ -62,32 +66,39 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
       fill = Color.White
     })
 
+  }
+
+  /* We start the level */
+  def startLevel(): Unit = {
+    /* The level gets immediately stopped */
+    listener.onPauseLevel()
     /* Splash screen animation, starting with a FadeIn */
-    new FadeTransition(Duration.apply(3000), this) {
+    new FadeTransition(Duration.apply(2000), splashScreen) {
       fromValue = 0.0
       toValue = 1.0
       autoReverse = true
       /* FadeOut */
-      onFinished = _ => new FadeTransition(Duration.apply(1500), splashScreen) {
+      onFinished = _ => new FadeTransition(Duration.apply(1000), splashScreen) {
         fromValue = 1.0
         toValue = 0.0
         autoReverse = true
         /* Showing the canvas */
-        onFinished = _ => new FadeTransition(Duration.apply(5000), canvas) {
+        onFinished = _ => new FadeTransition(Duration.apply(3000), canvas) {
           fromValue = 0.0
           toValue = 1.0
-          /* Removing the splash screen to reduce the load */
-          onFinished = _ => content.remove(splashScreen)
+          /* Removing the splash screen to reduce the load. Then the level is resumed */
+          onFinished = _ => content.remove(splashScreen); listener.onResumeLevel()
         }.play()
       }.play()
     }.play()
   }
 
   /**
-    * The images used to draw cells
+    * The images used to draw cells, background and level
     */
-  val cellDrawable: ImageDrawable = new ImageDrawable(ImageLoader.getImage("/textures/cell.png"), canvas.graphicsContext2D)
-  val backgroundDrawable: ImageDrawable = new ImageDrawable(ImageLoader.getImage("/textures/background.png"), canvas.graphicsContext2D)
+  val cellDrawable: CellTintDrawable = new CellTintDrawable(ImageLoader.getImage("/textures/cell.png"), canvas.graphicsContext2D)
+  val backgroundDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage("/textures/background.png"), canvas.graphicsContext2D)
+  var mapDrawable: Option[StaticImageDrawable] = Option.empty
 
   /**
     * The content of the whole scene
@@ -106,15 +117,19 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   override def onPause(): Unit = {
     pauseScreen.visible = true
     canvas.opacity = 0.5
+
+    listener.onPauseLevel()
   }
 
   override def onResume(): Unit = {
     pauseScreen.visible = false
     canvas.opacity = 1
+
+    listener.onResumeLevel()
   }
 
   override def onExit(): Unit = {
-    //TODO: add proper behaviour
+    listener.onStopLevel()
   }
 
   /**
@@ -132,14 +147,31 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     fadeOutTransition.play()
 
     levelContext match {
-      case Some(lc) => lc pushMouseEvent mouseEvent
+      case Some(lc) => lc pushEvent MouseEventWrapper(Point(mouseEvent.getX, mouseEvent.getY))
       case _ =>
     }
+  }
+
+  override def onLevelSetup(mapShape: MapShape): Unit = mapDrawable match {
+    case Some(e) => throw new IllegalStateException("Map has already been set")
+    case _ =>
+      val center = Point(mapShape.center._1, mapShape.center._2)
+      mapShape match {
+        case c: MapShape.Circle => mapDrawable = Option(new StaticImageDrawable(ImageLoader.getImage("/textures/cell.png"), center, c.radius, c.radius, canvas.graphicsContext2D))
+        case r: MapShape.Rectangle => mapDrawable = Option(new StaticImageDrawable(ImageLoader.getImage("/textures/cell.png"), center, r.base, r.height, canvas.graphicsContext2D))
+      }
+
+      /* Starting the level */
+      startLevel()
   }
 
   override def onDrawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = {
 
     var entitiesWrappers : Seq[(DrawableWrapper, Color)] = Seq()
+    var specialWrappers : Seq[(DrawableWrapper, Color)] = entities filter(e => e.entityType.equals(EntityType.Attractive) || e.entityType.equals(EntityType.Repulse)) map(e => e.entityType match {
+      case EntityType.Attractive => (e, attractiveCellColor)
+      case EntityType.Repulse => (e, repulsiveCellColor)
+    })
 
     playerEntity match {
       /* The player is present */
@@ -155,7 +187,12 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
       /* Draw the background */
       canvas.graphicsContext2D.drawImage(backgroundDrawable.image, 0, 0, width.value, height.value)
       /* Draw the entities */
-      entitiesWrappers foreach(e => cellDrawable.draw(e._1, e._2))
+      (entitiesWrappers ++ specialWrappers)foreach(e => cellDrawable.draw(e._1, e._2))
+      /* Draw the map */
+      mapDrawable match {
+        case Some(map) => map.draw()
+        case _ =>
+      }
     })
   }
 
@@ -197,10 +234,9 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
       case Nil => Seq()
       case _ =>
         /* Calculate the min and max radius among the entities, considering the player */
-        val allEntities = entities :+ playerEntity
-        val endRadius = getEntitiesExtremeRadiusValues(allEntities)
+        val endRadius = getEntitiesExtremeRadiusValues(entities)
 
-        allEntities map {
+        entities map {
           /* The entity has the same radius of the player so it will have the same color */
           case e if e.radius == playerEntity.radius => (e, playerColor)
           case e if e.radius < playerEntity.radius =>
@@ -226,6 +262,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     /* Retrieving the min and the max radius values */
     sorted match {
       case head +: _ :+ tail => (head.radius, tail.radius)
+      case head +: _ => (head.radius, head.radius)
       case _ => throw new IllegalArgumentException("Could not determine the min and max radius from an empty sequence of entities")
     }
   }
@@ -236,5 +273,20 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   * Trait which gets notified when a LevelScene event occurs
   */
 trait LevelSceneListener {
+
+  /**
+    * Called when the level gets paused
+    */
+  def onPauseLevel()
+
+  /**
+    * Called when the level gets resumed
+    */
+  def onResumeLevel()
+
+  /**
+    * Called when the level gets stopped
+    */
+  def onStopLevel()
 
 }

@@ -20,20 +20,13 @@ class TestInputSystem extends FunSuite {
 
   val dummyEvent = MouseEventWrapper(Point(157,104))
 
-  test("InputSystem priority must match the one passed at his constructor") {
-    val priority = 0
-    val system = InputSystem(priority)
-    assert(system.priority == priority)
-  }
-
   test("InputSystem updates entities acceleration correctly") {
 
     //setup level context
-    val levelContext = LevelContext(null,true)
-    levelContext.setupLevel()
+    val levelContext = LevelContext(null, true)
 
     //setup input system
-    val system = InputSystem(0)
+    val system = InputSystem()
 
     //add entities to the system using entity manager
     val pce = PlayerCellEntity(acceleration(0), collidable(0), dimension(0), position(0), speed(0), visibility(0), typeEntity(0), SpawnerComponent(false))
@@ -57,11 +50,10 @@ class TestInputSystem extends FunSuite {
   test("InputSystem should update only entities with input property") {
 
     //setup level context
-    val levelContext = LevelContext(null,true)
-    levelContext.setupLevel()
+    val levelContext = LevelContext(null, true)
 
     //setup input system
-    val system = InputSystem(0)
+    val system = InputSystem()
 
     //add entities to the system using entity manager
     val pce = PlayerCellEntity(acceleration(0), collidable(0), dimension(0), position(0), speed(0), visibility(0), typeEntity(0), SpawnerComponent(false))

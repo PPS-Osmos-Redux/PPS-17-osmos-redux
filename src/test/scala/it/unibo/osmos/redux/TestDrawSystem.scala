@@ -2,12 +2,12 @@ package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, DrawableProperty, EntityManager, PlayerCellEntity}
-import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
-import it.unibo.osmos.redux.mvc.view.events.MouseEventListener
-import it.unibo.osmos.redux.mvc.view.levels.LevelContext
 import it.unibo.osmos.redux.ecs.systems.DrawSystem
+import it.unibo.osmos.redux.mvc.model.MapShape
+import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
+import it.unibo.osmos.redux.mvc.view.events.{EventWrapperListener, GameStateEventWrapper, MouseEventWrapper}
+import it.unibo.osmos.redux.mvc.view.levels.LevelContext
 import it.unibo.osmos.redux.utils.Point
-import javafx.scene.input.MouseEvent
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 /**
@@ -19,26 +19,34 @@ case class DrawSystemSpy() extends LevelContext {
   private var _entities: Seq[DrawableWrapper] = Seq()
 
   def player: Option[DrawableWrapper] = _player
+
   def entities: Seq[DrawableWrapper] = _entities
 
-  override def setupLevel(): Unit = ???
+  override def setupLevel(mapShape: MapShape): Unit = ???
 
   override def drawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = {
     _player = playerEntity
     _entities = entities
   }
 
-  override def registerMouseEventListener(mouseEventListener: MouseEventListener): Unit = ???
+  override def gameCurrentState: GameStateEventWrapper = ???
 
-  override def unregisterMouseEventListener(mouseEventListener: MouseEventListener): Unit = ???
+  override def registerEventListener(eventListener: EventWrapperListener[MouseEventWrapper]): Unit = ???
 
-  override def pushMouseEvent(mouseEvent: MouseEvent): Unit = ???
+  override def unregisterEventListener(eventListener: EventWrapperListener[MouseEventWrapper]): Unit = ???
+
+
+  override def pushEvent(event: MouseEventWrapper): Unit = ???
+
+  override def onEvent(event: GameStateEventWrapper): Unit = ???
+
+  override def gameCurrentState_=(value: GameStateEventWrapper): Unit = ???
 }
 
 /**
   * Test for DrawSystem
   */
-class TestDrawSystem extends FunSuite with BeforeAndAfter{
+class TestDrawSystem extends FunSuite with BeforeAndAfter {
 
   val acceleration = AccelerationComponent(1, 1)
   val collidable = CollidableComponent(true)
@@ -55,42 +63,42 @@ class TestDrawSystem extends FunSuite with BeforeAndAfter{
 
   after(EntityManager.clear())
 
-  test("PlayerCellEntity not present"){
+  test("PlayerCellEntity not present") {
     val spy = DrawSystemSpy()
-    val system = DrawSystem(spy, 1)
+    val system = DrawSystem(spy)
     system.update()
     assert(spy.player.isEmpty)
   }
 
-  test("CellEntity enemies not present"){
+  test("CellEntity enemies not present") {
     val spy = DrawSystemSpy()
-    val system = DrawSystem(spy, 1)
+    val system = DrawSystem(spy)
     system.update()
     assert(spy.entities.isEmpty)
   }
 
-  test("PlayerCellEntity is present, but not visible"){
+  test("PlayerCellEntity is present, but not visible") {
     val spy = DrawSystemSpy()
-    val system = DrawSystem(spy, 1)
-    val pce = PlayerCellEntity(acceleration,collidable,dimension,position,speed,notVisible,typeEntity,spawner)
+    val system = DrawSystem(spy)
+    val pce = PlayerCellEntity(acceleration, collidable, dimension, position, speed, notVisible, typeEntity, spawner)
     EntityManager.add(pce)
     system.update()
     assert(spy.player.isEmpty)
   }
 
-  test("PlayerCellEntity is present and visible"){
+  test("PlayerCellEntity is present and visible") {
     val spy = DrawSystemSpy()
-    val system = DrawSystem(spy, 1)
-    val pce = PlayerCellEntity(acceleration,collidable,dimension,position,speed,visible,typeEntity,spawner)
+    val system = DrawSystem(spy)
+    val pce = PlayerCellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity, spawner)
     EntityManager.add(pce)
     system.update()
     assert(spy.player.isDefined)
   }
 
-  test("PlayerCellEntity correctly wrapped"){
+  test("PlayerCellEntity correctly wrapped") {
     val spy = DrawSystemSpy()
-    val system = DrawSystem(spy, 1)
-    val pce = PlayerCellEntity(acceleration,collidable,dimension,position,speed,visible,typeEntity,spawner)
+    val system = DrawSystem(spy)
+    val pce = PlayerCellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity, spawner)
     EntityManager.add(pce)
     system.update()
     val playerWrapped = spy.player.get
@@ -101,22 +109,22 @@ class TestDrawSystem extends FunSuite with BeforeAndAfter{
     assert(playerWrapped.speed._2 === speed.speedY)
   }
 
-  test("filter visible CellEntity"){
+  test("filter visible CellEntity") {
     val spy = DrawSystemSpy()
-    val system = DrawSystem(spy, 1)
-    val visibleCE = CellEntity(acceleration,collidable,dimension,position,speed,visible,typeEntity)
-    val notVisibleCE = CellEntity(acceleration,collidable,dimension1,position1,speed,notVisible,typeEntity)
+    val system = DrawSystem(spy)
+    val visibleCE = CellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity)
+    val notVisibleCE = CellEntity(acceleration, collidable, dimension1, position1, speed, notVisible, typeEntity)
     EntityManager.add(visibleCE)
     EntityManager.add(notVisibleCE)
     system.update()
     assert(spy.entities.size == 1)
   }
 
-  test("CellEntity enemies correctly wrapped"){
+  test("CellEntity enemies correctly wrapped") {
     val spy = DrawSystemSpy()
-    val system = DrawSystem(spy, 1)
-    val visibleCE = CellEntity(acceleration,collidable,dimension,position,speed,visible,typeEntity)
-    val visibleCE1 = CellEntity(acceleration,collidable,dimension1,position1,speed1,visible,typeEntity)
+    val system = DrawSystem(spy)
+    val visibleCE = CellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity)
+    val visibleCE1 = CellEntity(acceleration, collidable, dimension1, position1, speed1, visible, typeEntity)
     EntityManager.add(visibleCE)
     EntityManager.add(visibleCE1)
     system.update()

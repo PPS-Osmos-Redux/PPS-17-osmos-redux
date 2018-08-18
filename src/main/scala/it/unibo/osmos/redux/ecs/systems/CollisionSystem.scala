@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.ecs.systems
 import it.unibo.osmos.redux.ecs.entities.{CollidableProperty, Property}
 import it.unibo.osmos.redux.utils.MathUtils
 
-case class CollisionSystem(override val priority: Int) extends AbstractSystem[CollidableProperty](priority) {
+case class CollisionSystem() extends AbstractSystem[CollidableProperty] {
 
   //the percentage of mass that an entity can acquire from another during a collision in a tick
   private val massExchangeRate = 0.02
@@ -31,7 +31,7 @@ case class CollisionSystem(override val priority: Int) extends AbstractSystem[Co
     * @return The overlap amount.
     */
   private def computeOverlap(e1: CollidableProperty, e2: CollidableProperty): Double = {
-    val maxDist = MathUtils.distanceBetweenPoints(e1.getPositionComponent.point, e2.getPositionComponent.point)
+    val maxDist = MathUtils.euclideanDistance(e1.getPositionComponent.point, e2.getPositionComponent.point)
     val currDist = e1.getDimensionComponent.radius + e2.getDimensionComponent.radius
     if (maxDist < currDist) currDist - maxDist else 0
   }
@@ -81,10 +81,11 @@ case class CollisionSystem(override val priority: Int) extends AbstractSystem[Co
     val accel = entity.getAccelerationComponent
 
     //gain acceleration even if the entity is still
-    if (accel.accelerationX == 0) entity.getAccelerationComponent.accelerationX_(initialAcceleration * percentage) else {
+    if (accel.accelerationX == 0) {
+      entity.getAccelerationComponent.accelerationX_(initialAcceleration * percentage)
+      entity.getAccelerationComponent.accelerationY_(initialAcceleration * percentage)
+    } else {
       entity.getAccelerationComponent.accelerationX_(accel.accelerationX - accel.accelerationX * percentage)
-    }
-    if (accel.accelerationY == 0) entity.getAccelerationComponent.accelerationY_(initialAcceleration * percentage) else {
       entity.getAccelerationComponent.accelerationY_(accel.accelerationY - accel.accelerationY * percentage)
     }
   }

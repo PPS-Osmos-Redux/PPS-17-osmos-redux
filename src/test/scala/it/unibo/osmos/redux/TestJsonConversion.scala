@@ -2,6 +2,7 @@ package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities._
+import it.unibo.osmos.redux.mvc.controller.FileManager
 import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.mvc.model.MapShape._
 import it.unibo.osmos.redux.utils.Point
@@ -17,13 +18,15 @@ class TestJsonConversion extends FunSuite{
   val v = VisibleComponent(true)
   val et = TypeComponent(EntityType.Material)
   val sp = SpawnerComponent(true)
+  val sw = SpecificWeightComponent(1)
   //Entities
   val ce = CellEntity(a, c, d, p, s, v, et)
   val pce = PlayerCellEntity(a, c, d, p, s, v, et, sp)
-  val listCell:List[CellEntity] = List(ce, pce)
+  val gc = GravityCellEntity(a, c, d, p, s, v, et, sw)
+  val listCell:List[CellEntity] = List(ce, pce, gc)
   //LevelMap
-  val rectangle:MapShape = Rectangle(10.1,5.6)
-  val circle:MapShape = Circle(5.7)
+  val rectangle:MapShape = Rectangle((50,50),10.1,5.6)
+  val circle:MapShape = Circle((50.1,50.2), 5.7)
   val listShape:List[MapShape] = List(rectangle, circle)
   val levelMap:LevelMap = LevelMap(rectangle, CollisionRules.bouncing)
   //Level
@@ -51,6 +54,8 @@ class TestJsonConversion extends FunSuite{
     assert(jsVisible.convertTo[VisibleComponent].equals(v))
     val jsEntityType = et.toJson
     assert(jsEntityType.convertTo[TypeComponent].equals(et))
+    val jsSpecificWeight = sw.toJson
+    assert(jsSpecificWeight.convertTo[SpecificWeightComponent].equals(sw))
   }
 
   test("Cells conversion") {
@@ -58,11 +63,15 @@ class TestJsonConversion extends FunSuite{
     assert(jsCellEntity.convertTo[CellEntity].equals(ce))
     val jsPlayerCellEntity = pce.toJson
     assert(jsPlayerCellEntity.convertTo[PlayerCellEntity].equals(pce))
+    val jsGravityCell = gc.toJson
+    assert(jsGravityCell.convertTo[GravityCellEntity].equals(gc))
     val jsListCellEntities = listCell.toJson
     val convertedCellList = jsListCellEntities.convertTo[List[CellEntity]]
     assert(convertedCellList.size == listCell.size)
     assert(convertedCellList(1).getClass.equals(pce.getClass))
     assert(!convertedCellList.head.getClass.equals(pce.getClass))
+    assert(convertedCellList(2).getClass.equals(gc.getClass))
+    assert(!convertedCellList.head.getClass.equals(gc.getClass))
   }
 
   test("Map conversion") {
@@ -78,6 +87,18 @@ class TestJsonConversion extends FunSuite{
 
   test("Level conversion") {
     val jsLevel = level.toJson
+    val convertedLevel = jsLevel.convertTo[Level]
+    assert(convertedLevel.levelId.equals(level.levelId))
+    assert(convertedLevel.levelMap.equals(level.levelMap))
+    assert(convertedLevel.victoryRule.equals(level.victoryRule))
+    assert(convertedLevel.entities.size.equals(level.entities.size))
+  }
+
+  test("File reading and conversion") {
+    val fileContent = FileManager.loadResource(isSimulation = false,1)
+    assert(fileContent.isSuccess)
+    val jsLevel = fileContent.get.parseJson
+    assert(jsLevel.equals(jsLevel))
     val convertedLevel = jsLevel.convertTo[Level]
     assert(convertedLevel.levelId.equals(level.levelId))
     assert(convertedLevel.levelMap.equals(level.levelMap))
