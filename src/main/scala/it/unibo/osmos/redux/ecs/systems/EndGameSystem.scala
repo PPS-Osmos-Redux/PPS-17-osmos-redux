@@ -21,9 +21,9 @@ case class EndGameSystem(levelContext: GameStateHolder, /*isSimulation: Boolean,
       optionalPlayer match {
         case Some(player) =>
           if (victoryCondition.check(player, entities)) {
-            levelContext.gameCurrentState_=(GameWon)
+            levelContext.notify(GameWon)
           }
-        case None => levelContext.gameCurrentState_=(GameLost)
+        case None => levelContext.notify(GameLost)
       }
     }
   }
