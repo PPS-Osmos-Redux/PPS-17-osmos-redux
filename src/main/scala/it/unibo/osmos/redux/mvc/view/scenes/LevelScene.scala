@@ -14,6 +14,7 @@ import scalafx.animation.FadeTransition
 import scalafx.application.Platform
 import scalafx.geometry.Pos
 import scalafx.scene.canvas.Canvas
+import scalafx.scene.image.Image
 import scalafx.scene.layout.VBox
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.Circle
@@ -96,8 +97,9 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   /**
     * The images used to draw cells, background and level
     */
-  val cellDrawable: CellTintDrawable = new CellTintDrawable(ImageLoader.getImage("/textures/cell.png"), canvas.graphicsContext2D)
-  val backgroundDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage("/textures/background.png"), canvas.graphicsContext2D)
+  val cellDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage("/textures/cell.png"), canvas.graphicsContext2D)
+  val playerCellDrawable: CellDrawable = new CellWithSpeedDrawable(ImageLoader.getImage("/textures/cell.png"), canvas.graphicsContext2D)
+  val backgroundImage: Image = ImageLoader.getImage("/textures/background.png")
   var mapDrawable: Option[StaticImageDrawable] = Option.empty
 
   /**
@@ -185,9 +187,13 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
       /* Clear the screen */
       canvas.graphicsContext2D.clearRect(0, 0, width.value, height.value)
       /* Draw the background */
-      canvas.graphicsContext2D.drawImage(backgroundDrawable.image, 0, 0, width.value, height.value)
+      canvas.graphicsContext2D.drawImage(backgroundImage, 0, 0, width.value, height.value)
       /* Draw the entities */
-      (entitiesWrappers ++ specialWrappers)foreach(e => cellDrawable.draw(e._1, e._2))
+      val player : DrawableWrapper = playerEntity.get
+      (entitiesWrappers ++ specialWrappers)foreach(e => e._1 match {
+        case `player` => playerCellDrawable.draw(e._1, e._2)
+        case _ => cellDrawable.draw(e._1, e._2)
+      })
       /* Draw the map */
       mapDrawable match {
         case Some(map) => map.draw()
