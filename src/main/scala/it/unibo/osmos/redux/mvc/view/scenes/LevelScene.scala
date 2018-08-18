@@ -17,7 +17,7 @@ import scalafx.scene.canvas.Canvas
 import scalafx.scene.image.Image
 import scalafx.scene.layout.VBox
 import scalafx.scene.paint.Color
-import scalafx.scene.shape.Circle
+import scalafx.scene.shape.{Circle, Rectangle, Shape}
 import scalafx.scene.text.{Font, Text}
 import scalafx.stage.Stage
 import scalafx.util.Duration
@@ -98,7 +98,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   val cellDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage("/textures/cell.png"), canvas.graphicsContext2D)
   val playerCellDrawable: CellDrawable = new CellWithSpeedDrawable(ImageLoader.getImage("/textures/cell.png"), canvas.graphicsContext2D)
   val backgroundImage: Image = ImageLoader.getImage("/textures/background.png")
-  var mapDrawable: Option[StaticImageDrawable] = Option.empty
+  var mapBorder: Option[Shape] = Option.empty
 
   /**
     * The content of the whole scene
@@ -146,20 +146,40 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     }
     fadeOutTransition.play()
 
+    println("x: " + mouseEvent.getX + "y: " + mouseEvent.getY)
+
     levelContext match {
       case Some(lc) => lc notifyMouseEvent MouseEventWrapper(Point(mouseEvent.getX, mouseEvent.getY))
       case _ =>
     }
   }
 
-  override def onLevelSetup(mapShape: MapShape): Unit = mapDrawable match {
+  override def onLevelSetup(mapShape: MapShape): Unit = mapBorder match {
     case Some(e) => throw new IllegalStateException("Map has already been set")
     case _ =>
       val center = Point(mapShape.center._1, mapShape.center._2)
       mapShape match {
-        case c: MapShape.Circle => mapDrawable = Option(new StaticImageDrawable(ImageLoader.getImage("/textures/cell.png"), center, c.radius, c.radius, canvas.graphicsContext2D))
-        case r: MapShape.Rectangle => mapDrawable = Option(new StaticImageDrawable(ImageLoader.getImage("/textures/cell.png"), center, r.base, r.height, canvas.graphicsContext2D))
+        case c: MapShape.Circle => mapBorder = Option(new Circle {
+          centerX = center.x
+          centerY = center.y
+          radius = c.radius
+        })
+        case r: MapShape.Rectangle => mapBorder = Option(new Rectangle {
+          x = center.x - r.base / 2
+          y = center.y - r.height / 2
+          width = r.base
+          height = r.height
+        })
       }
+
+      /* Configuring the mapBorder */
+      mapBorder.get.fill = Color.Transparent
+      mapBorder.get.stroke = Color.White
+      mapBorder.get.strokeWidth = 2.0
+      mapBorder.get.opacity <== canvas.opacity
+
+      /* Adding the mapBorder */
+      content.add(mapBorder.get)
 
       /* Starting the level */
       startLevel()
@@ -195,10 +215,10 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
         case _ => (entitiesWrappers ++ specialWrappers) foreach(e => cellDrawable.draw(e._1, e._2))
       }
       /* Draw the map */
-      mapDrawable match {
+      /*mapDrawable match {
         case Some(map) => map.draw()
         case _ =>
-      }
+      }*/
     })
   }
 

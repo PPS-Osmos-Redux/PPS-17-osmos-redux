@@ -299,11 +299,10 @@
   },
   "levelMap": {
     "mapShape": {
-      "mapShape": "RECTANGLE",
-      "height": 300.1,
-      "base": 300.6,
-      "centerX": 400.0,
-      "centerY": 400.0
+      "mapShape": "CIRCLE",
+      "radius" : 300.0,
+      "centerX": 683.0,
+      "centerY": 384.0
     },
     "collisionRule": "Bouncing",
     "isSimulation":false
