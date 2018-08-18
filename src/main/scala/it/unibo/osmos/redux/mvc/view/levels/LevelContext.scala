@@ -32,11 +32,6 @@ trait GameStateHolder extends EventWrapperObserver[GameStateEventWrapper] {
     */
   def gameCurrentState: GameStateEventWrapper
 
-  /**
-    * Setter of the GameStateEventWrapper
-    * @param value a GameStateEventWrapper instance
-    */
-  def gameCurrentState_=(value: GameStateEventWrapper): Unit
 }
 
 object LevelContext {
