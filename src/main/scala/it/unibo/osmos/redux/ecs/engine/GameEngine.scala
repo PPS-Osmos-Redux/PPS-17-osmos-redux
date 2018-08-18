@@ -86,7 +86,7 @@ object GameEngine {
       clear()
 
       //register InputEventStack to the mouse event listener to collect input events
-      levelContext.registerEventListener(e => { InputEventQueue.enqueue(e)})
+      levelContext.subscribe(e => { InputEventQueue.enqueue(e)})
 
       //create systems, add to list, the order in this collection is the final system order in the game loop
       val systems = ListBuffer[System]()

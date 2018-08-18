@@ -3,8 +3,9 @@ package it.unibo.osmos.redux
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, DrawableProperty, EntityManager, PlayerCellEntity}
 import it.unibo.osmos.redux.ecs.systems.DrawSystem
+import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
-import it.unibo.osmos.redux.mvc.view.events.{EventWrapperListener, GameStateEventWrapper, MouseEventWrapper}
+import it.unibo.osmos.redux.mvc.view.events.{EventWrapperObserver, GameStateEventWrapper, MouseEventWrapper}
 import it.unibo.osmos.redux.mvc.view.levels.LevelContext
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.{BeforeAndAfter, FunSuite}
@@ -21,7 +22,7 @@ case class DrawSystemSpy() extends LevelContext {
 
   def entities: Seq[DrawableWrapper] = _entities
 
-  override def setupLevel(): Unit = ???
+  override def setupLevel(mapShape: MapShape): Unit = ???
 
   override def drawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = {
     _player = playerEntity
@@ -30,16 +31,13 @@ case class DrawSystemSpy() extends LevelContext {
 
   override def gameCurrentState: GameStateEventWrapper = ???
 
-  override def registerEventListener(eventListener: EventWrapperListener[MouseEventWrapper]): Unit = ???
+  override def subscribe(eventObserver: EventWrapperObserver[MouseEventWrapper]): Unit = ???
 
-  override def unregisterEventListener(eventListener: EventWrapperListener[MouseEventWrapper]): Unit = ???
+  override def unsubscribe(eventObserver: EventWrapperObserver[MouseEventWrapper]): Unit = ???
 
+  override def notify(event: GameStateEventWrapper): Unit = ???
 
-  override def pushEvent(event: MouseEventWrapper): Unit = ???
-
-  override def onEvent(event: GameStateEventWrapper): Unit = ???
-
-  override def gameCurrentState_=(value: GameStateEventWrapper): Unit = ???
+  override def notifyMouseEvent(event: MouseEventWrapper): Unit = ???
 }
 
 /**
