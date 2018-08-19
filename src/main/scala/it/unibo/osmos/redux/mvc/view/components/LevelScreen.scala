@@ -1,11 +1,12 @@
 package it.unibo.osmos.redux.mvc.view.components
 
+import javafx.event.{ActionEvent, EventHandler}
 import scalafx.geometry.Pos
 import scalafx.scene.control.Button
-import scalafx.scene.{Node, Scene}
 import scalafx.scene.layout.VBox
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, Text}
+import scalafx.scene.{Node, Scene}
 
 import scala.collection.mutable
 
@@ -26,9 +27,9 @@ object LevelScreen {
       this
     }
 
-    def withButton(text: String, onClick: => Unit): Builder = {
+    def withButton(text: String, onClick: EventHandler[ActionEvent]): Builder = {
       components += new Button(text) {
-        onAction = _ => onClick
+        onAction = onClick
       }
       this
     }
@@ -36,7 +37,7 @@ object LevelScreen {
     def build() : LevelScreenImpl = new LevelScreenImpl(parentScene, components)
   }
 
-  protected class LevelScreenImpl(parentScene: Scene, components: Seq[Node]) extends VBox {
+  protected class LevelScreenImpl(parentScene: Scene, components: Seq[Node]) extends VBox(spacing = 4) {
     prefWidth <== parentScene.width
     prefHeight <== parentScene.height
     alignment = Pos.Center

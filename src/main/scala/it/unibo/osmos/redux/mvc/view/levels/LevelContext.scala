@@ -86,7 +86,11 @@ object LevelContext {
     //TODO: react properly to events (showing screen)
     override def notify(event: GameStateEventWrapper): Unit = {
       gameCurrentState_=(event)
-      println(event)
+      gameCurrentState match {
+        case GameWon => listener.onLevelEnd(true)
+        case GameLost => listener.onLevelEnd(false)
+        case _ =>
+      }
     }
   }
 

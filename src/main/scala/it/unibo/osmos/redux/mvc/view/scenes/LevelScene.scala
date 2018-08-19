@@ -12,13 +12,10 @@ import it.unibo.osmos.redux.utils.MathUtils._
 import it.unibo.osmos.redux.utils.Point
 import scalafx.animation.FadeTransition
 import scalafx.application.Platform
-import scalafx.geometry.Pos
 import scalafx.scene.canvas.Canvas
 import scalafx.scene.image.Image
-import scalafx.scene.layout.VBox
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.{Circle, Rectangle, Shape}
-import scalafx.scene.text.{Font, Text}
 import scalafx.stage.Stage
 import scalafx.util.Duration
 
@@ -199,10 +196,26 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     })
   }
 
-  override def onLevelEnd(levelResult: Boolean): Unit = if (levelResult) {
+  override def onLevelEnd(levelResult: Boolean): Unit = {
+    val endScreen = LevelScreen.Builder(this)
+      .withText(if (!levelResult) "You won!" else "You lost.", 50, Color.White)
+      .withButton("Return to Level Selection", _ => onExit())
+      .build()
+    endScreen.opacity = 0.0
 
-  } else {
-
+    new FadeTransition(Duration.apply(3000), canvas) {
+      fromValue = 1.0
+      toValue = 0.0
+      onFinished = _ => {
+        /* Remove all the contents */
+        content.clear()
+        content.add(endScreen)
+        new FadeTransition(Duration.apply(3000), endScreen) {
+          fromValue = 0.0
+          toValue = 1.0
+        }.play()
+      }
+    }.play()
   }
 
   /**
