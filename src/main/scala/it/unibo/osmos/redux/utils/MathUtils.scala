@@ -28,6 +28,7 @@ object MathUtils {
 
   /**
     * Returns the Euclidean distance in 2D space
+    *
     * @param point1 first point
     * @param point2 second point
     * @return Euclidean distance
@@ -37,11 +38,21 @@ object MathUtils {
 
   /**
     * Returns the area of a circle of a given radius
+    *
     * @param radius the radius
     * @return area
     */
   def circleArea(radius: Double): Double = Math.pow(radius, 2) * Math.PI
 
+  /**
+    * Checks if a point is between other two points and it is
+    * on the straight line passing through these two points
+    *
+    * @param p the point to be verified
+    * @param p1 one of the boundary points
+    * @param p2 the other one
+    * @return result of the evaluation
+    */
   def isPointBetweenPoints(p: Point, p1: Point, p2: Point): Boolean = {
     val distance = MathUtils.euclideanDistance(p1, p2)
     MathUtils.euclideanDistance(p, p1) < distance && MathUtils.euclideanDistance(p, p2) < distance
