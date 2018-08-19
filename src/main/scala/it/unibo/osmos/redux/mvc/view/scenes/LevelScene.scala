@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.mvc.view.scenes
 import it.unibo.osmos.redux.ecs.components.EntityType
 import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities._
-import it.unibo.osmos.redux.mvc.view.components.{LevelStateBox, LevelStateBoxListener}
+import it.unibo.osmos.redux.mvc.view.components.{LevelSplashScreen, LevelStateBox, LevelStateBoxListener}
 import it.unibo.osmos.redux.mvc.view.drawables._
 import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
 import it.unibo.osmos.redux.mvc.view.levels.{LevelContext, LevelContextListener}
@@ -56,18 +56,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   /**
     * The splash screen showed when the game is paused
     */
-  val splashScreen : VBox = new VBox(){
-    prefWidth <== parentStage.width
-    prefHeight <== parentStage.height
-    alignment = Pos.Center
-    fill = Color.Black
-
-    children = Seq(new Text("Become the opposite of small") {
-      font = Font.font("Verdana", 40)
-      fill = Color.White
-    })
-
-  }
+  val splashScreen : VBox = new LevelSplashScreen(this,"Become huge", 50)
 
   /* We start the level */
   def startLevel(): Unit = {
@@ -146,8 +135,6 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     }
     fadeOutTransition.play()
 
-    println("x: " + mouseEvent.getX + "y: " + mouseEvent.getY)
-
     levelContext match {
       case Some(lc) => lc notifyMouseEvent MouseEventWrapper(Point(mouseEvent.getX, mouseEvent.getY))
       case _ =>
@@ -214,12 +201,13 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
         })
         case _ => (entitiesWrappers ++ specialWrappers) foreach(e => cellDrawable.draw(e._1, e._2))
       }
-      /* Draw the map */
-      /*mapDrawable match {
-        case Some(map) => map.draw()
-        case _ =>
-      }*/
     })
+  }
+
+  override def onLevelEnd(levelResult: Boolean): Unit = if (levelResult) {
+
+  } else {
+
   }
 
   /**

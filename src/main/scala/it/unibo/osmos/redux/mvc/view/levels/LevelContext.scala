@@ -71,6 +71,11 @@ object LevelContext {
 
     def gameCurrentState_=(value: GameStateEventWrapper): Unit = {
       _gameCurrentState = value
+      gameCurrentState match {
+        case GameWon => listener.onLevelEnd(true)
+        case GameLost => listener.onLevelEnd(false)
+        case _ =>
+      }
     }
 
     /**
@@ -79,7 +84,10 @@ object LevelContext {
       * @param event the event
       */
     //TODO: react properly to events (showing screen)
-    override def notify(event: GameStateEventWrapper): Unit = gameCurrentState_=(event)
+    override def notify(event: GameStateEventWrapper): Unit = {
+      gameCurrentState_=(event)
+      println(event)
+    }
   }
 
 }
@@ -100,4 +108,10 @@ trait LevelContextListener {
     * @param mapShape the level shape
     */
   def onLevelSetup(mapShape: MapShape)
+
+  /**
+    * Called once when the level ends.
+    * @param levelResult true if the player has won, false otherwise
+    */
+  def onLevelEnd(levelResult: Boolean)
 }
