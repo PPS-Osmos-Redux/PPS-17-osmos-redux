@@ -91,14 +91,13 @@ case class CircularBorder(levelCenter: Point, levelRadius: Double) extends Abstr
           // TODO: probably method name should be refactored to "computeNewPosition"
           // For better understanding see
           // http://gamedev.stackexchange.com/a/29658
-          println("levelradius ", levelRadius)
           val newPosition = find_contact_point(levelRadius, entity)
           positionComponent.point_(newPosition)
           // For better understanding see second answer
           // https://stackoverflow.com/questions/573084/bounce-angle
           val newSpeed = computeNewSpeed(positionComponent.point, levelCenter, speedComponent)
           entity.getSpeedComponent.speedX_(newSpeed.speedX)
-          entity.getSpeedComponent.speedX_(newSpeed.speedY)
+          entity.getSpeedComponent.speedY_(newSpeed.speedY)
         case CollisionRules.instantDeath =>
         // TODO: implement annihilation case
         case _ => throw new IllegalArgumentException
