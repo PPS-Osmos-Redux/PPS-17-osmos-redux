@@ -31,16 +31,13 @@ case class DrawSystemSpy() extends LevelContext {
 
   override def gameCurrentState: GameStateEventWrapper = ???
 
-  override def registerEventListener(eventListener: EventWrapperObserver[MouseEventWrapper]): Unit = ???
+  override def subscribe(eventObserver: EventWrapperObserver[MouseEventWrapper]): Unit = ???
 
-  override def unregisterEventListener(eventListener: EventWrapperObserver[MouseEventWrapper]): Unit = ???
+  override def unsubscribe(eventObserver: EventWrapperObserver[MouseEventWrapper]): Unit = ???
 
+  override def notify(event: GameStateEventWrapper): Unit = ???
 
-  override def pushEvent(event: MouseEventWrapper): Unit = ???
-
-  override def onEvent(event: GameStateEventWrapper): Unit = ???
-
-  override def gameCurrentState_=(value: GameStateEventWrapper): Unit = ???
+  override def notifyMouseEvent(event: MouseEventWrapper): Unit = ???
 }
 
 /**
