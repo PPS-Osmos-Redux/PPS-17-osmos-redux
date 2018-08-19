@@ -3,16 +3,23 @@ package it.unibo.osmos.redux
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager, PlayerCellEntity}
 import it.unibo.osmos.redux.ecs.systems.EndGameSystem
-import it.unibo.osmos.redux.mvc.model.VictoryRules
+import it.unibo.osmos.redux.mvc.model.{MapShape, VictoryRules}
+import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GamePending, GameWon}
-import it.unibo.osmos.redux.mvc.view.levels.LevelContext
+import it.unibo.osmos.redux.mvc.view.levels.{LevelContext, LevelContextListener}
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.FunSuite
 
 class TestEndGameSystem extends FunSuite {
 
+  private val levelContextListener = new LevelContextListener {
+    override def onDrawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = {}
+    override def onLevelSetup(mapShape: MapShape): Unit = {}
+    override def onLevelEnd(levelResult: Boolean): Unit = {}
+  }
+
   test("Test become the biggest victory") {
-    val levelContext = LevelContext(null, true)
+    val levelContext = LevelContext(levelContextListener, true)
     val endGameSystem = EndGameSystem(levelContext, VictoryRules.becomeTheBiggest)
 
     EntityManager.subscribe(endGameSystem, null)
@@ -47,7 +54,7 @@ class TestEndGameSystem extends FunSuite {
   }
 
   test("Test player death loss") {
-    val levelContext = LevelContext(null, true)
+    val levelContext = LevelContext(levelContextListener, true)
     val endGameSystem = EndGameSystem(levelContext, VictoryRules.becomeTheBiggest)
     EntityManager.subscribe(endGameSystem, null)
 
