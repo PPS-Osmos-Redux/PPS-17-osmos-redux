@@ -3,10 +3,14 @@ package it.unibo.osmos.redux.ecs.systems
 import it.unibo.osmos.redux.ecs.components.{SpeedComponent, VectorComponent}
 import it.unibo.osmos.redux.ecs.entities.{MovableProperty, Property}
 import it.unibo.osmos.redux.mvc.model.CollisionRules
-import it.unibo.osmos.redux.utils.{MathUtils, Point}
+import it.unibo.osmos.redux.utils.{MathUtils, Point, Vector}
 
 abstract class AbstractBorder[A <: Property](levelCenter: Point) {
 
+  private val cellElasticity: Double = 1.0
+  private val borderElasticity: Double = 1.0
+  protected val restitution: Double = cellElasticity * borderElasticity
+  
   def checkCollision(entity: A, collisionRule: CollisionRules.Value): Unit
 }
 
@@ -26,22 +30,22 @@ case class RectangularBorder(levelCenter: Point, base: Double, height: Double) e
       case CollisionRules.bouncing =>
         positionComponent.point match {
           case p if p.x < minHorizontalPoint =>
-            speedComponent.speedX_(-speedComponent.speedX)
+            speedComponent.vector.x_(-speedComponent.vector.x)
             val newXPosition = minHorizontalPoint - (p.x - minHorizontalPoint)
             positionComponent.point_(Point(newXPosition, p.y))
           case p if p.x > maxHorizontalPoint =>
-            speedComponent.speedX_(-speedComponent.speedX)
+            speedComponent.vector.x_(-speedComponent.vector.x)
             val newXPosition = maxHorizontalPoint - (p.x - maxHorizontalPoint)
             positionComponent.point_(Point(newXPosition, p.y))
           case _ => // no border collision, do nothing
         }
         positionComponent.point match {
           case p if p.y < minVerticalPoint =>
-            speedComponent.speedY_(-speedComponent.speedY)
+            speedComponent.vector.y_(-speedComponent.vector.y)
             val newYPosition = minVerticalPoint - (p.y - minVerticalPoint)
             positionComponent.point_(Point(p.x, newYPosition))
           case p if p.y > maxVerticalPoint =>
-            speedComponent.speedY_(-speedComponent.speedY)
+            speedComponent.vector.y_(-speedComponent.vector.y)
             val newYPosition = maxVerticalPoint - (p.y - maxVerticalPoint)
             positionComponent.point_(Point(p.x, newYPosition))
           case _ => // no border collision, do nothing
@@ -68,19 +72,13 @@ case class RectangularBorder(levelCenter: Point, base: Double, height: Double) e
 
 case class CircularBorder(levelCenter: Point, levelRadius: Double) extends AbstractBorder[MovableProperty](levelCenter) {
 
-  private val cellElasticity: Double = 1.0
-  private val borderElasticity: Double = 1.0
-  private val restitution = cellElasticity * borderElasticity
-
   override def checkCollision(entity: MovableProperty, collisionRule: CollisionRules.Value): Unit = {
     val speedComponent = entity.getSpeedComponent
     val positionComponent = entity.getPositionComponent
     val currentPosition = positionComponent.point
 
-    //val levelCenter = Point(levelRadius, levelRadius)
-    // TODO: possible code repetition, add in MathUtils method to sum point to vector
     // TODO: consider adding data structure that keeps in memory prec position
-    val precPosition = Point(currentPosition.x - speedComponent.speedX, currentPosition.y - speedComponent.speedY)
+    val precPosition = Point(currentPosition.x - speedComponent.vector.x, currentPosition.y - speedComponent.vector.y)
     val maxReachableDistance = levelRadius - entity.getDimensionComponent.radius
     val currentDistanceFromCenter = MathUtils.euclideanDistance(levelCenter, currentPosition)
 
@@ -96,8 +94,8 @@ case class CircularBorder(levelCenter: Point, levelRadius: Double) extends Abstr
           // For better understanding see second answer
           // https://stackoverflow.com/questions/573084/bounce-angle
           val newSpeed = computeNewSpeed(positionComponent.point, levelCenter, speedComponent)
-          entity.getSpeedComponent.speedX_(newSpeed.speedX)
-          entity.getSpeedComponent.speedY_(newSpeed.speedY)
+          entity.getSpeedComponent.vector.x_(newSpeed.x)
+          entity.getSpeedComponent.vector.y_(newSpeed.y)
         case CollisionRules.instantDeath =>
         // TODO: implement annihilation case
         case _ => throw new IllegalArgumentException
@@ -108,13 +106,13 @@ case class CircularBorder(levelCenter: Point, levelRadius: Double) extends Abstr
   private def find_contact_point(levelRadius: Double, entity: MovableProperty): Point = {
     val positionComponent = entity.getPositionComponent
     val A = levelCenter
-    val B = Point(positionComponent.point.x - entity.getSpeedComponent.speedX, positionComponent.point.y - entity.getSpeedComponent.speedY)
+    val B = Point(positionComponent.point.x - entity.getSpeedComponent.vector.x, positionComponent.point.y - entity.getSpeedComponent.vector.y)
     val C = positionComponent.point
     val R = levelRadius
     val r = entity.getDimensionComponent.radius
 
-    val AB = VectorComponent(A.x - B.x, A.y - B.y)
-    val BC = VectorComponent(B.x - C.x, B.y - C.y)
+    val AB = Vector(A.x - B.x, A.y - B.y)
+    val BC = Vector(B.x - C.x, B.y - C.y)
     val AB_len = AB.get_length
     val BC_len = BC.get_length
 
@@ -132,66 +130,24 @@ case class CircularBorder(levelCenter: Point, levelRadius: Double) extends Abstr
 
       val BD = C.subtract(B)
       val BD_len = BC_len * k
-      BD.set_length(BD_len)
+      val BD_length = BD.set_length(BD_len)
 
       // D
       // B.add(BD)
-      Point(B.x + BD.getX, B.y + BD.getY)
+      Point(B.x + BD_length.x, B.y + BD_length.y)
     }
   }
 
-  private def computePositionAfterBounce(currentPosition: Point, precPosition: Point, levelRadius: Double, levelCenter: Point): Point = {
-    val straightLine = GeometricalStraightLine(currentPosition, precPosition)
-    val circumference = GeometricalCircumference(levelCenter, levelRadius)
+  private def computeNewSpeed(currentPosition: Point, levelCenter: Point, speedComponent: SpeedComponent): Vector = {
+    val world_pt = levelCenter
+    val ball_pt = currentPosition
+    val v = speedComponent.vector
+    val n = ball_pt.subtract(world_pt).normalized()
 
-    // computing intersection between straight line and circumference
-    val eq_a = 1 + Math.pow(straightLine.m, 2)
-    val eq_b = 2 * straightLine.m * straightLine.q + circumference.a + circumference.b * straightLine.m
-    val eq_c = Math.pow(straightLine.q, 2) + circumference.b * straightLine.q + circumference.c
-    val delta = Math.pow(eq_b, 2) - 4 * eq_a * eq_c
-
-    // x1,x2 = (-b ± sqrt(Δ) / 2 * a)
-    val x_1 = (-eq_b + Math.sqrt(delta)) / 2 * eq_a
-    val y_1 = straightLine.m * x_1 + straightLine.q
-    val p_1 = Point(x_1, y_1)
-
-    var tangentToCircumference: GeometricalStraightLine = null
-
-    MathUtils.isPointBetweenPoints(p_1, precPosition, currentPosition) match {
-      case true =>
-        val straightLineFromCenterToP_1 = GeometricalStraightLine(p_1, levelCenter)
-        val tang_m = -1 / straightLineFromCenterToP_1.m
-        val tang_q = straightLineFromCenterToP_1.q
-        tangentToCircumference = GeometricalStraightLine(tang_m, tang_q)
-      case false =>
-        // must compute second result
-        val x_2 = (-eq_b - Math.sqrt(delta)) / 2 * eq_a
-        val y_2 = straightLine.m * x_2 + straightLine.q
-        val p_2 = Point(x_2, y_2)
-
-        val straightLineFromCenterToP_2 = GeometricalStraightLine(p_2, levelCenter)
-        val tang_m = -1 / straightLineFromCenterToP_2.m
-        val tang_q = straightLineFromCenterToP_2.q
-        tangentToCircumference = GeometricalStraightLine(tang_m, tang_q)
-    }
-
-    val perpendicular_m = -1 / tangentToCircumference.m
-    val perpendicular_q = 1 / tangentToCircumference.m * currentPosition.x + currentPosition.y
-    val perpendicularOfTangent = GeometricalStraightLine(perpendicular_m, perpendicular_q)
-
-    val midPointX = (perpendicularOfTangent.q - tangentToCircumference.q) / (perpendicularOfTangent.m - tangentToCircumference.m)
-    val midPointY = tangentToCircumference.m * midPointX + tangentToCircumference.q
-
-    Point(2 * midPointX - currentPosition.x, 2 * midPointY - currentPosition.y)
-  }
-
-  private def computeNewSpeed(currentPosition: Point, levelCenter: Point, speedComponent: SpeedComponent): SpeedComponent = {
-    val n = currentPosition.subtract(levelCenter).normalized()
-
-    val u = n.multiply(speedComponent.dot(n))
-    val w = currentPosition.subtract(u)
+    val u = n.multiply(v.dot(n))
+    val w = v.subtract(u)
     val v_after = w.subtract(u)
-    val reflection = v_after.subtract(currentPosition).multiply(restitution)
-    SpeedComponent(speedComponent.speedX + reflection.getX, speedComponent.speedY + reflection.getY)
+    val reflection = v_after.subtract(v).multiply(restitution)
+    Vector(speedComponent.vector.x + reflection.x, speedComponent.vector.y + reflection.y)
   }
 }

@@ -1,7 +1,5 @@
 package it.unibo.osmos.redux.utils
 
-import it.unibo.osmos.redux.ecs.components.VectorComponent
-
 /**
   * Cartesian point
   */
@@ -21,9 +19,9 @@ trait Point {
     */
   def y: Double
 
-  def subtract(p2: Point): VectorComponent
+  def subtract(p2: Point): Vector
 
-  def subtract(p2: VectorComponent): VectorComponent
+  def subtract(p2: Vector): Vector
 }
 
 object Point {
@@ -31,9 +29,9 @@ object Point {
 
   private case class PointImpl(override val x: Double, override val y: Double) extends Point {
 
-    override def subtract(p2: Point): VectorComponent = VectorComponent(x - p2.x, y - p2.y)
+    override def subtract(p2: Point): Vector = Vector(x - p2.x, y - p2.y)
 
-    override def subtract(p2: VectorComponent): VectorComponent = VectorComponent(x - p2.getX, y - p2.getY)
+    override def subtract(p2: Vector): Vector = Vector(x - p2.x, y - p2.y)
   }
 
 }
