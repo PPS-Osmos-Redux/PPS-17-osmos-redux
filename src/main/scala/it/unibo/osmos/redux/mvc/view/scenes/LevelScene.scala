@@ -12,6 +12,7 @@ import it.unibo.osmos.redux.utils.MathUtils._
 import it.unibo.osmos.redux.utils.Point
 import scalafx.animation.FadeTransition
 import scalafx.application.Platform
+import scalafx.beans.property.BooleanProperty
 import scalafx.scene.canvas.Canvas
 import scalafx.scene.image.Image
 import scalafx.scene.paint.Color
@@ -26,6 +27,11 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   with LevelContextListener with LevelStateBoxListener {
 
   /**
+    * The current game pending state: true if the game is paused
+    */
+  private var paused: BooleanProperty = BooleanProperty(false)
+
+  /**
     * The canvas which will draw the elements on the screen
     */
   private val canvas: Canvas = new Canvas(parentStage.getWidth, parentStage.getHeight) {
@@ -36,12 +42,12 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   }
 
   /**
-    * The screen showed when the game is paused
+    * The screen showed when the game is paused (with a bound property)
     */
   private val pauseScreen = LevelScreen.Builder(this)
     .withText("Game paused", 30, Color.White)
     .build()
-  pauseScreen.visible = false
+  pauseScreen.visible <== paused
 
   /**
     * The splash screen showed when the game is paused
@@ -90,20 +96,18 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     * The level context, created with the LevelScene. It still needs to be properly setup
     */
   private var _levelContext: Option[LevelContext] = Option.empty
-
   def levelContext: Option[LevelContext] = _levelContext
-
   def levelContext_= (levelContext: LevelContext): Unit = _levelContext = Option(levelContext)
 
   override def onPause(): Unit = {
-    pauseScreen.visible = true
+    paused.value = true
     canvas.opacity = 0.5
 
     listener.onPauseLevel()
   }
 
   override def onResume(): Unit = {
-    pauseScreen.visible = false
+    paused.value = false
     canvas.opacity = 1
 
     listener.onResumeLevel()
@@ -114,7 +118,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   }
 
   /**
-    * OnMouseClicked handler
+    * OnMouseClicked handler, reacting only if the game is not paused
     */
   onMouseClicked = mouseEvent => {
     /* Creating a circle representing the player click */
@@ -128,7 +132,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     fadeOutTransition.play()
 
     levelContext match {
-      case Some(lc) => lc notifyMouseEvent MouseEventWrapper(Point(mouseEvent.getX, mouseEvent.getY))
+      case Some(lc) => if (!paused.value) lc notifyMouseEvent MouseEventWrapper(Point(mouseEvent.getX, mouseEvent.getY))
       case _ =>
     }
   }
@@ -197,17 +201,19 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   }
 
   override def onLevelEnd(levelResult: Boolean): Unit = {
+    /* Creating an end screen with a button */
     val endScreen = LevelScreen.Builder(this)
       .withText(if (!levelResult) "You won!" else "You lost.", 50, Color.White)
       .withButton("Return to Level Selection", _ => onExit())
       .build()
     endScreen.opacity = 0.0
 
+    /* Fade in/fade out transition */
     new FadeTransition(Duration.apply(3000), canvas) {
       fromValue = 1.0
       toValue = 0.0
       onFinished = _ => {
-        /* Remove all the contents */
+        /* Remove all the contents and add the end screen */
         content.clear()
         content.add(endScreen)
         new FadeTransition(Duration.apply(3000), endScreen) {

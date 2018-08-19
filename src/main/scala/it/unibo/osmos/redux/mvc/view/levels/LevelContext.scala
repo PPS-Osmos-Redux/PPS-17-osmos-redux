@@ -83,7 +83,6 @@ object LevelContext {
       *
       * @param event the event
       */
-    //TODO: react properly to events (showing screen)
     override def notify(event: GameStateEventWrapper): Unit = {
       gameCurrentState_=(event)
       gameCurrentState match {
