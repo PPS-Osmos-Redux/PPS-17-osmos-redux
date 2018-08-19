@@ -102,8 +102,8 @@ class TestDrawSystem extends FunSuite with BeforeAndAfter {
     assert(playerWrapped.center.equals(pce.getPositionComponent.point))
     assert(playerWrapped.radius.equals(pce.getDimensionComponent.radius))
     assert(playerWrapped.entityType.equals(pce.getTypeComponent.typeEntity))
-    assert(playerWrapped.speed._1 === speed.speedX)
-    assert(playerWrapped.speed._2 === speed.speedY)
+    assert(playerWrapped.speed._1 === speed.vector.x)
+    assert(playerWrapped.speed._2 === speed.vector.y)
   }
 
   test("filter visible CellEntity") {
@@ -133,7 +133,7 @@ class TestDrawSystem extends FunSuite with BeforeAndAfter {
     assert(enemiesWrapped.exists(p => p.center.equals(enemy.getPositionComponent.point) &&
       p.radius.equals(enemy.getDimensionComponent.radius) &&
       p.entityType.equals(enemy.getTypeComponent.typeEntity) &&
-      p.speed._1 === enemy.getSpeedComponent.speedX &&
-      p.speed._2 === enemy.getSpeedComponent.speedY))
+      p.speed._1 === enemy.getSpeedComponent.vector.x &&
+      p.speed._2 === enemy.getSpeedComponent.vector.y))
   }
 }

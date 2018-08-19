@@ -24,6 +24,6 @@ case class DrawSystem(entitiesDrawer: EntitiesDrawer) extends AbstractSystemWith
   private def drawablePropertyToDrawableWrapper(entity: DrawableProperty): DrawableWrapper =
     DrawableWrapper(entity.getPositionComponent.point,
                     entity.getDimensionComponent.radius,
-                    (entity.getSpeedComponent.speedX, entity.getSpeedComponent.speedY),
+                    (entity.getSpeedComponent.vector.x, entity.getSpeedComponent.vector.y),
                     entity.getTypeComponent.typeEntity)
 }

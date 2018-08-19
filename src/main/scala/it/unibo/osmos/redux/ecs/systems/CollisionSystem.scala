@@ -81,12 +81,12 @@ case class CollisionSystem() extends AbstractSystem[CollidableProperty] {
     val accel = entity.getAccelerationComponent
 
     //gain acceleration even if the entity is still
-    if (accel.accelerationX == 0) {
-      entity.getAccelerationComponent.accelerationX_(initialAcceleration * percentage)
-      entity.getAccelerationComponent.accelerationY_(initialAcceleration * percentage)
+    if (accel.vector.x == 0) {
+      entity.getAccelerationComponent.vector.x_(initialAcceleration * percentage)
+      entity.getAccelerationComponent.vector.y_(initialAcceleration * percentage)
     } else {
-      entity.getAccelerationComponent.accelerationX_(accel.accelerationX - accel.accelerationX * percentage)
-      entity.getAccelerationComponent.accelerationY_(accel.accelerationY - accel.accelerationY * percentage)
+      entity.getAccelerationComponent.vector.x_(accel.vector.x - accel.vector.x * percentage)
+      entity.getAccelerationComponent.vector.y_(accel.vector.y - accel.vector.y * percentage)
     }
   }
 }
