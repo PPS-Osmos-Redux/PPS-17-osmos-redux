@@ -4,11 +4,22 @@ import it.unibo.osmos.redux.ecs.entities.{DeathProperty, Property}
 
 import scala.collection.mutable.ListBuffer
 
+/** Abstract class for victory condition strategy
+  *
+  * @tparam A
+  */
 abstract class AbstractVictoryCondition[A <: Property] {
 
+  /** Checks if the victory condition is fulfilled
+    *
+    * @param playerCellEntity player's entity
+    * @param entityList       entities present in this game instant
+    * @return the evaluation result
+    */
   protected def check(playerCellEntity: A, entityList: ListBuffer[A]): Boolean
 }
 
+/** class implementing become the biggest victory condition */
 case class BecomeTheBiggestVictoryCondition() extends AbstractVictoryCondition[DeathProperty] {
 
   override def check(playerCellEntity: DeathProperty, entityList: ListBuffer[DeathProperty]): Boolean = {
@@ -17,6 +28,7 @@ case class BecomeTheBiggestVictoryCondition() extends AbstractVictoryCondition[D
   }
 }
 
+/** class implementing become huge victory condition */
 case class BecomeHugeVictoryCondition() extends AbstractVictoryCondition[DeathProperty] {
 
   // TODO: adjust the value
@@ -30,6 +42,7 @@ case class BecomeHugeVictoryCondition() extends AbstractVictoryCondition[DeathPr
   }
 }
 
+/** class implementing absorb hostile cells victory condition */
 case class AbsorbHostileCellsVictoryCondition() extends AbstractVictoryCondition[DeathProperty] {
 
   override def check(playerCellEntity: DeathProperty, entityList: ListBuffer[DeathProperty]): Boolean = {
@@ -38,6 +51,7 @@ case class AbsorbHostileCellsVictoryCondition() extends AbstractVictoryCondition
   }
 }
 
+/** class implementing absorb the attractor victory condition */
 case class AbsorbTheAttractorVictoryCondition() extends AbstractVictoryCondition[DeathProperty] {
 
   override def check(playerCellEntity: DeathProperty, entityList: ListBuffer[DeathProperty]): Boolean = {
