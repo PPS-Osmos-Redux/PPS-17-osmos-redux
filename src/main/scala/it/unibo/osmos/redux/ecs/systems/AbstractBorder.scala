@@ -1,6 +1,5 @@
 package it.unibo.osmos.redux.ecs.systems
 
-import it.unibo.osmos.redux.ecs.components.SpeedComponent
 import it.unibo.osmos.redux.ecs.entities.{MovableProperty, Property}
 import it.unibo.osmos.redux.mvc.model.CollisionRules
 import it.unibo.osmos.redux.utils.{MathUtils, Point, Vector}
@@ -88,7 +87,9 @@ case class CircularBorder(levelCenter: Point, levelRadius: Double) extends Abstr
   override def checkCollision(entity: MovableProperty, collisionRule: CollisionRules.Value): Unit = {
     val positionComponent = entity.getPositionComponent
     val currentPosition = positionComponent.point
-    val maxReachableDistance = levelRadius - entity.getDimensionComponent.radius
+    val dimensionComponent = entity.getDimensionComponent
+    val entityRadius = dimensionComponent.radius
+    val maxReachableDistance = levelRadius - entityRadius
     val currentDistanceFromCenter = MathUtils.euclideanDistance(levelCenter, currentPosition)
 
     if (currentDistanceFromCenter > maxReachableDistance) {
@@ -98,11 +99,11 @@ case class CircularBorder(levelCenter: Point, levelRadius: Double) extends Abstr
           positionComponent.point_(newPosition)
 
           val speedComponent = entity.getSpeedComponent
-          val newSpeed = computeNewSpeed(positionComponent.point, levelCenter, speedComponent)
-          entity.getSpeedComponent.vector.x_(newSpeed.x)
-          entity.getSpeedComponent.vector.y_(newSpeed.y)
+          val speedVector = speedComponent.vector
+          val newSpeed = computeNewSpeed(positionComponent.point, levelCenter, speedVector)
+          speedComponent.vector_(newSpeed)
         case CollisionRules.instantDeath =>
-        // TODO: implement annihilation case
+          dimensionComponent.radius_(entityRadius - (currentDistanceFromCenter - maxReachableDistance))
         case _ => throw new IllegalArgumentException
       }
     }
@@ -115,24 +116,25 @@ case class CircularBorder(levelCenter: Point, levelRadius: Double) extends Abstr
     * @return
     */
   private def computeNewPosition(levelRadius: Double, entity: MovableProperty): Point = {
-    val positionComponent = entity.getPositionComponent
+    val entityPosition = entity.getPositionComponent.point
+    val entitySpeed = entity.getSpeedComponent.vector
     val A = levelCenter
     // TODO: consider keep in memory prec position to avoid its recomputation
-    val B = Point(positionComponent.point.x - entity.getSpeedComponent.vector.x, positionComponent.point.y - entity.getSpeedComponent.vector.y)
-    val C = positionComponent.point
+    val B = entityPosition.subtract(entitySpeed)
+    val C = entityPosition
     val R = levelRadius
     val r = entity.getDimensionComponent.radius
 
-    val AB = Vector(A.x - B.x, A.y - B.y)
-    val BC = Vector(B.x - C.x, B.y - C.y)
-    val AB_len = AB.getLength
-    val BC_len = BC.getLength
+    val AB = A.subtract(B)
+    val BC = B.subtract(C)
+    val lengthOfAB = AB.getLength
+    val lengthOfBC = BC.getLength
 
-    if (BC_len == 0) {
+    if (lengthOfBC == 0) {
       C
     } else {
-      val b = AB.dot(BC) / Math.pow(BC_len, 2) * -1
-      val c = (Math.pow(AB_len, 2) - Math.pow(R - r, 2)) / Math.pow(BC_len, 2)
+      val b = AB.dot(BC) / Math.pow(lengthOfBC, 2) * -1
+      val c = (Math.pow(lengthOfAB, 2) - Math.pow(R - r, 2)) / Math.pow(lengthOfBC, 2)
       val d = b * b - c
       var k = b - Math.sqrt(d)
 
@@ -141,12 +143,11 @@ case class CircularBorder(levelCenter: Point, levelRadius: Double) extends Abstr
       }
 
       val BD = C.subtract(B)
-      val BD_len = BC_len * k
-      val BD_length = BD.getNewLength(BD_len)
+      val lengthOfBD = BD.getNewLength(lengthOfBC * k)
 
       // D
       // B.add(BD)
-      Point(B.x + BD_length.x, B.y + BD_length.y)
+      Point(B.x + lengthOfBD.x, B.y + lengthOfBD.y)
     }
   }
 
@@ -154,18 +155,18 @@ case class CircularBorder(levelCenter: Point, levelRadius: Double) extends Abstr
     * https://stackoverflow.com/questions/573084/bounce-angle
     *
     * @param currentPosition entity current position
-    * @param levelCenter level center
-    * @param speedComponent entity speed component
+    * @param levelCenter     level center
+    * @param speedComponent  entity speed component
     * @return new entity speed
     */
-  private def computeNewSpeed(currentPosition: Point, levelCenter: Point, speedComponent: SpeedComponent): Vector = {
-    val v = speedComponent.vector
+  private def computeNewSpeed(currentPosition: Point, levelCenter: Point, speedVector: Vector): Vector = {
+    val v = speedVector
     val n = currentPosition.subtract(levelCenter).normalized()
 
     val u = n.multiply(v.dot(n))
     val w = v.subtract(u)
     val vAfter = w.subtract(u)
     val reflection = vAfter.subtract(v).multiply(restitution)
-    Vector(speedComponent.vector.x + reflection.x, speedComponent.vector.y + reflection.y)
+    v.add(reflection)
   }
 }
