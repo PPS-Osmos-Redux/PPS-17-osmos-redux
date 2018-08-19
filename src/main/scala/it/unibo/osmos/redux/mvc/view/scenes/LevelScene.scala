@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.mvc.view.scenes
 import it.unibo.osmos.redux.ecs.components.EntityType
 import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities._
-import it.unibo.osmos.redux.mvc.view.components.{LevelSplashScreen, LevelStateBox, LevelStateBoxListener}
+import it.unibo.osmos.redux.mvc.view.components.{LevelScreen, LevelStateBox, LevelStateBoxListener}
 import it.unibo.osmos.redux.mvc.view.drawables._
 import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
 import it.unibo.osmos.redux.mvc.view.levels.{LevelContext, LevelContextListener}
@@ -31,7 +31,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   /**
     * The canvas which will draw the elements on the screen
     */
-  val canvas: Canvas = new Canvas(parentStage.getWidth, parentStage.getHeight) {
+  private val canvas: Canvas = new Canvas(parentStage.getWidth, parentStage.getHeight) {
     width <== parentStage.width
     height <== parentStage.height
     cache = true
@@ -41,25 +41,20 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   /**
     * The screen showed when the game is paused
     */
-  val pauseScreen : VBox = new VBox(){
-    prefWidth <== parentStage.width
-    prefHeight <== parentStage.height
-    alignment = Pos.Center
-    visible = false
-
-    children = Seq(new Text("Game paused") {
-      font = Font.font("Verdana", 20)
-      fill = Color.White
-    })
-  }
+  private val pauseScreen = LevelScreen.Builder(this)
+    .withText("Game paused", 30, Color.White)
+    .build()
+  pauseScreen.visible = false
 
   /**
     * The splash screen showed when the game is paused
     */
-  val splashScreen : VBox = new LevelSplashScreen(this,"Become huge", 50)
+  private val splashScreen = LevelScreen.Builder(this)
+    .withText("Become huge", 50, Color.White)
+    .build()
 
   /* We start the level */
-  def startLevel(): Unit = {
+  private def startLevel(): Unit = {
     /* Splash screen animation, starting with a FadeIn */
     new FadeTransition(Duration.apply(2000), splashScreen) {
       fromValue = 0.0
@@ -84,10 +79,10 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   /**
     * The images used to draw cells, background and level
     */
-  val cellDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage("/textures/cell.png"), canvas.graphicsContext2D)
-  val playerCellDrawable: CellDrawable = new CellWithSpeedDrawable(ImageLoader.getImage("/textures/cell.png"), canvas.graphicsContext2D)
-  val backgroundImage: Image = ImageLoader.getImage("/textures/background.png")
-  var mapBorder: Option[Shape] = Option.empty
+  private val cellDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage("/textures/cell.png"), canvas.graphicsContext2D)
+  private val playerCellDrawable: CellDrawable = new CellWithSpeedDrawable(ImageLoader.getImage("/textures/cell.png"), canvas.graphicsContext2D)
+  private val backgroundImage: Image = ImageLoader.getImage("/textures/background.png")
+  private var mapBorder: Option[Shape] = Option.empty
 
   /**
     * The content of the whole scene
