@@ -1,7 +1,9 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
+import it.unibo.osmos.redux.ecs.components.EntityType
+import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities._
-import it.unibo.osmos.redux.mvc.view.components.{LevelStateBox, LevelStateBoxListener}
+import it.unibo.osmos.redux.mvc.view.components.{LevelScreen, LevelStateBox, LevelStateBoxListener}
 import it.unibo.osmos.redux.mvc.view.drawables._
 import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
 import it.unibo.osmos.redux.mvc.view.levels.{LevelContext, LevelContextListener}
@@ -10,12 +12,11 @@ import it.unibo.osmos.redux.utils.MathUtils._
 import it.unibo.osmos.redux.utils.Point
 import scalafx.animation.FadeTransition
 import scalafx.application.Platform
-import scalafx.geometry.Pos
+import scalafx.beans.property.BooleanProperty
 import scalafx.scene.canvas.Canvas
-import scalafx.scene.layout.VBox
+import scalafx.scene.image.Image
 import scalafx.scene.paint.Color
-import scalafx.scene.shape.Circle
-import scalafx.scene.text.{Font, Text}
+import scalafx.scene.shape.{Circle, Rectangle, Shape}
 import scalafx.stage.Stage
 import scalafx.util.Duration
 
@@ -26,9 +27,14 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   with LevelContextListener with LevelStateBoxListener {
 
   /**
+    * The current game pending state: true if the game is paused
+    */
+  private var paused: BooleanProperty = BooleanProperty(false)
+
+  /**
     * The canvas which will draw the elements on the screen
     */
-  val canvas: Canvas = new Canvas(parentStage.getWidth, parentStage.getHeight) {
+  private val canvas: Canvas = new Canvas(parentStage.getWidth, parentStage.getHeight) {
     width <== parentStage.width
     height <== parentStage.height
     cache = true
@@ -36,36 +42,24 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   }
 
   /**
-    * The screen showed when the game is paused
+    * The screen showed when the game is paused (with a bound property)
     */
-  val pauseScreen : VBox = new VBox(){
-    prefWidth <== parentStage.width
-    prefHeight <== parentStage.height
-    alignment = Pos.Center
-    visible = false
-
-    children = Seq(new Text("Game paused") {
-      font = Font.font("Verdana", 20)
-      fill = Color.White
-    })
-  }
+  private val pauseScreen = LevelScreen.Builder(this)
+    .withText("Game paused", 30, Color.White)
+    .build()
+  pauseScreen.visible <== paused
 
   /**
     * The splash screen showed when the game is paused
     */
-  val splashScreen : VBox = new VBox(){
-    prefWidth <== parentStage.width
-    prefHeight <== parentStage.height
-    alignment = Pos.Center
-    fill = Color.Black
+  private val splashScreen = LevelScreen.Builder(this)
+    .withText("Become huge", 50, Color.White)
+    .build()
 
-    children = Seq(new Text("Become the opposite of small") {
-      font = Font.font("Verdana", 40)
-      fill = Color.White
-    })
-
+  /* We start the level */
+  private def startLevel(): Unit = {
     /* Splash screen animation, starting with a FadeIn */
-    new FadeTransition(Duration.apply(2000), this) {
+    new FadeTransition(Duration.apply(2000), splashScreen) {
       fromValue = 0.0
       toValue = 1.0
       autoReverse = true
@@ -78,18 +72,20 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
         onFinished = _ => new FadeTransition(Duration.apply(3000), canvas) {
           fromValue = 0.0
           toValue = 1.0
-          /* Removing the splash screen to reduce the load */
-          onFinished = _ => content.remove(splashScreen)
+          /* Removing the splash screen to reduce the load. Then the level is starte */
+          onFinished = _ => content.remove(splashScreen); listener.onStartLevel()
         }.play()
       }.play()
     }.play()
   }
 
   /**
-    * The images used to draw cells
+    * The images used to draw cells, background and level
     */
-  val cellDrawable: ImageDrawable = new ImageDrawable(ImageLoader.getImage("/textures/cell.png"), canvas.graphicsContext2D)
-  val backgroundDrawable: ImageDrawable = new ImageDrawable(ImageLoader.getImage("/textures/background.png"), canvas.graphicsContext2D)
+  private val cellDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage("/textures/cell.png"), canvas.graphicsContext2D)
+  private val playerCellDrawable: CellDrawable = new CellWithSpeedDrawable(ImageLoader.getImage("/textures/cell.png"), canvas.graphicsContext2D)
+  private val backgroundImage: Image = ImageLoader.getImage("/textures/background.png")
+  private var mapBorder: Option[Shape] = Option.empty
 
   /**
     * The content of the whole scene
@@ -100,20 +96,18 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     * The level context, created with the LevelScene. It still needs to be properly setup
     */
   private var _levelContext: Option[LevelContext] = Option.empty
-
   def levelContext: Option[LevelContext] = _levelContext
-
   def levelContext_= (levelContext: LevelContext): Unit = _levelContext = Option(levelContext)
 
   override def onPause(): Unit = {
-    pauseScreen.visible = true
+    paused.value = true
     canvas.opacity = 0.5
 
     listener.onPauseLevel()
   }
 
   override def onResume(): Unit = {
-    pauseScreen.visible = false
+    paused.value = false
     canvas.opacity = 1
 
     listener.onResumeLevel()
@@ -124,7 +118,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   }
 
   /**
-    * OnMouseClicked handler
+    * OnMouseClicked handler, reacting only if the game is not paused
     */
   onMouseClicked = mouseEvent => {
     /* Creating a circle representing the player click */
@@ -138,14 +132,49 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     fadeOutTransition.play()
 
     levelContext match {
-      case Some(lc) => lc pushEvent MouseEventWrapper(Point(mouseEvent.getX, mouseEvent.getY))
+      case Some(lc) => if (!paused.value) lc notifyMouseEvent MouseEventWrapper(Point(mouseEvent.getX, mouseEvent.getY))
       case _ =>
     }
+  }
+
+  override def onLevelSetup(mapShape: MapShape): Unit = mapBorder match {
+    case Some(e) => throw new IllegalStateException("Map has already been set")
+    case _ =>
+      val center = Point(mapShape.center._1, mapShape.center._2)
+      mapShape match {
+        case c: MapShape.Circle => mapBorder = Option(new Circle {
+          centerX = center.x
+          centerY = center.y
+          radius = c.radius
+        })
+        case r: MapShape.Rectangle => mapBorder = Option(new Rectangle {
+          x = center.x - r.base / 2
+          y = center.y - r.height / 2
+          width = r.base
+          height = r.height
+        })
+      }
+
+      /* Configuring the mapBorder */
+      mapBorder.get.fill = Color.Transparent
+      mapBorder.get.stroke = Color.White
+      mapBorder.get.strokeWidth = 2.0
+      mapBorder.get.opacity <== canvas.opacity
+
+      /* Adding the mapBorder */
+      content.add(mapBorder.get)
+
+      /* Starting the level */
+      startLevel()
   }
 
   override def onDrawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = {
 
     var entitiesWrappers : Seq[(DrawableWrapper, Color)] = Seq()
+    var specialWrappers : Seq[(DrawableWrapper, Color)] = entities filter(e => e.entityType.equals(EntityType.Attractive) || e.entityType.equals(EntityType.Repulse)) map(e => e.entityType match {
+      case EntityType.Attractive => (e, attractiveCellColor)
+      case EntityType.Repulse => (e, repulsiveCellColor)
+    })
 
     playerEntity match {
       /* The player is present */
@@ -159,10 +188,40 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
       /* Clear the screen */
       canvas.graphicsContext2D.clearRect(0, 0, width.value, height.value)
       /* Draw the background */
-      canvas.graphicsContext2D.drawImage(backgroundDrawable.image, 0, 0, width.value, height.value)
+      canvas.graphicsContext2D.drawImage(backgroundImage, 0, 0, width.value, height.value)
       /* Draw the entities */
-      entitiesWrappers foreach(e => cellDrawable.draw(e._1, e._2))
+      playerEntity match  {
+        case Some(pe) => (entitiesWrappers ++ specialWrappers) foreach(e => e._1 match {
+          case `pe` => playerCellDrawable.draw(e._1, e._2)
+          case _ => cellDrawable.draw(e._1, e._2)
+        })
+        case _ => (entitiesWrappers ++ specialWrappers) foreach(e => cellDrawable.draw(e._1, e._2))
+      }
     })
+  }
+
+  override def onLevelEnd(levelResult: Boolean): Unit = {
+    /* Creating an end screen with a button */
+    val endScreen = LevelScreen.Builder(this)
+      .withText(if (levelResult) "You won!" else "You lost.", 50, Color.White)
+      .withButton("Return to Level Selection", _ => onExit())
+      .build()
+    endScreen.opacity = 0.0
+
+    /* Fade in/fade out transition */
+    new FadeTransition(Duration.apply(3000), canvas) {
+      fromValue = 1.0
+      toValue = 0.0
+      onFinished = _ => {
+        /* Remove all the contents and add the end screen */
+        content.clear()
+        content.add(endScreen)
+        new FadeTransition(Duration.apply(3000), endScreen) {
+          fromValue = 0.0
+          toValue = 1.0
+        }.play()
+      }
+    }.play()
   }
 
   /**
@@ -242,6 +301,11 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   * Trait which gets notified when a LevelScene event occurs
   */
 trait LevelSceneListener {
+
+  /**
+    * Called when the level gets started
+    */
+  def onStartLevel()
 
   /**
     * Called when the level gets paused

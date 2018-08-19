@@ -25,8 +25,8 @@ class TestJsonConversion extends FunSuite{
   val gc = GravityCellEntity(a, c, d, p, s, v, et, sw)
   val listCell:List[CellEntity] = List(ce, pce, gc)
   //LevelMap
-  val rectangle:MapShape = Rectangle(10.1,5.6)
-  val circle:MapShape = Circle(5.7)
+  val rectangle:MapShape = Rectangle((50,50),10.1,5.6)
+  val circle:MapShape = Circle((50.1,50.2), 5.7)
   val listShape:List[MapShape] = List(rectangle, circle)
   val levelMap:LevelMap = LevelMap(rectangle, CollisionRules.bouncing)
   //Level

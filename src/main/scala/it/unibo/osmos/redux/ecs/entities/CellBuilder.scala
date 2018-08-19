@@ -28,7 +28,7 @@ case class CellBuilder() {
   }
 
   def withAcceleration(acceleration: AccelerationComponent): CellBuilder = {
-    this.acceleration = AccelerationComponent(acceleration.accelerationX, acceleration.accelerationY)
+    this.acceleration = AccelerationComponent(acceleration.vector.x, acceleration.vector.y)
     this
   }
 
@@ -63,7 +63,7 @@ case class CellBuilder() {
   }
 
   def withSpeed(speed: SpeedComponent): CellBuilder = {
-    this.speed = SpeedComponent(speed.speedX, speed.speedY)
+    this.speed = SpeedComponent(speed.vector.x, speed.vector.y)
     this
   }
 

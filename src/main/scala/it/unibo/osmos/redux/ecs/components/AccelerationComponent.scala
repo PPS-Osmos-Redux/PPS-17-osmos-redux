@@ -1,45 +1,56 @@
 package it.unibo.osmos.redux.ecs.components
 
+import it.unibo.osmos.redux.utils
+
 /**
   * Component of the acceleration vector
   */
-trait AccelerationComponent {
+trait AccelerationComponent extends VectorComponent {
 
   /**
     * Getter. Return the acceleration of the x coordinate
+    *
     * @return the acceleration
     */
-  def accelerationX: Double
+  //def x: Double
 
   /**
     * Getter. Return the acceleration of the y coordinate
+    *
     * @return the acceleration
     */
-  def accelerationY: Double
+  //def y: Double
 
   /**
     * Setter. Set the new acceleration of the x coordinate
+    *
     * @param acceleration the new acceleration
     */
-  def accelerationX_(acceleration: Double): Unit
+  //def x_(acceleration: Double): Unit
 
   /**
     * Setter. Set the new acceleration of the y coordinate
+    *
     * @param acceleration the new acceleration
     */
-  def accelerationY_(acceleration: Double): Unit
+  //def y_(acceleration: Double): Unit
 }
 
 object AccelerationComponent {
-  def apply(accelerationX: Double, accelerationY: Double): AccelerationComponent = AccelerationComponentImpl(accelerationX,accelerationY)
+  def apply(accelerationX: Double, accelerationY: Double): AccelerationComponent = AccelerationComponentImpl(utils.Vector(accelerationX, accelerationY))
 
-  private case class AccelerationComponentImpl(var _accelerationX: Double, var _accelerationY: Double) extends AccelerationComponent {
-    override def accelerationX: Double = _accelerationX
+  private case class AccelerationComponentImpl(var _speedVector: utils.Vector) extends AccelerationComponent {
+    /*override def x: Double = _accelerationX
 
-    override def accelerationY: Double = _accelerationY
+    override def y: Double = _accelerationY
 
-    override def accelerationX_(acceleration: Double): Unit = _accelerationX = acceleration
+    override def x_(acceleration: Double): Unit = _accelerationX = acceleration
 
-    override def accelerationY_(acceleration: Double): Unit = _accelerationY = acceleration
+    override def y_(acceleration: Double): Unit = _accelerationY = acceleration*/
+
+    override def vector: utils.Vector = _speedVector
+
+    override def vector_(vector: utils.Vector): Unit = _speedVector = vector
   }
+
 }
