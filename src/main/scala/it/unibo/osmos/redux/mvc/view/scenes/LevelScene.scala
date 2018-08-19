@@ -203,7 +203,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   override def onLevelEnd(levelResult: Boolean): Unit = {
     /* Creating an end screen with a button */
     val endScreen = LevelScreen.Builder(this)
-      .withText(if (!levelResult) "You won!" else "You lost.", 50, Color.White)
+      .withText(if (levelResult) "You won!" else "You lost.", 50, Color.White)
       .withButton("Return to Level Selection", _ => onExit())
       .build()
     endScreen.opacity = 0.0
