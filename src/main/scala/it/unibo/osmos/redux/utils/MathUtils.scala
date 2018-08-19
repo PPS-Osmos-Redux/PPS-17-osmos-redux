@@ -21,6 +21,7 @@ object MathUtils {
     * @param point The point to normalize
     * @return The normalized point
     */
+  // TODO: code duplication, this is the same as the vector one
   def normalizePoint(point: Point): Point = {
     val mod = math.sqrt(math.pow(point.x, 2) + math.pow(point.y, 2))
     Point(point.x / mod, point.y / mod)

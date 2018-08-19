@@ -1,49 +1,96 @@
 package it.unibo.osmos.redux.utils
 
+/** 2D vector */
 trait Vector {
+
+  /** Getter for the vector x component
+    *
+    * @return x component
+    */
   def x: Double
 
+  /** Getter for the vector y component
+    *
+    * @return y component
+    */
   def y: Double
 
+  /** Setter for the vector x component
+    *
+    * @param newX new x component
+    */
   def x_(newX: Double): Unit
 
+  /** Setter for the vector y component
+    *
+    * @param newY new y component
+    */
   def y_(newY: Double): Unit
 
-  def add(v2: Vector): Vector = Vector(x + v2.x, y + v2.y)
+  /** Vector addition. Leaves this vector unchanged.
+    *
+    * @param v vector to add
+    * @return addition result as a new instance
+    */
+  def add(v: Vector): Vector = Vector(x + v.x, y + v.y)
 
-  def subtract(v2: Vector): Vector = {
+  /** Vector subtraction. Leaves this vector unchanged.
+    *
+    * @param v vector to subtract
+    * @return subtraction result as a new instance
+    */
+  def subtract(v: Vector): Vector = Vector(x - v.x, y - v.y)
 
-    Vector(x - v2.x, y - v2.y)
-  }
+  /** Vector-point subtraction. Leaves this vector unchanged.
+    *
+    * @param p point to subtract
+    * @return subtraction result as a new instance
+    */
+  def subtract(p: Point): Vector = Vector(x - p.x, y - p.y)
 
-  def subtract(v2: Point): Vector = {
+  /** Vector multiplication. Leaves this vector unchanged.
+    *
+    * @param v vector to multiply
+    * @return multiplication result as a new instance
+    */
+  def multiply(v: Vector): Vector = Vector(x * v.x, y * v.y)
 
-    Vector(x - v2.x, y - v2.y)
-  }
+  /** Vector-scalar multiplication. Leaves this vector unchanged.
+    *
+    * @param v scalar to multiply
+    * @return multiplication mu result as a new instance
+    */
+  def multiply(v: Double): Vector = Vector(x * v, y * v)
 
-  def multiply(v2: Vector): Vector = {
-    Vector(x * v2.x, y * v2.y)
-  }
+  /** TODO
+    *
+    * @return
+    */
+  def getLength: Double = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))
 
-  def multiply(v2: Double): Vector = {
-    Vector(x * v2, y * v2)
-  }
-
-  def get_length: Double = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))
-
-  def set_length(new_length: Double): Vector = {
-    val oldLength = get_length
-    val temp = new_length / oldLength
+  /** TODO
+    *
+    * @param newLength
+    * @return
+    */
+  def getNewLength(newLength: Double): Vector = {
+    val temp = newLength / getLength
     Vector(x * temp, y * temp)
   }
 
-  def distance(v2: Vector): Double = Math.sqrt(Math.pow(x - v2.x, 2) + Math.pow(y - v2.y, 2))
+  /** Vector dot product
+    *
+    * @param v vector to use for dot product
+    * @return dot product
+    */
+  def dot(v: Vector): Double = (x * v.x) + (y * v.y)
 
-  def dot(v2: Vector): Double = (x * v2.x) + (y * v2.y)
-
+  /** Gets the vector normalized
+    *
+    * @return this vector normalized as a new instance
+    */
   def normalized(): Vector = {
-    val length = get_length
-
+    val length = getLength
     if (length != 0) {
       Vector(x / length, y / length)
     } else {
