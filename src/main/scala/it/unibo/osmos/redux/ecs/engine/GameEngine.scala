@@ -1,6 +1,10 @@
 package it.unibo.osmos.redux.ecs.engine
 
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager}
+import it.unibo.osmos.redux.ecs.systems.{CollisionSystem, DrawSystem, InputSystem, MovementSystem}
+import it.unibo.osmos.redux.mvc.model.MapShape.Rectangle
+import it.unibo.osmos.redux.mvc.model.{CollisionRules, Level, LevelMap, VictoryRules}
+import it.unibo.osmos.redux.ecs.entities.EntityManager
 import it.unibo.osmos.redux.ecs.systems._
 import it.unibo.osmos.redux.mvc.model.Level
 import it.unibo.osmos.redux.mvc.view.levels.LevelContext
@@ -82,12 +86,13 @@ object GameEngine {
       clear()
 
       //register InputEventStack to the mouse event listener to collect input events
-      levelContext.registerMouseEventListener(e => { InputEventQueue.enqueue(e)})
+      levelContext.subscribe(e => { InputEventQueue.enqueue(e)})
 
       //create systems, add to list, the order in this collection is the final system order in the game loop
       val systems = ListBuffer[System]()
       if (!level.isSimulation) systems += InputSystem()
-      systems ++= List(MovementSystem(), CollisionSystem(), DrawSystem(levelContext), CellsEliminationSystem())
+      systems ++= List(GravitySystem(), MovementSystem(level), CollisionSystem(), SpawnSystem(), DrawSystem(levelContext), CellsEliminationSystem())
+      if(!level.isSimulation) systems += EndGameSystem(levelContext, level.victoryRule)
 
       //add all entities in the entity manager (systems are subscribed to EntityManager event when created)
       level.entities foreach(EntityManager add _)
@@ -125,10 +130,10 @@ object GameEngine {
         case Some(g) => g.kill()
         case None => throw new IllegalStateException("Unable to stop game loop because it hasn't been initialized yet")
       }
+      gameLoop = None
     }
 
     override def clear(): Unit = {
-
       EntityManager.clear()
       InputEventQueue.dequeueAll()
 
@@ -139,6 +144,7 @@ object GameEngine {
         }
         case _ => //do nothing if it's not present
       }
+      gameLoop = None
     }
 
     override def getStatus: GameStatus = {

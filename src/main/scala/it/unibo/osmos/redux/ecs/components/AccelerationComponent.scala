@@ -1,45 +1,24 @@
 package it.unibo.osmos.redux.ecs.components
 
-/**
-  * Component of the acceleration vector
-  */
-trait AccelerationComponent {
+import it.unibo.osmos.redux.utils
 
-  /**
-    * Getter. Return the acceleration of the x coordinate
-    * @return the acceleration
-    */
-  def accelerationX: Double
+/** Component of the acceleration vector */
+trait AccelerationComponent extends VectorComponent {
 
-  /**
-    * Getter. Return the acceleration of the y coordinate
-    * @return the acceleration
-    */
-  def accelerationY: Double
-
-  /**
-    * Setter. Set the new acceleration of the x coordinate
-    * @param acceleration the new acceleration
-    */
-  def accelerationX_(acceleration: Double): Unit
-
-  /**
-    * Setter. Set the new acceleration of the y coordinate
-    * @param acceleration the new acceleration
-    */
-  def accelerationY_(acceleration: Double): Unit
+  /** Resets this component vector's components to 0 */
+  def reset(): Unit
 }
 
 object AccelerationComponent {
-  def apply(accelerationX: Double, accelerationY: Double): AccelerationComponent = AccelerationComponentImpl(accelerationX,accelerationY)
+  def apply(accelerationX: Double, accelerationY: Double): AccelerationComponent = AccelerationComponentImpl(utils.Vector(accelerationX, accelerationY))
 
-  private case class AccelerationComponentImpl(var _accelerationX: Double, var _accelerationY: Double) extends AccelerationComponent {
-    override def accelerationX: Double = _accelerationX
+  private case class AccelerationComponentImpl(var _speedVector: utils.Vector) extends AccelerationComponent {
 
-    override def accelerationY: Double = _accelerationY
+    override def vector: utils.Vector = _speedVector
 
-    override def accelerationX_(acceleration: Double): Unit = _accelerationX = acceleration
+    override def vector_(vector: utils.Vector): Unit = _speedVector = vector
 
-    override def accelerationY_(acceleration: Double): Unit = _accelerationY = acceleration
+    override def reset(): Unit = vector_(utils.Vector(0, 0))
   }
+
 }

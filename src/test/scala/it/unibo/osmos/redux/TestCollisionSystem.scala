@@ -77,9 +77,9 @@ class TestCollisionSystem extends FunSuite {
     entity2.getCollidableComponent.setCollidable(true)
 
     val originalDim1 = DimensionComponent(entity1.getDimensionComponent.radius)
-    val originalAccel1 = AccelerationComponent(entity1.getAccelerationComponent.accelerationX, entity1.getAccelerationComponent.accelerationY)
+    val originalAccel1 = AccelerationComponent(entity1.getAccelerationComponent.vector.x, entity1.getAccelerationComponent.vector.y)
     val originalDim2 = DimensionComponent(entity2.getDimensionComponent.radius)
-    val originalAccel2 = AccelerationComponent(entity2.getAccelerationComponent.accelerationX, entity2.getAccelerationComponent.accelerationY)
+    val originalAccel2 = AccelerationComponent(entity2.getAccelerationComponent.vector.x, entity2.getAccelerationComponent.vector.y)
 
     EntityManager.add(entity1)
     EntityManager.add(entity2)

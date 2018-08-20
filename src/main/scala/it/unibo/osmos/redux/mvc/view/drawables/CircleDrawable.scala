@@ -1,13 +1,13 @@
 package it.unibo.osmos.redux.mvc.view.drawables
 
-import it.unibo.osmos.redux.utils.Point
 import scalafx.scene.canvas.GraphicsContext
 import scalafx.scene.paint.Color
+
 /**
   * Drawable implementation that shows a circle on the screen
   * @param graphicsContext the GraphicContext on which the circle will be drawn on
   */
-class CircleDrawable(override val graphicsContext: GraphicsContext) extends BaseDrawable(graphicsContext) {
+class CircleDrawable(val graphicsContext: GraphicsContext) extends Drawable {
 
   /**
     * Draws a circle on the canvas

@@ -1,8 +1,7 @@
 package it.unibo.osmos.redux.ecs.engine
 
-import java.util.concurrent.locks.{Lock, ReentrantLock}
+import java.util.concurrent.locks.ReentrantLock
 
-import it.unibo.osmos.redux.ecs.entities.Property
 import it.unibo.osmos.redux.ecs.systems._
 
 /**
@@ -14,7 +13,7 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
 
   type GameStatus = GameStatus.Value
 
-  private val lock: Lock = new ReentrantLock()
+  private val lock: ReentrantLock = new ReentrantLock()
   private var status: GameStatus = GameStatus.Idle
   private var stopFlag: Boolean = false
   private val tickTime = 1000 / engine.getFps
@@ -83,7 +82,7 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
     * Kills the execution.
     */
   def kill(): Unit = {
-    lock.unlock()
+    if (lock.isLocked) lock.unlock()
     stopFlag = true
   }
 

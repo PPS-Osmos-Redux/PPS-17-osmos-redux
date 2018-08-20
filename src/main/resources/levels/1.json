@@ -10,174 +10,6 @@
     "collidable": {
       "collidable": true
     },
-    "typeEntity": {
-      "entity_type": "Material"
-    },
-    "position": {
-      "point": {
-        "x": 150.0,
-        "y": 30.0
-      }
-    },
-    "cellType": "basicCell",
-    "dimension": {
-      "radius": 5.0
-    },
-    "speed": {
-      "speedX": 0.1,
-      "speedY": 0.5
-    }
-  }, {
-    "acceleration": {
-      "accelerationX": 0.0,
-      "accelerationY": 0.0
-    },
-    "visible": {
-      "visible": true
-    },
-    "collidable": {
-      "collidable": true
-    },
-    "typeEntity": {
-      "entity_type": "Material"
-    },
-    "position": {
-      "point": {
-        "x": 100.0,
-        "y": 90.0
-      }
-    },
-    "cellType": "basicCell",
-    "dimension": {
-      "radius": 15.0
-    },
-    "speed": {
-      "speedX": 0.1,
-      "speedY": 0.25
-    }
-  }, {
-    "acceleration": {
-      "accelerationX": 0.0,
-      "accelerationY": 0.0
-    },
-    "visible": {
-      "visible": true
-    },
-    "collidable": {
-      "collidable": true
-    },
-    "typeEntity": {
-      "entity_type": "Material"
-    },
-    "position": {
-      "point": {
-        "x": 10.0,
-        "y": 100.0
-      }
-    },
-    "cellType": "basicCell",
-    "dimension": {
-      "radius": 10.0
-    },
-    "speed": {
-      "speedX": 0.2,
-      "speedY": 0.1
-    }
-  }, {
-    "acceleration": {
-      "accelerationX": 0.0,
-      "accelerationY": 0.0
-    },
-    "visible": {
-      "visible": true
-    },
-    "collidable": {
-      "collidable": true
-    },
-    "typeEntity": {
-      "entity_type": "Material"
-    },
-    "position": {
-      "point": {
-        "x": 8.0,
-        "y": 80.0
-      }
-    },
-    "cellType": "basicCell",
-    "dimension": {
-      "radius": 35.0
-    },
-    "speed": {
-      "speedX": 0.3,
-      "speedY": 0.5
-    }
-  }, {
-    "acceleration": {
-      "accelerationX": 0.0,
-      "accelerationY": 0.0
-    },
-    "visible": {
-      "visible": true
-    },
-    "collidable": {
-      "collidable": true
-    },
-    "typeEntity": {
-      "entity_type": "Material"
-    },
-    "position": {
-      "point": {
-        "x": 40.0,
-        "y": 25.0
-      }
-    },
-    "cellType": "basicCell",
-    "dimension": {
-      "radius": 10.0
-    },
-    "speed": {
-      "speedX": 0.1,
-      "speedY": 0.99
-    }
-  }, {
-    "acceleration": {
-      "accelerationX": 0.0,
-      "accelerationY": 0.0
-    },
-    "visible": {
-      "visible": true
-    },
-    "collidable": {
-      "collidable": true
-    },
-    "typeEntity": {
-      "entity_type": "Material"
-    },
-    "position": {
-      "point": {
-        "x": 10.0,
-        "y": 30.0
-      }
-    },
-    "cellType": "basicCell",
-    "dimension": {
-      "radius": 8.0
-    },
-    "speed": {
-      "speedX": 0.3,
-      "speedY": 0.8
-    }
-  }, {
-    "acceleration": {
-      "accelerationX": 0.0,
-      "accelerationY": 0.0
-    },
-    "visible": {
-      "visible": true
-    },
-    "collidable": {
-      "collidable": true
-    },
     "spawner": {
       "canSpawn": true
     },
@@ -186,13 +18,13 @@
     },
     "position": {
       "point": {
-        "x": 90.0,
-        "y": 200.0
+        "x": 683.0,
+        "y": 384.0
       }
     },
     "cellType": "playerCell",
     "dimension": {
-      "radius": 20.0
+      "radius": 40.0
     },
     "speed": {
       "speedX": 0.0,
@@ -207,8 +39,10 @@
   "levelMap": {
     "mapShape": {
       "mapShape": "RECTANGLE",
-      "height": 10.1,
-      "base": 5.6
+      "height": 400.0,
+      "base": 800.0,
+      "centerX": 683.0,
+      "centerY": 384.0
     },
     "collisionRule": "Bouncing",
     "isSimulation":false
