@@ -7,18 +7,24 @@ import it.unibo.osmos.redux.mvc.view.events._
 /**
   * Trait modelling the context of a level
   */
-trait LevelContext extends EventWrapperSource[MouseEventWrapper] with EntitiesDrawer with GameStateHolder {
+trait LevelContext extends EventWrapperObservable[MouseEventWrapper] with EntitiesDrawer with GameStateHolder {
   /**
     * Called once at the beginning at the level. Manages the context setup
     * @param mapShape the level shape
     */
   def setupLevel(mapShape: MapShape)
+
+  /**
+    * Called when the LevelContext gets a mouse event from the scene
+    * @param event the mouse event
+    */
+  def notifyMouseEvent(event: MouseEventWrapper)
 }
 
 /**
   * Trait modelling an object which holds the current game state and reacts when it gets changed
   */
-trait GameStateHolder extends EventWrapperListener[GameStateEventWrapper] {
+trait GameStateHolder extends EventWrapperObserver[GameStateEventWrapper] {
 
   /**
     * A generic definition of the game state
@@ -26,11 +32,6 @@ trait GameStateHolder extends EventWrapperListener[GameStateEventWrapper] {
     */
   def gameCurrentState: GameStateEventWrapper
 
-  /**
-    * Setter of the GameStateEventWrapper
-    * @param value a GameStateEventWrapper instance
-    */
-  def gameCurrentState_=(value: GameStateEventWrapper): Unit
 }
 
 object LevelContext {
@@ -46,22 +47,20 @@ object LevelContext {
     /**
       * A reference to the mouse event listener
       */
-    private var mouseEventListener: Option[EventWrapperListener[MouseEventWrapper]] = Option.empty
+    private var mouseEventObserver: Option[EventWrapperObserver[MouseEventWrapper]] = Option.empty
 
     override def setupLevel(mapShape: MapShape): Unit = listener.onLevelSetup(mapShape)
 
+    override def notifyMouseEvent(event: MouseEventWrapper): Unit = mouseEventObserver match {
+      case Some(e) => e.notify(event)
+      case _ =>
+    }
+
     override def drawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = listener.onDrawEntities(playerEntity, entities)
 
-    override def registerEventListener(eventListener: EventWrapperListener[MouseEventWrapper]): Unit = mouseEventListener = Option(eventListener)
+    override def subscribe(eventObserver: EventWrapperObserver[MouseEventWrapper]): Unit = mouseEventObserver = Option(eventObserver)
 
-    override def unregisterEventListener(eventListener: EventWrapperListener[MouseEventWrapper]): Unit = mouseEventListener = Option.empty
-
-    override def pushEvent(event: MouseEventWrapper): Unit = {
-      mouseEventListener match {
-        case Some(e) => e.onEvent(event)
-        case _ =>
-      }
-    }
+    override def unsubscribe(eventObserver: EventWrapperObserver[MouseEventWrapper]): Unit = mouseEventObserver = Option.empty
 
     /**
       * The current game state
@@ -72,6 +71,11 @@ object LevelContext {
 
     def gameCurrentState_=(value: GameStateEventWrapper): Unit = {
       _gameCurrentState = value
+      gameCurrentState match {
+        case GameWon => listener.onLevelEnd(true)
+        case GameLost => listener.onLevelEnd(false)
+        case _ =>
+      }
     }
 
     /**
@@ -79,8 +83,14 @@ object LevelContext {
       *
       * @param event the event
       */
-    //TODO: react properly to events (showing screen)
-    override def onEvent(event: GameStateEventWrapper): Unit = gameCurrentState_=(event)
+    override def notify(event: GameStateEventWrapper): Unit = {
+      gameCurrentState_=(event)
+      gameCurrentState match {
+        case GameWon => listener.onLevelEnd(true)
+        case GameLost => listener.onLevelEnd(false)
+        case _ =>
+      }
+    }
   }
 
 }
@@ -101,4 +111,10 @@ trait LevelContextListener {
     * @param mapShape the level shape
     */
   def onLevelSetup(mapShape: MapShape)
+
+  /**
+    * Called once when the level ends.
+    * @param levelResult true if the player has won, false otherwise
+    */
+  def onLevelEnd(levelResult: Boolean)
 }

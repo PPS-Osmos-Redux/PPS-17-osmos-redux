@@ -4,13 +4,13 @@ import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.utils.Point
 
 case class CellBuilder() {
-  var acceleration = AccelerationComponent(0,0)
-  var collidable = CollidableComponent(true)
-  var dimension = DimensionComponent(0)
-  var position = PositionComponent(Point(0,0))
-  var speed = SpeedComponent(0, 0)
-  var visible = VisibleComponent(true)
-  var entityType = TypeComponent(EntityType.Material)
+  private var acceleration = AccelerationComponent(0,0)
+  private var collidable = CollidableComponent(true)
+  private var dimension = DimensionComponent(0)
+  private var position = PositionComponent(Point(0,0))
+  private var speed = SpeedComponent(0, 0)
+  private var visible = VisibleComponent(true)
+  private var entityType = TypeComponent(EntityType.Material)
 
   def collidable(collidable: Boolean): CellBuilder = {
     this.collidable = CollidableComponent(collidable)
@@ -28,7 +28,7 @@ case class CellBuilder() {
   }
 
   def withAcceleration(acceleration: AccelerationComponent): CellBuilder = {
-    this.acceleration = AccelerationComponent(acceleration.accelerationX, acceleration.accelerationY)
+    this.acceleration = AccelerationComponent(acceleration.vector.x, acceleration.vector.y)
     this
   }
 
@@ -63,7 +63,7 @@ case class CellBuilder() {
   }
 
   def withSpeed(speed: SpeedComponent): CellBuilder = {
-    this.speed = SpeedComponent(speed.speedX, speed.speedY)
+    this.speed = SpeedComponent(speed.vector.x, speed.vector.y)
     this
   }
 

@@ -12,8 +12,8 @@ import org.apache.commons.lang3.SerializationException
 object JsonProtocols {
   implicit object AccelerationFormatter extends RootJsonFormat[AccelerationComponent] {
     def write(acceleration: AccelerationComponent) = JsObject(
-      "accelerationX" -> JsNumber(acceleration.accelerationX),
-      "accelerationY" -> JsNumber(acceleration.accelerationY)
+      "accelerationX" -> JsNumber(acceleration.vector.x),
+      "accelerationY" -> JsNumber(acceleration.vector.y)
     )
     def read(value: JsValue): AccelerationComponent = {
       value.asJsObject.getFields("accelerationX", "accelerationY") match {
@@ -77,7 +77,7 @@ object JsonProtocols {
 
   implicit object SpeedFormatter extends RootJsonFormat[SpeedComponent] {
     def write(speed: SpeedComponent) =
-      JsObject("speedX" -> JsNumber(speed.speedX), "speedY" -> JsNumber(speed.speedY))
+      JsObject("speedX" -> JsNumber(speed.vector.x), "speedY" -> JsNumber(speed.vector.y))
     def read(value: JsValue): SpeedComponent = {
       value.asJsObject.getFields("speedX","speedY") match {
         case Seq(JsNumber(speedX), JsNumber(speedY)) =>

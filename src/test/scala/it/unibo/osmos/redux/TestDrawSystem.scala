@@ -5,7 +5,7 @@ import it.unibo.osmos.redux.ecs.entities.{CellEntity, DrawableProperty, EntityMa
 import it.unibo.osmos.redux.ecs.systems.DrawSystem
 import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
-import it.unibo.osmos.redux.mvc.view.events.{EventWrapperListener, GameStateEventWrapper, MouseEventWrapper}
+import it.unibo.osmos.redux.mvc.view.events.{EventWrapperObserver, GameStateEventWrapper, MouseEventWrapper}
 import it.unibo.osmos.redux.mvc.view.levels.LevelContext
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.{BeforeAndAfter, FunSuite}
@@ -31,16 +31,13 @@ case class DrawSystemSpy() extends LevelContext {
 
   override def gameCurrentState: GameStateEventWrapper = ???
 
-  override def registerEventListener(eventListener: EventWrapperListener[MouseEventWrapper]): Unit = ???
+  override def subscribe(eventObserver: EventWrapperObserver[MouseEventWrapper]): Unit = ???
 
-  override def unregisterEventListener(eventListener: EventWrapperListener[MouseEventWrapper]): Unit = ???
+  override def unsubscribe(eventObserver: EventWrapperObserver[MouseEventWrapper]): Unit = ???
 
+  override def notify(event: GameStateEventWrapper): Unit = ???
 
-  override def pushEvent(event: MouseEventWrapper): Unit = ???
-
-  override def onEvent(event: GameStateEventWrapper): Unit = ???
-
-  override def gameCurrentState_=(value: GameStateEventWrapper): Unit = ???
+  override def notifyMouseEvent(event: MouseEventWrapper): Unit = ???
 }
 
 /**
@@ -105,8 +102,8 @@ class TestDrawSystem extends FunSuite with BeforeAndAfter {
     assert(playerWrapped.center.equals(pce.getPositionComponent.point))
     assert(playerWrapped.radius.equals(pce.getDimensionComponent.radius))
     assert(playerWrapped.entityType.equals(pce.getTypeComponent.typeEntity))
-    assert(playerWrapped.speed._1 === speed.speedX)
-    assert(playerWrapped.speed._2 === speed.speedY)
+    assert(playerWrapped.speed._1 === speed.vector.x)
+    assert(playerWrapped.speed._2 === speed.vector.y)
   }
 
   test("filter visible CellEntity") {
@@ -136,7 +133,7 @@ class TestDrawSystem extends FunSuite with BeforeAndAfter {
     assert(enemiesWrapped.exists(p => p.center.equals(enemy.getPositionComponent.point) &&
       p.radius.equals(enemy.getDimensionComponent.radius) &&
       p.entityType.equals(enemy.getTypeComponent.typeEntity) &&
-      p.speed._1 === enemy.getSpeedComponent.speedX &&
-      p.speed._2 === enemy.getSpeedComponent.speedY))
+      p.speed._1 === enemy.getSpeedComponent.vector.x &&
+      p.speed._2 === enemy.getSpeedComponent.vector.y))
   }
 }
