@@ -4,7 +4,7 @@ import java.util.UUID
 
 import it.unibo.osmos.redux.ecs.components._
 
-trait PlayerCellEntity extends CellEntity with InputProperty {
+trait PlayerCellEntity extends CellEntity with InputProperty with Spawner {
 
 }
 
@@ -15,9 +15,15 @@ object PlayerCellEntity {
             position: PositionComponent,
             speed: SpeedComponent,
             visible: VisibleComponent,
-            typeEntity: TypeComponent): PlayerCellEntity = PlayerCellEntityImpl(CellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity))
+            typeEntity: TypeComponent,
+            spawner: SpawnerComponent): PlayerCellEntity = PlayerCellEntityImpl(CellEntity(acceleration,
+    collidable, dimension, position, speed, visible, typeEntity), spawner)
 
-  private case class PlayerCellEntityImpl(cellEntity: CellEntity) extends PlayerCellEntity {
+  def apply(cell: CellEntity, spawner: SpawnerComponent): PlayerCellEntity = PlayerCellEntityImpl(cell, spawner)
+
+  def apply(builder: CellBuilder, spawner: SpawnerComponent): PlayerCellEntity = PlayerCellEntityImpl(builder.build, spawner)
+
+  private case class PlayerCellEntityImpl(cellEntity: CellEntity, private val spawner: SpawnerComponent) extends PlayerCellEntity {
 
     override def getUUID: UUID = cellEntity.getUUID
 
@@ -34,6 +40,7 @@ object PlayerCellEntity {
     override def getVisibleComponent: VisibleComponent = cellEntity.getVisibleComponent
 
     override def getTypeComponent: TypeComponent = cellEntity.getTypeComponent
-  }
 
+    override def getSpawnerComponent: SpawnerComponent = spawner
+  }
 }

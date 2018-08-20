@@ -1,14 +1,15 @@
 package it.unibo.osmos.redux.mvc.view.events
 
 /**
-  * A basic listener to a EventWrapper
+  * A basic observer to a EventWrapper
+ *
   * @tparam T the EventWrapper class or subclass
   */
-trait EventWrapperListener[T <: EventWrapper] {
+trait EventWrapperObserver[T <: EventWrapper]{
 
   /**
     * Called on a event T type
     * @param event the event
     */
-  def onEvent(event: T)
+  def notify(event: T)
 }

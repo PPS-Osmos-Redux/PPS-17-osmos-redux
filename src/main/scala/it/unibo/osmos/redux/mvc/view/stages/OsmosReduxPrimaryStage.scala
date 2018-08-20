@@ -2,7 +2,7 @@ package it.unibo.osmos.redux.mvc.view.stages
 
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
 import it.unibo.osmos.redux.mvc.view.levels.LevelContext
-import it.unibo.osmos.redux.mvc.view.scenes.{LevelScene, LevelSceneListener, MainScene, MainSceneListener}
+import it.unibo.osmos.redux.mvc.view.scenes._
 import scalafx.application.JFXApp
 
 /**
@@ -29,7 +29,7 @@ object OsmosReduxPrimaryStage {
     * @param windowHeight the window height
     */
   class OsmosReduxPrimaryStageImpl(val listener: PrimaryStageListener, val fullScreenEnabled: Boolean, val windowWidth: Double, val windowHeight: Double) extends OsmosReduxPrimaryStage
-    with MainSceneListener with LevelSceneListener {
+    with MainSceneListener with LevelSelectionSceneListener {
 
     title = defaultWindowTitle
     fullScreen = fullScreenEnabled
@@ -41,17 +41,21 @@ object OsmosReduxPrimaryStage {
       */
     scene = new MainScene(this, this)
 
-    override def onPlayClick(): Unit = {
-      /* Creating a new level scene */
-      val levelScene = new LevelScene(this, this)
-      /* Creating a new LevelContext and setting it to the scene */
-      val levelContext = LevelContext(levelScene)
-      levelScene.levelContext = levelContext
-      /* Changing scene scene */
-      scene = levelScene
-      /* Notify the view the new context */
-      listener.onLevelContextSetup(levelContext)
-    }
+    override def onPlayClick(): Unit = scene = new LevelSelectionScene(this, this)
+
+    override def onLevelContextCreated(levelContext: LevelContext, level: Int, simulation: Boolean): Unit = listener.onLevelContextCreated(levelContext, level, simulation)
+
+    override def onStartLevel(): Unit = listener.onStartLevel()
+
+    override def onPauseLevel(): Unit = listener.onPauseLevel()
+
+    override def onResumeLevel(): Unit = listener.onResumeLevel()
+
+    override def onStopLevel(): Unit = listener.onStopLevel()
+
+
+    /* Stopping the game when the user closes the window */
+    onCloseRequest = _ => System.exit(0)
 
   }
 }
@@ -59,11 +63,6 @@ object OsmosReduxPrimaryStage {
 /**
   * Listener that manages all the events managed by the primary scene
   */
-trait PrimaryStageListener {
+trait PrimaryStageListener extends LevelSelectionSceneListener{
 
-  /**
-    * This method called when the level context has been created
-    * @param levelContext the new level context
-    */
-  def onLevelContextSetup(levelContext: LevelContext)
 }

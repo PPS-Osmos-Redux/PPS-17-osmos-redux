@@ -1,9 +1,16 @@
 package it.unibo.osmos.redux.ecs.engine
 
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager}
-import it.unibo.osmos.redux.ecs.systems.{DrawSystem, InputSystem, MovementSystem}
+import it.unibo.osmos.redux.ecs.systems.{CollisionSystem, DrawSystem, InputSystem, MovementSystem}
+import it.unibo.osmos.redux.mvc.model.MapShape.Rectangle
+import it.unibo.osmos.redux.mvc.model.{CollisionRules, Level, LevelMap, VictoryRules}
+import it.unibo.osmos.redux.ecs.entities.EntityManager
+import it.unibo.osmos.redux.ecs.systems._
+import it.unibo.osmos.redux.mvc.model.Level
 import it.unibo.osmos.redux.mvc.view.levels.LevelContext
-import it.unibo.osmos.redux.utils.InputEventStack
+import it.unibo.osmos.redux.utils.InputEventQueue
+
+import scala.collection.mutable.ListBuffer
 
 /**
   * Game engine, the game loop manager.
@@ -15,10 +22,10 @@ trait GameEngine {
   /**
     * Initializes the game loop with the input data that represents the level.
     *
+    * @param level The object that contains all level data.
     * @param levelContext The context of the current game level.
-    * @param entities The entities in the game level.
     */
-  def init(levelContext: LevelContext, entities: List[CellEntity]): Unit
+  def init(level: Level, levelContext: LevelContext): Unit
 
   /**
     * Starts the game loop.
@@ -69,31 +76,29 @@ object GameEngine {
     * The Game engine class implementation.
     * @param framerate The frame rate of the game.
     */
-  private case class GameEngineImpl(private val framerate: Int = 60) extends GameEngine {
+  private case class GameEngineImpl(private val framerate: Int = 30) extends GameEngine {
 
     private var gameLoop: Option[GameLoop] = _
 
-    //TODO: add framerate parameter
-    override def init(levelContext: LevelContext, entities: List[CellEntity]): Unit = {
+    override def init(level: Level, levelContext: LevelContext): Unit = {
 
       //clear all
       clear()
 
       //register InputEventStack to the mouse event listener to collect input events
-      levelContext.registerMouseEventListener(e => { InputEventStack.push(e)})
+      levelContext.subscribe(e => { InputEventQueue.enqueue(e)})
 
-      //create systems, add to list and sort by priority
-      val systems = List(
-        InputSystem(0),
-        MovementSystem(1),
-        DrawSystem(levelContext, 2)
-      ).sortBy(_.priority)
+      //create systems, add to list, the order in this collection is the final system order in the game loop
+      val systems = ListBuffer[System]()
+      if (!level.isSimulation) systems += InputSystem()
+      systems ++= List(SpawnSystem(), GravitySystem(), MovementSystem(level), CollisionSystem(), CellsEliminationSystem(), DrawSystem(levelContext))
+      if(!level.isSimulation) systems += EndGameSystem(levelContext, level.victoryRule)
 
       //add all entities in the entity manager (systems are subscribed to EntityManager event when created)
-      entities foreach(EntityManager add _)
+      level.entities foreach(EntityManager add _)
 
       //init the gameloop
-      gameLoop = Some(new GameLoop(this, systems))
+      gameLoop = Some(new GameLoop(this, systems.toList))
     }
 
     override def start(): Unit = {
@@ -125,12 +130,12 @@ object GameEngine {
         case Some(g) => g.kill()
         case None => throw new IllegalStateException("Unable to stop game loop because it hasn't been initialized yet")
       }
+      gameLoop = None
     }
 
     override def clear(): Unit = {
-
       EntityManager.clear()
-      InputEventStack.popAll()
+      InputEventQueue.dequeueAll()
 
       gameLoop match {
         case Some(i) => i.getStatus match {
@@ -139,6 +144,7 @@ object GameEngine {
         }
         case _ => //do nothing if it's not present
       }
+      gameLoop = None
     }
 
     override def getStatus: GameStatus = {

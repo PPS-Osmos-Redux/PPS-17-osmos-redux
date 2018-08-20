@@ -12,14 +12,16 @@ object ViewConstants {
     */
   object Window {
     val defaultWindowTitle: String = "Osmos-Redux"
-    val defaultWindowWidth: Double = 800
-    val defaultWindowHeight: Double = 600
+    val defaultWindowWidth: Double = 1366
+    val defaultWindowHeight: Double = 768
   }
 
   object Entities {
     val defaultPlayerColor: Color = Color.Green
     val defaultEntityMaxColor: Color = Color.DarkRed
     val defaultEntityMinColor: Color = Color.LightBlue
+    val attractiveCellColor: Color = Color.White
+    val repulsiveCellColor: Color = Color.Black
   }
 
 }
