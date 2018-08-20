@@ -16,7 +16,7 @@ class TestJsonConversion extends FunSuite{
   val p = PositionComponent(Point(0, 0))
   val s = SpeedComponent(4, 0)
   val v = VisibleComponent(true)
-  val et = TypeComponent(EntityType.Material)
+  val et = TypeComponent(EntityType.Matter)
   val sp = SpawnerComponent(true)
   val sw = SpecificWeightComponent(1)
   //Entities

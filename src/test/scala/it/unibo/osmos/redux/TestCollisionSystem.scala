@@ -9,9 +9,9 @@ import org.scalatest.FunSuite
 class TestCollisionSystem extends FunSuite {
 
   val entity1 = CellEntity(AccelerationComponent(0,0), CollidableComponent(true), DimensionComponent(5),
-    PositionComponent(Point(20, 30)), SpeedComponent(0, 0), VisibleComponent(true), TypeComponent(EntityType.Material))
+    PositionComponent(Point(20, 30)), SpeedComponent(0, 0), VisibleComponent(true), TypeComponent(EntityType.Matter))
   val entity2 = CellEntity(AccelerationComponent(0,0), CollidableComponent(true), DimensionComponent(2),
-    PositionComponent(Point(60, 80)), SpeedComponent(0, 0), VisibleComponent(true), TypeComponent(EntityType.Material))
+    PositionComponent(Point(60, 80)), SpeedComponent(0, 0), VisibleComponent(true), TypeComponent(EntityType.Matter))
 
   test("CollisionSystem should not collide the entity with herself") {
     val system = CollisionSystem()
