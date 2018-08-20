@@ -16,7 +16,7 @@ abstract class AbstractSystemWithTwoTypeOfEntity[T <:Property, R <:Property: Cla
   protected var entitiesSecondType: ListBuffer[R] = ListBuffer()
 
   EntityManager.subscribe(this, getGroupPropertySecondType)
-  protected def getGroupPropertySecondType: Class[_<:Property]
+  protected def getGroupPropertySecondType: Class[R]
 
   override def notify(event: EMEvents.EntityManagerEvent): Unit = {
     event.entity match {

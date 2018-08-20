@@ -9,9 +9,9 @@ import scala.collection.mutable.ListBuffer
 
 case class GravitySystem() extends AbstractSystemWithTwoTypeOfEntity[MovableProperty, GravityProperty]() {
 
-  override def getGroupProperty: Class[_ <: Property] = classOf[MovableProperty]
+  override def getGroupProperty: Class[MovableProperty] = classOf[MovableProperty]
 
-  override protected def getGroupPropertySecondType: Class[_ <: Property] = classOf[GravityProperty]
+  override protected def getGroupPropertySecondType: Class[GravityProperty] = classOf[GravityProperty]
 
   override def update(): Unit = for (
     gravityEntity <- entitiesSecondType; //for each gravity entity
