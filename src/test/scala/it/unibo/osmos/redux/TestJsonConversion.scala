@@ -1,12 +1,18 @@
 package it.unibo.osmos.redux
 
+import java.io.File
+import java.nio.file.{Files, Path}
+
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities._
 import it.unibo.osmos.redux.mvc.controller.FileManager
+import it.unibo.osmos.redux.mvc.controller.FileManager.{defaultFS, levelsDirectory}
 import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.mvc.model.MapShape._
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.FunSuite
+
+import scala.util.Try
 
 class TestJsonConversion extends FunSuite{
   //Components
@@ -95,14 +101,24 @@ class TestJsonConversion extends FunSuite{
   }
 
   test("File reading and conversion") {
-    val fileContent = FileManager.loadResource(isSimulation = false,1)
-    assert(fileContent.isSuccess)
-    val jsLevel = fileContent.get.parseJson
-    assert(jsLevel.equals(jsLevel))
-    val convertedLevel = jsLevel.convertTo[Level]
-    assert(convertedLevel.levelId.equals(level.levelId))
-    assert(convertedLevel.levelMap.equals(level.levelMap))
-    assert(convertedLevel.victoryRule.equals(level.victoryRule))
-    assert(convertedLevel.entities.size.equals(level.entities.size))
+    val convertedLevel = FileManager.loadResource(isSimulation = false,1)
+    assert(convertedLevel.isSuccess)
+    assert(convertedLevel.get.levelId.equals(level.levelId))
+    assert(convertedLevel.get.levelMap.equals(level.levelMap))
+    assert(convertedLevel.get.victoryRule.equals(level.victoryRule))
+    assert(convertedLevel.get.entities.size.equals(level.entities.size))
+  }
+
+  test("Writing and reading custom level") {
+    val fileName:String = "TestWritingLev3l"
+    val optFilePath = FileManager.saveLevel(level, fileName)
+    assert(optFilePath.isDefined)
+    val readLevel = FileManager.loadCustomLevel(fileName)
+    assert(readLevel.isDefined)
+    assert(readLevel.get.levelId.equals(level.levelId))
+    assert(readLevel.get.levelMap.equals(level.levelMap))
+    assert(readLevel.get.victoryRule.equals(level.victoryRule))
+    assert(readLevel.get.entities.size.equals(level.entities.size))
+    Try(Files.delete(optFilePath.get))
   }
 }
