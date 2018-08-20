@@ -4,7 +4,7 @@ import it.unibo.osmos.redux.ecs.entities._
 
 case class SpawnSystem() extends AbstractSystem[Spawner] {
 
-  override def getGroupProperty: Class[_ <: Property] = classOf[Spawner]
+  override def getGroupProperty: Class[Spawner] = classOf[Spawner]
 
   /**
     * Performs an action on all the entities of the system
