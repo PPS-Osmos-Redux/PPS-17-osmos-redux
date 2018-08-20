@@ -17,7 +17,7 @@ case class EndGameSystem(levelContext: GameStateHolder, victoryRules: VictoryRul
     case _ => throw new NotImplementedError()
   }
 
-  override def getGroupProperty: Class[_ <: Property] = classOf[DeathProperty]
+  override def getGroupProperty: Class[DeathProperty] = classOf[DeathProperty]
 
   override def update(): Unit = {
     if (levelContext.gameCurrentState == GamePending) {

@@ -12,7 +12,7 @@ case class CollisionSystem() extends AbstractSystem[CollidableProperty] {
   //constant that define the initial acceleration of a steady entity when a collision occurs
   private val initialAcceleration = 0.001
 
-  override def getGroupProperty: Class[_ <: Property] = classOf[CollidableProperty]
+  override def getGroupProperty: Class[CollidableProperty] = classOf[CollidableProperty]
 
   override def update(): Unit = {
     for {
