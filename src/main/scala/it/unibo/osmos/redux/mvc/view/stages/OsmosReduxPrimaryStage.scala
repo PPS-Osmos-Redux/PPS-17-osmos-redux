@@ -43,6 +43,8 @@ object OsmosReduxPrimaryStage {
 
     override def onPlayClick(): Unit = scene = new LevelSelectionScene(this, this)
 
+    override def onEditorClick(): Unit = {}
+
     override def onLevelContextCreated(levelContext: LevelContext, level: Int, simulation: Boolean): Unit = listener.onLevelContextCreated(levelContext, level, simulation)
 
     override def onStartLevel(): Unit = listener.onStartLevel()
