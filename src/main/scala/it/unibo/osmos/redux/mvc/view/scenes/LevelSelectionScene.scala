@@ -12,20 +12,39 @@ import scalafx.stage.Stage
 class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSelectionSceneListener) extends BaseScene(parentStage)
   with MainMenuBarListener with LevelNodeListener with LevelSceneListener {
 
-  val numLevels = 5
+  /**
+    * The upper main menu bar
+    */
+  private val menuBar = new MainMenuBar(this)
+
+  /**
+    * The central level container
+    */
+  private val levelsContainer: TilePane = new TilePane() {
+    alignmentInParent = Pos.Center
+    alignment = Pos.Center
+    prefColumns = numLevels
+    prefRows = 1
+    minHeight <== parentStage.height
+  }
+
+  //TODO: get the proper number of levels
+  /**
+    * The number of levels
+    * @return the number of levels
+    */
+  def numLevels: Int = 5
+
+  //TODO: parse actual available values
+  /**
+    * This method loads the level into the level container, thus letting the player choose them
+    */
+  def loadLevels(): Unit = for (i <- 1 to numLevels) levelsContainer.children.add(new LevelNode(LevelSelectionScene.this, i, i == 1))
 
   root = new VBox {
-    children = Seq(new MainMenuBar(LevelSelectionScene.this),
-      new TilePane() {
-        alignmentInParent = Pos.Center
-        alignment = Pos.Center
-        prefColumns = numLevels
-        prefRows = 1
-        minHeight <== parentStage.height
-        //TODO: parse actual available values
-        for (i <- 1 to numLevels) children.add(new LevelNode(LevelSelectionScene.this, i, if (i == 1) true else false))
-      }
-    )
+    /* Loading the levels */
+    loadLevels()
+    children = Seq(menuBar, levelsContainer)
   }
 
   override def onFullScreenSettingClick(): Unit = {
