@@ -13,74 +13,76 @@ import scalafx.scene.text.Text
 import scalafx.util.Duration
 
 /**
-  * This node represents a single selectable level from the menu
+  * Basic abstract level node, consisting of a text, an image, a play button and a simulation button
   * @param listener the LevelNodeListener
   * @param level the level index
-  * @param available true if the level is currently available, false otherwise
+  * @param playable true if the level is actually playable
   */
-class LevelNode(val listener: LevelNodeListener, val level: Int, val available: Boolean) extends VBox {
+abstract class AbstractLevelNode(val listener: LevelNodeListener, val level: Int, val playable: Boolean) extends VBox {
 
   alignment = Pos.Center
   padding = Insets(0, 30, 30, 30)
+
+  /**
+    * Lazy implementation of the basic component. They will be eventually overridden in a not abstract class. This let us implement the objects behaviour
+    */
+  lazy val imageView: ImageView = new ImageView()
+  lazy val text: Text = new Text()
+  lazy val playButton: Button = new Button()
+  lazy val simulationButton: Button = new Button()
+
+  if (playable) {
+    effect = new DropShadow {
+      color = Color.Blue
+    }
+
+    /**
+      * Button handlers, calling the listener
+      */
+    playButton.onAction = _ => listener.onLevelPlayClick(level, simulation = false)
+    simulationButton.onAction = _ => listener.onLevelPlayClick(level, simulation = true)
+
+    children = Seq(text, simulationButton, imageView, playButton)
+  } else {
+    effect = new SepiaTone
+
+    children = Seq(text, imageView)
+  }
+}
+
+/**
+  * Animated version of the base AbstractLevelNode, adding scaling and fading effects
+  * @param listener the LevelNodeListener
+  * @param level the level index
+  * @param playable true if the level is actually playable
+  */
+abstract class AnimatedAbstractLevelNode(override val listener: LevelNodeListener, override val level: Int, override val playable: Boolean) extends AbstractLevelNode(listener, level, playable) {
 
   /* Hover event handlers */
   scaleX <== when(hover) choose 1.2 otherwise 1
   scaleY <== when(hover) choose 1.2 otherwise 1
 
-  /* The upper text */
-  val textField: Text = new Text() {
-    margin = Insets(0, 0, 20, 0)
-    style = "-fx-font-size: 12pt"
-    visible = false
-  }
-
-  val fadeInTransition: Transition = new FadeTransition(Duration.apply(2000), textField) {
+  val fadeInTransition: Transition = new FadeTransition(Duration.apply(2000), text) {
     fromValue = 0.0
     toValue = 1.0
   }
 
-  val fadeOutTransition: Transition = new FadeTransition(Duration.apply(1000), textField) {
+  val fadeOutTransition: Transition = new FadeTransition(Duration.apply(1000), text) {
     fromValue = 1.0
     toValue = 0.0
-    onFinished = _ => textField.visible = false
+    onFinished = _ => text.visible = false
   }
 
-  /* The level image */
-  val imageView: ImageView = new ImageView(ImageLoader.getImage(s"/textures/menu_level_$level.png")) {
-    margin = Insets(20)
-    onMouseEntered = _ => {textField.visible = true; fadeInTransition.play()}
-    onMouseExited = _ => {fadeOutTransition.play()}
+  text.visible = false
 
-  }
+  /**
+    * Playing the faind animation whene the image is hovered
+    */
+  imageView.onMouseEntered = _ => {text.visible = true; fadeInTransition.play()}
+  imageView.onMouseExited = _ => {fadeOutTransition.play()}
 
-  /* The button to start the simulation in this level */
-  val simulationButton: Button = new Button("Simulation") {
-    visible <== when(LevelNode.this.hover) choose true otherwise false
-  }
-
-  /* The button to start the level normally */
-  val playButton: Button = new Button("Play") {
-    visible <== when(LevelNode.this.hover) choose true otherwise false
-    alignment = Pos.BottomLeft
-  }
-
-  /* We must prevent the user to select unavailable levels */
-  if (available) {
-    effect = new DropShadow {
-      color = Color.Blue
-    }
-    /* Text */
-    textField.text = s"Level $level"
-    /* Button handlers */
-    simulationButton.onAction = e => listener.onLevelPlayClick(level, simulation = true)
-    playButton.onAction = e => listener.onLevelPlayClick(level, simulation = false)
-    /* Setting all the components */
-    children = Seq(textField, simulationButton, imageView, playButton)
-  } else {
-    effect = new SepiaTone
-    textField.text = "Unlock previous level"
-    children = Seq(textField, imageView)
-  }
+  playButton.visible <== hover
+  simulationButton.visible <== hover
 
 }
 
@@ -95,4 +97,34 @@ trait LevelNodeListener {
     * @param simulation true if the level must be started as a simulation, false otherwise
     */
   def onLevelPlayClick(level: Int, simulation: Boolean)
+}
+
+
+/**
+  * This node represents a single selectable level from the menu
+  * @param listener the LevelNodeListener
+  * @param level the level index
+  * @param playable true if the level is currently playable, false otherwise
+  */
+class LevelNode(override val listener: LevelNodeListener, override val level: Int, override val playable: Boolean) extends AnimatedAbstractLevelNode(listener, level, playable) {
+
+  /* The upper text */
+  override lazy val text: Text = new Text() {
+    margin = Insets(0, 0, 20, 0)
+    style = "-fx-font-size: 12pt"
+    text = if (playable) s"Level $level" else "Unlock previous level"
+  }
+
+  /* The level image */
+  override lazy val imageView: ImageView = new ImageView(ImageLoader.getImage(s"/textures/menu_level_$level.png")) {
+    margin = Insets(20)
+  }
+
+  /* The button used to start the simulation in this level */
+  override lazy val simulationButton: Button = new Button("Simulation")
+
+  /* The button used to start the level normally */
+  override lazy val playButton: Button = new Button("Play") {
+    alignment = Pos.BottomLeft
+  }
 }
