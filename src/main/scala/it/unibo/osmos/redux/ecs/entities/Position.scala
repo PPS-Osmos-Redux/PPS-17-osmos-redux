@@ -2,15 +2,12 @@ package it.unibo.osmos.redux.ecs.entities
 
 import it.unibo.osmos.redux.ecs.components.PositionComponent
 
-/**
-  * Trait representing the entity's position property
-  */
+/** Trait representing the entity's position property */
 trait Position extends Property {
 
-  /**
-    * Gets the Position Component
+  /** Gets the position component
     *
-    * @return the Position Component
+    * @return position component
     */
   def getPositionComponent: PositionComponent
 }
