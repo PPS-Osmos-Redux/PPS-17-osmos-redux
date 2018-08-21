@@ -25,8 +25,18 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
     alignment = Pos.Center
     prefColumns = numLevels
     prefRows = 1
-    minHeight <== parentStage.height
+    prefHeight <== parentStage.height
   }
+
+  protected val container: VBox = new VBox {
+    alignment = Pos.Center
+    /* Loading the levels */
+    loadLevels()
+    children = Seq(menuBar, levelsContainer)
+  }
+
+  /* Setting the root container*/
+  root = container
 
   //TODO: get the proper number of levels
   /**
@@ -40,12 +50,6 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
     * This method loads the level into the level container, thus letting the player choose them
     */
   def loadLevels(): Unit = for (i <- 1 to numLevels) levelsContainer.children.add(new LevelNode(LevelSelectionScene.this, i, i == 1))
-
-  root = new VBox {
-    /* Loading the levels */
-    loadLevels()
-    children = Seq(menuBar, levelsContainer)
-  }
 
   override def onFullScreenSettingClick(): Unit = {
     parentStage.fullScreen = !parentStage.fullScreen.get()
@@ -79,7 +83,7 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
 }
 
 /**
-  * Trait which gets notified when a LevelSelectionSceneListener event occurs
+  * Trait which gets notified when a LevelSelectionScene event occurs
   */
 trait LevelSelectionSceneListener extends LevelSceneListener {
 
