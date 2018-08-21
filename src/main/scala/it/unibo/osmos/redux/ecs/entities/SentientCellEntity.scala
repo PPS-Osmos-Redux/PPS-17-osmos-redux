@@ -4,9 +4,8 @@ import java.util.UUID
 
 import it.unibo.osmos.redux.ecs.components._
 
-trait SentientCellEntity extends CellEntity with SentientProperty {
-
-}
+/** Trait representing a sentient cell */
+trait SentientCellEntity extends CellEntity with SentientProperty {}
 
 object SentientCellEntity {
   def apply(acceleration: AccelerationComponent,
