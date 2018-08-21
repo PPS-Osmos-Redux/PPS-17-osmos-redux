@@ -15,12 +15,12 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
   /**
     * The upper main menu bar
     */
-  private val menuBar = new MainMenuBar(this)
+  protected val menuBar = new MainMenuBar(this)
 
   /**
     * The central level container
     */
-  private val levelsContainer: TilePane = new TilePane() {
+  protected val levelsContainer: TilePane = new TilePane() {
     alignmentInParent = Pos.Center
     alignment = Pos.Center
     prefColumns = numLevels
