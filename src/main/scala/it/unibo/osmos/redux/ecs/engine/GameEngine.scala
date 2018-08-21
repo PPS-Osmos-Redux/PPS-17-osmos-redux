@@ -91,7 +91,7 @@ object GameEngine {
       //create systems, add to list, the order in this collection is the final system order in the game loop
       val systems = ListBuffer[System]()
       if (!level.isSimulation) systems += InputSystem()
-      systems ++= List(GravitySystem(), MovementSystem(level), CollisionSystem(), SpawnSystem(), DrawSystem(levelContext), CellsEliminationSystem())
+      systems ++= List(SpawnSystem(), GravitySystem(), MovementSystem(level), CollisionSystem(), CellsEliminationSystem(), DrawSystem(levelContext))
       if(!level.isSimulation) systems += EndGameSystem(levelContext, level.victoryRule)
 
       //add all entities in the entity manager (systems are subscribed to EntityManager event when created)
