@@ -7,7 +7,7 @@ import it.unibo.osmos.redux.ecs.components._
 /**
   * Trait representing a CellEntity
   */
-trait CellEntity extends AbstractEntity with MovableProperty with CollidableProperty with DrawableProperty with DeathProperty{
+trait CellEntity extends AbstractEntity with MovableProperty with CollidableProperty with DrawableProperty with DeathProperty with SentientEnemyProperty {
 
 }
 

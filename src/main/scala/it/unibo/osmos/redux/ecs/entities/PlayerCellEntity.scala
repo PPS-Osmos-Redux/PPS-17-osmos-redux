@@ -4,7 +4,7 @@ import java.util.UUID
 
 import it.unibo.osmos.redux.ecs.components._
 
-trait PlayerCellEntity extends CellEntity with InputProperty with Spawner {
+trait PlayerCellEntity extends CellEntity with InputProperty with Spawner with SentientTargetProperty {
 
 }
 
