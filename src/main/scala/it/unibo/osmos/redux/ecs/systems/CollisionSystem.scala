@@ -75,7 +75,6 @@ case class CollisionSystem() extends AbstractSystem[CollidableProperty] {
       case (EntityType.AntiMatter, _) | (_, EntityType.AntiMatter) => bigEntity.getDimensionComponent.radius_(bigRadius - exchangedRadiusValue)
       case _ => bigEntity.getDimensionComponent.radius_(bigRadius + exchangedRadiusValue)
     }
-
   }
 
 
