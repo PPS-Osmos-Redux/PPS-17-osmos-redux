@@ -45,7 +45,7 @@ class TestEndGameSystem extends FunSuite with BeforeAndAfter {
     val scp = PositionComponent(Point(60, 64))
     val scs = SpeedComponent(0, 0)
     val scv = VisibleComponent(true)
-    val sct = TypeComponent(EntityType.Material)
+    val sct = TypeComponent(EntityType.Matter)
     val smallerCellEntity = CellEntity(sca, scc, scd, scp, scs, scv, sct)
 
     val pca = AccelerationComponent(0, 0)
@@ -54,7 +54,7 @@ class TestEndGameSystem extends FunSuite with BeforeAndAfter {
     val pcp = PositionComponent(Point(50, 64))
     val pcs = SpeedComponent(4, 0)
     val pcv = VisibleComponent(true)
-    val pct = TypeComponent(EntityType.Material)
+    val pct = TypeComponent(EntityType.Matter)
     val spw = SpawnerComponent(false)
     val playerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv, pct, spw)
 
@@ -110,7 +110,7 @@ class TestEndGameSystem extends FunSuite with BeforeAndAfter {
     val bcp = PositionComponent(Point(65, 64))
     val bcs = SpeedComponent(0, 0)
     val bcv = VisibleComponent(true)
-    val bct = TypeComponent(EntityType.Material)
+    val bct = TypeComponent(EntityType.Matter)
     val biggerCellEntity = CellEntity(bca, bcc, bcd, bcp, bcs, bcv, bct)
 
     EntityManager.add(biggerCellEntity)

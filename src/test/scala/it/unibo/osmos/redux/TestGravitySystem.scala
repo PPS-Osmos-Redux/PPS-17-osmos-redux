@@ -16,7 +16,7 @@ class TestGravitySystem extends FunSuite with BeforeAndAfter{
   val dimension = DimensionComponent(3)
   val position = PositionComponent(Point(0, 0))
   val visible = VisibleComponent(true)
-  val baseTypeEntity = TypeComponent(EntityType.Material)
+  val baseTypeEntity = TypeComponent(EntityType.Matter)
   val attractiveTypeEntity = TypeComponent(EntityType.Attractive)
   val repulseTypeEntity = TypeComponent(EntityType.Repulse)
   val specificWeight = SpecificWeightComponent(1.5)

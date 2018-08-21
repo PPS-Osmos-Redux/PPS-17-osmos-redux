@@ -34,7 +34,7 @@ class TestSystemWithThreeTypeOfEntity extends FunSuite with BeforeAndAfter {
   val dimension = DimensionComponent(5)
   val position = PositionComponent(Point(0, 0))
   val visible = VisibleComponent(true)
-  val typeEntity = TypeComponent(EntityType.Material)
+  val typeEntity = TypeComponent(EntityType.Matter)
   val spawner = SpawnerComponent(false)
   val typeGravity = TypeComponent(EntityType.Attractive)
   val specificWeight = SpecificWeightComponent(1)

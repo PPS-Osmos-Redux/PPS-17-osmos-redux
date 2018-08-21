@@ -1,6 +1,7 @@
 package it.unibo.osmos.redux.ecs.systems
 
-import it.unibo.osmos.redux.ecs.entities.{CollidableProperty, Property}
+import it.unibo.osmos.redux.ecs.components.EntityType
+import it.unibo.osmos.redux.ecs.entities.CollidableProperty
 import it.unibo.osmos.redux.utils.MathUtils
 
 case class CollisionSystem() extends AbstractSystem[CollidableProperty] {
@@ -68,9 +69,14 @@ case class CollisionSystem() extends AbstractSystem[CollidableProperty] {
     val tinyRadius = smallEntity.getDimensionComponent.radius
 
     //apply exchange between the two entities
-    bigEntity.getDimensionComponent.radius_(bigRadius + exchangedRadiusValue)
     smallEntity.getDimensionComponent.radius_(tinyRadius - exchangedRadiusValue)
+
+    (bigEntity.getTypeComponent.typeEntity, smallEntity.getTypeComponent.typeEntity) match {
+      case (EntityType.AntiMatter, _) | (_, EntityType.AntiMatter) => bigEntity.getDimensionComponent.radius_(bigRadius - exchangedRadiusValue)
+      case _ => bigEntity.getDimensionComponent.radius_(bigRadius + exchangedRadiusValue)
+    }
   }
+
 
   /**
     * Applies deceleration to the input entity.

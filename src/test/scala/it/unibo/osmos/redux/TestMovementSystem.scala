@@ -36,7 +36,7 @@ class TestMovementSystem extends FunSuite with BeforeAndAfter {
     val cp = PositionComponent(Point(110, 170))
     val cs = SpeedComponent(4, 0)
     val cv = VisibleComponent(true)
-    val ct = TypeComponent(EntityType.Material)
+    val ct = TypeComponent(EntityType.Matter)
     val cellEntity = CellEntity(ca, cc, cd, cp, cs, cv, ct)
 
     val pca = AccelerationComponent(-4, -1)
@@ -45,7 +45,7 @@ class TestMovementSystem extends FunSuite with BeforeAndAfter {
     val pcp = PositionComponent(Point(130, 150))
     val pcs = SpeedComponent(4, 0)
     val pcv = VisibleComponent(true)
-    val pct = TypeComponent(EntityType.Material)
+    val pct = TypeComponent(EntityType.Matter)
     val spw = SpawnerComponent(false)
     val playerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv, pct, spw)
 
@@ -77,7 +77,7 @@ class TestMovementSystem extends FunSuite with BeforeAndAfter {
     val lccp = PositionComponent(Point(83, 56))
     val lccs = SpeedComponent(-4, 2)
     val lccv = VisibleComponent(true)
-    val lcct = TypeComponent(EntityType.Material)
+    val lcct = TypeComponent(EntityType.Matter)
     val leftCollisionCellEntity = CellEntity(lcca, lccc, lccd, lccp, lccs, lccv, lcct)
 
     val rcca = AccelerationComponent(0, 0)
@@ -86,7 +86,7 @@ class TestMovementSystem extends FunSuite with BeforeAndAfter {
     val rccp = PositionComponent(Point(231, 90))
     val rccs = SpeedComponent(6, 0)
     val rccv = VisibleComponent(true)
-    val rcct = TypeComponent(EntityType.Material)
+    val rcct = TypeComponent(EntityType.Matter)
     val rightCollisionCellEntity = CellEntity(rcca, rccc, rccd, rccp, rccs, rccv, rcct)
 
     val tcca = AccelerationComponent(0, 0)
@@ -95,7 +95,7 @@ class TestMovementSystem extends FunSuite with BeforeAndAfter {
     val tccp = PositionComponent(Point(160, 60))
     val tccs = SpeedComponent(6, -4)
     val tccv = VisibleComponent(true)
-    val tcct = TypeComponent(EntityType.Material)
+    val tcct = TypeComponent(EntityType.Matter)
     val topCollisionCellEntity = CellEntity(tcca, tccc, tccd, tccp, tccs, tccv, tcct)
 
     val bcca = AccelerationComponent(0, 0)
@@ -104,7 +104,7 @@ class TestMovementSystem extends FunSuite with BeforeAndAfter {
     val bccp = PositionComponent(Point(115, 144))
     val bccs = SpeedComponent(-2, 7)
     val bccv = VisibleComponent(true)
-    val bcct = TypeComponent(EntityType.Material)
+    val bcct = TypeComponent(EntityType.Matter)
     val bottomCollisionCellEntity = CellEntity(bcca, bccc, bccd, bccp, bccs, bccv, bcct)
 
     EntityManager.add(leftCollisionCellEntity)
