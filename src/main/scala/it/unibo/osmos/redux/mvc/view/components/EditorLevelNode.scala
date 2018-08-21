@@ -1,9 +1,11 @@
 package it.unibo.osmos.redux.mvc.view.components
 
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
-import scalafx.geometry.{Insets, Pos}
+import scalafx.geometry.Insets
 import scalafx.scene.control.Button
+import scalafx.scene.effect.DropShadow
 import scalafx.scene.image.ImageView
+import scalafx.scene.paint.Color
 import scalafx.scene.text.Text
 
 /**
@@ -25,6 +27,11 @@ trait EditorLevelNodeListener extends LevelNodeListener{
   */
 class EditorLevelNode(override val listener: EditorLevelNodeListener, override val level: Int) extends AnimatedAbstractLevelNode(listener, level, playable = true) {
 
+  effect = new DropShadow {
+    color = Color.ForestGreen
+  }
+
+
   /* The upper text */
   override lazy val text: Text = new Text() {
     margin = Insets(0, 0, 20, 0)
@@ -45,7 +52,9 @@ class EditorLevelNode(override val listener: EditorLevelNodeListener, override v
 
   /* The button used to delete the custom level */
   val deleteButton: Button = new Button("Delete") {
+    margin = Insets(20, 0, 0, 0)
     onAction = _ => listener.onLevelDeleteClick(level)
+    visible <== EditorLevelNode.this.hover
   }
 
   children.add(deleteButton)
