@@ -28,9 +28,7 @@ case class ControllerImpl() extends Controller {
                           chosenLevel:Int,
                           isSimulation:Boolean): Unit = {
 
-    val text:Try[String] = FileManager.loadResource(isSimulation, chosenLevel)
-    import it.unibo.osmos.redux.mvc.model.JsonProtocols._
-    val loadedLevel = text.get.parseJson.convertTo[Level]
+    val loadedLevel = FileManager.loadResource(isSimulation, chosenLevel).get
     if (isSimulation) loadedLevel.isSimulation = true
     if(engine.isEmpty) engine = Some(GameEngine())
     engine.get.init(loadedLevel, levelContext)
@@ -44,21 +42,4 @@ case class ControllerImpl() extends Controller {
   override def pauseLevel(): Unit = if (engine.isDefined) engine.get.pause()
 
   override def resumeLevel(): Unit = if (engine.isDefined) engine.get.resume()
-}
-
-object FileManager {
-  val separator:String = "/"
-  val levelStartPath:String = separator + "levels" + separator
-  val jsonExtension = ".json"
-
-  /**
-    * Reads a file from the resources folder
-    * @param isSimulation if i have to load a simulation or a playable levels
-    * @param chosenLevel levels id
-    * @return content of file wrapped into a Try
-    */
-  def loadResource(isSimulation:Boolean, chosenLevel:Int): Try[String] ={
-    val fileName = (levelStartPath + chosenLevel + jsonExtension).toLowerCase
-    Try(Source.fromInputStream(getClass.getResourceAsStream(fileName)).mkString)
-  }
 }
