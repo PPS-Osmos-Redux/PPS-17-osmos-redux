@@ -3,7 +3,12 @@ package it.unibo.osmos.redux.mvc.controller
 import java.io.{File, PrintWriter}
 import java.nio.file.{FileSystem, FileSystems, Files, Path}
 
+import it.unibo.osmos.redux.ecs.components._
+import it.unibo.osmos.redux.ecs.entities._
+import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
+import it.unibo.osmos.redux.mvc.model.UserProgress.UserStat
 import it.unibo.osmos.redux.mvc.model._
+import it.unibo.osmos.redux.utils.Point
 import spray.json._
 
 import scala.io.{BufferedSource, Source}
@@ -17,8 +22,12 @@ object FileManager {
   val defaultFS: FileSystem = FileSystems.getDefault
   val systemSeparator: String = defaultFS.getSeparator
   val userHome: String = System.getProperty("user.home")
-  val levelsDirectory: String = userHome + systemSeparator + "Osmos-Redux" +
-    systemSeparator + "CustomLevels" + systemSeparator
+  val gameDirectory:String = "Osmos-Redux" + systemSeparator
+  val levelsDirectory: String = userHome + systemSeparator + gameDirectory +
+    "CustomLevels" + systemSeparator
+  val userProgressFileName = "UserProgress"
+  val userProgressDirectory:String = userHome + systemSeparator + gameDirectory +
+    userProgressFileName + systemSeparator
 
   /**
     * Reads a file from the resources folder
@@ -53,18 +62,25 @@ object FileManager {
       }
     } while (flag)
     val levelFile = new File(path.toUri)
-    if (Try(levelFile.getParentFile.mkdirs()).isFailure) {
-      println("Error: SecurityException directories are protected")
-      return None
-    }
-    val writer = new PrintWriter(levelFile)
+    createDirectoriesTree(levelFile)
     import it.unibo.osmos.redux.mvc.model.JsonProtocols.levelFormatter
-    try writer.write(level.toJson.prettyPrint)
-    catch {
-      case e: Throwable => println("Exception occurred writing on file: ",e.printStackTrace())
-                           return None
-    } finally writer.close()
-    Some(path)
+    if (saveToFile(levelFile, level.toJson.prettyPrint)) Some(path) else None
+  }
+
+  def saveUserProgress(userProgress: UserStat): Option[Path] = {
+    val path: Path = defaultFS.getPath(userProgressDirectory + userProgressFileName + jsonExtension)
+    val upFile = new File(path.toUri)
+    createDirectoriesTree(upFile)
+    import it.unibo.osmos.redux.mvc.model.JsonProtocols._
+    if (saveToFile(upFile, userProgress.toJson.prettyPrint)) Some(path) else None
+  }
+
+  def loadUserProgress(): Option[UserStat] = {
+    import it.unibo.osmos.redux.mvc.model.JsonProtocols.userProgressFormatter
+    loadFile(userProgressDirectory + userProgressFileName + jsonExtension) match {
+      case Some(text) => Option(text.parseJson.convertTo[UserStat])
+      case _ => None
+    }
   }
 
   /**
@@ -73,18 +89,42 @@ object FileManager {
     * @return an option with the required level if it doesn't fail
     */
   def loadCustomLevel(fileName: String): Option[Level] = {
-    val source: Try[BufferedSource] = Try(Source.fromFile(defaultFS.getPath(levelsDirectory + fileName + jsonExtension).toUri))
+    loadFile(levelsDirectory + fileName + jsonExtension) match {
+      case Some(text) => textToLevel(text).toOption
+      case _ => None
+    }
+  }
+
+  def saveToFile(file:File, text: String): Boolean = {
+    val writer = new PrintWriter(file)
+    try {
+      writer.write(text)
+      return true
+    } catch {
+      case e: Throwable => println("Exception occurred writing on file: ", file.getName,
+        e.printStackTrace())
+    } finally writer.close()
+    false
+  }
+
+  def loadFile(filePath:String):Option[String] = {
+    val source: Try[BufferedSource] = Try(Source.fromFile(defaultFS.getPath(filePath).toUri))
     if (source.isSuccess) {
-      val lines = try source.get.mkString
-                         catch {
-                           case e:Throwable => println("Error reading custom level file: ", e)
-                                               return None
-                         }
-                         finally source.get.close()
-      val tryLevel = textToLevel(lines)
-      if (tryLevel.isSuccess) return Some(tryLevel.get)
+      try return Some(source.get.mkString)
+      catch {
+        case e:Throwable => println("Error reading file: ", filePath,e.printStackTrace())
+      }
+      finally source.get.close()
     }
     None
+  }
+
+  def createDirectoriesTree(file:File):Boolean = {
+    if (Try(file.getParentFile.mkdirs()).isFailure) {
+      println("Error: SecurityException directories are protected")
+      return false
+    }
+    true
   }
 
   /**
@@ -96,4 +136,9 @@ object FileManager {
     import it.unibo.osmos.redux.mvc.model.JsonProtocols.levelFormatter
     Try(text.parseJson.convertTo[Level])
   }
+
+  def customLevelsFilesName:List[String] =
+    new File(levelsDirectory).listFiles((d, name) => name.endsWith(jsonExtension))
+                             .map(f => f.getName.substring(0,f.getName.length-jsonExtension.length))
+                             .toList
 }
