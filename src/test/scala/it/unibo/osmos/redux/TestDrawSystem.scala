@@ -53,7 +53,7 @@ class TestDrawSystem extends FunSuite with BeforeAndAfter {
   val position = PositionComponent(Point(0, 0))
   val visible = VisibleComponent(true)
   val notVisible = VisibleComponent(false)
-  val typeEntity = TypeComponent(EntityType.Material)
+  val typeEntity = TypeComponent(EntityType.Matter)
   val dimension1 = DimensionComponent(3)
   val position1 = PositionComponent(Point(3, 4))
   val spawner = SpawnerComponent(false)

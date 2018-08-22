@@ -2,13 +2,10 @@ package it.unibo.osmos.redux.ecs.entities
 
 import it.unibo.osmos.redux.ecs.components.MassComponent
 
-/**
-  * Trait representing the entity's mass property
-  */
+/** Trait representing the entity's mass property */
 trait Mass extends Property {
 
-  /**
-    * Gets the Mass Component
+  /** Gets the Mass Component
     *
     * @return the Mass Component
     */
