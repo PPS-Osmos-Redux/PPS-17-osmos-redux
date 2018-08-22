@@ -89,6 +89,31 @@
       "speedX": 4.0,
       "speedY": 0.0
     }
+  },{
+    "acceleration": {
+      "accelerationX": 1.0,
+      "accelerationY": 1.0
+    },
+    "visible": {
+      "visible": true
+    },
+    "collidable": {
+      "collidable": true
+    },
+    "position": {
+      "point": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    },
+    "cellType": "sentientCell",
+    "dimension": {
+      "radius": 5.0
+    },
+    "speed": {
+      "speedX": 4.0,
+      "speedY": 0.0
+    }
   }],
   "levelId": 1,
   "isSimulation": false,

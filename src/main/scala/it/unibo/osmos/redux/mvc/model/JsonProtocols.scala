@@ -2,7 +2,7 @@ package it.unibo.osmos.redux.mvc.model
 import spray.json._
 import DefaultJsonProtocol._
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.{CellEntity, GravityCellEntity, PlayerCellEntity}
+import it.unibo.osmos.redux.ecs.entities.{CellEntity, GravityCellEntity, PlayerCellEntity, SentientCellEntity}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
 import it.unibo.osmos.redux.utils.Point
 import org.apache.commons.lang3.SerializationException
@@ -191,8 +191,37 @@ object JsonProtocols {
     }
   }
 
+  implicit object SentientCellEntityFormatter extends RootJsonFormat[SentientCellEntity] {
+    def write(sentientCell: SentientCellEntity) = JsObject(
+      "cellType" -> JsString(CellType.sentientCell),
+      "acceleration" -> sentientCell.getAccelerationComponent.toJson,
+      "collidable" -> sentientCell.getCollidableComponent.toJson,
+      "dimension" -> sentientCell.getDimensionComponent.toJson,
+      "position" -> sentientCell.getPositionComponent.toJson,
+      "speed" -> sentientCell.getSpeedComponent.toJson,
+      "visible" -> sentientCell.getVisibleComponent.toJson)
+    def read(value: JsValue): SentientCellEntity = {
+      value.asJsObject.getFields("acceleration",
+        "collidable",
+        "dimension",
+        "position",
+        "speed",
+        "visible") match {
+        case Seq(acceleration, collidable, dimension, position, speed, visible) =>
+          SentientCellEntity(acceleration.convertTo[AccelerationComponent],
+            collidable.convertTo[CollidableComponent],
+            dimension.convertTo[DimensionComponent],
+            position.convertTo[PositionComponent],
+            speed.convertTo[SpeedComponent],
+            visible.convertTo[VisibleComponent])
+        case _ => throw DeserializationException("Sentient cell entity expected")
+      }
+    }
+  }
+
   implicit object CellEntityFormatter extends RootJsonFormat[CellEntity] {
     def write(cellEntity: CellEntity): JsValue = cellEntity match {
+      case sc : SentientCellEntity => sc.toJson
       case gc : GravityCellEntity => gc.toJson
       case pce : PlayerCellEntity => pce.toJson
       case _ : CellEntity => JsObject( "cellType" -> JsString(CellType.basicCell),
@@ -224,11 +253,13 @@ object JsonProtocols {
             speed.convertTo[SpeedComponent],
             visible.convertTo[VisibleComponent],
             typeEntity.convertTo[TypeComponent])
+        case Seq(JsString(CellType.sentientCell), _, _, _, _, _, _) =>
+          value.convertTo[SentientCellEntity]
         case Seq(JsString(CellType.gravityCell), _, _, _, _, _, _, _) =>
           value.convertTo[GravityCellEntity]
         case Seq(JsString(CellType.playerCell), _, _, _, _, _, _, _) =>
           value.convertTo[PlayerCellEntity]
-        case _ => throw DeserializationException("Cell entity expected")
+        case Seq(qualcosa, _, _, _, _, _, _, _) => throw DeserializationException("Cell entity expected " + qualcosa)
       }
     }
   }
