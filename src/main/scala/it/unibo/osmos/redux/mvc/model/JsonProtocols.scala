@@ -3,6 +3,7 @@ import spray.json._
 import DefaultJsonProtocol._
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, GravityCellEntity, PlayerCellEntity}
+import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
 import it.unibo.osmos.redux.utils.Point
 import org.apache.commons.lang3.SerializationException
 
@@ -87,12 +88,23 @@ object JsonProtocols {
     }
   }
 
-  implicit object EntityTypeFormatter extends RootJsonFormat[TypeComponent] {
+  implicit object EntityTypeFormatter extends RootJsonFormat[EntityType.Value] {
+    def write(entityType: EntityType.Value) =
+      JsObject("entityType" -> JsString(entityType.toString))
+    def read(value: JsValue): EntityType.Value = {
+      value.asJsObject.getFields("entityType") match {
+        case Seq(JsString(entityType)) => EntityType.withName(entityType)
+        case _ => throw DeserializationException("EntityType component expected")
+      }
+    }
+  }
+
+  implicit object ComponentTypeFormatter extends RootJsonFormat[TypeComponent] {
     def write(entityType: TypeComponent) =
-      JsObject("entity_type" ->  JsString(entityType.typeEntity.toString))
+      JsObject("componentType" ->  JsString(entityType.typeEntity.toString))
     def read(value: JsValue): TypeComponent = {
-      value.asJsObject.getFields("entity_type") match {
-        case Seq(JsString(entityType)) => TypeComponent(EntityType.withName(entityType))
+      value.asJsObject.getFields("componentType") match {
+        case Seq(JsString(componentType)) => TypeComponent(EntityType.withName(componentType))
         case _ => throw DeserializationException("Type component component expected")
       }
     }
@@ -276,4 +288,6 @@ object JsonProtocols {
   }
 
   implicit val levelFormatter:RootJsonFormat[Level] = jsonFormat5(Level)
+
+  implicit val drawableWrapper:RootJsonFormat[DrawableWrapper] = jsonFormat4(DrawableWrapper)
 }
