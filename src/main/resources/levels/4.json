@@ -11,7 +11,7 @@
       "collidable": true
     },
     "typeEntity": {
-      "entity_type": "Matter"
+      "componentType": "Matter"
     },
     "position": {
       "point": {
@@ -39,7 +39,7 @@
       "collidable": true
     },
     "typeEntity": {
-      "entity_type": "Matter"
+      "componentType": "Matter"
     },
     "position": {
       "point": {
@@ -67,7 +67,7 @@
       "collidable": true
     },
     "typeEntity": {
-      "entity_type": "Matter"
+      "componentType": "Matter"
     },
     "position": {
       "point": {
@@ -95,7 +95,7 @@
       "collidable": true
     },
     "typeEntity": {
-      "entity_type": "Matter"
+      "componentType": "Matter"
     },
     "position": {
       "point": {
@@ -123,7 +123,7 @@
       "collidable": true
     },
     "typeEntity": {
-      "entity_type": "Matter"
+      "componentType": "Matter"
     },
     "position": {
       "point": {
@@ -151,7 +151,7 @@
       "collidable": true
     },
     "typeEntity": {
-      "entity_type": "Matter"
+      "componentType": "Matter"
     },
     "position": {
       "point": {
@@ -182,7 +182,7 @@
       "canSpawn": true
     },
     "typeEntity": {
-      "entity_type": "Matter"
+      "componentType": "Matter"
     },
     "position": {
       "point": {
