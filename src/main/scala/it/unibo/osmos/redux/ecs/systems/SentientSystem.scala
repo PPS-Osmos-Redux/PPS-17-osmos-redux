@@ -8,14 +8,18 @@ import scala.collection.mutable.ListBuffer
 
 case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientProperty, SentientEnemyProperty] {
 
-  private val MAX_SPEED = 4
+  private val MAX_SPEED = 2
   private val MAX_ACCELERATION = 0.1
 
   override protected def getGroupPropertySecondType: Class[SentientEnemyProperty] = classOf[SentientEnemyProperty]
 
   override protected def getGroupProperty: Class[SentientProperty] = classOf[SentientProperty]
 
-  override def update(): Unit = followTarget(entities.head, findTarget(entities.head, entitiesSecondType) get)
+  override def update(): Unit = for(
+    sentient <- entities;
+    target:Option[SentientEnemyProperty] = findTarget(sentient, entitiesSecondType);
+    if target isDefined
+  ) yield followTarget(sentient, target get)
 
   private def followTarget(sentient: SentientProperty, target: SentientEnemyProperty): Unit = {
     val desiredVelocity = MathUtils.unitVector(target.getPositionComponent.point, sentient.getPositionComponent.point).multiply(MAX_SPEED)
