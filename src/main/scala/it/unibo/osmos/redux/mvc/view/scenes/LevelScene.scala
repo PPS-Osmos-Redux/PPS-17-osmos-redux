@@ -3,7 +3,8 @@ package it.unibo.osmos.redux.mvc.view.scenes
 import it.unibo.osmos.redux.ecs.components.EntityType
 import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities._
-import it.unibo.osmos.redux.mvc.view.components.{LevelScreen, LevelStateBox, LevelStateBoxListener}
+import it.unibo.osmos.redux.mvc.view.components.level.{LevelScreen, LevelStateBox, LevelStateBoxListener}
+import it.unibo.osmos.redux.mvc.view.components.{LevelStateBox, LevelStateBoxListener}
 import it.unibo.osmos.redux.mvc.view.drawables._
 import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
 import it.unibo.osmos.redux.mvc.view.levels.{LevelContext, LevelContextListener}

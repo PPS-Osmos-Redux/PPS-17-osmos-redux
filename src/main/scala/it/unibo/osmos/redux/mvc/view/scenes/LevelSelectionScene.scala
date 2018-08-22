@@ -1,6 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
-import it.unibo.osmos.redux.mvc.view.components.{LevelNode, LevelNodeListener, MainMenuBar, MainMenuBarListener}
+import it.unibo.osmos.redux.mvc.view.components.level.{LevelNode, LevelNodeListener}
+import it.unibo.osmos.redux.mvc.view.components.{LevelNodeListener, MainMenuBar, MainMenuBarListener}
 import it.unibo.osmos.redux.mvc.view.levels.LevelContext
 import scalafx.geometry.Pos
 import scalafx.scene.layout.{TilePane, VBox}

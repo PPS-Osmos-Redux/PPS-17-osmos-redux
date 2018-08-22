@@ -1,6 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.components.editor
 
-import it.unibo.osmos.redux.mvc.view.components.{AnimatedAbstractLevelNode, LevelNodeListener}
+import it.unibo.osmos.redux.mvc.view.components.LevelNodeListener
+import it.unibo.osmos.redux.mvc.view.components.level.{AnimatedAbstractLevelNode, LevelNodeListener}
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import scalafx.geometry.Insets
 import scalafx.scene.control.Button
