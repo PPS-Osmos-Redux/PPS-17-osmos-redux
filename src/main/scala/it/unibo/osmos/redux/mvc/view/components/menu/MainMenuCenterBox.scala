@@ -1,4 +1,4 @@
-package it.unibo.osmos.redux.mvc.view.components
+package it.unibo.osmos.redux.mvc.view.components.menu
 
 import scalafx.geometry.Pos
 import scalafx.scene.control.Button
