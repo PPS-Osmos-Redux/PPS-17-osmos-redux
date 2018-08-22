@@ -96,4 +96,9 @@ object FileManager {
     import it.unibo.osmos.redux.mvc.model.JsonProtocols.levelFormatter
     Try(text.parseJson.convertTo[Level])
   }
+
+  def customLevelsFilesName:List[String] =
+    new File(levelsDirectory).listFiles((d, name) => name.endsWith(jsonExtension))
+                             .map(f => f.getName.substring(0,f.getName.length-jsonExtension.length))
+                             .toList
 }

@@ -1,24 +1,20 @@
 package it.unibo.osmos.redux.mvc.controller
 import it.unibo.osmos.redux.ecs.engine.GameEngine
-import it.unibo.osmos.redux.mvc.model.{CampaignLevels, Level}
+import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels
 import it.unibo.osmos.redux.mvc.view.levels.LevelContext
-import spray.json._
-
-import scala.io.Source
-import scala.util.Try
 
 /**
   * Controller base trait
   */
 trait Controller {
-  def initLevel(levelContext: LevelContext,
-                 chosenLevel:Int,
-                 isSimulation:Boolean)
+  def initLevel(levelContext: LevelContext, chosenLevel:Int, isSimulation:Boolean)
   def startLevel()
   def stopLevel()
   def pauseLevel()
   def resumeLevel()
-  def getCampaignLevels:List[(Int,Boolean)] = CampaignLevels.levels.toList
+  def getSinglePlayerLevels:List[(Int,Boolean)] = SinglePlayerLevels.levels.toList
+  def getCustomLevels:List[String]
+  def initCustomLevel(levelContext: LevelContext, chosenLevel:String, isSimulation:Boolean)
 }
 
 case class ControllerImpl() extends Controller {
@@ -35,6 +31,20 @@ case class ControllerImpl() extends Controller {
     levelContext.setupLevel(loadedLevel.levelMap.mapShape)
   }
 
+  override def initCustomLevel(levelContext: LevelContext,
+                               chosenLevel:String,
+                               isSimulation:Boolean): Unit = {
+    val loadedLevel = FileManager.loadCustomLevel(chosenLevel)
+    if(loadedLevel.isDefined) {
+      if (isSimulation) loadedLevel.get.isSimulation = true
+      if(engine.isEmpty) engine = Some(GameEngine())
+      engine.get.init(loadedLevel.get, levelContext)
+      levelContext.setupLevel(loadedLevel.get.levelMap.mapShape)
+    } else {
+      println("File ", chosenLevel, " not found")
+    }
+  }
+
   override def startLevel(): Unit = if (engine.isDefined) engine.get.start()
 
   override def stopLevel(): Unit = if (engine.isDefined) engine.get.stop()
@@ -42,4 +52,6 @@ case class ControllerImpl() extends Controller {
   override def pauseLevel(): Unit = if (engine.isDefined) engine.get.pause()
 
   override def resumeLevel(): Unit = if (engine.isDefined) engine.get.resume()
+
+  override def getCustomLevels: List[String] = FileManager.customLevelsFilesName
 }
