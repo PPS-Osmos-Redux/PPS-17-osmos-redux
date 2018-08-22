@@ -29,7 +29,6 @@ object FileManager {
   val userProgressDirectory:String = userHome + systemSeparator + gameDirectory +
     userProgressFileName + systemSeparator
 
-
   /**
     * Reads a file from the resources folder
     *
@@ -63,20 +62,50 @@ object FileManager {
       }
     } while (flag)
     val levelFile = new File(path.toUri)
-    if (Try(levelFile.getParentFile.mkdirs()).isFailure) {
-      println("Error: SecurityException directories are protected")
-      return None
-    }
-    val writer = new PrintWriter(levelFile)
+    createDirectoriesTree(levelFile)
     import it.unibo.osmos.redux.mvc.model.JsonProtocols.levelFormatter
-    try writer.write(level.toJson.prettyPrint)
-    catch {
-      case e: Throwable => println("Exception occurred writing on file: ",e.printStackTrace())
-                           return None
-    } finally writer.close()
-    Some(path)
+    if (saveToFile(levelFile, level.toJson.prettyPrint)) Some(path) else None
   }
 
+  def saveUserProgress(userProgress: UserStat): Option[Path] = {
+    val path: Path = defaultFS.getPath(userProgressDirectory + userProgressFileName + jsonExtension)
+    val upFile = new File(path.toUri)
+    createDirectoriesTree(upFile)
+    import it.unibo.osmos.redux.mvc.model.JsonProtocols._
+    if (saveToFile(upFile, userProgress.toJson.prettyPrint)) Some(path) else None
+  }
+
+  def loadUserProgress(): Option[UserStat] = {
+    import it.unibo.osmos.redux.mvc.model.JsonProtocols.userProgressFormatter
+    loadFile(userProgressDirectory + userProgressFileName + jsonExtension) match {
+      case Some(text) => Option(text.parseJson.convertTo[UserStat])
+      case _ => None
+    }
+  }
+
+  /**
+    * Load level from file saved into user home directory
+    * @param fileName the name of file
+    * @return an option with the required level if it doesn't fail
+    */
+  def loadCustomLevel(fileName: String): Option[Level] = {
+    loadFile(levelsDirectory + fileName + jsonExtension) match {
+      case Some(text) => textToLevel(text).toOption
+      case _ => None
+    }
+  }
+
+  def saveToFile(file:File, text: String): Boolean = {
+    val writer = new PrintWriter(file)
+    try {
+      writer.write(text)
+      return true
+    } catch {
+      case e: Throwable => println("Exception occurred writing on file: ", file.getName,
+        e.printStackTrace())
+    } finally writer.close()
+    false
+  }
 
   def loadFile(filePath:String):Option[String] = {
     val source: Try[BufferedSource] = Try(Source.fromFile(defaultFS.getPath(filePath).toUri))
@@ -90,41 +119,12 @@ object FileManager {
     None
   }
 
-  def loadUserProgress(): Option[UserStat] = {
-    import it.unibo.osmos.redux.mvc.model.JsonProtocols.userProgressFormatter
-      loadFile(userProgressDirectory + userProgressFileName + jsonExtension) match {
-        case Some(text) => Option(text.parseJson.convertTo[UserStat])
-        case _ => None
-      }
-  }
-
-  def saveUserProgress(userProgress: UserStat): Option[Path] = {
-    val path: Path = defaultFS.getPath(userProgressDirectory + userProgressFileName + jsonExtension)
-    val upFile = new File(path.toUri)
-    if (Try(upFile.getParentFile.mkdirs()).isFailure) {
+  def createDirectoriesTree(file:File):Boolean = {
+    if (Try(file.getParentFile.mkdirs()).isFailure) {
       println("Error: SecurityException directories are protected")
-      return None
+      return false
     }
-    val writer = new PrintWriter(upFile)
-    import it.unibo.osmos.redux.mvc.model.JsonProtocols._
-    try writer.write(userProgress.toJson.prettyPrint)
-    catch {
-      case e: Throwable => println("Exception occurred writing on file: ",e.printStackTrace())
-        return None
-    } finally writer.close()
-    Some(path)
-  }
-
-  /**
-    * Load level from file saved into user home directory
-    * @param fileName the name of file
-    * @return an option with the required level if it doesn't fail
-    */
-  def loadCustomLevel(fileName: String): Option[Level] = {
-    loadFile(levelsDirectory + fileName + jsonExtension) match {
-      case Some(text) => textToLevel(text).toOption
-      case _ => None
-    }
+    true
   }
 
   /**
