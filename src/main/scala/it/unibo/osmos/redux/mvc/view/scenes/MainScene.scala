@@ -1,7 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.mvc.view.components.menu.{MainMenuBar, MainMenuBarListener, MainMenuCenterBox, MainMenuCenterBoxListener}
-import it.unibo.osmos.redux.mvc.view.components.{MainMenuBarListener, MainMenuCenterBoxListener}
 import scalafx.scene.layout.BorderPane
 import scalafx.stage.Stage
 

@@ -1,7 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.mvc.view.components.editor.{EditorLevelNode, EditorLevelNodeListener}
-import it.unibo.osmos.redux.mvc.view.components.EditorLevelNodeListener
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.Button
 import scalafx.stage.Stage
