@@ -78,6 +78,19 @@ trait Vector {
     Vector(x * temp, y * temp)
   }
 
+  /**
+    * Limit the vector's length
+    * @param maxLength max length of the vector
+    * @return the limited vector
+    */
+  def limit(maxLength: Double): Vector = {
+    if (getLength > maxLength) {
+      getNewLength(maxLength)
+    } else {
+      Vector(x,y)
+    }
+  }
+
   /** Vector dot product
     *
     * @param v vector to use for dot product
