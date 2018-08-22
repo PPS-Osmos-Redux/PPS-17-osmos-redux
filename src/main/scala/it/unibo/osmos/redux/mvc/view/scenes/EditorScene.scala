@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.ecs.components.EntityType
-import it.unibo.osmos.redux.mvc.view.components.TitledComboBox
+import it.unibo.osmos.redux.mvc.view.components.editor.TitledComboBox
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import javafx.scene.paint.ImagePattern
 import scalafx.scene.effect.ColorAdjust
