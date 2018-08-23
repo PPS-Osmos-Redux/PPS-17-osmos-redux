@@ -51,24 +51,20 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
 
   private def runAwayFromEnemies(sentient: SentientProperty, enemies: List[SentientEnemyProperty]): Unit = {
     val desideredSeparation = sentient.getDimensionComponent.radius * COEFFICIENT_DESIDERED_SEPARATION
-    var sum = Vector.zero()
-    var count = 0
-    enemies.map(e => (e, MathUtils.euclideanDistance(sentient.getPositionComponent, e.getPositionComponent)))
+    val steer = average(enemies.map(e => (e, MathUtils.euclideanDistance(sentient.getPositionComponent, e.getPositionComponent)))
            .filter(p => p._2 < desideredSeparation)
-           .map(m => MathUtils.unitVector(sentient.getPositionComponent.point, m._1.getPositionComponent.point) divide m._2)
-           .foreach(diff => {
-             sum = sum add diff
-             count += 1
-           })
-    if (count > 0) {
-      val average = sum divide count normalized() multiply MAX_SPEED
-      val steer = average subtract sentient.getSpeedComponent.vector limit MAX_ACCELERATION
-      applyAcceleration(sentient, steer)
-    }
+           .map(m => MathUtils.unitVector(sentient.getPositionComponent.point, m._1.getPositionComponent.point) divide m._2))
+        .normalized() multiply MAX_SPEED subtract sentient.getSpeedComponent.vector limit MAX_ACCELERATION
+    applyAcceleration(sentient, steer)
   }
 
   private def applyAcceleration(sentient: SentientProperty, acceleration: Vector): Unit = {
     val accelerationSentient = sentient.getAccelerationComponent
     accelerationSentient.vector_(accelerationSentient.vector add acceleration)
+  }
+
+  def average(s: List[Vector]): Vector = s.foldLeft((Vector.zero(), 0)) ((acc, i) => (acc._1 add i, acc._2 + 1)) match {
+    case (_, 0) => Vector.zero()
+    case (sum, n) => sum divide n
   }
 }
