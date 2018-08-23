@@ -62,6 +62,13 @@ trait Vector {
     */
   def multiply(v: Double): Vector = Vector(x * v, y * v)
 
+  /** Vector-scalar division. Leaves this vector unchanged.
+    *
+    * @param v scalar
+    * @return division result as a new instance
+    */
+  def divide(v: Double): Vector = Vector(x / v, y / v)
+
   /** TODO
     *
     * @return
