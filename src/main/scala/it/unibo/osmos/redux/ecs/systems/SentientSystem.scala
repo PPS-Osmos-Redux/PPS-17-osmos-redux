@@ -26,9 +26,7 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
   })
 
   def followTarget(sentient: SentientProperty, target: SentientEnemyProperty): Unit = {
-    //TODO refactor after that add return Point
-    val newPositionTarget = target.getPositionComponent.point.add(target.getSpeedComponent.vector)
-    val nextPositionTarget = Point(newPositionTarget.x, newPositionTarget.y)
+    val nextPositionTarget = target.getPositionComponent.point.add(target.getSpeedComponent.vector)
     val desiredVelocity = MathUtils.unitVector(nextPositionTarget, sentient.getPositionComponent.point) multiply MAX_SPEED
     val steer = desiredVelocity subtract sentient.getSpeedComponent.vector limit MAX_ACCELERATION
     applyAcceleration(sentient, steer)
