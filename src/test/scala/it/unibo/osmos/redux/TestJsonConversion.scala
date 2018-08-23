@@ -122,8 +122,8 @@ class TestJsonConversion extends FunSuite{
   }
 
   test("File reading and conversion") {
-    val convertedLevel = FileManager.loadResource(isSimulation = false,1)
-    assert(convertedLevel.isSuccess)
+    val convertedLevel = FileManager.loadCampaignLevel(isSimulation = false,1.toString)
+    assert(convertedLevel.isDefined)
     assert(convertedLevel.get.levelId.equals(level.levelId))
     assert(convertedLevel.get.levelMap.equals(level.levelMap))
     assert(convertedLevel.get.victoryRule.equals(level.victoryRule))

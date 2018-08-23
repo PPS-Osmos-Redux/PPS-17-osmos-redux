@@ -1,7 +1,16 @@
 package it.unibo.osmos.redux.mvc.controller
 import it.unibo.osmos.redux.ecs.engine.GameEngine
 import it.unibo.osmos.redux.mvc.model.{Level, SinglePlayerLevels}
+import it.unibo.osmos.redux.mvc.view.events._
 import it.unibo.osmos.redux.mvc.view.levels.LevelContext
+
+trait Observable {
+  def subscribe(observer:Observer)
+}
+
+trait Observer {
+  def notify(event: GameStateEventWrapper, levelContext: LevelContext)
+}
 
 /**
   * Controller base trait
@@ -13,10 +22,10 @@ trait Controller {
   def pauseLevel()
   def resumeLevel()
   def getSinglePlayerLevels:List[(String,Boolean)] = SinglePlayerLevels.getLevels
-  def getCustomLevels:List[String]
+  def getCustomLevels:List[String] = FileManager.customLevelsFilesName
 }
 
-case class ControllerImpl() extends Controller {
+case class ControllerImpl() extends Controller with Observer {
   var engine:Option[GameEngine] = None
 
   override def initLevel(levelContext: LevelContext,
@@ -46,5 +55,8 @@ case class ControllerImpl() extends Controller {
 
   override def resumeLevel(): Unit = if (engine.isDefined) engine.get.resume()
 
-  override def getCustomLevels: List[String] = FileManager.customLevelsFilesName
+  override def notify(event: GameStateEventWrapper, levelContext: LevelContext): Unit = {
+    if(event.equals(GameWon)) SinglePlayerLevels.unlockNextLevel()
+    levelContext.notify(event)
+  }
 }
