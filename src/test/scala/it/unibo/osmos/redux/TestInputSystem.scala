@@ -16,7 +16,7 @@ class TestInputSystem extends FunSuite {
   val dimension = Seq(DimensionComponent(5), DimensionComponent(1), DimensionComponent(8))
   val position = Seq(PositionComponent(Point(0, 0)), PositionComponent(Point(1, 2)), PositionComponent(Point(0, 4)))
   val visibility = Seq(VisibleComponent(true), VisibleComponent(false), VisibleComponent(false))
-  val typeEntity = Seq(TypeComponent(EntityType.Material), TypeComponent(EntityType.Material), TypeComponent(EntityType.Material))
+  val typeEntity = Seq(TypeComponent(EntityType.Matter), TypeComponent(EntityType.Matter), TypeComponent(EntityType.Matter))
 
   val dummyEvent = MouseEventWrapper(Point(157,104))
 
@@ -24,7 +24,6 @@ class TestInputSystem extends FunSuite {
 
     //setup level context
     val levelContext = LevelContext(null, true)
-    levelContext.setupLevel()
 
     //setup input system
     val system = InputSystem()
@@ -52,7 +51,6 @@ class TestInputSystem extends FunSuite {
 
     //setup level context
     val levelContext = LevelContext(null, true)
-    levelContext.setupLevel()
 
     //setup input system
     val system = InputSystem()
@@ -64,7 +62,7 @@ class TestInputSystem extends FunSuite {
     EntityManager.add(ce)
 
     //save original acceleration value
-    val originalAccel = AccelerationComponent(acceleration(1).accelerationX, acceleration(1).accelerationY)
+    val originalAccel = AccelerationComponent(acceleration(1).vector.x, acceleration(1).vector.y)
 
     //pre-compute expected values
     val expectedAccel = computeExpectedAcceleration(system, pce, dummyEvent)
@@ -82,11 +80,11 @@ class TestInputSystem extends FunSuite {
     val pos = entity.getPositionComponent
     val accel = entity.getAccelerationComponent
 
-    var newAccel = AccelerationComponent(accel.accelerationX, accel.accelerationY)
+    var newAccel = AccelerationComponent(accel.vector.x, accel.vector.y)
     events foreach (ev => {
       val p = MathUtils.normalizePoint(Point(pos.point.x - ev.point.x, pos.point.y - ev.point.y))
-      newAccel = AccelerationComponent(newAccel.accelerationX + p.x * system.accelCoefficient,
-        newAccel.accelerationY + p.y * system.accelCoefficient)
+      newAccel = AccelerationComponent(newAccel.vector.x + p.x * system.accelCoefficient,
+        newAccel.vector.y + p.y * system.accelCoefficient)
     })
     newAccel
   }

@@ -23,7 +23,7 @@ case class InputSystem() extends AbstractSystem[InputProperty] {
     */
   val lostMassInitialVelocity: Double = 4.0
 
-  override def getGroupProperty(): Class[_ <: Property] = classOf[InputProperty]
+  override def getGroupProperty(): Class[InputProperty] = classOf[InputProperty]
 
   override def update(): Unit = {
 
@@ -43,8 +43,8 @@ case class InputSystem() extends AbstractSystem[InputProperty] {
         val newPoint = MathUtils.normalizePoint(Point(pos.point.x - ev.point.x, pos.point.y - ev.point.y))
 
         //apply acceleration
-        accel.accelerationX_(accel.accelerationX + newPoint.x * accelCoefficient)
-        accel.accelerationY_(accel.accelerationY + newPoint.y * accelCoefficient)
+        accel.vector.x_(accel.vector.x + newPoint.x * accelCoefficient)
+        accel.vector.y_(accel.vector.y + newPoint.y * accelCoefficient)
 
         //create a new spawn action
         val loseMassAmount = dim.radius * lostMassPercentage

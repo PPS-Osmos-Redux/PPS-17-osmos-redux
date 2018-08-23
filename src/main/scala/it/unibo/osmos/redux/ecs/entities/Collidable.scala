@@ -2,15 +2,12 @@ package it.unibo.osmos.redux.ecs.entities
 
 import it.unibo.osmos.redux.ecs.components.CollidableComponent
 
-/**
-  * Trait representing the entity's collidable property
-  */
+/** Trait representing the entity's collidable property */
 trait Collidable extends Property {
 
-  /**
-    * Gets the Collidable Component
+  /** Gets the collidable component
     *
-    * @return the Collidable Component
+    * @return collidable component
     */
   def getCollidableComponent: CollidableComponent
 }

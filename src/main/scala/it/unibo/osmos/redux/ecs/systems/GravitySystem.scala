@@ -9,9 +9,9 @@ import scala.collection.mutable.ListBuffer
 
 case class GravitySystem() extends AbstractSystemWithTwoTypeOfEntity[MovableProperty, GravityProperty]() {
 
-  override def getGroupProperty: Class[_ <: Property] = classOf[MovableProperty]
+  override def getGroupProperty: Class[MovableProperty] = classOf[MovableProperty]
 
-  override protected def getGroupPropertySecondType: Class[_ <: Property] = classOf[GravityProperty]
+  override protected def getGroupPropertySecondType: Class[GravityProperty] = classOf[GravityProperty]
 
   override def update(): Unit = for (
     gravityEntity <- entitiesSecondType; //for each gravity entity
@@ -29,8 +29,8 @@ case class GravitySystem() extends AbstractSystemWithTwoTypeOfEntity[MovableProp
     val gravityAcceleration = (gravityProperty.getMassComponent.mass / distance) *typeOfForce
     val unitVector = MathUtils.normalizePoint(Point(gravityCenter.x - entityCenter.x, gravityCenter.y - entityCenter.y))
     val acceleration = movableProperty.getAccelerationComponent
-    acceleration.accelerationX_(acceleration.accelerationX + unitVector.x*gravityAcceleration)
-    acceleration.accelerationY_(acceleration.accelerationY + unitVector.y*gravityAcceleration)
+    acceleration.vector.x_(acceleration.vector.x + unitVector.x*gravityAcceleration)
+    acceleration.vector.y_(acceleration.vector.y + unitVector.y*gravityAcceleration)
   }
 
   private def getTypeOfForce(typeOfForce: EntityType.Value): Double = typeOfForce match {

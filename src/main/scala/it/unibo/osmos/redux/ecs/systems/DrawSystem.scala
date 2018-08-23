@@ -9,9 +9,9 @@ import it.unibo.osmos.redux.mvc.view.drawables.{DrawableWrapper, EntitiesDrawer}
   */
 case class DrawSystem(entitiesDrawer: EntitiesDrawer) extends AbstractSystemWithTwoTypeOfEntity[DrawableProperty, PlayerCellEntity] {
 
-  override def getGroupProperty: Class[_ <: Property] = classOf[DrawableProperty]
+  override def getGroupProperty: Class[DrawableProperty] = classOf[DrawableProperty]
 
-  override protected def getGroupPropertySecondType: Class[_ <: Property] = classOf[PlayerCellEntity]
+  override protected def getGroupPropertySecondType: Class[PlayerCellEntity] = classOf[PlayerCellEntity]
 
   override def update(): Unit = entitiesDrawer.drawEntities(getPlayerEntity, getEntities)
 
@@ -24,6 +24,6 @@ case class DrawSystem(entitiesDrawer: EntitiesDrawer) extends AbstractSystemWith
   private def drawablePropertyToDrawableWrapper(entity: DrawableProperty): DrawableWrapper =
     DrawableWrapper(entity.getPositionComponent.point,
                     entity.getDimensionComponent.radius,
-                    (entity.getSpeedComponent.speedX, entity.getSpeedComponent.speedY),
+                    (entity.getSpeedComponent.vector.x, entity.getSpeedComponent.vector.y),
                     entity.getTypeComponent.typeEntity)
 }

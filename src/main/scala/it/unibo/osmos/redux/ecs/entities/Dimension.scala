@@ -2,15 +2,12 @@ package it.unibo.osmos.redux.ecs.entities
 
 import it.unibo.osmos.redux.ecs.components.DimensionComponent
 
-/**
-  * Trait representing the entity's dimension property
-  */
+/** Trait representing the entity's dimension property */
 trait Dimension extends Property {
 
-  /**
-    * Gets the Dimension Component
+  /** Gets the dimension component
     *
-    * @return the Dimension Component
+    * @return dimension component
     */
   def getDimensionComponent: DimensionComponent
 }

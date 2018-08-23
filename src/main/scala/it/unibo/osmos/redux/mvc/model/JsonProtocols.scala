@@ -2,7 +2,9 @@ package it.unibo.osmos.redux.mvc.model
 import spray.json._
 import DefaultJsonProtocol._
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.{CellEntity, GravityCellEntity, PlayerCellEntity}
+import it.unibo.osmos.redux.ecs.entities.{CellEntity, GravityCellEntity, PlayerCellEntity, SentientCellEntity}
+import it.unibo.osmos.redux.mvc.model.UserProgress.UserStat
+import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
 import it.unibo.osmos.redux.utils.Point
 import org.apache.commons.lang3.SerializationException
 
@@ -12,8 +14,8 @@ import org.apache.commons.lang3.SerializationException
 object JsonProtocols {
   implicit object AccelerationFormatter extends RootJsonFormat[AccelerationComponent] {
     def write(acceleration: AccelerationComponent) = JsObject(
-      "accelerationX" -> JsNumber(acceleration.accelerationX),
-      "accelerationY" -> JsNumber(acceleration.accelerationY)
+      "accelerationX" -> JsNumber(acceleration.vector.x),
+      "accelerationY" -> JsNumber(acceleration.vector.y)
     )
     def read(value: JsValue): AccelerationComponent = {
       value.asJsObject.getFields("accelerationX", "accelerationY") match {
@@ -77,7 +79,7 @@ object JsonProtocols {
 
   implicit object SpeedFormatter extends RootJsonFormat[SpeedComponent] {
     def write(speed: SpeedComponent) =
-      JsObject("speedX" -> JsNumber(speed.speedX), "speedY" -> JsNumber(speed.speedY))
+      JsObject("speedX" -> JsNumber(speed.vector.x), "speedY" -> JsNumber(speed.vector.y))
     def read(value: JsValue): SpeedComponent = {
       value.asJsObject.getFields("speedX","speedY") match {
         case Seq(JsNumber(speedX), JsNumber(speedY)) =>
@@ -87,12 +89,23 @@ object JsonProtocols {
     }
   }
 
-  implicit object EntityTypeFormatter extends RootJsonFormat[TypeComponent] {
+  implicit object EntityTypeFormatter extends RootJsonFormat[EntityType.Value] {
+    def write(entityType: EntityType.Value) =
+      JsObject("entityType" -> JsString(entityType.toString))
+    def read(value: JsValue): EntityType.Value = {
+      value.asJsObject.getFields("entityType") match {
+        case Seq(JsString(entityType)) => EntityType.withName(entityType)
+        case _ => throw DeserializationException("EntityType component expected")
+      }
+    }
+  }
+
+  implicit object ComponentTypeFormatter extends RootJsonFormat[TypeComponent] {
     def write(entityType: TypeComponent) =
-      JsObject("entity_type" ->  JsString(entityType.typeEntity.toString))
+      JsObject("componentType" ->  JsString(entityType.typeEntity.toString))
     def read(value: JsValue): TypeComponent = {
-      value.asJsObject.getFields("entity_type") match {
-        case Seq(JsString(entityType)) => TypeComponent(EntityType.withName(entityType))
+      value.asJsObject.getFields("componentType") match {
+        case Seq(JsString(componentType)) => TypeComponent(EntityType.withName(componentType))
         case _ => throw DeserializationException("Type component component expected")
       }
     }
@@ -179,8 +192,37 @@ object JsonProtocols {
     }
   }
 
+  implicit object SentientCellEntityFormatter extends RootJsonFormat[SentientCellEntity] {
+    def write(sentientCell: SentientCellEntity) = JsObject(
+      "cellType" -> JsString(CellType.sentientCell),
+      "acceleration" -> sentientCell.getAccelerationComponent.toJson,
+      "collidable" -> sentientCell.getCollidableComponent.toJson,
+      "dimension" -> sentientCell.getDimensionComponent.toJson,
+      "position" -> sentientCell.getPositionComponent.toJson,
+      "speed" -> sentientCell.getSpeedComponent.toJson,
+      "visible" -> sentientCell.getVisibleComponent.toJson)
+    def read(value: JsValue): SentientCellEntity = {
+      value.asJsObject.getFields("acceleration",
+        "collidable",
+        "dimension",
+        "position",
+        "speed",
+        "visible") match {
+        case Seq(acceleration, collidable, dimension, position, speed, visible) =>
+          SentientCellEntity(acceleration.convertTo[AccelerationComponent],
+            collidable.convertTo[CollidableComponent],
+            dimension.convertTo[DimensionComponent],
+            position.convertTo[PositionComponent],
+            speed.convertTo[SpeedComponent],
+            visible.convertTo[VisibleComponent])
+        case _ => throw DeserializationException("Sentient cell entity expected")
+      }
+    }
+  }
+
   implicit object CellEntityFormatter extends RootJsonFormat[CellEntity] {
     def write(cellEntity: CellEntity): JsValue = cellEntity match {
+      case sc : SentientCellEntity => sc.toJson
       case gc : GravityCellEntity => gc.toJson
       case pce : PlayerCellEntity => pce.toJson
       case _ : CellEntity => JsObject( "cellType" -> JsString(CellType.basicCell),
@@ -212,11 +254,13 @@ object JsonProtocols {
             speed.convertTo[SpeedComponent],
             visible.convertTo[VisibleComponent],
             typeEntity.convertTo[TypeComponent])
+        case Seq(JsString(CellType.sentientCell), _, _, _, _, _, _) =>
+          value.convertTo[SentientCellEntity]
         case Seq(JsString(CellType.gravityCell), _, _, _, _, _, _, _) =>
           value.convertTo[GravityCellEntity]
         case Seq(JsString(CellType.playerCell), _, _, _, _, _, _, _) =>
           value.convertTo[PlayerCellEntity]
-        case _ => throw DeserializationException("Cell entity expected")
+        case Seq(qualcosa, _, _, _, _, _, _, _) => throw DeserializationException("Cell entity expected " + qualcosa)
       }
     }
   }
@@ -276,4 +320,8 @@ object JsonProtocols {
   }
 
   implicit val levelFormatter:RootJsonFormat[Level] = jsonFormat5(Level)
+
+  implicit val drawableWrapperFormatter:RootJsonFormat[DrawableWrapper] = jsonFormat4(DrawableWrapper)
+
+  implicit val userProgressFormatter:RootJsonFormat[UserStat] = jsonFormat1(UserStat)
 }
