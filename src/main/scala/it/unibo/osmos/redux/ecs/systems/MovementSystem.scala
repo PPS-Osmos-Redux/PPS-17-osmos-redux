@@ -37,7 +37,6 @@ case class MovementSystem(levelInfo: Level) extends AbstractSystem[MovableProper
     val positionComponent = entity.getPositionComponent
     val position = positionComponent.point
     val speedVector = entity.getSpeedComponent.vector
-    val newPosition = position.add(speedVector)
-    positionComponent.point_(Point(newPosition.x, newPosition.y))
+    positionComponent.point_(position.add(speedVector))
   }
 }
