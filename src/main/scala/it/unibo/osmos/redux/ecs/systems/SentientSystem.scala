@@ -18,20 +18,25 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
 
   override def update(): Unit = entities foreach(sentient => {
     val target = findTarget(sentient, entitiesSecondType)
-    if (target isDefined) {
-      followTarget(sentient, target get)
+    val follow = target match {
+      case Some(t) => followTarget(sentient, t)
+      case _ => Vector.zero()
     }
+
     val enemies = findEnemies(sentient, entitiesSecondType)
-    runAwayFromEnemies(sentient, enemies)
+    val runAway = runAwayFromEnemies(sentient, enemies)
+
+    applyAcceleration(sentient, runAway)
+    applyAcceleration(sentient, follow)
   })
 
-  def followTarget(sentient: SentientProperty, target: SentientEnemyProperty): Unit = {
+  def followTarget(sentient: SentientProperty, target: SentientEnemyProperty): Vector = {
     //TODO refactor after that add return Point
     val newPositionTarget = target.getPositionComponent.point.add(target.getSpeedComponent.vector)
     val nextPositionTarget = Point(newPositionTarget.x, newPositionTarget.y)
     val desiredVelocity = MathUtils.unitVector(nextPositionTarget, sentient.getPositionComponent.point) multiply MAX_SPEED
-    val steer = desiredVelocity subtract sentient.getSpeedComponent.vector limit MAX_ACCELERATION
-    applyAcceleration(sentient, steer)
+    desiredVelocity subtract sentient.getSpeedComponent.vector limit MAX_ACCELERATION
+
   }
 
   private def findTarget(sentient: SentientProperty, enemies: ListBuffer[SentientEnemyProperty]): Option[SentientEnemyProperty] =
@@ -49,9 +54,9 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
     enemies.filter(e => e.getTypeComponent.typeEntity == EntityType.AntiMatter ||
                   sentient.getDimensionComponent.radius < e.getDimensionComponent.radius) toList
 
-  private def runAwayFromEnemies(sentient: SentientProperty, enemies: List[SentientEnemyProperty]): Unit = {
+  private def runAwayFromEnemies(sentient: SentientProperty, enemies: List[SentientEnemyProperty]): Vector = {
     val desideredSeparation = sentient.getDimensionComponent.radius * 6
-    var sum = Vector(0,0)
+    var sum = Vector.zero()
     var count = 0
     enemies foreach(e => {
       val distance = MathUtils.euclideanDistance(sentient.getPositionComponent, e.getPositionComponent)
@@ -64,8 +69,9 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
     })
     if (count > 0) {
       val average = sum divide count normalized() multiply MAX_SPEED
-      val steer = average subtract sentient.getSpeedComponent.vector limit MAX_ACCELERATION
-      applyAcceleration(sentient, steer)
+      average subtract sentient.getSpeedComponent.vector limit MAX_ACCELERATION
+    } else {
+      sum
     }
   }
 
