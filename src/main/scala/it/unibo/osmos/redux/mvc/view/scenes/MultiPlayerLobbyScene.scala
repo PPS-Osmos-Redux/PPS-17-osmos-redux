@@ -1,6 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.{User, UserWithProperties}
+import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, LobbyContextListener}
 import javafx.beans.value.ObservableBooleanValue
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Pos}
@@ -15,7 +16,15 @@ import scalafx.stage.Stage
   * @param listener the MultiPlayerLobbySceneListener
   * @param user the user who requested to enter the lobby
   */
-class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: MultiPlayerLobbySceneListener, val user: User) extends BaseScene(parentStage) {
+class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: MultiPlayerLobbySceneListener, val user: User) extends BaseScene(parentStage)
+ with LobbyContextListener {
+
+  /**
+    * The lobby context, created with the MultiPlayerLobbyScene. It still needs to be properly setup
+    */
+  private var _lobbyContext: Option[LobbyContext] = Option.empty
+  def lobbyContext: Option[LobbyContext] = _lobbyContext
+  def lobbyContext_= (lobbyContext: LobbyContext): Unit = _lobbyContext = Option(lobbyContext)
 
   /**
     * ObservableBuffer holding the current users

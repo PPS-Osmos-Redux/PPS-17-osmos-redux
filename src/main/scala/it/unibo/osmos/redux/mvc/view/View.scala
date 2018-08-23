@@ -1,9 +1,9 @@
 package it.unibo.osmos.redux.mvc.view
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 import it.unibo.osmos.redux.mvc.controller.Controller
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
-import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextType}
+import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextType, LobbyContext}
 import it.unibo.osmos.redux.mvc.view.stages.{OsmosReduxPrimaryStage, PrimaryStageListener}
 import scalafx.application.JFXApp
 
@@ -31,7 +31,7 @@ object View {
     */
   class ViewImpl(private val app: JFXApp) extends View with PrimaryStageListener {
 
-    implicit val ec = ExecutionContext.global
+    implicit val ec: ExecutionContextExecutor = ExecutionContext.global
 
     app.stage = OsmosReduxPrimaryStage(this)
     private var controller: Option[Controller] = Option.empty
@@ -66,11 +66,12 @@ object View {
     override def onStopLevel(): Unit = checkController(() => controller.get.stopLevel())
 
     /**
-      * After checking the controller, we ask to enter the lobby asynchronously and call the callback function after the futur result
+      * After checking the controller, we ask to enter the lobby asynchronously and call the callback function after the future result
       * @param user the user requesting to enter the lobby
+      * @param lobbyContext the lobby context, which may be used by the server to configure existing lobby users
       * @param callback the callback
       */
-    override def onLobbyClick(user: User, callback: (User, Boolean) => Unit): Unit = checkController(() => controller.get.initLobby(user).future.onComplete((res) => callback(user, res.get)))
+    override def onLobbyClick(user: User, lobbyContext: LobbyContext, callback: (User, LobbyContext, Boolean) => Unit): Unit = checkController(() => controller.get.initLobby(user, lobbyContext).future.onComplete((res) => callback(user, lobbyContext, res.get)))
 
   }
 

@@ -2,6 +2,8 @@ package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.mvc.view.components.custom.{TitledComboBox, TitledTextField}
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
+import it.unibo.osmos.redux.mvc.view.context.LobbyContext
+import it.unibo.osmos.redux.mvc.view.scenes
 import scalafx.application.Platform
 import scalafx.beans.property.{BooleanProperty, StringProperty}
 import scalafx.geometry.{Insets, Pos}
@@ -9,8 +11,19 @@ import scalafx.scene.control.{Alert, Button}
 import scalafx.scene.layout.{BorderPane, HBox, VBox}
 import scalafx.stage.Stage
 
+/**
+  * Scene in which the user can create or join a lobby as a server or as a client
+  * @param parentStage the parent stage
+  * @param listener the MultiPlayerSceneListener
+  * @param upperSceneListener the UpperMultiPlayerSceneListener
+  */
 class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlayerSceneListener, val upperSceneListener: UpperMultiPlayerSceneListener) extends BaseScene(parentStage)
  with MultiPlayerLobbySceneListener {
+
+  /**
+    * Reference to the next scene, which must be configured before it can be shown
+    */
+  private var multiPlayerLobbyScene: Option[MultiPlayerLobbyScene] = Option.empty
 
   private val username: StringProperty = StringProperty("")
   private val usernameTextField = new TitledTextField("Username: ", username)
@@ -36,11 +49,16 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
     * Result parsing function.
     * @return a function which will send the user to the MultiPlayerLobbyScene if the result is true, showing an error otherwise
     */
-  private def onLobbyEnterResult: (User, Boolean) => Unit = (user, result) => {
+  private def onLobbyEnterResult: (User, LobbyContext, Boolean) => Unit = (user, lobbyContext, result) => {
     Platform.runLater({
       if (result) {
-        parentStage.scene = new MultiPlayerLobbyScene(parentStage, MultiPlayerScene.this, user)
+        /* If the lobby was successfully created, we link the resulting lobby context and go to the next scene */
+        if (multiPlayerLobbyScene.nonEmpty) {
+          multiPlayerLobbyScene.get.lobbyContext_=(lobbyContext)
+          parentStage.scene = multiPlayerLobbyScene.get
+        }
       } else {
+        /* If an error occurred */
         val alert = new Alert(Alert.AlertType.Error) {
           title = "Error"
           contentText.value = "Error during lobby creation. Please try againg later."
@@ -51,11 +69,23 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
   }
 
   private val goToLobby = new Button("Go to lobby") {
+    /* We create the User */
+    private val user = if (mode.value) {
+      User(username.value, serverIp.value, serverPort.value, isServer = true)
+    } else {
+      User(username.value, isServer = false)
+    }
+
+    /* We created a new MultiPlayerLobbyScene to hold the future config info */
+    multiPlayerLobbyScene = Option(new MultiPlayerLobbyScene(parentStage, MultiPlayerScene.this, user))
+    /* We create a LobbyContext */
+    val lobbyContext = LobbyContext(multiPlayerLobbyScene.get)
+
     /* We parse the user values and ask to enter the lobby */
     onAction = _ => if (mode.value){
-      listener.onLobbyClick(User(username.value, serverIp.value, serverPort.value, isServer = true), onLobbyEnterResult)
+      listener.onLobbyClick(User(username.value, serverIp.value, serverPort.value, isServer = true), lobbyContext, onLobbyEnterResult)
     } else{
-      listener.onLobbyClick(User(username.value, isServer = false), onLobbyEnterResult)
+      listener.onLobbyClick(User(username.value, isServer = false), lobbyContext, onLobbyEnterResult)
     }
   }
 
@@ -104,8 +134,9 @@ trait MultiPlayerSceneListener {
   /**
     * Called when the user wants to go to the lobby as a server
     * @param user the user requesting to enter the lobby
+    * @param lobbyContext the lobby context, which may be used by the server to configure existing lobby users
     * @param callback the callback
     */
-  def onLobbyClick(user: User, callback: (User, Boolean) => Unit)
+  def onLobbyClick(user: User, lobbyContext: LobbyContext, callback: (User, LobbyContext, Boolean) => Unit)
 
 }

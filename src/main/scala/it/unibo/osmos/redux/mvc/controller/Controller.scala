@@ -4,7 +4,9 @@ import it.unibo.osmos.redux.multiplayer.client.Client
 import it.unibo.osmos.redux.multiplayer.common.{ActorSystemHolder, MultiPlayerMode}
 import it.unibo.osmos.redux.multiplayer.server.Server
 import it.unibo.osmos.redux.mvc.model.CampaignLevels
-import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextType}
+import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
+import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextType, LobbyContext}
+import it.unibo.osmos.redux.mvc.view.events.{EventWrapperObserver, LobbyEventWrapper}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Promise
@@ -26,10 +28,11 @@ trait Controller {
 
   /**
     * Initializes the multi-player lobby and the server or client.
-    * @param config The multi-player config
+    * @param user The user config
+    * @param lobbyContext The lobby context
     * @return Promise that completes with true if the lobby is initialized successfully; otherwise false.
     */
-  def initLobby(config: Any): Promise[Boolean]
+  def initLobby(user: User, lobbyContext: LobbyContext): Promise[Boolean]
 
   /**
     * Initializes the multi-player level and the game engine.
@@ -84,7 +87,7 @@ case class ControllerImpl() extends Controller {
     levelContext.setupLevel(loadedLevel.levelMap.mapShape)
   }
 
-  override def initLobby(config: Any): Promise[Boolean] = {
+  override def initLobby(user: User, lobbyContext: LobbyContext): Promise[Boolean] = {
     val promise = Promise[Boolean]()
 
     //DEBUG ONLY

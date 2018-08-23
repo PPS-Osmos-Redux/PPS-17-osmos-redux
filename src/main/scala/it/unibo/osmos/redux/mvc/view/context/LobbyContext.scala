@@ -8,18 +8,29 @@ import it.unibo.osmos.redux.mvc.view.events.{EventWrapperObserver, LobbyEventWra
   */
 trait LobbyContext extends EventWrapperObserver[LobbyEventWrapper]{
 
-  def getCurrentUsers: Seq[User]
+  /**
+    * The lobby current users
+    */
+  private[this] var _users: Seq[User] = Seq.empty
+  def users: Seq[User] = _users
+  def users_=(value: Seq[User]): Unit = _users = value
 
 }
 
+/**
+  * Companion object
+  */
 object LobbyContext {
 
+  def apply(lobbyContextListener: LobbyContextListener): LobbyContext = new LobbyContextImpl(lobbyContextListener)
+
+  /**
+    * LobbyContext implementation
+    * @param Listener the lobby context listener
+    */
   class LobbyContextImpl(val Listener: LobbyContextListener) extends LobbyContext {
 
-    private var users: Seq[User] = Seq.empty
-
-    override def getCurrentUsers: Seq[User] = users
-
+    //TODO: call the listener
     override def notify(event: LobbyEventWrapper): Unit = event.lobbyEvent match {
       case UserAdded => if (!users.contains(event.user)) users = users :+ event.user
       case UserRemoved => if (users.contains(event.user)) users = users filterNot(u => u.username == event.user.username)
