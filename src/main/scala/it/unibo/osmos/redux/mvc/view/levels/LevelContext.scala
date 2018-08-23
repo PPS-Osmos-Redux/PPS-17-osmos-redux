@@ -22,27 +22,19 @@ trait LevelContext extends EventWrapperObservable[MouseEventWrapper] with Entiti
 }
 
 /**
-  * Trait modelling an object which holds the current game state and reacts when it gets changed
+  * Companion object
   */
-trait GameStateHolder extends EventWrapperObserver[GameStateEventWrapper] {
-
-  /**
-    * A generic definition of the game state
-    * @return a GameStateEventWrapper
-    */
-  def gameCurrentState: GameStateEventWrapper
-
-}
-
 object LevelContext {
 
-  def apply(listener: LevelContextListener, simulation: Boolean): LevelContext = new LevelContextImpl(listener, simulation)
+  def apply(listener: LevelContextListener): LevelContext = new LevelContextImpl(listener)
+
+  def apply(listener: LevelContextListener, levelContextType: LevelContextType.Value): LevelContext = new LevelContextImpl(listener, levelContextType)
 
   /**
-    * Implementation of the LevelContext trait
+    * Base abstract implementation of the LevelContext trait
     * @param listener the LevelContextListener instance
     */
-  private class LevelContextImpl(private val listener: LevelContextListener, val simulation: Boolean) extends LevelContext {
+  private abstract class AbstractLevelContext(private val listener: LevelContextListener, val levelContextType: LevelContextType.Value = LevelContextType.normal) extends LevelContext {
 
     /**
       * A reference to the mouse event listener
@@ -61,6 +53,14 @@ object LevelContext {
     override def subscribe(eventObserver: EventWrapperObserver[MouseEventWrapper]): Unit = mouseEventObserver = Option(eventObserver)
 
     override def unsubscribe(eventObserver: EventWrapperObserver[MouseEventWrapper]): Unit = mouseEventObserver = Option.empty
+
+  }
+
+  /**
+    * Implementation of the LevelContext trait
+    * @param listener the LevelContextListener instance
+    */
+  private class LevelContextImpl(private val listener: LevelContextListener, override val levelContextType: LevelContextType.Value = LevelContextType.normal) extends AbstractLevelContext(listener, levelContextType) {
 
     /**
       * The current game state
