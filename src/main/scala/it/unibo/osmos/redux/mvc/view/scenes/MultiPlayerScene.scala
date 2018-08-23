@@ -1,6 +1,5 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
-import it.unibo.osmos.redux.mvc.view.components.{MainMenuBar, MainMenuCenterBox}
 import scalafx.beans.property.StringProperty
 import scalafx.geometry.Pos
 import scalafx.scene.control.{Button, TextField}

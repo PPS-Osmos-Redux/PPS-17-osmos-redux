@@ -49,7 +49,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
 
 
   val entityPlaceholder: Circle = new Circle() {
-    fill.value = new ImagePattern(ImageLoader.getImage("/textures/menu_level_1.png"))
+    fill.value = new ImagePattern(ImageLoader.getImage("/textures/cell_blue.png"))
     radius = 100
 
     onScroll = scroll => radius = radius.value + (scroll.getDeltaY/10) min 200 max 10
