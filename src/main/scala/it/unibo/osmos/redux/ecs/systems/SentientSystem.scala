@@ -10,6 +10,7 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
 
   private val MAX_SPEED = 2
   private val MAX_ACCELERATION = 0.1
+  private val COEFFICIENT_DESIDERED_SEPARATION = 6
   private val radiusThreshold = 4
 
   override protected def getGroupPropertySecondType: Class[SentientEnemyProperty] = classOf[SentientEnemyProperty]
@@ -36,7 +37,6 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
     val nextPositionTarget = Point(newPositionTarget.x, newPositionTarget.y)
     val desiredVelocity = MathUtils.unitVector(nextPositionTarget, sentient.getPositionComponent.point) multiply MAX_SPEED
     desiredVelocity subtract sentient.getSpeedComponent.vector limit MAX_ACCELERATION
-
   }
 
   private def findTarget(sentient: SentientProperty, enemies: ListBuffer[SentientEnemyProperty]): Option[SentientEnemyProperty] =
@@ -55,18 +55,16 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
                   sentient.getDimensionComponent.radius < e.getDimensionComponent.radius) toList
 
   private def runAwayFromEnemies(sentient: SentientProperty, enemies: List[SentientEnemyProperty]): Vector = {
-    val desideredSeparation = sentient.getDimensionComponent.radius * 6
+    val desideredSeparation = sentient.getDimensionComponent.radius * COEFFICIENT_DESIDERED_SEPARATION
     var sum = Vector.zero()
     var count = 0
-    enemies foreach(e => {
-      val distance = MathUtils.euclideanDistance(sentient.getPositionComponent, e.getPositionComponent)
-      //sentient is not in enemies
-      if (distance < desideredSeparation) {
-        val diff = MathUtils.unitVector(sentient.getPositionComponent.point, e.getPositionComponent.point) divide distance
-        sum = sum add diff
-        count += 1
-      }
-    })
+    enemies.map(e => (e, MathUtils.euclideanDistance(sentient.getPositionComponent, e.getPositionComponent)))
+           .filter(p => p._2 < desideredSeparation)
+           .map(m => MathUtils.unitVector(sentient.getPositionComponent.point, m._1.getPositionComponent.point) divide m._2)
+           .foreach(diff => {
+             sum = sum add diff
+             count += 1
+           })
     if (count > 0) {
       val average = sum divide count normalized() multiply MAX_SPEED
       average subtract sentient.getSpeedComponent.vector limit MAX_ACCELERATION
