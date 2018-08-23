@@ -1,12 +1,11 @@
 package it.unibo.osmos.redux.ecs.engine
 
-import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager}
-import it.unibo.osmos.redux.ecs.systems.{CollisionSystem, DrawSystem, InputSystem, MovementSystem}
-import it.unibo.osmos.redux.mvc.model.MapShape.Rectangle
-import it.unibo.osmos.redux.mvc.model.{CollisionRules, Level, LevelMap, VictoryRules}
 import it.unibo.osmos.redux.ecs.entities.EntityManager
 import it.unibo.osmos.redux.ecs.systems._
+import it.unibo.osmos.redux.multiplayer.client.Client
+import it.unibo.osmos.redux.multiplayer.server.Server
 import it.unibo.osmos.redux.mvc.model.Level
+import it.unibo.osmos.redux.mvc.view.events.GamePending
 import it.unibo.osmos.redux.mvc.view.levels.LevelContext
 import it.unibo.osmos.redux.utils.InputEventQueue
 
@@ -26,6 +25,22 @@ trait GameEngine {
     * @param levelContext The context of the current game level.
     */
   def init(level: Level, levelContext: LevelContext): Unit
+
+  /**
+    * Initializes the game loop and server for a multi-player level.
+    * @param level The object that contains all level data.
+    * @param levelContext The context of the current game level.
+    * @param server The server.
+    */
+  def init(level: Level, levelContext: LevelContext, server: Server)
+
+  /**
+    * Initializes the game loop and client for a multi-player level.
+    * @param level The object that contains all level data.
+    * @param levelContext The context of the current game level.
+    * @param client The client.
+    */
+  def init(level: Level, levelContext: LevelContext, client: Client)
 
   /**
     * Starts the game loop.
@@ -91,14 +106,61 @@ object GameEngine {
       //create systems, add to list, the order in this collection is the final system order in the game loop
       val systems = ListBuffer[System]()
       if (!level.isSimulation) systems += InputSystem()
-      systems ++= List(SpawnSystem(), GravitySystem(), MovementSystem(level), CollisionSystem(), CellsEliminationSystem(), DrawSystem(levelContext))
-      if(!level.isSimulation) systems += EndGameSystem(levelContext, level.victoryRule)
+      systems ++= initMainSystems(level, levelContext)
+      if (!level.isSimulation) systems += EndGameSystem(levelContext, level.victoryRule)
 
       //add all entities in the entity manager (systems are subscribed to EntityManager event when created)
       level.entities foreach(EntityManager add _)
 
       //init the gameloop
       gameLoop = Some(new GameLoop(this, systems.toList))
+    }
+
+    override def init(level: Level, levelContext: LevelContext, server: Server): Unit = {
+
+      //clear all
+      clear()
+
+      //register InputEventQueue to the mouse event listener to collect input events
+      levelContext.subscribe { InputEventQueue enqueue _ }
+
+      //register InputEventQueue to the client input events
+      server.subscribeClientInputEvent { InputEventQueue enqueue _ }
+
+      //create systems, add to list, the order in this collection is the final system order in the game loop
+      val systems = ListBuffer[System](InputSystem())
+      systems ++= initMainSystems(level, levelContext) :+ MultiPlayerSystem(server) :+ EndGameSystem(levelContext, level.victoryRule)
+
+      //add all entities in the entity manager (systems are subscribed to EntityManager event when created)
+      level.entities foreach(EntityManager add _)
+
+      //init the gameloop
+      gameLoop = Some(new GameLoop(this, systems.toList))
+    }
+
+    override def init(level: Level, levelContext: LevelContext, client: Client): Unit = {
+
+      //clear all
+      clear()
+
+      //register client to the mouse event listener to send input events to the server
+      levelContext.subscribe(e => { client.signalPlayerInput(e) })
+
+      //subscribe to draw entity event and call interface to draw them
+      client.subscribeEntityDrawEvent (entities => {
+        //TODO: drawablewrapper must have uuid
+        /*
+        val player = entities find (e => e.uuid == client.getUUID)
+        if (player.isEmpty) throw new IllegalArgumentException("Unable to draw entities because the player is not found")
+        levelContext.drawEntities(player, entities)
+        */
+      })
+
+      //subscribe to game status changed event to detect the end of the game
+      client.subscribeGameStatusChangedEvent {
+        case GamePending => //TODO: game have been started, tell interface to start
+        case s => levelContext.notify(s)
+      }
     }
 
     override def start(): Unit = {
@@ -155,6 +217,16 @@ object GameEngine {
     }
 
     override def getFps: Int = framerate
+
+    /**
+      * Initializes the main game systems
+      * @param level The level
+      * @param levelContext The level context
+      * @return The list of all main systems
+      */
+    private def initMainSystems(level: Level, levelContext: LevelContext): List[System] = {
+      List(SpawnSystem(), GravitySystem(), MovementSystem(level), CollisionSystem(), CellsEliminationSystem(), DrawSystem(levelContext))
+    }
   }
 }
 
