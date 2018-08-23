@@ -16,6 +16,9 @@ import scalafx.stage.Stage
   */
 class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: MultiPlayerLobbySceneListener, val user: User) extends BaseScene(parentStage) {
 
+  /**
+    * ObservableBuffer holding the current users
+    */
   private val userList = ObservableBuffer[UserWithProperties](
     User("Marco", "0.0.0.0", "0000", isServer = true).getUserWithProperty,
     User("Davide", "0.0.0.1", "0001", isServer = false).getUserWithProperty,
@@ -24,6 +27,9 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     User("Proc", "0.0.0.4", "0004", isServer = false).getUserWithProperty
   )
 
+  /**
+    * TableView linked with the user list
+    */
   val usersTable: TableView[UserWithProperties] = new TableView[UserWithProperties](userList) {
     columns ++= List(
       new TableColumn[UserWithProperties, String]() {
@@ -49,10 +55,10 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
 
   }
 
-  private val goBack = new Button("Go back") {
+  private val exitLobby = new Button("Exit Lobby") {
     onAction = _ => {}
   }
-  private val goToLobby = new Button("Go to lobby") {
+  private val startGame = new Button("Start Game") {
     visible = user.isServer
     onAction = _ => {}
   }
@@ -63,7 +69,7 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     alignmentInParent = Pos.Center
     /* Setting the upper MenuBar */
     center = container
-    bottom = new HBox(30.0, goBack, goToLobby) {
+    bottom = new HBox(30.0, exitLobby, startGame) {
       alignment = Pos.Center
     }
   }

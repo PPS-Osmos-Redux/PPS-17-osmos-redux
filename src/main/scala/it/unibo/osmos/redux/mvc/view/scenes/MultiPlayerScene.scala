@@ -2,6 +2,7 @@ package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.mvc.view.components.custom.{TitledComboBox, TitledTextField}
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
+import scalafx.application.Platform
 import scalafx.beans.property.{BooleanProperty, StringProperty}
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.Button
@@ -35,10 +36,14 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
     * Result parsing function.
     * @return a function which will send the user to the MultiPlayerLobbyScene if the result is true, showing an error otherwise
     */
-  private def onLobbyEnterResult: (User, Boolean) => Unit = (user, result) => if (result) parentStage.scene = new MultiPlayerLobbyScene(parentStage, MultiPlayerScene.this, mode.value)
+  private def onLobbyEnterResult: (User, Boolean) => Unit = (user, result) => {
+    Platform.runLater({
+      if (result) parentStage.scene = new MultiPlayerLobbyScene(parentStage, MultiPlayerScene.this, user)
+    })
+  }
 
   private val goToLobby = new Button("Go to lobby") {
-
+    /* We parse the user values and ask to enter the lobby */
     onAction = _ => if (mode.value){
       listener.onLobbyClick(User(username.value, serverIp.value, serverPort.value, isServer = true), onLobbyEnterResult)
     } else{
@@ -91,8 +96,8 @@ trait MultiPlayerSceneListener {
   /**
     * Called when the user wants to go to the lobby as a server
     * @param user the user requesting to enter the lobby
-    * @param result the callback
+    * @param callback the callback
     */
-  def onLobbyClick(user: User, result: (User, Boolean) => Unit)
+  def onLobbyClick(user: User, callback: (User, Boolean) => Unit)
 
 }
