@@ -36,31 +36,30 @@ object View {
       this.controller = Option(controller)
     }
 
-    override def onLevelContextCreated(levelContext: LevelContext, level: Int, levelContextType: LevelContextType.Value): Unit = controller match {
-      case Some(c) => c.initLevel(levelContext, level, levelContextType)
+    /**
+      * Utility method that checks if controller is not empty and execute f() if that is the case
+      * @param f the function which will be executed if controller is not empty
+      */
+    private def checkController(f:() => Unit): Unit = controller match {
+      case Some(_) => f()
       case _ =>
     }
 
-    override def onStartLevel(): Unit = controller match {
-      case Some(c) => c.startLevel()
-      case _ =>
-    }
+    override def onLevelContextCreated(levelContext: LevelContext, level: Int, levelContextType: LevelContextType.Value): Unit = checkController(() => {
+      if (levelContextType eq LevelContextType.multiplayer) {
+        controller.get.initLevel(levelContext, level, levelContextType)
+      } else {
+        controller.get.initMultiPlayerLevel(levelContext, level)
+      }
+    })
 
-    override def onPauseLevel(): Unit = controller match {
-      case Some(c) => c.pauseLevel()
-      case _ =>
-    }
+    override def onStartLevel(): Unit = checkController(() => controller.get.startLevel())
 
-    override def onResumeLevel(): Unit = controller match {
-      case Some(c) => c.resumeLevel()
-      case _ =>
-    }
+    override def onPauseLevel(): Unit = checkController(() => controller.get.pauseLevel())
 
-    override def onStopLevel(): Unit = controller match {
-      case Some(c) => c.stopLevel()
-      case _ =>
-    }
+    override def onResumeLevel(): Unit = checkController(() => controller.get.resumeLevel())
 
+    override def onStopLevel(): Unit = checkController(() => controller.get.stopLevel())
 
     override def onLobbyClickAsServer(username: String, ip: String, port: String): Unit = ???
 
