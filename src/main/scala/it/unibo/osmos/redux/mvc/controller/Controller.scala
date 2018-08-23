@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.mvc.controller
 import it.unibo.osmos.redux.ecs.engine.GameEngine
 import it.unibo.osmos.redux.mvc.model.{CampaignLevels, Level}
-import it.unibo.osmos.redux.mvc.view.levels.LevelContext
+import it.unibo.osmos.redux.mvc.view.levels.{LevelContext, LevelContextType}
 import spray.json._
 
 import scala.io.Source
@@ -12,8 +12,8 @@ import scala.util.Try
   */
 trait Controller {
   def initLevel(levelContext: LevelContext,
-                 chosenLevel:Int,
-                 isSimulation:Boolean)
+                chosenLevel:Int,
+                levelContextType: LevelContextType.Value)
   def startLevel()
   def stopLevel()
   def pauseLevel()
@@ -25,9 +25,9 @@ case class ControllerImpl() extends Controller {
   var engine:Option[GameEngine] = None
 
   override def initLevel(levelContext: LevelContext,
-                          chosenLevel:Int,
-                          isSimulation:Boolean): Unit = {
-
+                         chosenLevel:Int,
+                         levelContextType: LevelContextType.Value): Unit = {
+    val isSimulation: Boolean = levelContext eq LevelContextType.simulation
     val loadedLevel = FileManager.loadResource(isSimulation, chosenLevel).get
     if (isSimulation) loadedLevel.isSimulation = true
     if(engine.isEmpty) engine = Some(GameEngine())

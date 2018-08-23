@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
-import it.unibo.osmos.redux.mvc.view.levels.LevelContext
+import it.unibo.osmos.redux.mvc.view.levels.{LevelContext, LevelContextType}
 import it.unibo.osmos.redux.mvc.view.components.{LevelNode, LevelNodeListener, MainMenuBar, MainMenuBarListener}
 import scalafx.geometry.Pos
 import scalafx.scene.layout.{TilePane, VBox}
@@ -35,13 +35,14 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
   def onLevelPlayClick(level: Int, simulation: Boolean): Unit = {
     // Creating a new level scene
     val levelScene = new LevelScene(parentStage, this)
+    val levelContextType = if (simulation) LevelContextType.simulation else LevelContextType.normal
     // Creating a new LevelContext and setting it to the scene
-    val levelContext = LevelContext(levelScene, simulation)
+    val levelContext = LevelContext(levelScene, levelContextType)
     levelScene.levelContext = levelContext
     // Changing scene scene
     parentStage.scene = levelScene
     // Notify the view the new context
-    listener.onLevelContextCreated(levelContext, level, simulation)
+    listener.onLevelContextCreated(levelContext, level, levelContextType)
   }
 
   override def onStartLevel(): Unit = listener.onStartLevel()
@@ -68,7 +69,7 @@ trait LevelSelectionSceneListener extends LevelSceneListener {
     * This method called when the level context has been created
     * @param levelContext the new level context
     * @param level the new level index
-    * @param simulation true if the new level must be started as a simulation, false otherwise
+    * @param levelContextType the level type
     */
-  def onLevelContextCreated(levelContext: LevelContext, level: Int, simulation: Boolean)
+  def onLevelContextCreated(levelContext: LevelContext, level: Int, levelContextType: LevelContextType.Value)
 }

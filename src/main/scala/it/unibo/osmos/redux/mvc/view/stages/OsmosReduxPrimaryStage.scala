@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.stages
 
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
-import it.unibo.osmos.redux.mvc.view.levels.LevelContext
+import it.unibo.osmos.redux.mvc.view.levels.{LevelContext, LevelContextType}
 import it.unibo.osmos.redux.mvc.view.scenes._
 import scalafx.application.JFXApp
 
@@ -43,7 +43,7 @@ object OsmosReduxPrimaryStage {
 
     override def onPlayClick(): Unit = scene = new LevelSelectionScene(this, this)
 
-    override def onLevelContextCreated(levelContext: LevelContext, level: Int, simulation: Boolean): Unit = listener.onLevelContextCreated(levelContext, level, simulation)
+    override def onLevelContextCreated(levelContext: LevelContext, level: Int, levelContextType: LevelContextType.Value): Unit = listener.onLevelContextCreated(levelContext, level, levelContextType)
 
     override def onStartLevel(): Unit = listener.onStartLevel()
 
@@ -63,6 +63,6 @@ object OsmosReduxPrimaryStage {
 /**
   * Listener that manages all the events managed by the primary scene
   */
-trait PrimaryStageListener extends LevelSelectionSceneListener{
+trait PrimaryStageListener extends LevelSelectionSceneListener {
 
 }

@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.mvc.view
 
 import it.unibo.osmos.redux.mvc.controller.Controller
-import it.unibo.osmos.redux.mvc.view.levels.LevelContext
+import it.unibo.osmos.redux.mvc.view.levels.{LevelContext, LevelContextType}
 import it.unibo.osmos.redux.mvc.view.stages.{OsmosReduxPrimaryStage, PrimaryStageListener}
 import scalafx.application.JFXApp
 
@@ -36,8 +36,8 @@ object View {
       this.controller = Option(controller)
     }
 
-    override def onLevelContextCreated(levelContext: LevelContext, level: Int, simulation: Boolean): Unit = controller match {
-      case Some(c) => c.initLevel(levelContext, level, simulation)
+    override def onLevelContextCreated(levelContext: LevelContext, level: Int, levelContextType: LevelContextType.Value): Unit = controller match {
+      case Some(c) => c.initLevel(levelContext, level, levelContextType)
       case _ =>
     }
 
