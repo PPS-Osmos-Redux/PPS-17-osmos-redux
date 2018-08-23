@@ -5,7 +5,7 @@ import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import scalafx.application.Platform
 import scalafx.beans.property.{BooleanProperty, StringProperty}
 import scalafx.geometry.{Insets, Pos}
-import scalafx.scene.control.Button
+import scalafx.scene.control.{Alert, Button}
 import scalafx.scene.layout.{BorderPane, HBox, VBox}
 import scalafx.stage.Stage
 
@@ -38,7 +38,15 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
     */
   private def onLobbyEnterResult: (User, Boolean) => Unit = (user, result) => {
     Platform.runLater({
-      if (result) parentStage.scene = new MultiPlayerLobbyScene(parentStage, MultiPlayerScene.this, user)
+      if (result) {
+        parentStage.scene = new MultiPlayerLobbyScene(parentStage, MultiPlayerScene.this, user)
+      } else {
+        val alert = new Alert(Alert.AlertType.Error) {
+          title = "Error"
+          contentText.value = "Error during lobby creation. Please try againg later."
+        }
+        alert.showAndWait()
+      }
     })
   }
 

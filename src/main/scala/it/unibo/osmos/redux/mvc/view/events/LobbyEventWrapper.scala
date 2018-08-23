@@ -14,4 +14,4 @@ case object UserRemoved extends LobbyEvent
   * @param lobbyEvent the lobby event
   * @param user the user the event refers to
   */
-case class LobbyEventWrapper(lobbyEvent: LobbyEvent, user: User)
+case class LobbyEventWrapper(lobbyEvent: LobbyEvent, user: User) extends EventWrapper
