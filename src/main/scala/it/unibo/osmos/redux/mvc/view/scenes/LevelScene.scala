@@ -23,7 +23,7 @@ import scalafx.util.Duration
 /**
   * This scene holds and manages a single level
   */
-class LevelScene(override val parentStage: Stage, val listener: LevelSceneListener) extends BaseScene(parentStage)
+class LevelScene(override val parentStage: Stage, val listener: LevelSceneListener, val upperSceneListener: UpperLevelSceneListener) extends BaseScene(parentStage)
   with LevelContextListener with LevelStateBoxListener {
 
   private val TEXTURE_FOLDER = "/textures/"
@@ -121,6 +121,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   }
 
   override def onExit(): Unit = {
+    upperSceneListener.onStopLevel()
     listener.onStopLevel()
   }
 
@@ -305,6 +306,18 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
       case _ => throw new IllegalArgumentException("Could not determine the min and max radius from an empty sequence of entities")
     }
   }
+
+}
+
+/**
+  * Trait used by LevelScene to notify an event to the upper scene
+  */
+trait UpperLevelSceneListener {
+
+  /**
+    * Called when the level gets stopped
+    */
+  def onStopLevel()
 
 }
 

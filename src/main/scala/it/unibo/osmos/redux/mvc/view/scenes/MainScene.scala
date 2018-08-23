@@ -8,7 +8,7 @@ import scalafx.stage.Stage
   * Opening scene, showing the menu and the menu bar
   */
 class MainScene(override val parentStage: Stage, val listener: MainSceneListener) extends BaseScene(parentStage)
-  with MainMenuCenterBoxListener with MainMenuBarListener {
+  with MainMenuCenterBoxListener with MainMenuBarListener with UpperMultiPlayerSceneListener {
 
   /* Requesting a structured layout */
   private val rootLayout: BorderPane = new BorderPane {
@@ -33,6 +33,9 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
   override def onFullScreenSettingClick(): Unit = {
     parentStage.fullScreen = !parentStage.fullScreen.get()
   }
+
+  override def onMultiPlayerSceneBackClick(): Unit = parentStage.scene = this
+
 }
 
 /**

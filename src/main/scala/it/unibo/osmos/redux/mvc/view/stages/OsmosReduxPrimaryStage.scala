@@ -29,34 +29,25 @@ object OsmosReduxPrimaryStage {
     * @param windowHeight the window height
     */
   class OsmosReduxPrimaryStageImpl(val listener: PrimaryStageListener, val fullScreenEnabled: Boolean, val windowWidth: Double, val windowHeight: Double) extends OsmosReduxPrimaryStage
-    with MainSceneListener with LevelSelectionSceneListener with MultiPlayerSceneListener {
+    with MainSceneListener {
 
     title = defaultWindowTitle
     fullScreen = fullScreenEnabled
     width = windowWidth
     height = windowHeight
 
+    private val mainScene = new MainScene(this, this)
+
     /**
       * The scene field represents the scene currently shown to the screen
       */
-    scene = new MainScene(this, this)
+    scene = mainScene
 
-    override def onPlayClick(): Unit = scene = new LevelSelectionScene(this, this)
+    override def onPlayClick(): Unit = scene = new LevelSelectionScene(this, listener)
 
-    override def onMultiPlayerClick(): Unit = scene = new MultiPlayerScene(this, this)
+    override def onMultiPlayerClick(): Unit = scene = new MultiPlayerScene(this, listener, mainScene)
 
-    override def onLevelContextCreated(levelContext: LevelContext, level: Int, levelContextType: LevelContextType.Value): Unit = listener.onLevelContextCreated(levelContext, level, levelContextType)
-
-    override def onEditorClick(): Unit = scene = new EditorLevelSelectionScene(this, this)
-
-    override def onStartLevel(): Unit = listener.onStartLevel()
-
-    override def onPauseLevel(): Unit = listener.onPauseLevel()
-
-    override def onResumeLevel(): Unit = listener.onResumeLevel()
-
-    override def onStopLevel(): Unit = listener.onStopLevel()
-
+    override def onEditorClick(): Unit = scene = new EditorLevelSelectionScene(this, listener)
 
     /* Stopping the game when the user closes the window */
     onCloseRequest = _ => System.exit(0)
@@ -67,6 +58,6 @@ object OsmosReduxPrimaryStage {
 /**
   * Listener that manages all the events managed by the primary scene
   */
-trait PrimaryStageListener extends LevelSelectionSceneListener {
+trait PrimaryStageListener extends LevelSelectionSceneListener with MultiPlayerSceneListener {
 
 }
