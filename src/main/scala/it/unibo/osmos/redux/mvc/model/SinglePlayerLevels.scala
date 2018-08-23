@@ -38,8 +38,8 @@ object SinglePlayerLevels {
     */
   def syncWithFile(userStat: UserStat): Unit ={
     levels.foreach(level => {
-      unlockNextLevel()
       if(level._1.equals(userStat.toDoLevel)) return
+      unlockNextLevel()
     })
   }
 

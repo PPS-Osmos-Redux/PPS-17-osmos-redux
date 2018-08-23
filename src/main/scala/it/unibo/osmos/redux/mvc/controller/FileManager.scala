@@ -71,11 +71,12 @@ object FileManager {
     if (saveToFile(upFile, userProgress.toJson.prettyPrint)) Some(path) else None
   }
 
-  def loadUserProgress(): Option[UserStat] = {
+  def loadUserProgress(): UserStat = {
     import it.unibo.osmos.redux.mvc.model.JsonProtocols._
     loadFile(userProgressDirectory + userProgressFileName + jsonExtension) match {
-      case Some(text) => Option(text.parseJson.convertTo[UserStat])
-      case _ => None
+      case Some(text) => text.parseJson.convertTo[UserStat]
+      case _ => saveUserProgress(SinglePlayerLevels.toUserProgression)
+                loadUserProgress()
     }
   }
 

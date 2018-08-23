@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.main
 
-import it.unibo.osmos.redux.mvc.controller.{Controller, ControllerImpl}
-import it.unibo.osmos.redux.mvc.model.Model
+import it.unibo.osmos.redux.mvc.controller.{Controller, ControllerImpl, FileManager}
+import it.unibo.osmos.redux.mvc.model.{Model, SinglePlayerLevels}
 import it.unibo.osmos.redux.mvc.view.View
 import scalafx.application.JFXApp
 
@@ -12,6 +12,7 @@ object AppLauncher extends JFXApp {
 
   //TODO: replace null with proper implementation
   val model: Model = null
+  SinglePlayerLevels.syncWithFile(FileManager.loadUserProgress())
   val controller: Controller = new ControllerImpl
   val view = View(this)
   view.setController(controller)
