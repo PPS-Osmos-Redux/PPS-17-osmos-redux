@@ -36,6 +36,11 @@ object PrologRules {
                    MOD is sqrt(PUVX+PUVY),
                    divide([UVX,UVY],MOD, [VX,VY]).
 
+               euclideanDistance([PX1,PY1],[PX2,PY2],D) :-
+                   pow(PX1 - PX2, 2, PX),
+                   pow(PY1 - PY2, 2, PY),
+                   D is sqrt(PX + PY).
+
                getNewLength([X,Y], NewLength, [RX, RY]) :-
                    getLength([X,Y],Length),
                    divide(NewLength, Length, TEMP),
@@ -55,7 +60,7 @@ object PrologRules {
                    multiply([UVX,UVY], 2, [DSX,DSY]),
                    steer([DSX,DSY], [SSX,SSY], [RX,RY]).
 
-               filter([_,_,SR], [[]], []):-!.
+               filter([_,_,SR], [], []):-!.
                filter([_,_,SR], [[EP,ES,ER,ET]|T], OUTL) :-
                    filter([_,_,SR], T, RL),
                    (ET \== 'AntiMatter' ->
@@ -64,6 +69,31 @@ object PrologRules {
                                OUTL = [[EP,ES,ER,ET]|RL];
                                OUTL = RL );
                            OUTL = RL );
-                   OUTL = RL ).
+                       OUTL = RL ).
+
+               associateScoreToEnemy([SP,_,SR], [EP,ES,ER,ET], [[EP,ES,ER,ET],R]) :-
+                   euclideanDistance(SP,EP,D),
+                   divide(SR, D, R).
+
+               associateScoreToEnemies(S, [H|[]], [R|[]]) :- associateScoreToEnemy(S, H, R),!.
+               associateScoreToEnemies(S, [H|T], [R|TR]) :-
+                   associateScoreToEnemy(S, H, R),
+                   associateScoreToEnemies(S, T, TR),!.
+
+               quicksort([],[]).
+               quicksort([X|Xs],Ys):-
+                   partition(Xs,X,Ls,Bs),
+                   quicksort(Ls,LOs),
+                   quicksort(Bs,BOs),
+                   append(LOs,[X|BOs],Ys).
+
+               partition([],_,[],[]).
+               partition([[X,SCOREX]|Xs],[Y,SCOREY],[X|Ls],Bs):- SCOREX>SCOREY, !, partition(Xs,Y,Ls,Bs).
+               partition([X|Xs],[Y,SCOREY],Ls,[X|Bs]):- partition(Xs,Y,Ls,Bs).
+
+               findTarget(S,[H|T],RL) :-
+                   filter(S, [H|T], FL),
+                   associateScoreToEnemies(S, FL, EWS),
+                   quicksort(EWS, RL).
   """
 }
