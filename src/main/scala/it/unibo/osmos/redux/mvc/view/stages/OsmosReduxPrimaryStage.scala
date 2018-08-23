@@ -29,7 +29,7 @@ object OsmosReduxPrimaryStage {
     * @param windowHeight the window height
     */
   class OsmosReduxPrimaryStageImpl(val listener: PrimaryStageListener, val fullScreenEnabled: Boolean, val windowWidth: Double, val windowHeight: Double) extends OsmosReduxPrimaryStage
-    with MainSceneListener with LevelSelectionSceneListener {
+    with MainSceneListener with LevelSelectionSceneListener with MultiPlayerSceneListener {
 
     title = defaultWindowTitle
     fullScreen = fullScreenEnabled
@@ -42,6 +42,8 @@ object OsmosReduxPrimaryStage {
     scene = new MainScene(this, this)
 
     override def onPlayClick(): Unit = scene = new LevelSelectionScene(this, this)
+
+    override def onMultiPlayerClick(): Unit = scene = new MultiPlayerScene(this, this)
 
     override def onLevelContextCreated(levelContext: LevelContext, level: Int, levelContextType: LevelContextType.Value): Unit = listener.onLevelContextCreated(levelContext, level, levelContextType)
 
