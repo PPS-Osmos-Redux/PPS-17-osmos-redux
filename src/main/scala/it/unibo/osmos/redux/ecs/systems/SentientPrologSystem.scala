@@ -1,22 +1,15 @@
 package it.unibo.osmos.redux.ecs.systems
 
-import alice.tuprolog.{SolveInfo, Struct, Term}
+import alice.tuprolog._
 import it.unibo.osmos.redux.ecs.entities.{SentientEnemyProperty, SentientProperty}
+import it.unibo.osmos.redux.utils.PrologRules
 import it.unibo.osmos.redux.utils.Scala2P._
 
 import scala.collection.mutable.ListBuffer
 
 case class SentientPrologSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientProperty, SentientEnemyProperty]() {
 
-  private val engine: Term => Stream[SolveInfo] = mkPrologEngine(
-    """
-       followTarget(S,T,2).
-       followTarget(S,T,3).
-       member([H|T],H,T).
-       member([H|T],E,[H|T2]):- member(T,E,T2).
-       permutation([],[]).
-       permutation(L,[H|TP]) :- member(L,H,T), permutation(T,TP).
- """)
+  private val engine: Term => Stream[SolveInfo] = mkPrologEngine(PrologRules.rules)
 
   override protected def getGroupProperty: Class[SentientProperty] = classOf[SentientProperty]
 
@@ -31,20 +24,14 @@ case class SentientPrologSystem() extends AbstractSystemWithTwoTypeOfEntity[Sent
   }
 
   private def computeSentientCellBehaviour(sentientEntity: SentientProperty, sentientEnemies: ListBuffer[SentientEnemyProperty]): Unit = {
-    val sentientRadius: Double = sentientEntity.getDimensionComponent.radius
+    //val sentientRadius: Double = sentientEntity.getDimensionComponent.radius
     //println(sentientRadius)
-
-    var v = "" + sentientEntity
-    /*sentientEnemies.foreach(e => {
-      v = v + "," + e
-    })*/
-    //val t = new Struct(new alice.tuprolog.Int(2), new alice.tuprolog.Int(3))
-    //val app = new Struct("permutation", t, new alice.tuprolog.Var())
-    //engine(app) foreach (println(_))
-    engine("followTarget(1,2,T)") foreach (println(_))
-
-    //engine("permutation([1,2,3],L)") foreach (println(_))
-    //var list2=new Struct(new Term[]{new alice.tuprolog.Int(2),new  alice.tuprolog.Int(3)});
+    val e = sentientEnemies.head
+    //val input = new Struct("followTarget", sentientEntity, e, new Var())
+    //val input = new Struct("add", "[1,2]", "[1,2]", new Var("A"))
+    //val input = new Struct("pow", new Int(3), new Int(3), new Var("A"))
+    val input = new Struct("followTarget", "[[10,30],[30,20]]","[[70,80],[40,30]]", new Var("A"))
+    engine(input) foreach (println(_))
   }
 
 }
