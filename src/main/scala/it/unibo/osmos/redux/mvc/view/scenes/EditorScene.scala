@@ -38,15 +38,11 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     */
   private var entityType: ObjectProperty[EntityType.Value] = ObjectProperty(EntityType.Matter)
 
-  private val entityComboBox = new TitledComboBox[EntityType.Value]("Entity Type", EntityType.values.toSeq, et => {
-    entityType.value = et
-    println("val: " + entityType)
-
-  })
+  private val entityComboBox = new TitledComboBox[EntityType.Value]("Entity Type", EntityType.values.toSeq, et => entityType.value = et)
 
   private val cellEntityBuilder = new CellEntityBuilder
 
-  val verticalContainer: VBox = new VBox(10.0, entityComboBox, cellEntityBuilder)
+  val verticalContainer: VBox = new VBox(10.0, entityComboBox.root, cellEntityBuilder)
 
 
   val entityPlaceholder: Circle = new Circle() {

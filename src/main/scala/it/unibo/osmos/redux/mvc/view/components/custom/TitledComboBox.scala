@@ -1,9 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.components.custom
 
-import scalafx.geometry.Insets
 import scalafx.scene.control.ComboBox
-import scalafx.scene.layout.VBox
-import scalafx.scene.text.Text
 
 /**
   * A box consisting in a generic combo box and a title
@@ -12,19 +9,9 @@ import scalafx.scene.text.Text
   * @param handler the handler called when an item gets selected
   * @tparam A the items type
   */
-class TitledComboBox[A](val title: String, val items: Seq[A], val handler: A => Unit) extends VBox(spacing = 4.0) {
+class TitledComboBox[A](override val title: String, val items: Seq[A], val handler: A => Unit) extends TitledNode[ComboBox[A]](title, vertical = true) {
 
-  padding = Insets(10.0)
-  style = "-fx-background-color : #ffffff;"
-
-  private val text = new Text(title)
-
-  private val comboBox = new ComboBox[A](items)
-  comboBox.onAction = _ => handler.apply(comboBox.value.apply())
-
-  children = Seq(text, comboBox)
-
-  comboBox.selectionModel.value.selectFirst()
-
-
+  override def node: ComboBox[A] = new ComboBox[A](items)
+  node.onAction = _ => handler.apply(node.value.apply())
+  node.selectionModel.value.selectFirst()
 }
