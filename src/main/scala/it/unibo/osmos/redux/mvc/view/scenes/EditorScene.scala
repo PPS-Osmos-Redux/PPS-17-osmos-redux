@@ -1,7 +1,8 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.ecs.components.EntityType
-import it.unibo.osmos.redux.mvc.view.components.editor.{CellEntityBuilder, TitledComboBox}
+import it.unibo.osmos.redux.mvc.view.components.custom.TitledComboBox
+import it.unibo.osmos.redux.mvc.view.components.editor.CellEntityBuilder
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import javafx.scene.paint.ImagePattern
 import scalafx.beans.Observable

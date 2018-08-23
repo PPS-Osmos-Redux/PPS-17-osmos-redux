@@ -1,4 +1,4 @@
-package it.unibo.osmos.redux.mvc.view.components.editor
+package it.unibo.osmos.redux.mvc.view.components.custom
 
 import scalafx.geometry.Insets
 import scalafx.scene.control.ComboBox
