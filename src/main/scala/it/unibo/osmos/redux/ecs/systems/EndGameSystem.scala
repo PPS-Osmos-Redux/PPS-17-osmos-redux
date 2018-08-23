@@ -21,6 +21,7 @@ case class EndGameSystem(levelContext: GameStateHolder, victoryRules: VictoryRul
 
   override def update(): Unit = {
     if (levelContext.gameCurrentState == GamePending) {
+      //TODO: upgrade to support multiple players
       val optionalPlayer: Option[DeathProperty] = entities.find(entity => entity.isInstanceOf[PlayerCellEntity])
 
       optionalPlayer match {
