@@ -25,9 +25,9 @@ object PrologRules {
                    VX is X*V,
                    VY is Y*V,!.
 
-               divide([X,Y],V, [VX,VY]):-
-                   VX is X/V,
-                   VY is Y/V,!.
+               divide([X,Y],V,[VX,VY]):- divide(X,V,VX),divide(Y,V,VY),!.
+
+               divide(X,Y,R) :- ( Y \= 0 -> R is X / Y ; R is X ).
 
                unitVector([PX1,PY1],[PX2,PY2],[VX,VY]) :-
                    subtract([PX1,PY1], [PX2,PY2], [UVX,UVY]),
@@ -38,7 +38,7 @@ object PrologRules {
 
                getNewLength([X,Y], NewLength, [RX, RY]) :-
                    getLength([X,Y],Length),
-                   TEMP is NewLength / Length,
+                   divide(NewLength, Length, TEMP),
                    multiply([X,Y],TEMP,[RX,RY]).
 
                limit([X,Y], MaxLength, [RX,RY]) :-
@@ -54,5 +54,16 @@ object PrologRules {
                    unitVector([NPX,NPY],[SPX,SPY],[UVX,UVY]),
                    multiply([UVX,UVY], 2, [DSX,DSY]),
                    steer([DSX,DSY], [SSX,SSY], [RX,RY]).
+
+               filter([_,_,SR], [[]], []):-!.
+               filter([_,_,SR], [[EP,ES,ER,ET]|T], OUTL) :-
+                   filter([_,_,SR], T, RL),
+                   (ET \== 'AntiMatter' ->
+                       ( SR > ER ->
+                           (ER > 4.0 ->
+                               OUTL = [[EP,ES,ER,ET]|RL];
+                               OUTL = RL );
+                           OUTL = RL );
+                   OUTL = RL ).
   """
 }

@@ -23,18 +23,22 @@ object Scala2P {
 
   implicit def sentientEnemyPropertyToTerm(s: SentientEnemyProperty): Term = {
     val position = s.getPositionComponent.point
-    //s.getSpeedComponent.vector.x
-    //s.getAccelerationComponent
+    val speed = s.getSpeedComponent.vector
     val positionToTerm = wrap(separate(position.x, position.y))
-    wrap(separate(positionToTerm, s.getDimensionComponent.radius))
+    val speedToTerm = wrap(separate(speed.x, speed.y))
+    val radiusToTerm = s.getDimensionComponent.radius
+    val typeToTerm = s.getTypeComponent.typeEntity
+    //s.getAccelerationComponent
+    wrap(separate(separate(positionToTerm, speedToTerm),separate(radiusToTerm, typeToTerm)))
   }
 
   implicit def sentientPropertyToTerm(s: SentientProperty): Term = {
     val position = s.getPositionComponent.point
-    //s.getSpeedComponent.vector.x
-    //s.getAccelerationComponent
+    val speed = s.getSpeedComponent.vector
     val positionToTerm = wrap(separate(position.x, position.y))
-    wrap(separate(positionToTerm, s.getDimensionComponent.radius))
+    val speedToTerm = wrap(separate(speed.x, speed.y))
+    val radiusToTerm = s.getDimensionComponent.radius
+    wrap(separate(separate(positionToTerm, speedToTerm),radiusToTerm))
   }
 
   def mkPrologEngine(theory: Theory): Term => Stream[SolveInfo] = {
