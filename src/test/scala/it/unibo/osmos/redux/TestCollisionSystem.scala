@@ -75,7 +75,7 @@ class TestCollisionSystem extends FunSuite {
     entity1.getPositionComponent.point_(Point(60, 80))
     entity1.getCollidableComponent.setCollidable(true)
     entity2.getDimensionComponent.radius_(2)
-    entity2.getPositionComponent.point_(Point(66.9, 80))
+    entity2.getPositionComponent.point_(Point(66, 80))
     entity2.getCollidableComponent.setCollidable(true)
 
     val originalDim1 = DimensionComponent(entity1.getDimensionComponent.radius)
@@ -88,8 +88,10 @@ class TestCollisionSystem extends FunSuite {
 
     system.update()
 
-    assert(entity1.getDimensionComponent.radius > originalDim1.radius && entity1.getAccelerationComponent != originalAccel1 &&
-      entity2.getDimensionComponent.radius < originalDim2.radius && entity2.getAccelerationComponent != originalAccel2)
+    assert(entity1.getDimensionComponent.radius == 6)
+    assert(entity1.getPositionComponent.point == Point(59,80))
+    assert(entity2.getDimensionComponent.radius == 1)
+    assert(entity2.getPositionComponent.point == Point(66,80))
   }
 
   test("Collision with AntiMatter entity should reduce both dimension's entity") {
