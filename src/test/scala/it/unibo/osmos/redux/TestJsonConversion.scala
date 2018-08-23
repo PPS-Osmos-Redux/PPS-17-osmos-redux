@@ -37,7 +37,7 @@ class TestJsonConversion extends FunSuite{
   val listShape:List[MapShape] = List(rectangle, circle)
   val levelMap:LevelMap = LevelMap(rectangle, CollisionRules.bouncing)
   //Level
-  val level:Level = Level(levelId = 1,
+  val level:Level = Level("1",
     levelMap,
     listCell,
     VictoryRules.becomeTheBiggest)

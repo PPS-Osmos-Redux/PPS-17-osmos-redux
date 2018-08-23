@@ -1,47 +1,40 @@
 package it.unibo.osmos.redux.mvc.controller
 import it.unibo.osmos.redux.ecs.engine.GameEngine
-import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels
+import it.unibo.osmos.redux.mvc.model.{Level, SinglePlayerLevels}
 import it.unibo.osmos.redux.mvc.view.levels.LevelContext
 
 /**
   * Controller base trait
   */
 trait Controller {
-  def initLevel(levelContext: LevelContext, chosenLevel:Int, isSimulation:Boolean)
+  def initLevel(levelContext: LevelContext, chosenLevel:String, isSimulation:Boolean, isCustomLevel:Boolean)
   def startLevel()
   def stopLevel()
   def pauseLevel()
   def resumeLevel()
-  def getSinglePlayerLevels:List[(Int,Boolean)] = SinglePlayerLevels.levels.toList
+  def getSinglePlayerLevels:List[(String,Boolean)] = SinglePlayerLevels.getLevels
   def getCustomLevels:List[String]
-  def initCustomLevel(levelContext: LevelContext, chosenLevel:String, isSimulation:Boolean)
 }
 
 case class ControllerImpl() extends Controller {
   var engine:Option[GameEngine] = None
 
   override def initLevel(levelContext: LevelContext,
-                          chosenLevel:Int,
-                          isSimulation:Boolean): Unit = {
+                         chosenLevel:String,
+                         isSimulation:Boolean,
+                         isCustomLevel:Boolean): Unit = {
 
-    val loadedLevel = FileManager.loadResource(isSimulation, chosenLevel).get
-    if (isSimulation) loadedLevel.isSimulation = true
-    if(engine.isEmpty) engine = Some(GameEngine())
-    engine.get.init(loadedLevel, levelContext)
-    levelContext.setupLevel(loadedLevel.levelMap.mapShape)
-  }
+    var loadedLevel:Option[Level] = None
+    if (isCustomLevel) loadedLevel = FileManager.loadCustomLevel(chosenLevel)
+    else loadedLevel = FileManager.loadCampaignLevel(isSimulation, chosenLevel)
 
-  override def initCustomLevel(levelContext: LevelContext,
-                               chosenLevel:String,
-                               isSimulation:Boolean): Unit = {
-    val loadedLevel = FileManager.loadCustomLevel(chosenLevel)
     if(loadedLevel.isDefined) {
       if (isSimulation) loadedLevel.get.isSimulation = true
       if(engine.isEmpty) engine = Some(GameEngine())
       engine.get.init(loadedLevel.get, levelContext)
       levelContext.setupLevel(loadedLevel.get.levelMap.mapShape)
     } else {
-      println("File ", chosenLevel, " not found")
+      println("File ", chosenLevel, " not found! is a custom level? ", isCustomLevel)
     }
   }
 

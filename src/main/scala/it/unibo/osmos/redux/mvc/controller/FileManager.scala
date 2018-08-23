@@ -34,12 +34,12 @@ object FileManager {
     *
     * @param isSimulation if i have to load a simulation or a playable levels
     * @param chosenLevel  levels id
-    * @return content of file wrapped into a Try
+    * @return content of file wrapped into a Option
     */
-  def loadResource(isSimulation: Boolean, chosenLevel: Int): Try[Level] =
+  def loadCampaignLevel(isSimulation: Boolean, chosenLevel: String): Option[Level] =
     Try(textToLevel(Source.fromInputStream(
       getClass.getResourceAsStream(levelStartPath + chosenLevel + jsonExtension)
-    ).mkString).get)
+    ).mkString).get).toOption
 
   /**
     * Save a level on file
