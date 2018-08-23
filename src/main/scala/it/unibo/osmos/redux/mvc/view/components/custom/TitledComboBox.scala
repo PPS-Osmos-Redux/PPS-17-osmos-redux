@@ -9,9 +9,13 @@ import scalafx.scene.control.ComboBox
   * @param handler the handler called when an item gets selected
   * @tparam A the items type
   */
-class TitledComboBox[A](override val title: String, val items: Seq[A], val handler: A => Unit) extends TitledNode[ComboBox[A]](title, vertical = true) {
+class TitledComboBox[A](override val title: String, val items: Seq[A], val handler: A => Unit, val vertical: Boolean = true) extends TitledNode[ComboBox[A]](title, vertical) {
 
-  override def node: ComboBox[A] = new ComboBox[A](items)
-  node.onAction = _ => handler.apply(node.value.apply())
-  node.selectionModel.value.selectFirst()
+  override def node: ComboBox[A] = new ComboBox[A](items) {
+
+    selectionModel.value.selectFirst()
+    onAction = e => handler.apply(selectionModel.value.getSelectedItem)
+
+  }
+
 }
