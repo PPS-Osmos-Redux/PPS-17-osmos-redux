@@ -3,12 +3,8 @@ package it.unibo.osmos.redux.mvc.controller
 import java.io.{File, PrintWriter}
 import java.nio.file.{FileSystem, FileSystems, Files, Path}
 
-import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities._
-import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
-import it.unibo.osmos.redux.mvc.model.UserProgress.UserStat
+import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.UserStat
 import it.unibo.osmos.redux.mvc.model._
-import it.unibo.osmos.redux.utils.Point
 import spray.json._
 
 import scala.io.{BufferedSource, Source}
@@ -76,7 +72,7 @@ object FileManager {
   }
 
   def loadUserProgress(): Option[UserStat] = {
-    import it.unibo.osmos.redux.mvc.model.JsonProtocols.userProgressFormatter
+    import it.unibo.osmos.redux.mvc.model.JsonProtocols._
     loadFile(userProgressDirectory + userProgressFileName + jsonExtension) match {
       case Some(text) => Option(text.parseJson.convertTo[UserStat])
       case _ => None

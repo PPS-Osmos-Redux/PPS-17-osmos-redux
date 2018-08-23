@@ -2,14 +2,14 @@ package it.unibo.osmos.redux.mvc.controller
 import it.unibo.osmos.redux.ecs.engine.GameEngine
 import it.unibo.osmos.redux.mvc.model.{Level, SinglePlayerLevels}
 import it.unibo.osmos.redux.mvc.view.events._
-import it.unibo.osmos.redux.mvc.view.levels.LevelContext
+import it.unibo.osmos.redux.mvc.view.levels.{GameStateHolder, LevelContext}
 
 trait Observable {
   def subscribe(observer:Observer)
 }
 
 trait Observer {
-  def notify(event: GameStateEventWrapper, levelContext: LevelContext)
+  def notify(event: GameStateEventWrapper, levelContext: GameStateHolder)
 }
 
 /**
@@ -21,6 +21,7 @@ trait Controller {
   def stopLevel()
   def pauseLevel()
   def resumeLevel()
+  def saveNewCustomLevel(customLevel:Level):Boolean
   def getSinglePlayerLevels:List[(String,Boolean)] = SinglePlayerLevels.getLevels
   def getCustomLevels:List[String] = FileManager.customLevelsFilesName
 }
@@ -55,8 +56,14 @@ case class ControllerImpl() extends Controller with Observer {
 
   override def resumeLevel(): Unit = if (engine.isDefined) engine.get.resume()
 
-  override def notify(event: GameStateEventWrapper, levelContext: LevelContext): Unit = {
-    if(event.equals(GameWon)) SinglePlayerLevels.unlockNextLevel()
+  override def notify(event: GameStateEventWrapper, levelContext: GameStateHolder): Unit = {
+    if(event.equals(GameWon)) {
+      SinglePlayerLevels.unlockNextLevel()
+      FileManager.saveUserProgress(SinglePlayerLevels.toUserProgression)
+    }
     levelContext.notify(event)
   }
+
+  override def saveNewCustomLevel(customLevel: Level): Boolean =
+    FileManager.saveLevel(customLevel, customLevel.levelId).isDefined
 }
