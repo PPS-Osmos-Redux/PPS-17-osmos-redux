@@ -122,6 +122,8 @@ trait Vector {
 object Vector {
   def apply(x: Double, y: Double): Vector = VectorImpl(x, y)
 
+  def zero(): Vector = VectorImpl(0,0)
+
   private case class VectorImpl(var _x: Double, var _y: Double) extends Vector {
 
     override def x: Double = _x
