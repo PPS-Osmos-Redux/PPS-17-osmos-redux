@@ -61,19 +61,22 @@ case class CollisionSystem() extends AbstractSystem[CollidableProperty] {
     * @param overlap The overlap amount
     */
   private def exchangeMass(bigEntity: CollidableProperty, smallEntity: CollidableProperty, overlap: Double): Unit = {
-    //decrease small entity radius by the overlap amount
-    smallEntity.getDimensionComponent.radius_(smallEntity.getDimensionComponent.radius - overlap)
-
-    val exchangedRadiusValue = smallEntity.getDimensionComponent.radius * massExchangeRate
     val bigRadius = bigEntity.getDimensionComponent.radius
     val tinyRadius = smallEntity.getDimensionComponent.radius
 
-    //apply exchange between the two entities
-    smallEntity.getDimensionComponent.radius_(tinyRadius - exchangedRadiusValue)
-
     (bigEntity.getTypeComponent.typeEntity, smallEntity.getTypeComponent.typeEntity) match {
-      case (EntityType.AntiMatter, _) | (_, EntityType.AntiMatter) => bigEntity.getDimensionComponent.radius_(bigRadius - exchangedRadiusValue)
-      case _ => bigEntity.getDimensionComponent.radius_(bigRadius + exchangedRadiusValue)
+      case (EntityType.AntiMatter, _) | (_, EntityType.AntiMatter) => {
+        bigEntity.getDimensionComponent.radius_(bigRadius - (overlap/2))
+        smallEntity.getDimensionComponent.radius_(tinyRadius - (overlap/2))
+      }
+      case _ => {
+        smallEntity.getDimensionComponent.radius_(tinyRadius - overlap)
+        bigEntity.getDimensionComponent.radius_(bigRadius + overlap)
+        //move the big entity
+        val bigEntityPosition = bigEntity.getPositionComponent
+        val unitVector = MathUtils.unitVector(bigEntityPosition.point, smallEntity.getPositionComponent.point)
+        bigEntityPosition.point_(bigEntityPosition.point add (unitVector multiply overlap))
+      }
     }
   }
 
