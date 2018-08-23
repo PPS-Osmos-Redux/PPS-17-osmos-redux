@@ -12,6 +12,8 @@ trait AccelerationComponent extends VectorComponent {
 object AccelerationComponent {
   def apply(accelerationX: Double, accelerationY: Double): AccelerationComponent = AccelerationComponentImpl(Vector(accelerationX, accelerationY))
 
+  def apply(acceleration: Vector): AccelerationComponent = AccelerationComponentImpl(acceleration)
+
   private case class AccelerationComponentImpl(var _speedVector: Vector) extends AccelerationComponent {
 
     override def vector: Vector = _speedVector
