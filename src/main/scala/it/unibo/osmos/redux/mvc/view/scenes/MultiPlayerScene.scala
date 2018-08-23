@@ -1,13 +1,15 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.mvc.view.components.custom.{TitledComboBox, TitledTextField}
+import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import scalafx.beans.property.{BooleanProperty, StringProperty}
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.Button
 import scalafx.scene.layout.{BorderPane, HBox, VBox}
 import scalafx.stage.Stage
 
-class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlayerSceneListener, val upperSceneListener: UpperMultiPlayerSceneListener) extends BaseScene(parentStage) {
+class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlayerSceneListener, val upperSceneListener: UpperMultiPlayerSceneListener) extends BaseScene(parentStage)
+ with MultiPlayerLobbySceneListener {
 
   private val username: StringProperty = StringProperty("")
   private val usernameTextField = new TitledTextField("Username: ", username)
@@ -28,8 +30,20 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
   private val goBack = new Button("Go back") {
     onAction = _ => upperSceneListener.onMultiPlayerSceneBackClick()
   }
+
+  /**
+    * Result parsing function.
+    * @return a function which will send the user to the MultiPlayerLobbyScene if the result is true, showing an error otherwise
+    */
+  private def onLobbyEnterResult: (User, Boolean) => Unit = (user, result) => if (result) parentStage.scene = new MultiPlayerLobbyScene(parentStage, MultiPlayerScene.this, mode.value)
+
   private val goToLobby = new Button("Go to lobby") {
-    onAction = _ => if (mode.value) listener.onLobbyClickAsServer(username.value, serverIp.value, serverPort.value) else listener.onLobbyClickAsClient(username.value)
+
+    onAction = _ => if (mode.value){
+      listener.onLobbyClick(User(username.value, serverIp.value, serverPort.value, isServer = true), onLobbyEnterResult)
+    } else{
+      listener.onLobbyClick(User(username.value, isServer = false), onLobbyEnterResult)
+    }
   }
 
   private val container: VBox = new VBox(5.0) {
@@ -76,12 +90,9 @@ trait MultiPlayerSceneListener {
 
   /**
     * Called when the user wants to go to the lobby as a server
+    * @param user the user requesting to enter the lobby
+    * @param result the callback
     */
-  def onLobbyClickAsServer(username: String, ip: String, port: String)
-
-  /**
-    * Called when the user wants to go to the lobby as a client
-    */
-  def onLobbyClickAsClient(username: String)
+  def onLobbyClick(user: User, result: (User, Boolean) => Unit)
 
 }

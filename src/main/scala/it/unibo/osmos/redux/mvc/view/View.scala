@@ -1,6 +1,7 @@
 package it.unibo.osmos.redux.mvc.view
 
 import it.unibo.osmos.redux.mvc.controller.Controller
+import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.levels.{LevelContext, LevelContextType}
 import it.unibo.osmos.redux.mvc.view.stages.{OsmosReduxPrimaryStage, PrimaryStageListener}
 import scalafx.application.JFXApp
@@ -61,9 +62,8 @@ object View {
 
     override def onStopLevel(): Unit = checkController(() => controller.get.stopLevel())
 
-    override def onLobbyClickAsServer(username: String, ip: String, port: String): Unit = ???
+    override def onLobbyClick(user: User, result: (User, Boolean) => Unit): Unit = ???
 
-    override def onLobbyClickAsClient(username: String): Unit = ???
   }
 
 }

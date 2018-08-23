@@ -1,11 +1,10 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
-import scalafx.beans.property.StringProperty
+import it.unibo.osmos.redux.mvc.view.components.multiplayer.{User, UserWithProperties}
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Pos}
-import scalafx.scene.control.Button
 import scalafx.scene.control.TableColumn._
-import scalafx.scene.control.{TableColumn, TableView}
+import scalafx.scene.control.{Button, TableColumn, TableView}
 import scalafx.scene.layout.{BorderPane, HBox, VBox}
 import scalafx.stage.Stage
 
@@ -13,44 +12,27 @@ import scalafx.stage.Stage
   * Lobby showing other clients or servers playing in multiplayer
   * @param parentStage the parent stage
   * @param listener the MultiPlayerLobbySceneListener
-  * @param isServer true if the user registered as a server, false otherwise
+  * @param user the user who requested to enter the lobby
   */
-class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: MultiPlayerLobbySceneListener, val isServer: Boolean) extends BaseScene(parentStage) {
+class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: MultiPlayerLobbySceneListener, val user: User) extends BaseScene(parentStage) {
 
-  /**
-    * User class
-    * @param username the username
-    * @param ip the ip
-    * @param port the port
-    */
-  case class User(username: StringProperty, ip: StringProperty, port: StringProperty)
-
-  /**
-    * Implicit definition of a User with String arguments
-    * @param username the username String
-    * @param ip the ip String
-    * @param port the port String
-    * @return the User with the requeste StringProperties
-    */
-  implicit def User(username: String, ip: String, port: String): User = User(StringProperty(username), StringProperty(ip), StringProperty(port))
-
-  private val userList = ObservableBuffer[User](
-    User("Marco", "0.0.0.0", "0000"),
-    User("Davide", "0.0.0.1", "0001"),
-    User("Placu", "0.0.0.2", "0002"),
-    User("Turi", "0.0.0.3", "0003"),
-    User("Proc", "0.0.0.4", "0004"),
+  private val userList = ObservableBuffer[UserWithProperties](
+    User("Marco", "0.0.0.0", "0000", isServer = true).getUserWithProperty,
+    User("Davide", "0.0.0.1", "0001", isServer = false).getUserWithProperty,
+    User("Placu", "0.0.0.2", "0002", isServer = false).getUserWithProperty,
+    User("Turi", "0.0.0.3", "0003", isServer = false).getUserWithProperty,
+    User("Proc", "0.0.0.4", "0004", isServer = false).getUserWithProperty
   )
 
-  val usersTable: TableView[User] = new TableView[User](userList) {
+  val usersTable: TableView[UserWithProperties] = new TableView[UserWithProperties](userList) {
     columns ++= List(
-      new TableColumn[User, String]() {
+      new TableColumn[UserWithProperties, String]() {
         text = "Username"
         cellValueFactory = {_.value.username}
-      }, new TableColumn[User, String]() {
+      }, new TableColumn[UserWithProperties, String]() {
         text = "IP"
         cellValueFactory = {_.value.ip}
-      }, new TableColumn[User, String]() {
+      }, new TableColumn[UserWithProperties, String]() {
         text = "Port"
         cellValueFactory = {_.value.port}
       }
@@ -71,7 +53,7 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     onAction = _ => {}
   }
   private val goToLobby = new Button("Go to lobby") {
-    visible = isServer
+    visible = user.isServer
     onAction = _ => {}
   }
 
