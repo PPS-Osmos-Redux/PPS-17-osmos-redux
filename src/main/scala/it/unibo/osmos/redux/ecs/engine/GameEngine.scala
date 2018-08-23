@@ -6,7 +6,7 @@ import it.unibo.osmos.redux.multiplayer.client.Client
 import it.unibo.osmos.redux.multiplayer.server.Server
 import it.unibo.osmos.redux.mvc.model.Level
 import it.unibo.osmos.redux.mvc.view.events.GamePending
-import it.unibo.osmos.redux.mvc.view.levels.LevelContext
+import it.unibo.osmos.redux.mvc.view.context.LevelContext
 import it.unibo.osmos.redux.utils.InputEventQueue
 
 import scala.collection.mutable.ListBuffer

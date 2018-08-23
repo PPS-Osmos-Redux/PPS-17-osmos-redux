@@ -1,4 +1,4 @@
-package it.unibo.osmos.redux.mvc.view.levels
+package it.unibo.osmos.redux.mvc.view.context
 
 import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.drawables.{DrawableWrapper, EntitiesDrawer}

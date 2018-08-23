@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.mvc.view
 import scala.concurrent.ExecutionContext
 import it.unibo.osmos.redux.mvc.controller.Controller
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
-import it.unibo.osmos.redux.mvc.view.levels.{LevelContext, LevelContextType}
+import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextType}
 import it.unibo.osmos.redux.mvc.view.stages.{OsmosReduxPrimaryStage, PrimaryStageListener}
 import scalafx.application.JFXApp
 

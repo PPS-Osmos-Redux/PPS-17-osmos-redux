@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.ecs.systems
 import it.unibo.osmos.redux.ecs.entities.{DeathProperty, PlayerCellEntity, Property}
 import it.unibo.osmos.redux.mvc.model.VictoryRules
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GamePending, GameWon}
-import it.unibo.osmos.redux.mvc.view.levels.GameStateHolder
+import it.unibo.osmos.redux.mvc.view.context.GameStateHolder
 
 /** System managing the level's ending rules
   *

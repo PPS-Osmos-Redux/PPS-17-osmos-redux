@@ -6,7 +6,7 @@ import it.unibo.osmos.redux.ecs.systems.EndGameSystem
 import it.unibo.osmos.redux.mvc.model.{MapShape, VictoryRules}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GamePending, GameWon}
-import it.unibo.osmos.redux.mvc.view.levels.{LevelContext, LevelContextListener}
+import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextListener}
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.{BeforeAndAfter, FunSuite}
 

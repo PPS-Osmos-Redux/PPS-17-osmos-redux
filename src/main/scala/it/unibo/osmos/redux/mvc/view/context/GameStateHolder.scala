@@ -1,4 +1,4 @@
-package it.unibo.osmos.redux.mvc.view.levels
+package it.unibo.osmos.redux.mvc.view.context
 
 import it.unibo.osmos.redux.mvc.view.events.{EventWrapperObserver, GameStateEventWrapper}
 

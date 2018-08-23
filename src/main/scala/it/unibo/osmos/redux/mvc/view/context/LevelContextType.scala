@@ -1,4 +1,4 @@
-package it.unibo.osmos.redux.mvc.view.levels
+package it.unibo.osmos.redux.mvc.view.context
 
 /**
   * Enumeration representing the type of level the user is playing

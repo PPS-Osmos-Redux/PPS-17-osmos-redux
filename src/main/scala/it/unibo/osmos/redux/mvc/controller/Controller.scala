@@ -4,7 +4,7 @@ import it.unibo.osmos.redux.multiplayer.client.Client
 import it.unibo.osmos.redux.multiplayer.common.{ActorSystemHolder, MultiPlayerMode}
 import it.unibo.osmos.redux.multiplayer.server.Server
 import it.unibo.osmos.redux.mvc.model.CampaignLevels
-import it.unibo.osmos.redux.mvc.view.levels.{LevelContext, LevelContextType}
+import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextType}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Promise
