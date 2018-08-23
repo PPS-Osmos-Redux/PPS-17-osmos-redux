@@ -27,7 +27,7 @@ case class ControllerImpl() extends Controller {
   override def initLevel(levelContext: LevelContext,
                          chosenLevel:Int,
                          levelContextType: LevelContextType.Value): Unit = {
-    val isSimulation: Boolean = levelContext eq LevelContextType.simulation
+    val isSimulation: Boolean = levelContextType eq LevelContextType.simulation
     val loadedLevel = FileManager.loadResource(isSimulation, chosenLevel).get
     if (isSimulation) loadedLevel.isSimulation = true
     if(engine.isEmpty) engine = Some(GameEngine())
