@@ -1,4 +1,4 @@
-package it.unibo.osmos.redux.mvc.view.components
+package it.unibo.osmos.redux.mvc.view.components.level
 
 import scalafx.geometry.Insets
 import scalafx.scene.control.Button

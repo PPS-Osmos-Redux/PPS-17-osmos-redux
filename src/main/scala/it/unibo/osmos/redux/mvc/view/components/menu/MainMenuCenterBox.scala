@@ -1,4 +1,4 @@
-package it.unibo.osmos.redux.mvc.view.components
+package it.unibo.osmos.redux.mvc.view.components.menu
 
 import scalafx.geometry.Pos
 import scalafx.scene.control.Button
@@ -12,16 +12,16 @@ class MainMenuCenterBox(val listener: MainMenuCenterBoxListener) extends VBox(20
   alignment = Pos.Center
 
   /* Play button */
-  val playButton = new Button("Play")
-  /* Multiplayer button */
-  val multiplayerButton = new Button("Multiplayer")
+  val playButton = new Button("Campaign Levels")
+  /* Editor button */
+  val editorButton = new Button("Editor Levels")
   /* Exit button */
   val exitButton = new Button("Exit")
 
-  children = List(playButton, multiplayerButton, exitButton)
+  children = List(playButton, editorButton, exitButton)
 
   playButton.onAction = e => listener.onPlayClick()
-  multiplayerButton.onAction = e => listener.onMultiPlayerClick()
+  editorButton.onAction = e => listener.onEditorClick()
   exitButton.onAction = e => listener.onExitClick()
 }
 
@@ -39,6 +39,11 @@ trait MainMenuCenterBoxListener {
     * Called when the user clicks on the multiplayer button
     */
   def onMultiPlayerClick()
+
+  /**
+    * Called when the user clicks on the editor button
+    */
+  def onEditorClick()
 
   /**
     * Called when the user clicks on the exit button

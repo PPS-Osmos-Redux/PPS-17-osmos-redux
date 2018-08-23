@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
-import it.unibo.osmos.redux.mvc.view.components.{MainMenuBar, MainMenuBarListener, MainMenuCenterBox, MainMenuCenterBoxListener}
+import it.unibo.osmos.redux.mvc.view.components.menu.{MainMenuBar, MainMenuBarListener, MainMenuCenterBox, MainMenuCenterBoxListener}
 import scalafx.scene.layout.BorderPane
 import scalafx.stage.Stage
 
@@ -23,6 +23,8 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
   override def onPlayClick(): Unit = listener.onPlayClick()
 
   override def onMultiPlayerClick(): Unit = listener.onMultiPlayerClick()
+
+  override def onEditorClick(): Unit = listener.onEditorClick()
 
   override def onExitClick(): Unit = {
     System.exit(0)
@@ -47,6 +49,11 @@ trait MainSceneListener {
     * Called when the user clicks on the play button
     */
   def onMultiPlayerClick()
+
+  /**
+    * Called when the user clicks on the editor button
+    */
+  def onEditorClick()
 
 }
 

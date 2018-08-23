@@ -1,4 +1,4 @@
-package it.unibo.osmos.redux.mvc.view.components
+package it.unibo.osmos.redux.mvc.view.components.level
 
 import javafx.event.{ActionEvent, EventHandler}
 import scalafx.geometry.Pos

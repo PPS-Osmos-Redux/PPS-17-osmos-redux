@@ -1,7 +1,8 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.mvc.view.levels.{LevelContext, LevelContextType}
-import it.unibo.osmos.redux.mvc.view.components.{LevelNode, LevelNodeListener, MainMenuBar, MainMenuBarListener}
+import it.unibo.osmos.redux.mvc.view.components.level.{LevelNode, LevelNodeListener}
+import it.unibo.osmos.redux.mvc.view.components.menu.{MainMenuBar, MainMenuBarListener}
 import scalafx.geometry.Pos
 import scalafx.scene.layout.{TilePane, VBox}
 import scalafx.stage.Stage
@@ -12,21 +13,44 @@ import scalafx.stage.Stage
 class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSelectionSceneListener) extends BaseScene(parentStage)
   with MainMenuBarListener with LevelNodeListener with LevelSceneListener {
 
-  val numLevels = 5
+  /**
+    * The upper main menu bar
+    */
+  protected val menuBar = new MainMenuBar(this)
 
-  root = new VBox {
-    children = Seq(new MainMenuBar(LevelSelectionScene.this),
-      new TilePane() {
-        alignmentInParent = Pos.Center
-        alignment = Pos.Center
-        prefColumns = numLevels
-        prefRows = 1
-        minHeight <== parentStage.height
-        //TODO: parse actual available values
-        for (i <- 1 to numLevels) children.add(new LevelNode(LevelSelectionScene.this, i, if (i == 1) true else false))
-      }
-    )
+  /**
+    * The central level container
+    */
+  protected val levelsContainer: TilePane = new TilePane() {
+    alignmentInParent = Pos.Center
+    alignment = Pos.Center
+    prefColumns = numLevels
+    prefRows = 1
+    prefHeight <== parentStage.height
   }
+
+  protected val container: VBox = new VBox {
+    alignment = Pos.Center
+    /* Loading the levels */
+    loadLevels()
+    children = Seq(menuBar, levelsContainer)
+  }
+
+  /* Setting the root container*/
+  root = container
+
+  //TODO: get the proper number of levels
+  /**
+    * The number of levels
+    * @return the number of levels
+    */
+  def numLevels: Int = 5
+
+  //TODO: parse actual available values
+  /**
+    * This method loads the level into the level container, thus letting the player choose them
+    */
+  def loadLevels(): Unit = for (i <- 1 to numLevels) levelsContainer.children.add(new LevelNode(LevelSelectionScene.this, i, i == 1))
 
   override def onFullScreenSettingClick(): Unit = {
     parentStage.fullScreen = !parentStage.fullScreen.get()
@@ -61,7 +85,7 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
 }
 
 /**
-  * Trait which gets notified when a LevelSelectionSceneListener event occurs
+  * Trait which gets notified when a LevelSelectionScene event occurs
   */
 trait LevelSelectionSceneListener extends LevelSceneListener {
 
