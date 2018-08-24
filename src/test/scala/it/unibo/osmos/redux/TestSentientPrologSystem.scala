@@ -24,6 +24,14 @@ class TestSentientPrologSystem extends FunSuite with BeforeAndAfter {
     val scv = VisibleComponent(true)
     val sentientCellEntity = SentientCellEntity(sca, scc, scd, scp, scs, scv)
 
+    val sca2 = AccelerationComponent(0, 0)
+    val scc2 = CollidableComponent(true)
+    val scd2 = DimensionComponent(8)
+    val scp2 = PositionComponent(Point(101, 87))
+    val scs2 = SpeedComponent(0, 0)
+    val scv2 = VisibleComponent(true)
+    val sentientCellEntity2 = SentientCellEntity(sca2, scc2, scd2, scp2, scs2, scv2)
+
     val ca1 = AccelerationComponent(1, 1)
     val cc1 = CollidableComponent(true)
     val cd1 = DimensionComponent(4)
@@ -52,6 +60,7 @@ class TestSentientPrologSystem extends FunSuite with BeforeAndAfter {
     val cellEntity3 = CellEntity(ca3, cc3, cd3, cp3, cs3, cv3, ct3)
 
     EntityManager.add(sentientCellEntity)
+    EntityManager.add(sentientCellEntity2)
     EntityManager.add(cellEntity1)
     EntityManager.add(cellEntity2)
     EntityManager.add(cellEntity3)

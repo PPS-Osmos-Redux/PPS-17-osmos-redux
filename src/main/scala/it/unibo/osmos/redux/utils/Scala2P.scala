@@ -29,9 +29,23 @@ object Scala2P {
     val positionToTerm = wrap(separate(position.x, position.y))
     val speedToTerm = wrap(separate(speed.x, speed.y))
     val radiusToTerm = s.getDimensionComponent.radius
+
     val typeToTerm = "'" + s.getTypeComponent.typeEntity + "'"
-    //s.getAccelerationComponent
-    wrap(separate(separate(positionToTerm, speedToTerm),separate(radiusToTerm, typeToTerm)))
+
+    wrap(separate(separate(positionToTerm, speedToTerm), separate(radiusToTerm, typeToTerm)))
+  }
+
+  implicit def sentientEnemyPropertyListToTerm(sentientEnemies: ListBuffer[SentientEnemyProperty]): Term = {
+    if (sentientEnemies.isEmpty) {
+      wrap("[]")
+    } else {
+      var result = ""
+      sentientEnemies foreach (enemy => {
+        result = separate(result, sentientEnemyPropertyToTerm(enemy))
+      })
+      // substring removes the first ,
+      wrap(result.substring(1))
+    }
   }
 
   implicit def sentientPropertyToTerm(s: SentientProperty): Term = {
@@ -40,26 +54,20 @@ object Scala2P {
     val positionToTerm = wrap(separate(position.x, position.y))
     val speedToTerm = wrap(separate(speed.x, speed.y))
     val radiusToTerm = s.getDimensionComponent.radius
-    wrap(separate(separate(positionToTerm, speedToTerm),radiusToTerm))
+    wrap(separate(separate(positionToTerm, speedToTerm), radiusToTerm))
   }
 
-
-  implicit def sentientEnemiesToTerm(sentientEnemies: ListBuffer[SentientEnemyProperty]): Term = {
-    var result = ""
-    sentientEnemies foreach(enemy => {
-      result = separate(result, sentientEnemyPropertyToTerm(enemy))
-    })
-    // substring removes the first ,
-    wrap(result.substring(1))
-  }
-
-  implicit def sentientCellsToTerm(sentientCells: ListBuffer[SentientProperty]): Term = {
-    var result = ""
-    sentientCells foreach(cell => {
-      result = separate(result, sentientPropertyToTerm(cell))
-    })
-    // substring removes the first ,
-    wrap(result.substring(1))
+  implicit def sentientPropertyListToTerm(sentientEnemies: ListBuffer[SentientProperty]): Term = {
+    if (sentientEnemies.isEmpty) {
+      wrap("[]")
+    } else {
+      var result = ""
+      sentientEnemies foreach (enemy => {
+        result = separate(result, sentientPropertyToTerm(enemy))
+      })
+      // substring removes the first ,
+      wrap(result.substring(1))
+    }
   }
 
   def mkPrologEngine(theory: Theory): Term => Stream[SolveInfo] = {
