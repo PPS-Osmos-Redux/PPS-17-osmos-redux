@@ -6,8 +6,6 @@ import it.unibo.osmos.redux.utils.MathUtils
 
 case class CollisionSystem() extends AbstractSystem[CollidableProperty] {
 
-  //the percentage of mass that an entity can acquire from another during a collision in a tick
-  private val massExchangeRate = 0.02
   //constants that controls how much deceleration is applied to an entity when colliding with another one
   private val decelerationAmount = 0.1
   //constant that define the initial acceleration of a steady entity when a collision occurs
@@ -73,18 +71,16 @@ case class CollisionSystem() extends AbstractSystem[CollidableProperty] {
     val tinyRadius = smallEntity.getDimensionComponent.radius
 
     (bigEntity.getTypeComponent.typeEntity, smallEntity.getTypeComponent.typeEntity) match {
-      case (EntityType.AntiMatter, _) | (_, EntityType.AntiMatter) => {
+      case (EntityType.AntiMatter, _) | (_, EntityType.AntiMatter) =>
         bigEntity.getDimensionComponent.radius_(bigRadius - (overlap/2))
         smallEntity.getDimensionComponent.radius_(tinyRadius - (overlap/2))
-      }
-      case _ => {
+      case _ =>
         smallEntity.getDimensionComponent.radius_(tinyRadius - overlap)
         bigEntity.getDimensionComponent.radius_(bigRadius + overlap)
         //move the big entity
         val bigEntityPosition = bigEntity.getPositionComponent
         val unitVector = MathUtils.unitVector(bigEntityPosition.point, smallEntity.getPositionComponent.point)
         bigEntityPosition.point_(bigEntityPosition.point add (unitVector multiply overlap))
-      }
     }
   }
 
