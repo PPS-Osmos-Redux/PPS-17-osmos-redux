@@ -24,6 +24,9 @@ object CollisionRules extends Enumeration {
   */
 object VictoryRules extends Enumeration {
   val becomeTheBiggest: VictoryRules.Value = Value("Become_the_biggest")
+  val becomeHuge: VictoryRules.Value = Value("Become_huge")
+  val absorbTheRepulsors: VictoryRules.Value = Value("Absorb_the_repulsors")
+  val absorbTheHostileCells: VictoryRules.Value = Value("Absorb_the_hostile_cells")
 }
 
 /**
