@@ -13,13 +13,13 @@
     },
     "position": {
       "point": {
-        "x": 400.0,
-        "y": 700.0
+        "x": 700.0,
+        "y": 300.0
       }
     },
     "cellType": "sentientCell",
     "dimension": {
-      "radius": 10.0
+      "radius": 20.0
     },
     "speed": {
       "speedX": 0,
@@ -86,7 +86,7 @@
         "radius": 19.0
       },
       "speed": {
-        "speedX": -2.0,
+        "speedX": -1.0,
         "speedY": 0.0
       }
     },
@@ -109,7 +109,7 @@
       },
       "position": {
         "point": {
-          "x": 140.0,
+          "x": 120.0,
           "y": 200.0
         }
       },
@@ -155,6 +155,70 @@
       }
     },
     {
+      "acceleration": {
+        "accelerationX": 0.0,
+        "accelerationY": 0.0
+      },
+      "visible": {
+        "visible": true
+      },
+      "collidable": {
+        "collidable": true
+      },
+      "spawner": {
+        "canSpawn": true
+      },
+      "typeEntity": {
+        "componentType": "Matter"
+      },
+      "position": {
+        "point": {
+          "x": 500.0,
+          "y": 660.0
+        }
+      },
+      "cellType": "basicCell",
+      "dimension": {
+        "radius": 20.0
+      },
+      "speed": {
+        "speedX": 0.0,
+        "speedY": 0.0
+      }
+    },
+    {
+      "acceleration": {
+        "accelerationX": 0.0,
+        "accelerationY": 0.0
+      },
+      "visible": {
+        "visible": true
+      },
+      "collidable": {
+        "collidable": true
+      },
+      "spawner": {
+        "canSpawn": true
+      },
+      "typeEntity": {
+        "componentType": "Matter"
+      },
+      "position": {
+        "point": {
+          "x": 500.0,
+          "y": 740.0
+        }
+      },
+      "cellType": "basicCell",
+      "dimension": {
+        "radius": 20.0
+      },
+      "speed": {
+        "speedX": 0.0,
+        "speedY": 0.0
+      }
+    },
+    {
     "acceleration": {
       "accelerationX": 0.0,
       "accelerationY": 0.0
@@ -182,7 +246,7 @@
       "radius": 30.0
     },
     "speed": {
-      "speedX": 0.0,
+      "speedX": 0.5,
       "speedY": 0.0
     }
   }],
