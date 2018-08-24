@@ -1,24 +1,24 @@
 ,,,Size estimated at sprint,,,
 Priority,Item,Initial Size Estimated,1,2,3,4
-1,Design e creazione architettura di base del sistema,44,0,,,
-2,Interfaccia menù principale,6,1,,,
-3,Visualizzazione cellule del livello,13,0,,,
-4,Gestione movimento cellule del livello,11,6,,,
-5,Cellule devono reagire a input utente,8,0,,,
-6,Caricamento definizione livello e cellule da file,8,4,,,
-7,Gestione collisioni tra cellule,10,10,,,
-8,Spawn cellule durante movimento,6,6,,,
-9,Eliminazione cellule quando troppo piccole,2,2,,,
-10,Gestione fine partita,7,7,,,
-11,Gestione gravità,16,16,,,
-12,Design texture livello e cellule,6,6,,,
-13,Schermata selezione livelli,3,3,,,
-14,Definizione progressione giocatore tra livelli,2,2,,,
-15,Modalità Simulazione,2,2,,,
-16,Implementazione Intelligenza Artificiale,40,40,,,
-17,Implementazione Multigiocatore,50,50,,,
-18,Creazione animazioni,4,4,,,
-19,Gestione effetti sonori,6,6,,,
-20,Gestione impostazioni di gioco,8,8,,,
-21,Editor Livelli,12,12,,,
-22,Statistiche di gioco,6,6,,,
+1,Design e creazione architettura di base del sistema,44,0,0,0,0
+2,Interfaccia menù principale,6,1,1,-,-
+3,Visualizzazione cellule del livello,13,0,0,0,0
+4,Gestione movimento cellule del livello,11,6,3,-,-
+5,Cellule devono reagire a input utente,8,0,0,0,0
+6,Caricamento definizione livello e cellule da file,8,4,0,0,0
+7,Gestione collisioni tra cellule,10,10,0,0,0
+8,Spawn cellule durante movimento,6,6,0,0,0
+9,Eliminazione cellule quando troppo piccole,2,2,0,-,-
+10,Gestione fine partita,7,7,3,-,-
+11,Gestione gravità,16,16,0,0,0
+12,Design texture livello e cellule,6,6,2,-,-
+13,Schermata selezione livelli,3,3,1,-,-
+14,Definizione progressione giocatore tra livelli,2,2,1,-,-
+15,Modalità Simulazione,2,2,0,0,0
+16,Implementazione Intelligenza Artificiale,40,40,40,-,-
+17,Implementazione Multigiocatore,50,50,50,-,-
+18,Creazione animazioni,4,4,2,-,-
+19,Gestione effetti sonori,6,6,6,-,-
+20,Gestione impostazioni di gioco,8,8,8,-,-
+21,Editor Livelli,12,12,12,-,-
+22,Statistiche di gioco,6,6,6,-,-

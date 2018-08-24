@@ -10,7 +10,7 @@ import org.scalatest.FunSuite
   * Spy class to capture entities number
   */
 case class SystemSpy() extends AbstractSystem[DeathProperty] {
-  override def getGroupProperty: Class[_ <: Property] = classOf[DeathProperty]
+  override def getGroupProperty: Class[DeathProperty] = classOf[DeathProperty]
   override def update(): Unit = ???
   def entitiesNumber: Int = entities.size
 }

@@ -1,6 +1,7 @@
 package it.unibo.osmos.redux.ecs.systems
 
-import it.unibo.osmos.redux.ecs.entities.{CollidableProperty, Property}
+import it.unibo.osmos.redux.ecs.components.EntityType
+import it.unibo.osmos.redux.ecs.entities.CollidableProperty
 import it.unibo.osmos.redux.utils.MathUtils
 
 case class CollisionSystem() extends AbstractSystem[CollidableProperty] {
@@ -12,7 +13,7 @@ case class CollisionSystem() extends AbstractSystem[CollidableProperty] {
   //constant that define the initial acceleration of a steady entity when a collision occurs
   private val initialAcceleration = 0.001
 
-  override def getGroupProperty: Class[_ <: Property] = classOf[CollidableProperty]
+  override def getGroupProperty: Class[CollidableProperty] = classOf[CollidableProperty]
 
   override def update(): Unit = {
     for {
@@ -68,9 +69,14 @@ case class CollisionSystem() extends AbstractSystem[CollidableProperty] {
     val tinyRadius = smallEntity.getDimensionComponent.radius
 
     //apply exchange between the two entities
-    bigEntity.getDimensionComponent.radius_(bigRadius + exchangedRadiusValue)
     smallEntity.getDimensionComponent.radius_(tinyRadius - exchangedRadiusValue)
+
+    (bigEntity.getTypeComponent.typeEntity, smallEntity.getTypeComponent.typeEntity) match {
+      case (EntityType.AntiMatter, _) | (_, EntityType.AntiMatter) => bigEntity.getDimensionComponent.radius_(bigRadius - exchangedRadiusValue)
+      case _ => bigEntity.getDimensionComponent.radius_(bigRadius + exchangedRadiusValue)
+    }
   }
+
 
   /**
     * Applies deceleration to the input entity.

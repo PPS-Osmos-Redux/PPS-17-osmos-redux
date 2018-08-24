@@ -14,7 +14,7 @@ case class MovementSystem(levelInfo: Level) extends AbstractSystem[MovableProper
   }
   private val collisionRule = levelInfo.levelMap.collisionRule
 
-  override def getGroupProperty: Class[_ <: Property] = classOf[MovableProperty]
+  override def getGroupProperty: Class[MovableProperty] = classOf[MovableProperty]
 
   override def update(): Unit = {
     entities foreach (entity => {
@@ -37,7 +37,6 @@ case class MovementSystem(levelInfo: Level) extends AbstractSystem[MovableProper
     val positionComponent = entity.getPositionComponent
     val position = positionComponent.point
     val speedVector = entity.getSpeedComponent.vector
-    val newPosition = position.add(speedVector)
-    positionComponent.point_(Point(newPosition.x, newPosition.y))
+    positionComponent.point_(position.add(speedVector))
   }
 }

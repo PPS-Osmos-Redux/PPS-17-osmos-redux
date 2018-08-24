@@ -9,9 +9,11 @@ import org.scalatest.FunSuite
 class TestCollisionSystem extends FunSuite {
 
   val entity1 = CellEntity(AccelerationComponent(0,0), CollidableComponent(true), DimensionComponent(5),
-    PositionComponent(Point(20, 30)), SpeedComponent(0, 0), VisibleComponent(true), TypeComponent(EntityType.Material))
+    PositionComponent(Point(20, 30)), SpeedComponent(0, 0), VisibleComponent(true), TypeComponent(EntityType.Matter))
   val entity2 = CellEntity(AccelerationComponent(0,0), CollidableComponent(true), DimensionComponent(2),
-    PositionComponent(Point(60, 80)), SpeedComponent(0, 0), VisibleComponent(true), TypeComponent(EntityType.Material))
+    PositionComponent(Point(60, 80)), SpeedComponent(0, 0), VisibleComponent(true), TypeComponent(EntityType.Matter))
+  val antiMatterEntity = CellEntity(AccelerationComponent(0,0), CollidableComponent(true), DimensionComponent(2),
+    PositionComponent(Point(65, 81)), SpeedComponent(0, 0), VisibleComponent(true), TypeComponent(EntityType.AntiMatter))
 
   test("CollisionSystem should not collide the entity with herself") {
     val system = CollisionSystem()
@@ -86,7 +88,28 @@ class TestCollisionSystem extends FunSuite {
 
     system.update()
 
-    assert(entity1.getDimensionComponent != originalDim1 && entity1.getAccelerationComponent != originalAccel1 &&
-      entity2.getDimensionComponent != originalDim2 && entity2.getAccelerationComponent != originalAccel2)
+    assert(entity1.getDimensionComponent.radius > originalDim1.radius && entity1.getAccelerationComponent != originalAccel1 &&
+      entity2.getDimensionComponent.radius < originalDim2.radius && entity2.getAccelerationComponent != originalAccel2)
+  }
+
+  test("Collision with AntiMatter entity should reduce both dimension's entity") {
+    val system = CollisionSystem()
+
+    entity1.getDimensionComponent.radius_(5)
+    entity1.getPositionComponent.point_(Point(60, 80))
+    entity1.getCollidableComponent.setCollidable(true)
+
+    val originalDim1 = DimensionComponent(entity1.getDimensionComponent.radius)
+    val originalAccel1 = AccelerationComponent(entity1.getAccelerationComponent.vector.x, entity1.getAccelerationComponent.vector.y)
+    val originalDim2 = DimensionComponent(antiMatterEntity.getDimensionComponent.radius)
+    val originalAccel2 = AccelerationComponent(antiMatterEntity.getAccelerationComponent.vector.x, antiMatterEntity.getAccelerationComponent.vector.y)
+
+    EntityManager.add(entity1)
+    EntityManager.add(antiMatterEntity)
+
+    system.update()
+
+    assert(entity1.getDimensionComponent.radius < originalDim1.radius && entity1.getAccelerationComponent != originalAccel1 &&
+      antiMatterEntity.getDimensionComponent.radius < originalDim2.radius && antiMatterEntity.getAccelerationComponent != originalAccel2)
   }
 }
