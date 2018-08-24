@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.mvc.model
 import scala.collection.mutable
 
 object SinglePlayerLevels {
-  private val levels:mutable.ArraySeq[(String,Boolean)] = mutable.ArraySeq("1" -> true, "2" -> false, "3" -> false, "4" -> false)
+  private val levels:mutable.ArraySeq[(String,Boolean)] = mutable.ArraySeq("1" -> true, "2" -> false, "3" -> false, "4" -> false, "5" -> false)
   def getLevels:List[(String,Boolean)] = levels.clone.toList
 
   /**

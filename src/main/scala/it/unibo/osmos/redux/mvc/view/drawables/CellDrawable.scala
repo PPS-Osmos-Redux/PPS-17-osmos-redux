@@ -16,9 +16,8 @@ class CellDrawable(override val image: Image, override val graphicsContext: Grap
     * @param color the color of the circle, currently unused
     */
   override def draw(dw: DrawableWrapper, color: Color): Unit = {
-    graphicsContext.fill = color
-    graphicsContext.stroke = Color.Black
-    graphicsContext.lineWidth = 1
+    graphicsContext.stroke = color
+    graphicsContext.lineWidth = 2
     graphicsContext.fillOval(dw.center.x - dw.radius, dw.center.y - dw.radius, dw.radius * 2, dw.radius * 2)
     graphicsContext.strokeOval(dw.center.x - dw.radius, dw.center.y - dw.radius, dw.radius * 2, dw.radius * 2)
     graphicsContext.drawImage(image, dw.center.x - dw.radius, dw.center.y - dw.radius, dw.radius * 2, dw.radius * 2)
