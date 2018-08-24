@@ -22,14 +22,15 @@ class TestJsonConversion extends FunSuite{
   val p = PositionComponent(Point(0, 0))
   val s = SpeedComponent(4, 0)
   val v = VisibleComponent(true)
-  val et = TypeComponent(EntityType.Material)
+  val et = TypeComponent(EntityType.Matter)
   val sp = SpawnerComponent(true)
   val sw = SpecificWeightComponent(1)
   //Entities
   val ce = CellEntity(a, c, d, p, s, v, et)
   val pce = PlayerCellEntity(a, c, d, p, s, v, et, sp)
   val gc = GravityCellEntity(a, c, d, p, s, v, et, sw)
-  val listCell:List[CellEntity] = List(ce, pce, gc)
+  val sc = SentientCellEntity(a, c, d, p, s, v)
+  val listCell:List[CellEntity] = List(ce, pce, gc, sc)
   //LevelMap
   val rectangle:MapShape = Rectangle((50,50),10.1,5.6)
   val circle:MapShape = Circle((50.1,50.2), 5.7)
@@ -64,19 +65,39 @@ class TestJsonConversion extends FunSuite{
     assert(jsSpecificWeight.convertTo[SpecificWeightComponent].equals(sw))
   }
 
-  test("Cells conversion") {
+  test("Cell Entity conversion") {
     val jsCellEntity = ce.toJson
     assert(jsCellEntity.convertTo[CellEntity].equals(ce))
+  }
+
+  test("Player Cell Entity conversion"){
     val jsPlayerCellEntity = pce.toJson
     assert(jsPlayerCellEntity.convertTo[PlayerCellEntity].equals(pce))
+  }
+
+  test("Gravity Cell Entity conversion"){
     val jsGravityCell = gc.toJson
     assert(jsGravityCell.convertTo[GravityCellEntity].equals(gc))
+  }
+
+  test("Sentient Cell Entity conversion") {
+    val jsSentientCell = sc.toJson
+    assert(jsSentientCell.convertTo[SentientCellEntity].equals(sc))
+  }
+
+  test("List of CellEntity conversion") {
     val jsListCellEntities = listCell.toJson
     val convertedCellList = jsListCellEntities.convertTo[List[CellEntity]]
+    //Check covnerted list size
     assert(convertedCellList.size == listCell.size)
+    //Check if the second cell is a player cell
     assert(convertedCellList(1).getClass.equals(pce.getClass))
     assert(!convertedCellList.head.getClass.equals(pce.getClass))
+    //Check if the third cell is a gravity cell
     assert(convertedCellList(2).getClass.equals(gc.getClass))
+    assert(!convertedCellList.head.getClass.equals(gc.getClass))
+    //Check if the fourth cell is a sentient cell
+    assert(convertedCellList(3).getClass.equals(sc.getClass))
     assert(!convertedCellList.head.getClass.equals(gc.getClass))
   }
 

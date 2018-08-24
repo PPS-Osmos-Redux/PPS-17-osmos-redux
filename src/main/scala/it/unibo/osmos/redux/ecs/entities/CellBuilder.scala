@@ -11,7 +11,7 @@ case class CellBuilder() {
   private var position = PositionComponent(Point(0,0))
   private var speed = SpeedComponent(0, 0)
   private var visible = VisibleComponent(true)
-  private var entityType = TypeComponent(EntityType.Material)
+  private var entityType = TypeComponent(EntityType.Matter)
 
   def collidable(collidable: Boolean): CellBuilder = {
     this.collidable = CollidableComponent(collidable)
