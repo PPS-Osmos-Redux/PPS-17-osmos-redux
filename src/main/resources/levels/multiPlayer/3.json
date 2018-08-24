@@ -90,7 +90,7 @@
       "speedY": 0.0
     }
   }],
-  "levelId": 1,
+  "levelId": "3",
   "isSimulation": false,
   "victoryRule": {
     "victoryRule": "Become_the_biggest"
