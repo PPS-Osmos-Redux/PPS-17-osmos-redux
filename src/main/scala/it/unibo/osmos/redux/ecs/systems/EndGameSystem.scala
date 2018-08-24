@@ -1,5 +1,6 @@
 package it.unibo.osmos.redux.ecs.systems
 
+import it.unibo.osmos.redux.ecs.components.EntityType
 import it.unibo.osmos.redux.ecs.entities.{DeathProperty, PlayerCellEntity, Property}
 import it.unibo.osmos.redux.mvc.model.VictoryRules
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GamePending, GameWon}
@@ -14,6 +15,9 @@ case class EndGameSystem(levelContext: GameStateHolder, victoryRules: VictoryRul
 
   private val victoryCondition = victoryRules match {
     case VictoryRules.becomeTheBiggest => BecomeTheBiggestVictoryCondition()
+    case VictoryRules.becomeHuge => BecomeHugeVictoryCondition()
+    case VictoryRules.absorbTheRepulsors => AbsorbCellsWithTypeVictoryCondition(EntityType.Repulse)
+    case VictoryRules.absorbTheHostileCells => AbsorbCellsWithTypeVictoryCondition(EntityType.Sentient)
     case _ => throw new NotImplementedError()
   }
 
