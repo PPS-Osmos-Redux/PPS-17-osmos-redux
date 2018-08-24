@@ -6,7 +6,9 @@ object PrologRules {
     """
                pow(X, 0, 1):-!.
                pow(X, 1, X):-!.
-               pow(X, N, R) :- N1 is N-1, pow(X, N1, RT), R is X*RT.
+               pow(X, N, R) :-
+                    N1 is N-1,
+                    pow(X, N1, RT), R is X*RT.
 
                getLength([X,Y], L):-
                    pow(X,2,PX),
@@ -88,12 +90,19 @@ object PrologRules {
                    append(LOs,[X|BOs],Ys).
 
                partition([],_,[],[]).
-               partition([[X,SCOREX]|Xs],[Y,SCOREY],[X|Ls],Bs):- SCOREX>SCOREY, !, partition(Xs,Y,Ls,Bs).
-               partition([X|Xs],[Y,SCOREY],Ls,[X|Bs]):- partition(Xs,Y,Ls,Bs).
+               partition([[X,SCOREX]|Xs],[Y,SCOREY],[[X,SCOREX]|Ls],Bs):- SCOREX>SCOREY, !, partition(Xs,[Y,SCOREY],Ls,Bs).
+               partition([X|Xs],Y,Ls,[X|Bs]):- partition(Xs,Y,Ls,Bs).
 
                findTarget(S,[H|T],RL) :-
                    filter(S, [H|T], FL),
                    associateScoreToEnemies(S, FL, EWS),
                    quicksort(EWS, RL).
+
+               sentientCellBehaviour(S,L,[RX,RY]) :-
+                   findTarget(S,L,RL),
+                   [SP,SS,_] = S,
+                   % considers the highest score result
+                   [[[EP,ES,_,_],_]|K] = RL,
+                   followTarget([SP,SS],[EP,ES],[RX,RY]).
   """
 }
