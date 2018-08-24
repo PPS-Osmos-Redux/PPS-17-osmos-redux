@@ -89,9 +89,9 @@ class TestCollisionSystem extends FunSuite {
     system.update()
 
     assert(entity1.getDimensionComponent.radius == 6)
-    assert(entity1.getPositionComponent.point == Point(59,80))
+    assert(entity1.getPositionComponent.point == Point(59.5,80))
     assert(entity2.getDimensionComponent.radius == 1)
-    assert(entity2.getPositionComponent.point == Point(66,80))
+    assert(entity2.getPositionComponent.point == Point(66.5,80))
   }
 
   test("Collision with AntiMatter entity should reduce both dimension's entity") {

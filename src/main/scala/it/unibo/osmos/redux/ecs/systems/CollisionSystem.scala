@@ -79,8 +79,12 @@ case class CollisionSystem() extends AbstractSystem[CollidableProperty] {
         bigEntity.getDimensionComponent.radius_(bigRadius + overlap)
         //move the big entity
         val bigEntityPosition = bigEntity.getPositionComponent
-        val unitVector = MathUtils.unitVector(bigEntityPosition.point, smallEntity.getPositionComponent.point)
-        bigEntityPosition.point_(bigEntityPosition.point add (unitVector multiply overlap))
+        val bigUnitVector = MathUtils.unitVector(bigEntityPosition.point, smallEntity.getPositionComponent.point)
+        bigEntityPosition.point_(bigEntityPosition.point add (bigUnitVector multiply (overlap/2)))
+        //move the small entity
+        val smallEntityPosition = smallEntity.getPositionComponent
+        val smallUnitVector = MathUtils.unitVector(smallEntityPosition.point, bigEntity.getPositionComponent.point)
+        smallEntityPosition.point_(smallEntityPosition.point add (smallUnitVector multiply (overlap/2)))
     }
   }
 
