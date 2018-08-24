@@ -46,7 +46,15 @@ class LevelNode(val listener: LevelNodeListener, val level: Int, val available: 
   }
 
   /* The level image */
-  val imageView: ImageView = new ImageView(ImageLoader.getImage(s"/textures/menu_level_$level.png")) {
+  val imageView: ImageView = new ImageView(ImageLoader.getImage("/textures/" + (level match {
+    case 1 => "cell_green.png"
+    case 2 => "cell_yellow.png"
+    case 3 => "cell_orange.png"
+    case 4 => "cell_red.png"
+    case 5 => "cell_blue.png"
+    case _ => "cell_blue.png"
+  }))) {
+
     margin = Insets(20)
     onMouseEntered = _ => {textField.visible = true; fadeInTransition.play()}
     onMouseExited = _ => {fadeOutTransition.play()}

@@ -62,6 +62,13 @@ trait Vector {
     */
   def multiply(v: Double): Vector = Vector(x * v, y * v)
 
+  /** Vector-scalar division. Leaves this vector unchanged.
+    *
+    * @param v scalar
+    * @return division result as a new instance
+    */
+  def divide(v: Double): Vector = Vector(x / v, y / v)
+
   /** TODO
     *
     * @return
@@ -76,6 +83,19 @@ trait Vector {
   def getNewLength(newLength: Double): Vector = {
     val temp = newLength / getLength
     Vector(x * temp, y * temp)
+  }
+
+  /**
+    * Limit the vector's length
+    * @param maxLength max length of the vector
+    * @return the limited vector
+    */
+  def limit(maxLength: Double): Vector = {
+    if (getLength > maxLength) {
+      getNewLength(maxLength)
+    } else {
+      Vector(x,y)
+    }
   }
 
   /** Vector dot product
@@ -101,6 +121,8 @@ trait Vector {
 
 object Vector {
   def apply(x: Double, y: Double): Vector = VectorImpl(x, y)
+
+  def zero(): Vector = VectorImpl(0,0)
 
   private case class VectorImpl(var _x: Double, var _y: Double) extends Vector {
 
