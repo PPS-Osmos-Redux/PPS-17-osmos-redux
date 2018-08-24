@@ -86,7 +86,7 @@
         "radius": 19.0
       },
       "speed": {
-        "speedX": -1.0,
+        "speedX": -3.0,
         "speedY": 0.0
       }
     },
@@ -246,7 +246,7 @@
       "radius": 30.0
     },
     "speed": {
-      "speedX": 0.5,
+      "speedX": 1.5,
       "speedY": 0.0
     }
   }],
