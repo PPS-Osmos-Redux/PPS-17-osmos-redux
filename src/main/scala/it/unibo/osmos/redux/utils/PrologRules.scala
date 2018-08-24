@@ -104,5 +104,10 @@ object PrologRules {
                    % considers the highest score result
                    [[[EP,ES,_,_],_]|K] = RL,
                    followTarget([SP,SS],[EP,ES],[RX,RY]).
+
+               computeBehaviourOfSentientCells([],_,[]) :- !.
+               computeBehaviourOfSentientCells([H|T],EL,[EA|TEA]) :-
+                   sentientCellBehaviour(H,EL,EA),
+                   computeBehaviourOfSentientCells(T,EL,TEA).
   """
 }

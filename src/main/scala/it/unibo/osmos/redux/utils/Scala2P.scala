@@ -44,10 +44,19 @@ object Scala2P {
   }
 
 
-  def sentientEnemiesToTerm(sentientEnemies: ListBuffer[SentientEnemyProperty]): Term = {
+  implicit def sentientEnemiesToTerm(sentientEnemies: ListBuffer[SentientEnemyProperty]): Term = {
     var result = ""
     sentientEnemies foreach(enemy => {
       result = separate(result, sentientEnemyPropertyToTerm(enemy))
+    })
+    // substring removes the first ,
+    wrap(result.substring(1))
+  }
+
+  implicit def sentientCellsToTerm(sentientCells: ListBuffer[SentientProperty]): Term = {
+    var result = ""
+    sentientCells foreach(cell => {
+      result = separate(result, sentientPropertyToTerm(cell))
     })
     // substring removes the first ,
     wrap(result.substring(1))
