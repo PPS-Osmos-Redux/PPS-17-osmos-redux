@@ -45,16 +45,16 @@
       },
       "position": {
         "point": {
-          "x": 600.0,
+          "x": 400.0,
           "y": 200.0
         }
       },
       "cellType": "basicCell",
       "dimension": {
-        "radius": 25.0
+        "radius": 10.0
       },
       "speed": {
-        "speedX": -1.0,
+        "speedX": -0.5,
         "speedY": 0.0
       }
     },
@@ -77,7 +77,39 @@
       },
       "position": {
         "point": {
-          "x": 130.0,
+          "x": 600.0,
+          "y": 200.0
+        }
+      },
+      "cellType": "basicCell",
+      "dimension": {
+        "radius": 19.0
+      },
+      "speed": {
+        "speedX": -2.0,
+        "speedY": 0.0
+      }
+    },
+    {
+      "acceleration": {
+        "accelerationX": 0.0,
+        "accelerationY": 0.0
+      },
+      "visible": {
+        "visible": true
+      },
+      "collidable": {
+        "collidable": true
+      },
+      "spawner": {
+        "canSpawn": true
+      },
+      "typeEntity": {
+        "componentType": "Matter"
+      },
+      "position": {
+        "point": {
+          "x": 140.0,
           "y": 200.0
         }
       },
