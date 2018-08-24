@@ -86,8 +86,6 @@ case class Level(levelId:Int,
     case circ:Circle => circularMapCheck(circ)
   }
 
-  def circularMapCheck(circle:Circle) = ???
-
   /**
     * Remove all entities who aren't into map boundary
     * @param rectangle map shape
@@ -118,5 +116,81 @@ case class Level(levelId:Int,
         entities = entities.filterNot(entity => entity.equals(ent))
       }
     })
+  }
+
+  def circularMapCheck(circle:Circle): Unit = {
+    entities.foreach(entity => {
+      val d = Math.sqrt(Math.pow(circle.center._1 - entity.getPositionComponent.point.x, 2) + Math.pow(circle.center._2 - entity.getPositionComponent.point.y, 2))
+      val k = d+entity.getDimensionComponent.radius
+      println("--k: ", k)
+      println("k > c.r: ", k > circle.radius)
+      if(k > circle.radius) {
+        entities = entities.filterNot(entity2 => entity2.equals(entity))
+      }
+    })
+  }
+}
+
+object app extends App {
+
+  val level = getLevel
+  level.checkCellPosition()
+  println(level.entities.map(ent => ent.getClass.getName))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  def getLevel:Level = {
+    //Components
+    val a = AccelerationComponent(1, 1)
+    val c = CollidableComponent(true)
+
+
+    val d = DimensionComponent(1)
+
+    val p = PositionComponent(Point(0, 0))
+    val p1 = PositionComponent(Point(-2, -2))
+    val p2= PositionComponent(Point(4,1))
+    val p3 = PositionComponent(Point(-2.1, 2.1))
+
+    val s = SpeedComponent(4, 0)
+    val v = VisibleComponent(true)
+    val et = TypeComponent(EntityType.Matter)
+    val sp = SpawnerComponent(true)
+    val sw = SpecificWeightComponent(1)
+    //Entities
+    val ce = CellEntity(a, c, d, p, s, v, et)
+    val pce = PlayerCellEntity(a, c, d, p1, s, v, et, sp)
+    val gc = GravityCellEntity(a, c, d, p2, s, v, et, sw)
+    val sc = SentientCellEntity(a, c, d, p3, s, v)
+    val listCell:List[CellEntity] = List(ce, pce, gc, sc)
+    //LevelMap
+    val rectangle:MapShape = Rectangle((0,0),10,10)
+    val circle:MapShape = Circle((0,0), 4)
+    val listShape:List[MapShape] = List(rectangle, circle)
+    val levelMap:LevelMap = LevelMap(circle, CollisionRules.bouncing)
+    //Level
+    val level:Level = Level(levelId = 1,
+      levelMap,
+      listCell,
+      VictoryRules.becomeTheBiggest)
+    level
   }
 }
