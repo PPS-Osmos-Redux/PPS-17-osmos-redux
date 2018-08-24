@@ -118,6 +118,7 @@ case class Level(levelId:Int,
     entities = entities.map(ent => (ent, MathUtils.euclideanDistance(ent.getPositionComponent.point,
                                                                       Point(circle.center._1, circle.center._2)) +
                                                                       ent.getDimensionComponent.radius))
-                       .filterNot(tup => tup._2 > circle.radius).map(t => t._1)
+                       .filterNot(tup => tup._2 > circle.radius)
+                       .map(t => t._1)
 
 }
