@@ -6,6 +6,8 @@ import it.unibo.osmos.redux.utils.MathUtils
 
 case class CollisionSystem() extends AbstractSystem[CollidableProperty] {
 
+  //the percentage of mass that an entity can acquire from another during a collision in a tick
+  private val massExchangeRate = 0.1
   //constants that controls how much deceleration is applied to an entity when colliding with another one
   private val decelerationAmount = 0.1
   //constant that define the initial acceleration of a steady entity when a collision occurs
@@ -75,16 +77,15 @@ case class CollisionSystem() extends AbstractSystem[CollidableProperty] {
         bigEntity.getDimensionComponent.radius_(bigRadius - (overlap/2))
         smallEntity.getDimensionComponent.radius_(tinyRadius - (overlap/2))
       case _ =>
-        smallEntity.getDimensionComponent.radius_(tinyRadius - overlap)
-        bigEntity.getDimensionComponent.radius_(bigRadius + overlap)
+        smallEntity.getDimensionComponent.radius_(tinyRadius - overlap*massExchangeRate)
+        bigEntity.getDimensionComponent.radius_(bigRadius + overlap*massExchangeRate)
         //move the big entity
         val bigEntityPosition = bigEntity.getPositionComponent
-        val bigUnitVector = MathUtils.unitVector(bigEntityPosition.point, smallEntity.getPositionComponent.point)
-        bigEntityPosition.point_(bigEntityPosition.point add (bigUnitVector multiply (overlap/2)))
+        val unitVector = MathUtils.unitVector(bigEntityPosition.point, smallEntity.getPositionComponent.point)
+        bigEntityPosition.point_(bigEntityPosition.point add (unitVector multiply (overlap/2)))
         //move the small entity
         val smallEntityPosition = smallEntity.getPositionComponent
-        val smallUnitVector = MathUtils.unitVector(smallEntityPosition.point, bigEntity.getPositionComponent.point)
-        smallEntityPosition.point_(smallEntityPosition.point add (smallUnitVector multiply (overlap/2)))
+        smallEntityPosition.point_(smallEntityPosition.point add (unitVector multiply (-overlap/2)))
     }
   }
 
