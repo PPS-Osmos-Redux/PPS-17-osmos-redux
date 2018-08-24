@@ -13,6 +13,8 @@ import scala.util.Try
 object FileManager {
   val separator: String = "/"
   val levelStartPath: String = separator + "levels" + separator
+  val singlePlayerLevelsPath: String = levelStartPath + separator + "singlePlayer" + separator
+  val multiPlayerLevelsPath: String = levelStartPath + separator + "multiPlayer" + separator
   val jsonExtension = ".json"
 
   val defaultFS: FileSystem = FileSystems.getDefault
@@ -28,14 +30,16 @@ object FileManager {
   /**
     * Reads a file from the resources folder
     *
-    * @param isSimulation if i have to load a simulation or a playable levels
     * @param chosenLevel  levels id
     * @return content of file wrapped into a Option
     */
-  def loadCampaignLevel(isSimulation: Boolean, chosenLevel: String): Option[Level] =
+  def loadResource(chosenLevel: String, isMultiplayer:Boolean = false): Option[Level] = {
+    val levelsPath = if (isMultiplayer) multiPlayerLevelsPath else singlePlayerLevelsPath
     Try(textToLevel(Source.fromInputStream(
-      getClass.getResourceAsStream(levelStartPath + chosenLevel + jsonExtension)
+      getClass.getResourceAsStream(levelsPath + chosenLevel + jsonExtension)
     ).mkString).get).toOption
+  }
+
 
   /**
     * Save a level on file

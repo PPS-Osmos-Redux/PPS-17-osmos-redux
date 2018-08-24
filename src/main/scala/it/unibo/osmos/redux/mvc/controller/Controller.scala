@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.controller
 import it.unibo.osmos.redux.ecs.engine.GameEngine
-import it.unibo.osmos.redux.mvc.model.{Level, SinglePlayerLevels}
+import it.unibo.osmos.redux.mvc.model.{Level, MultiPlayerLevels, SinglePlayerLevels}
 import it.unibo.osmos.redux.mvc.view.events._
 import it.unibo.osmos.redux.mvc.view.levels.{GameStateHolder, LevelContext}
 
@@ -23,6 +23,7 @@ trait Controller {
   def resumeLevel()
   def saveNewCustomLevel(customLevel:Level):Boolean
   def getSinglePlayerLevels:List[(String,Boolean)] = SinglePlayerLevels.getLevels
+  def getMultiPlayerLevels:List[String] = MultiPlayerLevels.getLevels
   def getCustomLevels:List[String] = FileManager.customLevelsFilesName
 }
 
@@ -36,7 +37,7 @@ case class ControllerImpl() extends Controller with Observer {
 
     var loadedLevel:Option[Level] = None
     if (isCustomLevel) loadedLevel = FileManager.loadCustomLevel(chosenLevel)
-    else loadedLevel = FileManager.loadCampaignLevel(isSimulation, chosenLevel)
+    else loadedLevel = FileManager.loadResource(chosenLevel)
 
     if(loadedLevel.isDefined) {
       if (isSimulation) loadedLevel.get.isSimulation = true
