@@ -33,13 +33,12 @@ object FileManager {
     * @param chosenLevel  levels id
     * @return content of file wrapped into a Option
     */
-  def loadResource(chosenLevel: String, isMultiplayer:Boolean = false): Option[Level] = {
-    val levelsPath = if (isMultiplayer) multiPlayerLevelsPath else singlePlayerLevelsPath
+  def loadResource(chosenLevel: String, isMultiPlayer: Boolean = false): Option[Level] = {
+    val levelsPath = if (isMultiPlayer) multiPlayerLevelsPath else singlePlayerLevelsPath
     Try(textToLevel(Source.fromInputStream(
       getClass.getResourceAsStream(levelsPath + chosenLevel + jsonExtension)
     ).mkString).get).toOption
   }
-
 
   /**
     * Save a level on file

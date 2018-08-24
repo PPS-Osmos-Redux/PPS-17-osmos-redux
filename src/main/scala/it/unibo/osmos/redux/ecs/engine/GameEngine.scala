@@ -89,9 +89,9 @@ object GameEngine {
 
   /**
     * The Game engine class implementation.
-    * @param framerate The frame rate of the game.
+    * @param frameRate The frame rate of the game.
     */
-  private case class GameEngineImpl(private val framerate: Int = 30) extends GameEngine {
+  private case class GameEngineImpl(private val frameRate: Int = 30) extends GameEngine {
 
     private var gameLoop: Option[GameLoop] = _
 
@@ -216,7 +216,7 @@ object GameEngine {
       }
     }
 
-    override def getFps: Int = framerate
+    override def getFps: Int = frameRate
 
     /**
       * Initializes the main game systems
