@@ -32,8 +32,8 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
     */
   def followTarget(sentient: SentientProperty, target: SentientEnemyProperty): Unit = {
     val nextPositionTarget = target.getPositionComponent.point.add(target.getSpeedComponent.vector)
-    val desiredVelocity = MathUtils.unitVector(nextPositionTarget, sentient.getPositionComponent.point) multiply MAX_SPEED
-    val steer = desiredVelocity subtract sentient.getSpeedComponent.vector limit MAX_ACCELERATION
+    val unitVectorDesiredVelocity = MathUtils.unitVector(nextPositionTarget, sentient.getPositionComponent.point)
+    val steer = computeSteer(sentient.getSpeedComponent.vector, unitVectorDesiredVelocity)
     applyAcceleration(sentient, steer)
   }
 
@@ -78,13 +78,16 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
     */
   private def runAwayFromEnemies(sentient: SentientProperty, enemies: List[SentientEnemyProperty]): Unit = {
     val desideredSeparation = sentient.getDimensionComponent.radius * COEFFICIENT_DESIDERED_SEPARATION
-    val steer = enemies.map(e => (e, MathUtils.euclideanDistance(sentient.getPositionComponent, e.getPositionComponent)))
-           .filter(p => p._2 < desideredSeparation)
-           .map(m => MathUtils.unitVector(sentient.getPositionComponent.point, m._1.getPositionComponent.point) divide m._2)
-        .foldLeft((Vector.zero(), 1)) ((acc, i) => (acc._1 add ((i subtract acc._1) divide acc._2), acc._2 + 1))._1
-        .normalized() multiply MAX_SPEED subtract sentient.getSpeedComponent.vector limit MAX_ACCELERATION
+    val unitVectorDesiredVelocity = enemies.map(e => (e, MathUtils.euclideanDistance(sentient.getPositionComponent, e.getPositionComponent)))
+          .filter(p => p._2 < desideredSeparation)
+          .map(m => MathUtils.unitVector(sentient.getPositionComponent.point, m._1.getPositionComponent.point) divide m._2)
+          .foldLeft((Vector.zero(), 1)) ((acc, i) => (acc._1 add ((i subtract acc._1) divide acc._2), acc._2 + 1))._1 normalized()
+    val steer = computeSteer(sentient.getSpeedComponent.vector, unitVectorDesiredVelocity)
     applyAcceleration(sentient, steer)
   }
+
+  private def computeSteer(actualVelocity: Vector, desideredVelovity: Vector): Vector =
+    desideredVelovity multiply MAX_SPEED subtract actualVelocity limit MAX_ACCELERATION
 
   private def applyAcceleration(sentient: SentientProperty, acceleration: Vector): Unit = {
     val accelerationSentient = sentient.getAccelerationComponent
