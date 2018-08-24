@@ -17,7 +17,7 @@ abstract class AbstractVictoryCondition[A <: Property] {
     * @param entityList       entities present in this game instant
     * @return the evaluation result
     */
-  protected def check(playerCellEntity: A, entityList: ListBuffer[A]): Boolean
+  def check(playerCellEntity: A, entityList: ListBuffer[A]): Boolean
 }
 
 /** class implementing become the biggest victory condition */

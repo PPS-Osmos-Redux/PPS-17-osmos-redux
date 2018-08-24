@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.ecs.systems
 
 import it.unibo.osmos.redux.ecs.components.EntityType
-import it.unibo.osmos.redux.ecs.entities.{DeathProperty, PlayerCellEntity, Property}
+import it.unibo.osmos.redux.ecs.entities.{DeathProperty, PlayerCellEntity}
 import it.unibo.osmos.redux.mvc.model.VictoryRules
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GamePending, GameWon}
 import it.unibo.osmos.redux.mvc.view.levels.GameStateHolder
@@ -27,10 +27,10 @@ case class EndGameSystem(levelContext: GameStateHolder, victoryRules: VictoryRul
 
   override def update(): Unit = {
     if (levelContext.gameCurrentState == GamePending) {
-      if(entities.isEmpty){
+      if (entities.isEmpty) {
         levelContext.notify(GameLost)
       } else {
-        entities foreach(playerEntity => {
+        entities foreach (playerEntity => {
           if (victoryCondition.check(playerEntity, entitiesSecondType)) {
             levelContext.notify(GameWon)
           }
