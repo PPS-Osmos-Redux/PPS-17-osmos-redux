@@ -32,9 +32,17 @@ case class CollisionSystem() extends AbstractSystem[CollidableProperty] {
     * @return The overlap amount.
     */
   private def computeOverlap(e1: CollidableProperty, e2: CollidableProperty): Double = {
+    val tinyRadius = (e1.getDimensionComponent.radius, e2.getDimensionComponent.radius) match {
+      case (r1, r2) if r1 > r2 => r2
+      case (r1, _) => r1
+    }
     val maxDist = MathUtils.euclideanDistance(e1.getPositionComponent.point, e2.getPositionComponent.point)
     val currDist = e1.getDimensionComponent.radius + e2.getDimensionComponent.radius
-    if (maxDist < currDist) currDist - maxDist else 0
+    currDist - maxDist match {
+      case overlap if overlap <= 0 => 0
+      case overlap if overlap > tinyRadius => tinyRadius
+      case overlap => overlap
+    }
   }
 
   /**
