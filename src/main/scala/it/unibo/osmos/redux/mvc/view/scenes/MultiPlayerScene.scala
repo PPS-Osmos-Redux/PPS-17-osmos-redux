@@ -59,8 +59,10 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
   private def onLobbyEnterResult: (User, LobbyContext, Boolean) => Unit = (user, lobbyContext, result) => {
     Platform.runLater({
       if (result) {
+        /* Creating an abstract listener on the run */
+        val lobbySceneListener: UpperMultiPlayerLobbySceneListener = () => parentStage.scene = MultiPlayerScene.this
         /* If the lobby was successfully created, we link the resulting lobby context and go to the next scene */
-        val multiPlayerLobbyScene = new MultiPlayerLobbyScene(parentStage, listener, () => parentStage.scene = MultiPlayerScene.this, user)
+        val multiPlayerLobbyScene = new MultiPlayerLobbyScene(parentStage, listener, lobbySceneListener, user)
         /* We link the lobby context */
         multiPlayerLobbyScene.lobbyContext_=(lobbyContext)
         /* We go to the next scene */

@@ -11,7 +11,7 @@ import scalafx.stage.Stage
   * This scene lets the players choose which level they want to play
   */
 class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSelectionSceneListener) extends BaseScene(parentStage)
-  with MainMenuBarListener with LevelNodeListener with UpperLevelSceneListener {
+  with MainMenuBarListener with LevelNodeListener {
 
   /**
     * The upper main menu bar
@@ -56,19 +56,19 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
     parentStage.fullScreen = !parentStage.fullScreen.get()
   }
 
-  override def onStopLevel(): Unit = parentStage.scene = this
-
   def onLevelPlayClick(level: Int, simulation: Boolean): Unit = {
-    // Creating a new level scene
-    val levelScene = new LevelScene(parentStage, listener, this)
+    /* Creating a listener on the run*/
+    val upperLevelSceneListener: UpperLevelSceneListener = () => parentStage.scene = this
+    /* Creating a new level scene */
+    val levelScene = new LevelScene(parentStage, listener, upperLevelSceneListener)
     val levelContextType = if (simulation) LevelContextType.simulation else LevelContextType.normal
-    // Creating a new LevelContext and setting it to the scene
+    /* Creating a new LevelContext and setting it to the scene */
     val levelContext = LevelContext(levelContextType)
     levelContext.setListener(levelScene)
     levelScene.levelContext = levelContext
-    // Changing scene scene
+    /* Changing scene scene */
     parentStage.scene = levelScene
-    // Notify the view the new context
+    /* Notify the view the new context */
     listener.onLevelContextCreated(levelContext, level)
   }
 
