@@ -17,8 +17,7 @@ import scalafx.stage.Stage
   * @param listener the MultiPlayerSceneListener
   * @param upperSceneListener the UpperMultiPlayerSceneListener
   */
-class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlayerSceneListener, val upperSceneListener: UpperMultiPlayerSceneListener) extends BaseScene(parentStage)
- with MultiPlayerLobbySceneListener {
+class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlayerSceneListener, val upperSceneListener: UpperMultiPlayerSceneListener) extends BaseScene(parentStage) {
 
   private val username: StringProperty = StringProperty("")
   private val usernameTextField = new TitledTextField("Username: ", username)
@@ -61,16 +60,17 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
     Platform.runLater({
       if (result) {
         /* If the lobby was successfully created, we link the resulting lobby context and go to the next scene */
-        val multiPlayerLobbyScene = new MultiPlayerLobbyScene(parentStage, MultiPlayerScene.this, user)
+        val multiPlayerLobbyScene = new MultiPlayerLobbyScene(parentStage, listener, () => parentStage.scene = MultiPlayerScene.this, user)
         /* We link the lobby context */
         multiPlayerLobbyScene.lobbyContext_=(lobbyContext)
+        /* We go to the next scene */
         parentStage.scene = multiPlayerLobbyScene
 
       } else {
         /* If an error occurred */
         val alert = new Alert(Alert.AlertType.Error) {
           title = "Error"
-          contentText.value = "Error during lobby creation. Please try againg later."
+          contentText.value = "Error during lobby creation. Please try again later."
         }
         alert.showAndWait()
       }
@@ -138,7 +138,7 @@ trait UpperMultiPlayerSceneListener {
 /**
   * Trait used by MultiPlayerScene to notify events which need to be managed by the View
   */
-trait MultiPlayerSceneListener {
+trait MultiPlayerSceneListener extends MultiPlayerLobbySceneListener{
 
   /**
     * Called when the user wants to go to the lobby as a server

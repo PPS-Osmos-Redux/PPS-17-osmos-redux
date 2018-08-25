@@ -2,7 +2,7 @@ package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.{User, UserWithProperties}
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, LobbyContextListener}
-import javafx.beans.value.ObservableBooleanValue
+import it.unibo.osmos.redux.mvc.view.events.UserRemoved
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.TableColumn._
@@ -16,7 +16,7 @@ import scalafx.stage.Stage
   * @param listener the MultiPlayerLobbySceneListener
   * @param user the user who requested to enter the lobby
   */
-class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: MultiPlayerLobbySceneListener, val user: User) extends BaseScene(parentStage)
+class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: MultiPlayerLobbySceneListener, val upperSceneListener: UpperMultiPlayerLobbySceneListener, val user: User) extends BaseScene(parentStage)
  with LobbyContextListener {
 
   /**
@@ -65,12 +65,24 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
 
   }
 
+  /**
+    * Exit lobby button
+    */
   private val exitLobby = new Button("Exit Lobby") {
-    onAction = _ => {}
+    onAction = _ => lobbyContext match {
+      /* We notify the lobby observer that we exited the lobby */
+      case Some(lc) => lc notifyLobbyEvent UserRemoved(user);
+      case _ =>
+    }
   }
+
+  /**
+    * Start game button
+    */
   private val startGame = new Button("Start Game") {
-    visible = user.isServer
-    onAction = _ => {}
+    /* Only visible if the user is a server and there are at least two players*/
+    visible = user.isServer && userList.size >= 2
+    onAction = _ => listener.onStartMultiplayerGameClick()
   }
 
   /* Requesting a structured layout */
@@ -90,8 +102,25 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
 }
 
 /**
+  * Trait used by UpperMultiPlayerLobbyScene to notify an event to the upper scene
+  */
+trait UpperMultiPlayerLobbySceneListener {
+
+  /**
+    * Called when the the user exits from the lobby
+    */
+  def onLobbyExited()
+
+}
+
+/**
   * Trait used by MultiPlayerLobbyScene to notify events which need to be managed by the View
   */
 trait MultiPlayerLobbySceneListener {
+
+  /**
+    * Called once per lobby. This will eventually lead to the server init. The server will eventually respond using the previously passed lobby context
+    */
+  def onStartMultiplayerGameClick()
 
 }

@@ -6,7 +6,7 @@ import it.unibo.osmos.redux.mvc.view.events._
 /**
   * Basic LobbyContext trait, seen as a LobbyEvent wrapper and a User container
   */
-trait LobbyContext extends EventWrapperObserver[LobbyEventWrapper]{
+trait LobbyContext extends EventWrapperObserver[LobbyEventWrapper] with EventWrapperObservable[LobbyEventWrapper]{
 
   /**
     * The lobby current users
@@ -20,6 +20,12 @@ trait LobbyContext extends EventWrapperObserver[LobbyEventWrapper]{
     * @param lobbyContextListener the lobby context listener
     */
   def setListener(lobbyContextListener: LobbyContextListener)
+
+  /**
+    * Called when the LobbyContext gets a lobby event from the scene
+    * @param event the lobby event
+    */
+  def notifyLobbyEvent(event: LobbyEventWrapper)
 
 }
 
@@ -53,6 +59,17 @@ object LobbyContext {
       case AbortLobby =>
     }
 
+    /**
+      * A reference to the lobby event listener, used to notify the server that we went away
+      */
+    private var lobbyContextObserver: Option[EventWrapperObserver[LobbyEventWrapper]] = Option.empty
+    override def subscribe(eventWrapperObserver: EventWrapperObserver[LobbyEventWrapper]): Unit = lobbyContextObserver = Option(eventWrapperObserver)
+    override def unsubscribe(eventWrapperObserver: EventWrapperObserver[LobbyEventWrapper]): Unit = lobbyContextObserver = Option.empty
+
+    override def notifyLobbyEvent(event: LobbyEventWrapper): Unit = lobbyContextObserver match {
+      case Some(lco) => lco.notify(event)
+      case _ =>
+    }
   }
 
 }

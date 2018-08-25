@@ -49,13 +49,7 @@ object View {
       case _ =>
     }
 
-    override def onLevelContextCreated(levelContext: LevelContext, level: Int): Unit = checkController(() => {
-      if (levelContext ne LevelContextType.multiplayer) {
-        controller.get.initLevel(levelContext, level)
-      } else {
-        controller.get.initMultiPlayerLevel()
-      }
-    })
+    override def onLevelContextCreated(levelContext: LevelContext, level: Int): Unit = checkController(() =>controller.get.initLevel(levelContext, level))
 
     override def onStartLevel(): Unit = checkController(() => controller.get.startLevel())
 
@@ -72,6 +66,8 @@ object View {
       * @param callback the callback
       */
     override def onLobbyClick(user: User, lobbyContext: LobbyContext, callback: (User, LobbyContext, Boolean) => Unit): Unit = checkController(() => controller.get.initLobby(user, lobbyContext).future.onComplete((res) => callback(user, lobbyContext, res.get)))
+
+    override def onStartMultiplayerGameClick(): Unit = checkController(() => controller.get.initMultiPlayerLevel())
   }
 }
 
