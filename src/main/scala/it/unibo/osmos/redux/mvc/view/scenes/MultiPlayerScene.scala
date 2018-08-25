@@ -20,11 +20,6 @@ import scalafx.stage.Stage
 class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlayerSceneListener, val upperSceneListener: UpperMultiPlayerSceneListener) extends BaseScene(parentStage)
  with MultiPlayerLobbySceneListener {
 
-  /**
-    * Reference to the next scene, which must be configured before it can be shown
-    */
-  private var multiPlayerLobbyScene: Option[MultiPlayerLobbyScene] = Option.empty
-
   private val username: StringProperty = StringProperty("")
   private val usernameTextField = new TitledTextField("Username: ", username)
 
@@ -66,10 +61,11 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
     Platform.runLater({
       if (result) {
         /* If the lobby was successfully created, we link the resulting lobby context and go to the next scene */
-        if (multiPlayerLobbyScene.nonEmpty) {
-          multiPlayerLobbyScene.get.lobbyContext_=(lobbyContext)
-          parentStage.scene = multiPlayerLobbyScene.get
-        }
+        val multiPlayerLobbyScene = new MultiPlayerLobbyScene(parentStage, MultiPlayerScene.this, user)
+        /* We link the lobby context */
+        multiPlayerLobbyScene.lobbyContext_=(lobbyContext)
+        parentStage.scene = multiPlayerLobbyScene
+
       } else {
         /* If an error occurred */
         val alert = new Alert(Alert.AlertType.Error) {
@@ -89,16 +85,16 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
       User(username.value, isServer = false)
     }
 
-    /* We created a new MultiPlayerLobbyScene to hold the future config info */
-    multiPlayerLobbyScene = Option(new MultiPlayerLobbyScene(parentStage, MultiPlayerScene.this, user))
-    /* We create a LobbyContext */
-    val lobbyContext = LobbyContext(multiPlayerLobbyScene.get)
-
-    /* We parse the user values and ask to enter the lobby */
-    onAction = _ => if (mode.value){
-      listener.onLobbyClick(User(username.value, addressValue.value, portTextField.node.getText(), isServer = true), lobbyContext, onLobbyEnterResult)
-    } else{
-      listener.onLobbyClick(User(username.value, isServer = false), lobbyContext, onLobbyEnterResult)
+    onAction = _ => {
+      /* We create the lobby context */
+      val lobbyContext = LobbyContext()
+      if (mode.value){
+        /* We ask to be a server */
+        listener.onLobbyClick(User(username.value, addressValue.value, portTextField.node.getText(), isServer = true), lobbyContext, onLobbyEnterResult)
+      } else{
+        /* We ask to be a client */
+        listener.onLobbyClick(User(username.value, isServer = false), lobbyContext, onLobbyEnterResult)
+      }
     }
   }
 

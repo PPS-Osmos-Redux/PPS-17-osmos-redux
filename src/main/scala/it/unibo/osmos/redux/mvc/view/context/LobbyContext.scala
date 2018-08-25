@@ -15,6 +15,12 @@ trait LobbyContext extends EventWrapperObserver[LobbyEventWrapper]{
   def users: Seq[User] = _users
   def users_=(value: Seq[User]): Unit = _users = value
 
+  /**
+    * Setter. Sets the lobby context listener
+    * @param lobbyContextListener the lobby context listener
+    */
+  def setListener(lobbyContextListener: LobbyContextListener)
+
 }
 
 /**
@@ -22,13 +28,18 @@ trait LobbyContext extends EventWrapperObserver[LobbyEventWrapper]{
   */
 object LobbyContext {
 
-  def apply(lobbyContextListener: LobbyContextListener): LobbyContext = new LobbyContextImpl(lobbyContextListener)
+  def apply(): LobbyContext = new LobbyContextImpl()
 
   /**
     * LobbyContext implementation
-    * @param Listener the lobby context listener
     */
-  class LobbyContextImpl(val Listener: LobbyContextListener) extends LobbyContext {
+  class LobbyContextImpl() extends LobbyContext {
+
+    /**
+      * The lobby context listener
+      */
+    protected var listener: Option[LobbyContextListener] = Option.empty
+    override def setListener(lobbyContextListener: LobbyContextListener): Unit = listener = Option(lobbyContextListener)
 
     //TODO: call the listener
     override def notify(event: LobbyEventWrapper): Unit = event.lobbyEvent match {
