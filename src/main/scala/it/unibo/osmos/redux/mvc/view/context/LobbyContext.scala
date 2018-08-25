@@ -48,15 +48,21 @@ object LobbyContext {
     override def setListener(lobbyContextListener: LobbyContextListener): Unit = listener = Option(lobbyContextListener)
 
     //TODO: call the listener
-    override def notify(event: LobbyEventWrapper): Unit = event.lobbyEvent match {
-      /* A user entered the lobby */
-      case UserAdded => if (!users.contains(event.user)) users = users :+ event.user
-      /* A user exited from the lobby */
-      case UserRemoved => if (users.contains(event.user)) users = users filterNot(u => u.username == event.user.username)
-      /* The game has started, we can create a new LevelScene */
-      case StartGame(levelContext) =>
-      /* The lobby has been aborted, we have to go back */
-      case AbortLobby =>
+    override def notify(event: LobbyEventWrapper): Unit = listener match {
+      case Some(l) =>
+        event.lobbyEvent match {
+          /* A user entered the lobby */
+          case UserAdded => if (!users.contains(event.user)) users = users :+ event.user; l.updateUsers(users)
+          /* A user exited from the lobby */
+          case UserRemoved => if (users.contains(event.user)) users = users filterNot(u => u.username == event.user.username); l.updateUsers(users)
+          /* The game has started, we can create a new MultiPlayerLevelScene */
+          case StartGame(multiPlayerLevelContext) => l.onMultiPlayerGameStarted(multiPlayerLevelContext)
+          /* The lobby has been aborted, we have to go back */
+          case AbortLobby => l.onLobbyAborted()
+          case _ =>
+        }
+      case _ =>
+
     }
 
     /**
@@ -78,5 +84,22 @@ object LobbyContext {
   * Trait which gets notified when a LobbyContext event occurs
   */
 trait LobbyContextListener {
+
+  /**
+    * Updated the users list that must be shown to the user
+    * @param users the new user seq
+    */
+  def updateUsers(users: Seq[User])
+
+  /**
+    * Called once per lobby. A new MultiPLayerLevelScene will be created the scene
+    * @param multiPlayerLevelContext the level context
+    */
+  def onMultiPlayerGameStarted(multiPlayerLevelContext: MultiPlayerLevelContext)
+
+  /**
+    * Called once per lobby if the lobby is deleted
+    */
+  def onLobbyAborted()
 
 }

@@ -1,8 +1,8 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.{User, UserWithProperties}
-import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, LobbyContextListener}
-import it.unibo.osmos.redux.mvc.view.events.UserRemoved
+import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, LobbyContextListener, MultiPlayerLevelContext}
+import it.unibo.osmos.redux.mvc.view.events.{LobbyEventWrapper, UserRemoved}
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.TableColumn._
@@ -71,7 +71,7 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
   private val exitLobby = new Button("Exit Lobby") {
     onAction = _ => lobbyContext match {
       /* We notify the lobby observer that we exited the lobby */
-      case Some(lc) => lc notifyLobbyEvent UserRemoved(user);
+      case Some(lc) => lc notifyLobbyEvent LobbyEventWrapper(UserRemoved, user); upperSceneListener.onLobbyExited()
       case _ =>
     }
   }
@@ -99,6 +99,20 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
   /* Enabling the layout */
   root = rootLayout
 
+  override def updateUsers(users: Seq[User]): Unit = {
+    userList clear()
+    userList ++ users
+  }
+
+  override def onMultiPlayerGameStarted(multiPlayerLevelContext: MultiPlayerLevelContext): Unit = {
+    /* Creating a multiplayer level*/
+    val multiPlayerLevelScene = new MultiPlayerLevelScene(parentStage, listener, () => parentStage.scene = this)
+    multiPlayerLevelScene.levelContext = multiPlayerLevelContext
+    parentStage.scene = multiPlayerLevelScene
+  }
+
+  override def onLobbyAborted(): Unit = upperSceneListener.onLobbyExited()
+
 }
 
 /**
@@ -116,7 +130,7 @@ trait UpperMultiPlayerLobbySceneListener {
 /**
   * Trait used by MultiPlayerLobbyScene to notify events which need to be managed by the View
   */
-trait MultiPlayerLobbySceneListener {
+trait MultiPlayerLobbySceneListener extends LevelSceneListener {
 
   /**
     * Called once per lobby. This will eventually lead to the server init. The server will eventually respond using the previously passed lobby context
