@@ -3,6 +3,8 @@ package it.unibo.osmos.redux
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager}
 import it.unibo.osmos.redux.ecs.systems.CollisionSystem
+import it.unibo.osmos.redux.mvc.model.MapShape.Rectangle
+import it.unibo.osmos.redux.mvc.model.{CollisionRules, Level, LevelMap, VictoryRules}
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.FunSuite
 
@@ -15,8 +17,14 @@ class TestCollisionSystem extends FunSuite {
   val antiMatterEntity = CellEntity(AccelerationComponent(0,0), CollidableComponent(true), DimensionComponent(2),
     PositionComponent(Point(65, 81)), SpeedComponent(0, 0), VisibleComponent(true), TypeComponent(EntityType.AntiMatter))
 
+  val levelInfo = Level(1,
+    LevelMap( Rectangle((100, 150), 100, 150), CollisionRules.bouncing),
+    null,
+    VictoryRules.becomeTheBiggest,
+    false)
+
   test("CollisionSystem should not collide the entity with herself") {
-    val system = CollisionSystem()
+    val system = CollisionSystem(levelInfo)
 
     val originalDim = entity1.getDimensionComponent
     val originalAccel = entity1.getAccelerationComponent
@@ -29,7 +37,7 @@ class TestCollisionSystem extends FunSuite {
   }
 
   test("CollisionSystem should not consider entities that do not have CollisionProperty") {
-    val system = CollisionSystem()
+    val system = CollisionSystem(levelInfo)
 
     val position = Point(60, 80)
     entity1.getPositionComponent.point_(position)
@@ -52,7 +60,7 @@ class TestCollisionSystem extends FunSuite {
   }
 
   test("CollisionSystem should not collide two entities if the distance between the centers is greater than the sum of their radii") {
-    val system = CollisionSystem()
+    val system = CollisionSystem(levelInfo)
 
     val originalDim1 = entity1.getDimensionComponent
     val originalAccel1 = entity1.getAccelerationComponent
@@ -69,7 +77,7 @@ class TestCollisionSystem extends FunSuite {
   }
 
   test("CollisionSystem should collide two entities if the distance between the centers is less than the sum of their radii") {
-    val system = CollisionSystem()
+    val system = CollisionSystem(levelInfo)
 
     entity1.getDimensionComponent.radius_(5)
     entity1.getPositionComponent.point_(Point(60, 80))
@@ -95,7 +103,7 @@ class TestCollisionSystem extends FunSuite {
   }
 
   test("Collision with AntiMatter entity should reduce both dimension's entity") {
-    val system = CollisionSystem()
+    val system = CollisionSystem(levelInfo)
 
     entity1.getDimensionComponent.radius_(5)
     entity1.getPositionComponent.point_(Point(60, 80))

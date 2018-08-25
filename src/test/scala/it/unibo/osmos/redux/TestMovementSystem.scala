@@ -22,7 +22,7 @@ class TestMovementSystem extends FunSuite with BeforeAndAfter {
       null,
       VictoryRules.becomeTheBiggest,
       false)
-    movementSystem = MovementSystem(levelInfo)
+    movementSystem = MovementSystem()
     EntityManager.subscribe(movementSystem, null)
   }
 
