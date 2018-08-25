@@ -1,5 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.components.custom
 
+import scalafx.beans.property.StringProperty
 import scalafx.scene.control.ComboBox
 
 /**
@@ -9,7 +10,7 @@ import scalafx.scene.control.ComboBox
   * @param handler the handler called when an item gets selected
   * @tparam A the items type
   */
-class TitledComboBox[A](override val title: String, val items: Seq[A], val handler: A => Unit, val vertical: Boolean = true) extends TitledNode[ComboBox[A]](title, vertical) {
+class TitledComboBox[A](title: String, val items: Seq[A], val handler: A => Unit, val vertical: Boolean = true) extends TitledNode[ComboBox[A]](StringProperty(title), vertical) {
 
   override def node: ComboBox[A] = new ComboBox[A](items) {
 
@@ -17,5 +18,4 @@ class TitledComboBox[A](override val title: String, val items: Seq[A], val handl
     onAction = e => handler.apply(selectionModel.value.getSelectedItem)
 
   }
-
 }
