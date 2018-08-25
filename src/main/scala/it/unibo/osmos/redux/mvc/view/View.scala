@@ -49,9 +49,9 @@ object View {
       case _ =>
     }
 
-    override def onLevelContextCreated(levelContext: LevelContext, level: Int, levelContextType: LevelContextType.Value): Unit = checkController(() => {
-      if (levelContextType eq LevelContextType.multiplayer) {
-        controller.get.initLevel(levelContext, level, levelContextType)
+    override def onLevelContextCreated(levelContext: LevelContext, level: Int): Unit = checkController(() => {
+      if (levelContext ne LevelContextType.multiplayer) {
+        controller.get.initLevel(levelContext, level)
       } else {
         controller.get.initMultiPlayerLevel()
       }

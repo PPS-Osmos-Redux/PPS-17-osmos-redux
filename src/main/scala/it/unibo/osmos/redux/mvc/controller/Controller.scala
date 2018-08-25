@@ -32,9 +32,8 @@ trait Controller {
     * Initializes the level and the game engine.
     * @param levelContext The level context.
     * @param chosenLevel The index of the chosen level.
-    * @param levelContextType The level context type
     */
-  def initLevel(levelContext: LevelContext, chosenLevel: Int, levelContextType: LevelContextType.Value): Unit
+  def initLevel(levelContext: LevelContext, chosenLevel: Int): Unit
 
   /**
     * Initializes the multi-player lobby and the server or client.
@@ -106,7 +105,7 @@ case class ControllerImpl() extends Controller with Observer {
   private var server: Option[Server] = None
   private var client: Option[Client] = None //TODO: maybe it can be removed
 
-  override def initLevel(levelContext: LevelContext, chosenLevel: Int, levelContextType: LevelContextType.Value): Unit = {
+  override def initLevel(levelContext: LevelContext, chosenLevel: Int): Unit = {
 
     var loadedLevel: Option[Level] = FileManager.loadResource(chosenLevel.toString)
 
@@ -114,7 +113,7 @@ case class ControllerImpl() extends Controller with Observer {
     //if (isCustomLevel) loadedLevel = FileManager.loadCustomLevel(chosenLevel.toString)
 
     if (loadedLevel.isDefined) {
-      loadedLevel.get.isSimulation = levelContextType == LevelContextType.simulation
+      loadedLevel.get.isSimulation = levelContext.levelContextType == LevelContextType.simulation
       if (engine.isEmpty) engine = Some(GameEngine())
       engine.get.init(loadedLevel.get, levelContext)
       levelContext.setupLevel(loadedLevel.get.levelMap.mapShape)

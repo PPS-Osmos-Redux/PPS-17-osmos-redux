@@ -2,7 +2,7 @@ package it.unibo.osmos.redux.multiplayer.client
 
 import java.util.UUID
 
-import akka.actor.{Actor, InvalidMessageException, Props}
+import akka.actor.{Actor, Props}
 import it.unibo.osmos.redux.multiplayer.client.ClientActor.Ready
 import it.unibo.osmos.redux.multiplayer.server.ServerActor._
 import it.unibo.osmos.redux.mvc.view.events._

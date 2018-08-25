@@ -63,12 +63,13 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
     val levelScene = new LevelScene(parentStage, listener, this)
     val levelContextType = if (simulation) LevelContextType.simulation else LevelContextType.normal
     // Creating a new LevelContext and setting it to the scene
-    val levelContext = LevelContext(levelScene, levelContextType)
+    val levelContext = LevelContext(levelContextType)
+    levelContext.setListener(levelScene)
     levelScene.levelContext = levelContext
     // Changing scene scene
     parentStage.scene = levelScene
     // Notify the view the new context
-    listener.onLevelContextCreated(levelContext, level, levelContextType)
+    listener.onLevelContextCreated(levelContext, level)
   }
 
 }
@@ -82,7 +83,6 @@ trait LevelSelectionSceneListener extends LevelSceneListener {
     * This method called when the level context has been created
     * @param levelContext the new level context
     * @param level the new level index
-    * @param levelContextType the level type
     */
-  def onLevelContextCreated(levelContext: LevelContext, level: Int, levelContextType: LevelContextType.Value)
+  def onLevelContextCreated(levelContext: LevelContext, level: Int)
 }

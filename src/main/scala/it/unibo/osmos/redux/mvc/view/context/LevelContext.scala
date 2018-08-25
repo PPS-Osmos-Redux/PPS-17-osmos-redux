@@ -8,11 +8,23 @@ import it.unibo.osmos.redux.mvc.view.events._
   * Trait modelling the context of a level
   */
 trait LevelContext extends EventWrapperObservable[MouseEventWrapper] with EntitiesDrawer with GameStateHolder {
+
+  /**
+    * The level context type
+    */
+  val levelContextType: LevelContextType.Value
+
   /**
     * Called once at the beginning at the level. Manages the context setup
     * @param mapShape the level shape
     */
   def setupLevel(mapShape: MapShape)
+
+  /**
+    * Setter. Sets the level context listener
+    * @param levelContextListener the level context listener
+    */
+  def setListener(levelContextListener: LevelContextListener)
 
   /**
     * Called when the LevelContext gets a mouse event from the scene
@@ -26,29 +38,40 @@ trait LevelContext extends EventWrapperObservable[MouseEventWrapper] with Entiti
   */
 object LevelContext {
 
-  def apply(listener: LevelContextListener): LevelContext = new LevelContextImpl(listener)
+  def apply(): LevelContext = new LevelContextImpl()
 
-  def apply(listener: LevelContextListener, levelContextType: LevelContextType.Value): LevelContext = new LevelContextImpl(listener, levelContextType)
+  def apply(levelContextType: LevelContextType.Value): LevelContext = new LevelContextImpl(levelContextType)
 
   /**
     * Base abstract implementation of the LevelContext trait
-    * @param listener the LevelContextListener instance
     */
-  private abstract class AbstractLevelContext(private val listener: LevelContextListener, val levelContextType: LevelContextType.Value = LevelContextType.normal) extends LevelContext {
+  private abstract class AbstractLevelContext(override val levelContextType: LevelContextType.Value = LevelContextType.normal) extends LevelContext {
+
+    /**
+      * The level context listener
+      */
+    protected var listener: Option[LevelContextListener] = Option.empty
+    override def setListener(levelContextListener: LevelContextListener): Unit = listener = Option(levelContextListener)
 
     /**
       * A reference to the mouse event listener
       */
     private var mouseEventObserver: Option[EventWrapperObserver[MouseEventWrapper]] = Option.empty
 
-    override def setupLevel(mapShape: MapShape): Unit = listener.onLevelSetup(mapShape)
-
-    override def notifyMouseEvent(event: MouseEventWrapper): Unit = mouseEventObserver match {
-      case Some(e) => e.notify(event)
+    override def setupLevel(mapShape: MapShape): Unit = listener match {
+      case Some(l) => l.onLevelSetup(mapShape)
       case _ =>
     }
 
-    override def drawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = listener.onDrawEntities(playerEntity, entities)
+    override def notifyMouseEvent(event: MouseEventWrapper): Unit = mouseEventObserver match {
+      case Some(meo) => meo.notify(event)
+      case _ =>
+    }
+
+    override def drawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = listener match {
+      case Some(l) => l.onDrawEntities(playerEntity, entities)
+      case _ =>
+    }
 
     override def subscribe(eventObserver: EventWrapperObserver[MouseEventWrapper]): Unit = mouseEventObserver = Option(eventObserver)
 
@@ -58,9 +81,8 @@ object LevelContext {
 
   /**
     * Implementation of the LevelContext trait
-    * @param listener the LevelContextListener instance
     */
-  private class LevelContextImpl(private val listener: LevelContextListener, override val levelContextType: LevelContextType.Value = LevelContextType.normal) extends AbstractLevelContext(listener, levelContextType) {
+  private class LevelContextImpl(override val levelContextType: LevelContextType.Value = LevelContextType.normal) extends AbstractLevelContext(levelContextType) {
 
     /**
       * The current game state
@@ -71,9 +93,13 @@ object LevelContext {
 
     def gameCurrentState_=(value: GameStateEventWrapper): Unit = {
       _gameCurrentState = value
-      gameCurrentState match {
-        case GameWon => listener.onLevelEnd(true)
-        case GameLost => listener.onLevelEnd(false)
+      listener match {
+        case Some(l) =>
+          gameCurrentState match {
+            case GameWon => l.onLevelEnd(true)
+            case GameLost => l.onLevelEnd(false)
+            case _ =>
+        }
         case _ =>
       }
     }
@@ -85,11 +111,6 @@ object LevelContext {
       */
     override def notify(event: GameStateEventWrapper): Unit = {
       gameCurrentState_=(event)
-      gameCurrentState match {
-        case GameWon => listener.onLevelEnd(true)
-        case GameLost => listener.onLevelEnd(false)
-        case _ =>
-      }
     }
   }
 
