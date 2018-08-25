@@ -17,7 +17,7 @@ class ClientActor(private val client: Client) extends Actor {
     case LobbyClosed => client.clearLobby()
     case PlayerEnteredLobby(player) => client.addPlayerToLobby(player)
     case PlayerLeftLobby(username) => client.removePlayerFromLobby(username)
-    case UpdateGame(entities) => client.notifyEntityToDraw(entities)
+    case UpdateGame(entities) => client.notifyRedraw(entities)
     case GameStarted(uuid) =>
       //save the uuid of the player entity that represents this client
       client.setUUID(UUID.fromString(uuid))
@@ -38,6 +38,6 @@ object ClientActor {
   final case object Connect //to tell the server that you want to connect with it
   final case class EnterLobby(username: String) //to tell the server that you want to enter the lobby (server gets the actor ref from the sender object at his side)
   final case class LeaveLobby(username: String) //to tell the server that you leave the lobby
-  final case class PlayerInput(uuid: String, event: MouseEventWrapper) //to send a new input event to the server
+  final case class PlayerInput(event: MouseEventWrapper) //to send a new input event to the server
   final case class LeaveGame(username: String) //to tell server that you are leaving the game
 }

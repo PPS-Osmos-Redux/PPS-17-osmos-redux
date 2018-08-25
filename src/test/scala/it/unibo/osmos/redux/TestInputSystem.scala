@@ -18,12 +18,7 @@ class TestInputSystem extends FunSuite {
   val visibility = Seq(VisibleComponent(true), VisibleComponent(false), VisibleComponent(false))
   val typeEntity = Seq(TypeComponent(EntityType.Matter), TypeComponent(EntityType.Matter), TypeComponent(EntityType.Matter))
 
-  val dummyEvent = MouseEventWrapper(Point(157,104))
-
   test("InputSystem updates entities acceleration correctly") {
-
-    //setup level context
-    val levelContext = LevelContext(null)
 
     //setup input system
     val system = InputSystem()
@@ -33,7 +28,7 @@ class TestInputSystem extends FunSuite {
     EntityManager.add(pce)
 
     //prepare list of events to apply
-    val events = List(dummyEvent,  MouseEventWrapper(Point(200,194)), MouseEventWrapper(Point(314,44)))
+    val events = List(MouseEventWrapper(pce.getUUID, Point(157,104)),  MouseEventWrapper(pce.getUUID, Point(200,194)), MouseEventWrapper(pce.getUUID, Point(314,44)))
 
     //add mouse events to Input event stack
     InputEventQueue.enqueue(events: _*)
@@ -49,9 +44,6 @@ class TestInputSystem extends FunSuite {
 
   test("InputSystem should update only entities with input property") {
 
-    //setup level context
-    val levelContext = LevelContext(null)
-
     //setup input system
     val system = InputSystem()
 
@@ -65,10 +57,10 @@ class TestInputSystem extends FunSuite {
     val originalAccel = AccelerationComponent(acceleration(1).vector.x, acceleration(1).vector.y)
 
     //pre-compute expected values
-    val expectedAccel = computeExpectedAcceleration(system, pce, dummyEvent)
+    val expectedAccel = computeExpectedAcceleration(system, pce, MouseEventWrapper(pce.getUUID, Point(157,104)))
 
     //add mouse event to Input event stack
-    InputEventQueue.enqueue(dummyEvent)
+    InputEventQueue.enqueue(MouseEventWrapper(pce.getUUID, Point(157,104)))
 
     //call system update
     system.update()

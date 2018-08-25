@@ -20,8 +20,7 @@ class ServerActor(private val server: Server) extends Actor {
       if (server.addPlayerToLobby(sender, BasicPlayer(username, playerInfo))) sender ! LobbyInfo(server.getLobbyPlayers)
       else sender ! LobbyFull
     case LeaveLobby(username) => server.removePlayerFromLobby(username) //To tell the server that you leave the lobby
-    case PlayerInput(uuid, event) =>
-      //TODO: create a new MouseEventWrapper that supports uuid
+    case PlayerInput(event) =>
       server.notifyClientInputEvent(event) //sent to the server when a new input event is detected
     case LeaveGame(username) => server.removePlayerFromGame(username)
   }

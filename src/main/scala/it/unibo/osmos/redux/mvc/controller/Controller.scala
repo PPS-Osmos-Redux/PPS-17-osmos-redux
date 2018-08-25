@@ -46,11 +46,9 @@ trait Controller {
 
   /**
     * Initializes the multi-player level and the game engine.
-    * @param levelContext The level context.
-    * @param chosenLevel The index of the chosen level
     * @return Promise that completes with true if the level is initialized successfully; otherwise false.
     */
-  def initMultiPlayerLevel(levelContext: LevelContext, chosenLevel: Int): Promise[Boolean]
+  def initMultiPlayerLevel(): Promise[Boolean]
 
   /**
     * Starts the level.
@@ -101,12 +99,12 @@ trait Controller {
 
 case class ControllerImpl() extends Controller with Observer {
 
-  private var engine:Option[GameEngine] = None
+  private var engine: Option[GameEngine] = None
 
-  //multiplayer variables
+  //multi-player variables
   private var multiPlayerMode: Option[MultiPlayerMode] = None
   private var server: Option[Server] = None
-  private var client: Option[Client] = None
+  private var client: Option[Client] = None //TODO: maybe it can be removed
 
   override def initLevel(levelContext: LevelContext, chosenLevel: Int, levelContextType: LevelContextType.Value): Unit = {
 
@@ -128,6 +126,8 @@ case class ControllerImpl() extends Controller with Observer {
   override def initLobby(user: User, lobbyContext: LobbyContext): Promise[Boolean] = {
     val promise = Promise[Boolean]()
 
+    //TODO: lobbyContext will have the chosenLevel, save it in the lobby and get it in the initMultiPlayerLevel
+
     multiPlayerMode = Some(if (user.isServer) MultiPlayerMode.Server else MultiPlayerMode.Client)
 
     multiPlayerMode match {
@@ -136,10 +136,9 @@ case class ControllerImpl() extends Controller with Observer {
         //initialize the server and creates the lobby
         val server = Server(user.username)
         server.bind(ActorSystemHolder.createActor(server))
-        server.createLobby()
-
-        //TODO: use lobby context to send updates about lobby players
-
+        //create lobby
+        server.createLobby(lobbyContext)
+        //save server reference
         this.server = Some(server)
         promise.success(true)
 
@@ -149,16 +148,19 @@ case class ControllerImpl() extends Controller with Observer {
         val client = Client()
         client.bind(ActorSystemHolder.createActor(client))
         client.connect(user.ip, user.port.toInt).future andThen {
-          case Success(true) => client.enterLobby(user.username).future
+          case Success(true) => client.enterLobby(user.username, lobbyContext).future
           case Success(false) => false
         } andThen {
           case Success(true) =>
             this.client = Some(client)
-
-            //TODO: use lobby context to send updates about lobby players
-
+            //creates the level context
+            val levelContext = LevelContext(null)
+            //initializes the game
+            client.initGame(levelContext)
+            //fulfill promise
             promise success true
-          case Success(false) => promise success false
+          case Success(false) =>
+            promise success false
         }
       case _ =>
         promise failure new IllegalArgumentException("Cannot initialize the lobby if the multi-player mode is not defined")
@@ -166,34 +168,31 @@ case class ControllerImpl() extends Controller with Observer {
     promise
   }
 
-  override def initMultiPlayerLevel(levelContext: LevelContext, chosenLevel: Int): Promise[Boolean] = {
+  override def initMultiPlayerLevel(): Promise[Boolean] = {
     val promise = Promise[Boolean]()
 
     //load level definition
-    //TODO: load multi-player definition
-    val loadedLevel = FileManager.loadResource(chosenLevel.toString, isMultiPlayer = true).get
+    //TODO: for not there is only one multi-player level
+    val loadedLevel = FileManager.loadResource("0", isMultiPlayer = true).get
 
     multiPlayerMode.get match {
       case MultiPlayerMode.Server =>
         //assign clients to players and wait confirmation
-        server.get.startGame(loadedLevel).future onComplete {
+        server.get.initGame(loadedLevel).future onComplete {
           case Success(_) =>
-            //creates and initialize the engine
+
+            //create the engine
             if (engine.isEmpty) engine = Some(GameEngine())
-            engine.get.init(loadedLevel, levelContext, server.get)
-            //signal interface that the engine and servers are ready
-            levelContext.setupLevel(loadedLevel.levelMap.mapShape)
+            //initialize the engine and let him create the levelContext
+            val levelContext = engine.get.init(loadedLevel, server.get)
+
+            //signal server that the game is ready to be started
+            server.get.startGame(levelContext)
+
             //fulfill the promise
             promise success true
           case Failure(_) => promise failure _
-          //TODO: change scene to game
         }
-      case MultiPlayerMode.Client =>
-        //creates and initialize the engine
-        if (engine.isEmpty) engine = Some(GameEngine())
-        engine.get.init(loadedLevel, levelContext, client.get)
-        //signal interface that the engine and servers are ready
-        levelContext.setupLevel(loadedLevel.levelMap.mapShape)
         //fulfill the promise
         promise success true
       case _ =>

@@ -1,10 +1,11 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
+import java.util.function.UnaryOperator
+
 import it.unibo.osmos.redux.multiplayer.common.NetworkUtils
 import it.unibo.osmos.redux.mvc.view.components.custom.{TitledComboBox, TitledTextField}
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.LobbyContext
-import javafx.util.converter.DefaultStringConverter
 import scalafx.util.converter.IntStringConverter
 import scalafx.application.Platform
 import scalafx.beans.property.{BooleanProperty, StringProperty}
@@ -39,24 +40,13 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
   private val portValue: StringProperty = StringProperty("0")
   private val portTextField = new TitledTextField(portTitle, portValue)
 
-  //TODO: do not work (Force integers only)
-  /*
-  val filter: Change => Change = { c: Change =>
-
-    val newText = c.getControlNewText
-    val oldText = c.getControlText
-    val isValid = NetworkUtils.validatePort(newText) && (1 to 5 contains newText.length)
-
-    println("valid: " + isValid)
-    if (!isValid) {
-      portTextField.node.setText(oldText)
-      portTextField.node.commitValue()
-    }
-     c
-  }
-  val formatter = new TextFormatter[String](new DefaultStringConverter, "0", filter)
-  portTextField.node.setTextFormatter(formatter)
-  */
+  //TODO: do not work (Force integers only or use TitledNumericTextField)
+  /*portTextField.node.setTextFormatter(new TextFormatter[String]((c: Change) => {
+    val input = c.getText
+    val isNumber = input.matches("[0-9]*")
+    if (!isNumber) c.setText(""); c.delegate.setText("")
+    c
+  }))*/
 
   private val mode: BooleanProperty = BooleanProperty(true)
   private val modeComboBox = new TitledComboBox[String]("Mode: ", Seq("Client", "Server"), {

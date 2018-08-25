@@ -9,8 +9,9 @@ import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.multiplayer.lobby.ClientLobby
 import it.unibo.osmos.redux.multiplayer.players.BasicPlayer
 import it.unibo.osmos.redux.multiplayer.server.ServerActor
+import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LobbyContext}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
-import it.unibo.osmos.redux.mvc.view.events.{GameStateEventWrapper, MouseEventWrapper}
+import it.unibo.osmos.redux.mvc.view.events.{GamePending, GameStateEventWrapper, MouseEventWrapper}
 import it.unibo.osmos.redux.utils.Constants
 
 import scala.collection.mutable
@@ -55,6 +56,12 @@ trait Client {
   def kill(): Unit
 
   /**
+    * Initializes the game.
+    * @param levelContext The level context.
+    */
+  def initGame(levelContext: LevelContext): Unit
+
+  /**
     * Leaves the game.
     */
   def leaveGame(): Unit
@@ -62,9 +69,10 @@ trait Client {
   /**
     * Requests to enter the lobby.
     * @param username The username of the player.
+    * @param lobbyContext The lobby context.
     * @return Promise that completes with true if the client have successfully entered the lobby; otherwise false.
     */
-  def enterLobby(username: String): Promise[Boolean]
+  def enterLobby(username: String, lobbyContext: LobbyContext): Promise[Boolean]
 
   /**
     * Requests to leave the lobby.
@@ -101,28 +109,16 @@ trait Client {
   def signalPlayerInput(event: MouseEventWrapper): Unit
 
   /**
-    * Subscribes an observer to the game status changed events.
-    * @param observer The observer.
-    */
-  def subscribeGameStatusChangedEvent(observer: GameStatusChangedObserver): Unit
-
-  /**
-    * Notifies all observer of a change in the game status.
+    * Notifies the client that the game status have changed.
     * @param status The current status of the game.
     */
   def notifyGameStatusChanged(status: GameStateEventWrapper): Unit
 
   /**
-    * Subscribes an observer to draw entity events.
-    * @param observer The observer.
+    * Notifies the client to redraw.
+    * @param entities The entities to draw.
     */
-  def subscribeEntityDrawEvent(observer: DrawEntityObserver): Unit
-
-  /**
-    * Notifies all observer new entities to draw.
-    * @param entities The entities.
-    */
-  def notifyEntityToDraw(entities: Seq[DrawableWrapper]): Unit
+  def notifyRedraw(entities: Seq[DrawableWrapper]): Unit
 }
 
 object Client {
@@ -187,6 +183,36 @@ object Client {
 
     //GAME MANAGEMENT
 
+    override def initGame(levelContext: LevelContext): Unit = {
+
+      if (lobby.isEmpty) throw new IllegalStateException("The player entered no lobby, unable to initialize the game.")
+
+      //register client to the mouse event listener to send input events to the server
+      levelContext.subscribe(e => { signalPlayerInput(e) })
+
+      //TODO: update with something more appropriate instead of observers
+
+      //subscribe to draw entity event and call interface to draw them
+      subscribeRedraw (entities => {
+        //TODO: drawablewrapper must have uuid
+        /*
+        val player = entities find (e => e.uuid == client.getUUID)
+        if (player.isEmpty) throw new IllegalArgumentException("Unable to draw entities because the player is not found")
+        levelContext.drawEntities(player, entities)
+        */
+      })
+
+      //subscribe to game status changed event to detect the beginning or the end of the game
+      subscribeGameStatusChanged {
+        case GamePending =>
+          //starts the game
+          lobby.get.startGame(levelContext)
+        case s =>
+          //game is won or lost
+          levelContext.notify(s)
+      }
+    }
+
     override def leaveGame(): Unit = {
       if (username.isEmpty) throw new IllegalStateException("The player entered no lobby, unable to leave.")
       server.get ! ClientActor.LeaveGame(username)
@@ -196,11 +222,11 @@ object Client {
     //INPUT MANAGEMENT
 
     //TODO: add UUID to Mouse
-    override def signalPlayerInput(event: MouseEventWrapper): Unit = server.get ! ClientActor.PlayerInput(uuid.toString, event)
+    override def signalPlayerInput(event: MouseEventWrapper): Unit = server.get ! ClientActor.PlayerInput(event)
 
     //LOBBY
 
-    override def enterLobby(username: String): Promise[Boolean] = {
+    override def enterLobby(username: String, lobbyContext: LobbyContext): Promise[Boolean] = {
       if (lobby.nonEmpty) throw new IllegalStateException("Unable to enter lobby if the client is already entered in another one")
       //Save username locally
       this.username = username
@@ -209,6 +235,7 @@ object Client {
       server.get ? ClientActor.EnterLobby(username) onComplete { //TODO: forse necessario passare actorRef
         case Success(result) => result match {
           case ServerActor.LobbyInfo(players) =>
+            lobby = Some(ClientLobby(lobbyContext))
             lobby.get.addPlayers(players: _*)
             promise success true
           case ServerActor.UsernameAlreadyTaken =>
@@ -243,11 +270,11 @@ object Client {
 
     override def notifyGameStatusChanged(status: GameStateEventWrapper): Unit = gameStatusObservers foreach(o => o.update(status))
 
-    override def subscribeGameStatusChangedEvent(observer: GameStatusChangedObserver): Unit = gameStatusObservers += observer
+    override def notifyRedraw(entities: Seq[DrawableWrapper]): Unit = drawEntityObservers foreach(o => o.update(entities))
 
-    override def subscribeEntityDrawEvent(observer: DrawEntityObserver): Unit = drawEntityObservers += observer
+    private def subscribeGameStatusChanged(observer: GameStatusChangedObserver): Unit = gameStatusObservers += observer
 
-    override def notifyEntityToDraw(entities: Seq[DrawableWrapper]): Unit = drawEntityObservers foreach(o => o.update(entities))
+    private def subscribeRedraw(observer: DrawEntityObserver): Unit = drawEntityObservers += observer
 
     //HELPERS
 
