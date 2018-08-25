@@ -96,6 +96,8 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
         //move the small entity
         val smallEntityPosition = smallEntity.getPositionComponent
         smallEntityPosition.point_(smallEntityPosition.point add (unitVector multiply (-overlap/2)))
+        bounceRule.checkCollision(bigEntity)
+        bounceRule.checkCollision(smallEntity)
     }
   }
 
