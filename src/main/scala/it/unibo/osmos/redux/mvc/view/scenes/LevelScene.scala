@@ -96,6 +96,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   private val repulsiveDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(TEXTURE_FOLDER + "cell_yellow.png"), canvas.graphicsContext2D)
   private val antiMatterDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(TEXTURE_FOLDER + "cell_dark_blue.png"), canvas.graphicsContext2D)
   private val sentientDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(TEXTURE_FOLDER + "cell_purple.png"), canvas.graphicsContext2D)
+  private val opponentDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(TEXTURE_FOLDER + "cell_violet.png"), canvas.graphicsContext2D)
 
   private val backgroundImage: Image = ImageLoader.getImage(TEXTURE_FOLDER + "background.png")
   private var mapBorder: Option[Shape] = Option.empty
@@ -228,6 +229,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
       case EntityType.Repulse => repulsiveDrawable.draw(drawableWrapper, color)
       case EntityType.AntiMatter => antiMatterDrawable.draw(drawableWrapper, color)
       case EntityType.Sentient => sentientDrawable.draw(drawableWrapper, color)
+      case EntityType.Controlled => opponentDrawable.draw(drawableWrapper, color)
       case _ => cellDrawable.draw(drawableWrapper, color)
     }
   }
