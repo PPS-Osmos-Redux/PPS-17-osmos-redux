@@ -1,5 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.context
 
+import java.util.UUID
+
 import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.drawables.{DrawableWrapper, EntitiesDrawer}
 import it.unibo.osmos.redux.mvc.view.events._
@@ -34,13 +36,29 @@ trait LevelContext extends EventWrapperObservable[MouseEventWrapper] with Entiti
 }
 
 /**
+  * LevelContext used in multplayer sessions
+  */
+trait MultiPlayerLevelContext extends LevelContext {
+
+  /**
+    * The level context UUID, used in multiplayer to discriminate between different users
+    * @return the uuid
+    */
+  def getUUID: UUID
+
+}
+
+/**
   * Companion object
   */
 object LevelContext {
 
   def apply(): LevelContext = new LevelContextImpl()
 
-  def apply(levelContextType: LevelContextType.Value): LevelContext = new LevelContextImpl(levelContextType)
+  def apply(levelContextType: LevelContextType.Value): LevelContext = levelContextType match {
+    case LevelContextType.multiplayer => new MultiPlayerLevelContextImpl
+    case _ => new LevelContextImpl(levelContextType)
+  }
 
   /**
     * Base abstract implementation of the LevelContext trait
@@ -112,6 +130,14 @@ object LevelContext {
     override def notify(event: GameStateEventWrapper): Unit = {
       gameCurrentState_=(event)
     }
+  }
+
+  /**
+    * Implementation of the MultiPlayerLevelContext trait, override LevelContextImpl
+    */
+  private class MultiPlayerLevelContextImpl() extends LevelContextImpl() with MultiPlayerLevelContext {
+
+    override def getUUID: UUID = UUID.randomUUID()
   }
 
 }
