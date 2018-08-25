@@ -81,24 +81,30 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
   private def exchangeMass(bigEntity: CollidableProperty, smallEntity: CollidableProperty, overlap: Double): Unit = {
     val bigRadius = bigEntity.getDimensionComponent.radius
     val tinyRadius = smallEntity.getDimensionComponent.radius
+    //reduce radius of the small entity
+    smallEntity.getDimensionComponent.radius_(tinyRadius - overlap*massExchangeRate)
 
-    (bigEntity.getTypeComponent.typeEntity, smallEntity.getTypeComponent.typeEntity) match {
+    //change radius of the big entity and compute the quantity to move the two entity
+    val quantityToMove = (bigEntity.getTypeComponent.typeEntity, smallEntity.getTypeComponent.typeEntity) match {
       case (EntityType.AntiMatter, _) | (_, EntityType.AntiMatter) =>
-        bigEntity.getDimensionComponent.radius_(bigRadius - (overlap/2))
-        smallEntity.getDimensionComponent.radius_(tinyRadius - (overlap/2))
+        bigEntity.getDimensionComponent.radius_(bigRadius - overlap*massExchangeRate)
+        (overlap * (1 - massExchangeRate*2)) / 2
       case _ =>
-        smallEntity.getDimensionComponent.radius_(tinyRadius - overlap*massExchangeRate)
         bigEntity.getDimensionComponent.radius_(bigRadius + overlap*massExchangeRate)
-        //move the big entity
-        val bigEntityPosition = bigEntity.getPositionComponent
-        val unitVector = MathUtils.unitVector(bigEntityPosition.point, smallEntity.getPositionComponent.point)
-        bigEntityPosition.point_(bigEntityPosition.point add (unitVector multiply (overlap/2)))
-        //move the small entity
-        val smallEntityPosition = smallEntity.getPositionComponent
-        smallEntityPosition.point_(smallEntityPosition.point add (unitVector multiply (-overlap/2)))
-        bounceRule.checkCollision(bigEntity)
-        bounceRule.checkCollision(smallEntity)
+        overlap/2
     }
+
+    moveEntitiesAfterCollision(bigEntity, smallEntity, quantityToMove)
+  }
+
+  private def moveEntitiesAfterCollision(entity1: CollidableProperty, entity2: CollidableProperty, quantityToMove: Double): Unit = {
+    val position1 = entity1.getPositionComponent
+    val position2 = entity2.getPositionComponent
+    val unitVector = MathUtils.unitVector(position1.point, position2.point)
+    position1.point_(position1.point add (unitVector multiply quantityToMove))
+    position2.point_(position2.point add (unitVector multiply (-quantityToMove)))
+    bounceRule.checkCollision(entity1)
+    bounceRule.checkCollision(entity2)
   }
 
 

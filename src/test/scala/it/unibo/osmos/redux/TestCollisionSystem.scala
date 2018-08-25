@@ -96,9 +96,9 @@ class TestCollisionSystem extends FunSuite {
 
     system.update()
 
-    assert(entity1.getDimensionComponent.radius == 5.1)
+    assert(entity1.getDimensionComponent.radius == 5.2)
     assert(entity1.getPositionComponent.point == Point(59.5,80))
-    assert(entity2.getDimensionComponent.radius == 1.9)
+    assert(entity2.getDimensionComponent.radius == 1.8)
     assert(entity2.getPositionComponent.point == Point(66.5,80))
   }
 
