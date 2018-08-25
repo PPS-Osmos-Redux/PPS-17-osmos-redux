@@ -59,6 +59,11 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     .withText("Become huge", 50, Color.White)
     .build()
 
+  /**
+    * The upper state box
+    */
+  protected val levelStateBox = new LevelStateBox(this,4.0)
+
   /* We start the level */
   private def startLevel(): Unit = {
     /* Splash screen animation, starting with a FadeIn */
@@ -98,7 +103,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   /**
     * The content of the whole scene
     */
-  content = Seq(canvas, pauseScreen, new LevelStateBox(this,4.0), splashScreen)
+  content = Seq(canvas, pauseScreen, levelStateBox, splashScreen)
 
   /**
     * The level context, created with the LevelScene. It still needs to be properly setup
@@ -154,7 +159,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   }
 
   override def onLevelSetup(mapShape: MapShape): Unit = mapBorder match {
-    case Some(e) => throw new IllegalStateException("Map has already been set")
+    case Some(_) => throw new IllegalStateException("Map has already been set")
     case _ =>
       val center = Point(mapShape.center._1, mapShape.center._2)
       mapShape match {
