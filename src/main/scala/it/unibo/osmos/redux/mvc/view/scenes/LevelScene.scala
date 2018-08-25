@@ -108,7 +108,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   /**
     * The level context, created with the LevelScene. It still needs to be properly setup
     */
-  private var _levelContext: Option[LevelContext] = Option.empty
+  protected var _levelContext: Option[LevelContext] = Option.empty
   def levelContext: Option[LevelContext] = _levelContext
   def levelContext_= (levelContext: LevelContext): Unit = _levelContext = Option(levelContext)
 
@@ -153,7 +153,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     * Sends a MouseEventWrapper to the LevelContextListener
     * @param mouseEvent the mouse event
     */
-  protected def sendMouseEvent(mouseEvent: MouseEvent): Unit  =     levelContext match {
+  protected def sendMouseEvent(mouseEvent: MouseEvent): Unit  = levelContext match {
     case Some(lc) => if (!paused.value) lc notifyMouseEvent MouseEventWrapper(Point(mouseEvent.getX, mouseEvent.getY))
     case _ =>
   }
