@@ -28,7 +28,7 @@ class TestInputSystem extends FunSuite {
     EntityManager.add(pce)
 
     //prepare list of events to apply
-    val events = List(MouseEventWrapper(pce.getUUID, Point(157,104)),  MouseEventWrapper(pce.getUUID, Point(200,194)), MouseEventWrapper(pce.getUUID, Point(314,44)))
+    val events = List(MouseEventWrapper(Point(157,104), pce.getUUID),  MouseEventWrapper(Point(200,194), pce.getUUID), MouseEventWrapper(Point(314,44), pce.getUUID))
 
     //add mouse events to Input event stack
     InputEventQueue.enqueue(events: _*)
@@ -57,10 +57,10 @@ class TestInputSystem extends FunSuite {
     val originalAccel = AccelerationComponent(acceleration(1).vector.x, acceleration(1).vector.y)
 
     //pre-compute expected values
-    val expectedAccel = computeExpectedAcceleration(system, pce, MouseEventWrapper(pce.getUUID, Point(157,104)))
+    val expectedAccel = computeExpectedAcceleration(system, pce, MouseEventWrapper(Point(157,104), pce.getUUID))
 
     //add mouse event to Input event stack
-    InputEventQueue.enqueue(MouseEventWrapper(pce.getUUID, Point(157,104)))
+    InputEventQueue.enqueue(MouseEventWrapper(Point(157,104), pce.getUUID))
 
     //call system update
     system.update()
