@@ -15,6 +15,7 @@ import scalafx.application.Platform
 import scalafx.beans.property.BooleanProperty
 import scalafx.scene.canvas.Canvas
 import scalafx.scene.image.Image
+import javafx.scene.input.MouseEvent
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.{Circle, Rectangle, Shape}
 import scalafx.stage.Stage
@@ -139,10 +140,17 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     }
     fadeOutTransition.play()
 
-    levelContext match {
-      case Some(lc) => /*if (!paused.value) lc notifyMouseEvent MouseEventWrapper(Point(mouseEvent.getX, mouseEvent.getY))*/ //TODO: add uuid to MouseEventWrapper
-      case _ =>
-    }
+    /* Sending the event */
+    sendMouseEvent(mouseEvent)
+  }
+
+  /**
+    * Sends a MouseEventWrapper to the LevelContextListener
+    * @param mouseEvent the mouse event
+    */
+  protected def sendMouseEvent(mouseEvent: MouseEvent): Unit  =     levelContext match {
+    case Some(lc) => if (!paused.value) lc notifyMouseEvent MouseEventWrapper(Point(mouseEvent.getX, mouseEvent.getY))
+    case _ =>
   }
 
   override def onLevelSetup(mapShape: MapShape): Unit = mapBorder match {
