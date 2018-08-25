@@ -7,19 +7,29 @@ import scalafx.scene.layout.VBox
 /**
   * Simple box to manage pause, resume and exit events
   */
-class LevelStateBox(val listener: LevelStateBoxListener, val vSpacing: Double) extends VBox(vSpacing){
+class LevelStateBox(val listener: LevelStateBoxListener, val vSpacing: Double, val showPauseButton: Boolean = true) extends VBox(vSpacing){
   padding = Insets(4.0)
-  children = Seq(new Button("Pause") {
-    var isPaused: Boolean = false
 
+  /**
+    * Pause button
+    */
+  private val pauseBtton = new Button("Pause") {
+    var isPaused: Boolean = false
     onAction = _ => {
       isPaused = !isPaused
       if (isPaused) {text = "Resume"; listener.onPause()} else {text = "Pause"; listener.onResume()}
     }
+  }
 
-  }, new Button("Exit") {
+  /**
+    * Exit button
+    */
+  private val exitButton = new Button("Exit") {
     onAction = _ => listener.onExit()
-  })
+  }
+
+  if (showPauseButton) children = Seq(pauseBtton, exitButton) else children = Seq(exitButton)
+
 }
 
 /**
