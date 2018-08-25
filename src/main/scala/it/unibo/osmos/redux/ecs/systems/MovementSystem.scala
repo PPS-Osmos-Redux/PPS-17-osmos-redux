@@ -5,14 +5,7 @@ import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.utils.Point
 
-case class MovementSystem(levelInfo: Level) extends AbstractSystem[MovableProperty] {
-
-  private val collisionRule = levelInfo.levelMap.collisionRule
-  private val bounceRule = levelInfo.levelMap.mapShape match {
-    case shape: Rectangle => RectangularBorder(Point(shape.center._1, shape.center._2), collisionRule, shape.base, shape.height)
-    case shape: Circle => CircularBorder(Point(shape.center._1, shape.center._2), collisionRule, shape.radius)
-    case _ => throw new IllegalArgumentException
-  }
+case class MovementSystem() extends AbstractSystem[MovableProperty] {
 
   override def getGroupProperty: Class[MovableProperty] = classOf[MovableProperty]
 
@@ -20,7 +13,6 @@ case class MovementSystem(levelInfo: Level) extends AbstractSystem[MovableProper
     entities foreach (entity => {
       updateEntitySpeed(entity)
       updateEntityPosition(entity)
-      bounceRule.checkCollision(entity)
     })
   }
 

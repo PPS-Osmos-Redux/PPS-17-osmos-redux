@@ -2,20 +2,30 @@ package it.unibo.osmos.redux.ecs.systems
 
 import it.unibo.osmos.redux.ecs.components.EntityType
 import it.unibo.osmos.redux.ecs.entities.CollidableProperty
-import it.unibo.osmos.redux.utils.MathUtils
+import it.unibo.osmos.redux.mvc.model.Level
+import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
+import it.unibo.osmos.redux.utils.{MathUtils, Point}
 
-case class CollisionSystem() extends AbstractSystem[CollidableProperty] {
+case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidableProperty] {
 
   //the percentage of mass that an entity can acquire from another during a collision in a tick
-  private val massExchangeRate = 0.1
+  private val massExchangeRate = 0.2
   //constants that controls how much deceleration is applied to an entity when colliding with another one
   private val decelerationAmount = 0.1
   //constant that define the initial acceleration of a steady entity when a collision occurs
   private val initialAcceleration = 0.001
 
+  private val collisionRule = levelInfo.levelMap.collisionRule
+  private val bounceRule = levelInfo.levelMap.mapShape match {
+    case shape: Rectangle => RectangularBorder(Point(shape.center._1, shape.center._2), collisionRule, shape.base, shape.height)
+    case shape: Circle => CircularBorder(Point(shape.center._1, shape.center._2), collisionRule, shape.radius)
+    case _ => throw new IllegalArgumentException
+  }
+
   override def getGroupProperty: Class[CollidableProperty] = classOf[CollidableProperty]
 
   override def update(): Unit = {
+    entities foreach(e => bounceRule.checkCollision(e))
     for {
       (e1, xIndex) <- entities.zipWithIndex
       (e2, yIndex) <- entities.zipWithIndex
