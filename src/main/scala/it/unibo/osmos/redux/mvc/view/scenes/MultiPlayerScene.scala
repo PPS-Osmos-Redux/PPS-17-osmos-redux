@@ -1,17 +1,13 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
-import java.util.function.UnaryOperator
-
 import it.unibo.osmos.redux.multiplayer.common.NetworkUtils
-import it.unibo.osmos.redux.mvc.view.components.custom.{TitledComboBox, TitledTextField}
+import it.unibo.osmos.redux.mvc.view.components.custom.{TitledComboBox, TitledNumericTextField, TitledTextField}
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.LobbyContext
-import scalafx.util.converter.IntStringConverter
 import scalafx.application.Platform
 import scalafx.beans.property.{BooleanProperty, StringProperty}
 import scalafx.geometry.{Insets, Pos}
-import scalafx.scene.control.TextFormatter.Change
-import scalafx.scene.control.{Alert, Button, TextFormatter}
+import scalafx.scene.control.{Alert, Button}
 import scalafx.scene.layout.{BorderPane, HBox, VBox}
 import scalafx.stage.Stage
 
@@ -37,16 +33,10 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
   private val addressTextField = new TitledTextField(addressTitle, addressValue)
 
   private val portTitle: StringProperty = StringProperty("Server port: ")
-  private val portValue: StringProperty = StringProperty("0")
-  private val portTextField = new TitledTextField(portTitle, portValue)
-
-  //TODO: do not work (Force integers only or use TitledNumericTextField)
-  /*portTextField.node.setTextFormatter(new TextFormatter[String]((c: Change) => {
-    val input = c.getText
-    val isNumber = input.matches("[0-9]*")
-    if (!isNumber) c.setText(""); c.delegate.setText("")
-    c
-  }))*/
+  private val portTextField = new TitledNumericTextField(portTitle) {
+    minValue = 0
+    maxValue = 65535
+  }
 
   private val mode: BooleanProperty = BooleanProperty(true)
   private val modeComboBox = new TitledComboBox[String]("Mode: ", Seq("Client", "Server"), {
@@ -54,15 +44,14 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
       mode.value = false
       addressTitle.setValue("Server address:")
       portTitle.setValue("Server port:")
-      if (addressValue.isNotNull.get() && addressValue.getValue.equals(NetworkUtils.getLocalIPAddress))
-        addressValue.setValue("")
-        portValue.setValue("0")
+      if (addressValue.getValue.equals(NetworkUtils.getLocalIPAddress)) addressValue.setValue("")
+      portTextField.node.setText("0")
     case "Server" =>
       mode.value = true
       addressTitle.setValue("Address:")
       portTitle.setValue("Port:")
       if (addressValue.isEmpty.get()) addressValue.setValue(NetworkUtils.getLocalIPAddress)
-      if (!portValue.getValue.equals("0")) portValue.setValue("0")
+      if (!portTextField.node.getText.equals("0")) portTextField.node.setText("0")
   }, vertical = false)
 
   private val goBack = new Button("Go back") {
@@ -95,7 +84,7 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
   private val goToLobby = new Button("Go to lobby") {
     /* We create the User */
     private val user = if (mode.value) {
-      User(username.value, addressValue.value, portValue.value, isServer = true)
+      User(username.value, addressValue.value, portTextField.node.getText(), isServer = true)
     } else {
       User(username.value, isServer = false)
     }
@@ -107,7 +96,7 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
 
     /* We parse the user values and ask to enter the lobby */
     onAction = _ => if (mode.value){
-      listener.onLobbyClick(User(username.value, addressValue.value, portValue.value, isServer = true), lobbyContext, onLobbyEnterResult)
+      listener.onLobbyClick(User(username.value, addressValue.value, portTextField.node.getText(), isServer = true), lobbyContext, onLobbyEnterResult)
     } else{
       listener.onLobbyClick(User(username.value, isServer = false), lobbyContext, onLobbyEnterResult)
     }

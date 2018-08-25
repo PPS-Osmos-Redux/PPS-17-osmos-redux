@@ -1,15 +1,24 @@
 package it.unibo.osmos.redux.mvc.view.components.custom
 
 import scalafx.beans.property.StringProperty
-import scalafx.event.ActionEvent
 import scalafx.scene.control.{TextField, TextFormatter}
 import scalafx.scene.control.TextFormatter.Change
+import scalafx.util.converter.IntStringConverter
 
-class TitledNumericTextField(override val title: StringProperty, stringProperty: StringProperty) extends TitledNode[TextField](title, vertical = false) {
+class TitledNumericTextField(override val title: StringProperty) extends TitledNode[TextField](title, vertical = false) {
 
-  def this(title: String, stringProperty: StringProperty) {
-    this(StringProperty(title), stringProperty)
+  def this(title: String) {
+    this(StringProperty(title))
   }
+
+  /**
+    * The maximum value
+    */
+  var maxValue: Int = Int.MaxValue
+  /**
+    * The minimum value
+    */
+  var minValue: Int = Int.MinValue
 
   /**
     * The node that will be shown after the text
@@ -19,13 +28,13 @@ class TitledNumericTextField(override val title: StringProperty, stringProperty:
   override def node: TextField = new TextField(){
     editable = true
     prefWidth <== maxWidth
-    textFormatter = new TextFormatter[String](new TextFormatter[String]((c: Change) => {
+    textFormatter = new TextFormatter[Int](new IntStringConverter, 0, { c: Change => {
       val input = c.getText
-      val isNumber = input.matches("[0-9]*")
-      if (!isNumber) c.setText(""); c.delegate.setText("")
+      val isNumber = input.matches("\\d+")
+      if (!isNumber) c.setText("")
+      if (isNumber && (maxValue < c.getControlNewText.toInt || minValue > c.getControlNewText.toInt)) c.setText("")
       c
-    }))
-    if (stringProperty != null) stringProperty <==> text
+    }})
   }
 }
 
