@@ -13,6 +13,7 @@ case class DrawSystem(entitiesDrawer: EntitiesDrawer) extends AbstractSystemWith
 
   override protected def getGroupPropertySecondType: Class[PlayerCellEntity] = classOf[PlayerCellEntity]
 
+  //TODO: upgrade to support drawableentities
   override def update(): Unit = entitiesDrawer.drawEntities(getPlayerEntity, getEntities)
 
   private def getPlayerEntity: Option[DrawableWrapper] =

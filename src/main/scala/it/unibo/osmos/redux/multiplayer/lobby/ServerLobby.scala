@@ -1,8 +1,9 @@
 package it.unibo.osmos.redux.multiplayer.lobby
 
 import it.unibo.osmos.redux.multiplayer.players.ReferablePlayer
+import it.unibo.osmos.redux.mvc.view.context.LobbyContext
 
-case class ServerLobby() extends Lobby[ReferablePlayer] {
+case class ServerLobby(override val lobbyContext: LobbyContext) extends AbstractLobby[ReferablePlayer](lobbyContext) {
 
   override def addPlayer(player: ReferablePlayer): Unit = {
     if (getPlayer(player.getUsername).nonEmpty) throw new IllegalArgumentException("Cannot add player to lobby because the username is already specified")

@@ -10,7 +10,7 @@ object ActorSystemHolder {
   /**
     * Actor System variable, lazily initialized
     */
-  private lazy val system: ActorSystem = ActorSystem(Constants.defaultSystemName, ActorSystemConfigFactory.create())
+  private lazy val system: ActorSystem = ActorSystem(Constants.defaultSystemName, ActorSystemConfigFactory.load())
 
   /**
     * Gets the actor system.

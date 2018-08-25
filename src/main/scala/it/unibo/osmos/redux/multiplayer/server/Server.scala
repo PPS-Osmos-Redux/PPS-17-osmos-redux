@@ -11,10 +11,11 @@ import it.unibo.osmos.redux.multiplayer.lobby.ServerLobby
 import it.unibo.osmos.redux.multiplayer.players.{BasicPlayer, PlayerInfo, ReferablePlayer}
 import it.unibo.osmos.redux.multiplayer.server.ServerActor.{PlayerEnteredLobby, PlayerLeftLobby}
 import it.unibo.osmos.redux.mvc.model.Level
+import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LobbyContext}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
 import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
+import it.unibo.osmos.redux.utils.InputEventQueue
 
-import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
 import scala.concurrent.duration._
@@ -44,8 +45,9 @@ trait Server {
 
   /**
     * Creates a lobby and enters it, all further requests to enter it are handled.
+    * @param lobbyContext The lobby context.
     */
-  def createLobby(): Unit
+  def createLobby(lobbyContext: LobbyContext): Unit
 
   /**
     * Closes the lobby, all further requests to enter it are ignored.
@@ -76,7 +78,13 @@ trait Server {
     * Signals all clients that the game needs to be started and checks that they all reply.
     * @return Promise that completes with true if all clients replied before the timeout; otherwise false.
     */
-  def startGame(level: Level): Promise[Boolean]
+  def initGame(level: Level): Promise[Boolean]
+
+  /**
+    * Starts the game by notifying the interface and passing the level context to use.
+    * @param levelContext The level context.
+    */
+  def startGame(levelContext: LevelContext): Unit
 
   /**
     * Signals all clients that the game have been stopped.
@@ -90,13 +98,7 @@ trait Server {
   def removePlayerFromGame(username: String)
 
   /**
-    * Subscribes an observer to the client input events.
-    * @param observer The observer.
-    */
-  def subscribeClientInputEvent(observer: ClientInputEventObserver): Unit
-
-  /**
-    * Notifies all observer of a new client input events.
+    * Notifies server about new client input event.
      * @param event The event.
     */
   def notifyClientInputEvent(event: MouseEventWrapper): Unit
@@ -122,8 +124,6 @@ object Server {
     private var uuid: UUID = _
     //the current lobby
     private var lobby: Option[ServerLobby] = None
-    //the subscribed observers
-    private var clientObservers: mutable.Set[ClientInputEventObserver] = mutable.Set()
     //the actor ref used to send and receive
     private var ref: Option[ActorRef] = None
 
@@ -136,7 +136,6 @@ object Server {
     override def setUUID(uuid: UUID): Unit = this.uuid = uuid
 
     override def kill(): Unit = {
-      clientObservers.clear()
       if (ref.nonEmpty) {
         ref.get ! PoisonPill
         ref = None
@@ -148,7 +147,7 @@ object Server {
 
     //GAME MANAGEMENT
 
-    override def startGame(level: Level): Promise[Boolean] = {
+    override def initGame(level: Level): Promise[Boolean] = {
       val promise = Promise[Boolean]()
 
       //assign player cells to lobby players
@@ -162,8 +161,12 @@ object Server {
       promise
     }
 
+    override def startGame(levelContext: LevelContext): Unit = {
+      lobby.get.startGame(levelContext)
+    }
+
     override def stopGame(): Unit = {
-      broadcastMessage(ServerActor.GameStopped)
+      broadcastMessage(ServerActor.GameStopped(false))
       kill()
     }
 
@@ -176,8 +179,8 @@ object Server {
 
     //LOBBY MANAGEMENT
 
-    override def createLobby(): Unit = {
-      lobby = Some(ServerLobby())
+    override def createLobby(lobbyContext: LobbyContext): Unit = {
+      lobby = Some(ServerLobby(lobbyContext))
       val address = ActorSystemHolder.systemAddress
       addPlayerToLobby(ref.get, BasicPlayer(username, PlayerInfo(address.host.getOrElse("0.0.0.0"), address.port.getOrElse(0))))
     }
@@ -205,10 +208,8 @@ object Server {
 
     //OBSERVERS MANAGEMENT
 
-    override def subscribeClientInputEvent(observer: ClientInputEventObserver): Unit = clientObservers += observer
-
     //TODO: event must have uuid
-    override def notifyClientInputEvent(event: MouseEventWrapper): Unit = clientObservers foreach(c => c.update(event))
+    override def notifyClientInputEvent(event: MouseEventWrapper): Unit = InputEventQueue enqueue event
 
     //HELPER METHODS
 

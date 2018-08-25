@@ -23,7 +23,7 @@ case class InputSystem() extends AbstractSystem[InputProperty] {
     */
   val lostMassInitialVelocity: Double = 4.0
 
-  override def getGroupProperty(): Class[InputProperty] = classOf[InputProperty]
+  override def getGroupProperty: Class[InputProperty] = classOf[InputProperty]
 
   override def update(): Unit = {
 
@@ -38,7 +38,9 @@ case class InputSystem() extends AbstractSystem[InputProperty] {
 
       inputEvents foreach (ev => {
 
-        //TODO: probably at some point there will be different events and it will be necessary to filter them before applying deceleration
+        //TODO: upgrade to handle MouseEventWrapper with UUID
+
+        //TODO: probably at some point there will be different events and it will be necessary to filter them before applying deceleration (es. mouse pressed)
 
         val newPoint = MathUtils.normalizePoint(Point(pos.point.x - ev.point.x, pos.point.y - ev.point.y))
 

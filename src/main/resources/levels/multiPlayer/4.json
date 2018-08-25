@@ -51,9 +51,8 @@
         "speedX": 0,
         "speedY": 0
       }
-    }
-    ],
-  "levelId": 1,
+    }],
+  "levelId": "4",
   "isSimulation": false,
   "victoryRule": {
     "victoryRule": "Become_the_biggest"

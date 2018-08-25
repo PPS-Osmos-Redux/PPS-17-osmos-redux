@@ -1,5 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.components.custom
 
+import scalafx.beans.property.StringProperty
 import scalafx.geometry.Insets
 import scalafx.scene.Node
 import scalafx.scene.layout.{HBox, Pane, VBox}
@@ -13,13 +14,14 @@ import scalafx.scene.text.Text
   * @param spacing the spacing between the text and the node
   * @tparam N the node type
   */
-abstract class TitledNode[N <: Node](val title: String, vertical: Boolean, spacing: Double = 4.0) {
+abstract class TitledNode[N <: Node](val title: StringProperty, vertical: Boolean, spacing: Double = 4.0) {
 
   val root: Pane = if (vertical) new VBox(spacing) else new HBox(spacing)
   root.padding = Insets(10.0)
   root.style = "-fx-background-color : #ffffff;"
 
-  private val text = new Text(title) {
+  private val text = new Text {
+    text <==> title
     fill = Color.Black
   }
 

@@ -53,7 +53,7 @@ object View {
       if (levelContextType eq LevelContextType.multiplayer) {
         controller.get.initLevel(levelContext, level, levelContextType)
       } else {
-        controller.get.initMultiPlayerLevel(levelContext, level)
+        controller.get.initMultiPlayerLevel()
       }
     })
 
@@ -72,8 +72,6 @@ object View {
       * @param callback the callback
       */
     override def onLobbyClick(user: User, lobbyContext: LobbyContext, callback: (User, LobbyContext, Boolean) => Unit): Unit = checkController(() => controller.get.initLobby(user, lobbyContext).future.onComplete((res) => callback(user, lobbyContext, res.get)))
-
   }
-
 }
 
