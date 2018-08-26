@@ -19,7 +19,7 @@ case class User(username: String, ip: String = "", port: Int = 0, isServer: Bool
     * @param isServer true if the user is a server, false if it's a client
     * @return
     */
-  def this(player: BasicPlayer, isServer: Boolean) = this(player.getUsername, player.getInfo.address, player.getInfo.port, isServer)
+  def this(player: BasicPlayer, isServer: Boolean) = this(player.username, player.address, player.port, isServer)
 
   def getUserWithProperty: UserWithProperties = UserWithProperties(StringProperty(username), StringProperty(ip), IntegerProperty(port), BooleanProperty(isServer))
 }

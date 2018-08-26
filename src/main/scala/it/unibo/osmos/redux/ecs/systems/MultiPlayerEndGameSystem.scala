@@ -30,11 +30,11 @@ case class MultiPlayerEndGameSystem(server: Server, levelContext: GameStateHolde
   override def update(): Unit = {
     if (levelContext.gameCurrentState == GamePending) {
 
-      val (alivePlayers, deadPlayers) = server.getLobbyPlayers partition(p => entities.map(_.getUUID) contains p.getUsername)
+      val (alivePlayers, deadPlayers) = server.getLobbyPlayers partition(p => entities.map(_.getUUID) contains p.username)
       val aliveCells = entitiesSecondType.filterNot(c => deadPlayers.map(_.getUUID) contains c.getUUID)
 
       //notify all dead players and remove them
-      deadPlayers.foreach(p => server.removePlayerFromGame(p.getUsername))
+      deadPlayers.foreach(p => server.removePlayerFromGame(p.username))
 
       //check
       for (
@@ -47,8 +47,8 @@ case class MultiPlayerEndGameSystem(server: Server, levelContext: GameStateHolde
           server.stopGame()
           levelContext.notify(GameWon)
         } else {
-          server.deliverMessage(player.getUsername, GameEnded(true))
-          server.broadcastMessage(GameEnded(false), player.getUsername)
+          server.deliverMessage(player.username, GameEnded(true))
+          server.broadcastMessage(GameEnded(false), player.username)
           levelContext.notify(GameLost)
           server.kill()
         }

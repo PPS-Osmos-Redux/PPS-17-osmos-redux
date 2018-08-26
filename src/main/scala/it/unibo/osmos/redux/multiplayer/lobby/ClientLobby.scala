@@ -7,8 +7,8 @@ import it.unibo.osmos.redux.mvc.view.context.LobbyContext
 case class ClientLobby(private val lobbyContext: LobbyContext) extends AbstractLobby[BasicPlayer](lobbyContext) {
 
   override def addPlayer(player: BasicPlayer): Unit = {
-    if (getPlayer(player.getUsername).nonEmpty) throw new IllegalArgumentException("Cannot add player to lobby because the username is already specified")
-    players += (player.getUsername -> player)
+    if (getPlayer(player.username).nonEmpty) throw new IllegalArgumentException("Cannot add player to lobby because the username is already specified")
+    players += (player.username -> player)
     notifyUserAdded(new User(player, false))
   }
 

@@ -6,7 +6,7 @@ import akka.util.Timeout
 import it.unibo.osmos.redux.ecs.entities.{EntityManager, PlayerCellEntity}
 import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.multiplayer.lobby.ServerLobby
-import it.unibo.osmos.redux.multiplayer.players.{BasicPlayer, PlayerInfo, ReferablePlayer}
+import it.unibo.osmos.redux.multiplayer.players.{BasicPlayer, ReferablePlayer}
 import it.unibo.osmos.redux.multiplayer.server.ServerActor.{GameEnded, PlayerEnteredLobby, PlayerLeftLobby}
 import it.unibo.osmos.redux.mvc.model.Level
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
@@ -156,15 +156,15 @@ object Server {
     //COMMUNICATION
 
     override def deliverMessage(username: String, message: Any): Unit = {
-      lobby.get.getPlayers.find(_.getUsername == username) match  {
-        case Some(player) => player.getRef ! message
+      lobby.get.getPlayers.find(_.username == username) match  {
+        case Some(player) => player.actorRef ! message
         case None => throw new IllegalArgumentException("Cannot deliver message to specific client if the username does not match any player.")
       }
     }
 
     override def broadcastMessage(message: Any, clientsToExclude: String*): Unit = {
       val usernameToExclude = clientsToExclude +: this.username
-      lobby.get.getPlayers.filterNot(p => usernameToExclude contains p.getUsername).foreach(p => p.getRef ! message)
+      lobby.get.getPlayers.filterNot(p => usernameToExclude contains p.username).foreach(p => p.actorRef ! message)
     }
 
     //GAME MANAGEMENT
@@ -200,7 +200,7 @@ object Server {
       if (player.isEmpty) throw new IllegalArgumentException("Cannot remove player from game because it was not found.")
 
       //notify player that he has lost
-      if (notify) player.get.getRef ! GameEnded(false)
+      if (notify) player.get.actorRef ! GameEnded(false)
 
       val playerEntity = EntityManager.filterEntities(classOf[PlayerCellEntity]).find(_.getUUID == player.get.getUUID)
       if (player.isEmpty) throw new IllegalArgumentException("Cannot remove player cell from game because it was not found.")
@@ -215,7 +215,7 @@ object Server {
       lobby = Some(ServerLobby(lobbyContext))
       val address = ActorSystemHolder.systemAddress
       //add the server itself
-      val serverPlayer = BasicPlayer(username, PlayerInfo(address.host.getOrElse("0.0.0.0"), address.port.getOrElse(0)))
+      val serverPlayer = BasicPlayer(username, address.host.getOrElse("0.0.0.0"), address.port.getOrElse(0))
       lobbyContext.users = Seq(new User(serverPlayer, true))
     }
 
@@ -228,7 +228,7 @@ object Server {
 
     override def addPlayerToLobby(actorRef: ActorRef, player: BasicPlayer): Boolean = {
       if (!lobby.get.isFull) {
-        val newPlayer = ReferablePlayer(player.getUsername, player.getInfo, actorRef)
+        val newPlayer = ReferablePlayer(player.username, player.address, player.port, actorRef)
         lobby.get.addPlayer(newPlayer)
         broadcastMessage(PlayerEnteredLobby(newPlayer.toBasicPlayer))
         true
@@ -244,7 +244,7 @@ object Server {
 
     private def assignCellsToPlayers(level: Level): Seq[Future[Any]] = {
       val availablePlayerCells = level.entities.filter(_.isInstanceOf[PlayerCellEntity]).map(p => Some(p.getUUID))
-      val otherPlayers = lobby.get.getPlayers.filterNot(_.getUsername == this.username)
+      val otherPlayers = lobby.get.getPlayers.filterNot(_.username == this.username)
 
       if (availablePlayerCells.size <= 0) throw new IllegalStateException()
 
@@ -252,13 +252,13 @@ object Server {
       this.uuid = availablePlayerCells.head.get
 
       otherPlayers.zipAll(availablePlayerCells.tail, null, None).map {
-        case (p, Some(id)) =>  p.setUUID(id); p.getRef ? ServerActor.GameStarted(id)
+        case (p, Some(id)) =>  p.setUUID(id); p.actorRef ? ServerActor.GameStarted(id)
         case (_, None) => throw new IllegalStateException("Not enough player cells for all the clients")
       }
     }
 
     private def getPlayerFromLobby(username: String): Option[ReferablePlayer] = {
-      lobby.get.getPlayers.find(_.getUsername == username)
+      lobby.get.getPlayers.find(_.username == username)
     }
   }
 }

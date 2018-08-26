@@ -2,7 +2,7 @@ package it.unibo.osmos.redux.multiplayer.server
 
 import akka.actor.{Actor, Props}
 import it.unibo.osmos.redux.multiplayer.client.ClientActor._
-import it.unibo.osmos.redux.multiplayer.players.{BasicPlayer, PlayerInfo}
+import it.unibo.osmos.redux.multiplayer.players.BasicPlayer
 import it.unibo.osmos.redux.multiplayer.server.ServerActor.{Established, LobbyFull, LobbyInfo}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity
 
@@ -17,8 +17,8 @@ class ServerActor(private val server: Server) extends Actor {
     case EnterLobby(username) =>
       //to tell the server that you want to enter the lobby (server gets the actor ref from the sender object at his side)
       //TODO: along with all current players in the lobby you can send UUID too
-      val playerInfo = PlayerInfo(sender.path.address.host.getOrElse("0.0.0.0"), sender.path.address.port.getOrElse(0))
-      if (server.addPlayerToLobby(sender, BasicPlayer(username, playerInfo))) sender ! LobbyInfo(server.getLobbyPlayers.map(_.toBasicPlayer))
+      val (address, port) = (sender.path.address.host.getOrElse("0.0.0.0"), sender.path.address.port.getOrElse(0))
+      if (server.addPlayerToLobby(sender, BasicPlayer(username, address, port))) sender ! LobbyInfo(server.getLobbyPlayers.map(_.toBasicPlayer))
       else sender ! LobbyFull
     case LeaveLobby(username) => server.removePlayerFromLobby(username)
     case PlayerInput(event) => server.notifyClientInputEvent(event)

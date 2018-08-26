@@ -7,8 +7,8 @@ import it.unibo.osmos.redux.mvc.view.context.LobbyContext
 case class ServerLobby(private val lobbyContext: LobbyContext) extends AbstractLobby[ReferablePlayer](lobbyContext) {
 
   override def addPlayer(player: ReferablePlayer): Unit = {
-    if (getPlayer(player.getUsername).nonEmpty) throw new IllegalArgumentException("Cannot add player to lobby because the username is already specified")
-    players += (player.getUsername -> player)
+    if (getPlayer(player.username).nonEmpty) throw new IllegalArgumentException("Cannot add player to lobby because the username is already specified")
+    players += (player.username -> player)
     notifyUserAdded(new User(player.toBasicPlayer, false))
   }
 
@@ -19,7 +19,7 @@ case class ServerLobby(private val lobbyContext: LobbyContext) extends AbstractL
   override def getPlayers: Seq[ReferablePlayer] = players.values.toList
 
   override def removePlayer(username: String): Unit = {
-    notifyUserRemoved(new User(players(username).toBasicPlayer , false))
+    notifyUserRemoved(new User(players(username).toBasicPlayer, false))
     players -= username
   }
 }
