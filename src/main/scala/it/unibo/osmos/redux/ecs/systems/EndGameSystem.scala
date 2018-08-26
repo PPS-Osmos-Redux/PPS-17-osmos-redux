@@ -10,22 +10,25 @@ import it.unibo.osmos.redux.mvc.view.events.{GameLost, GamePending, GameWon}
   * @param levelContext object to notify the view of the end game result
   * @param victoryRules enumeration representing the level's victory rules
   */
-case class EndGameSystem(levelContext: GameStateHolder, victoryRules: VictoryRules.Value) extends AbstractSystem[DeathProperty] {
+case class EndGameSystem(levelContext: GameStateHolder, victoryRules: VictoryRules.Value) extends AbstractSystemWithTwoTypeOfEntity[DeathProperty] {
 
   private val victoryCondition = victoryRules match {
     case VictoryRules.becomeTheBiggest => BecomeTheBiggestVictoryCondition()
     case _ => throw new NotImplementedError()
   }
 
-  override def getGroupProperty: Class[DeathProperty] = classOf[DeathProperty]
+  override protected def getGroupProperty: Class[PlayerCellEntity] = classOf[PlayerCellEntity]
+
+  override protected def getGroupPropertySecondType: Class[DeathProperty] = classOf[DeathProperty]
 
   override def update(): Unit = {
     if (levelContext.gameCurrentState == GamePending) {
-      val player = entities.find(_.isInstanceOf[PlayerCellEntity])
-      player match {
-        case Some(player) => if (victoryCondition.check(player, entities)) levelContext.notify(GameWon)
-        case None => levelContext.notify(GameLost)
-      }
+      if (entities.isEmpty) {
+        levelContext.notify(GameLost)
+      } else {
+        entities foreach (playerEntity => {
+          if (victoryCondition.check(playerEntity, entitiesSecondType)) levelContext.notify(GameWon)
+        })
     }
   }
 }
