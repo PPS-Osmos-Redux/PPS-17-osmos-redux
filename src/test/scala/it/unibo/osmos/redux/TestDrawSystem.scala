@@ -19,6 +19,7 @@ case class DrawSystemSpy() extends LevelContext {
   private var _entities: Seq[DrawableWrapper] = Seq()
   protected var _listener: Option[LevelContextListener] = Option.empty
 
+
   def player: Option[DrawableWrapper] = _player
 
   def entities: Seq[DrawableWrapper] = _entities
@@ -43,6 +44,10 @@ case class DrawSystemSpy() extends LevelContext {
   override val levelContextType: LevelContextType.Value = LevelContextType.normal
 
   override def setListener(levelContextListener: LevelContextListener): Unit = _listener = Option(levelContextListener)
+
+  override def getPlayerUUID: String = ""
+
+  override def setPlayerUUID(playerUUID: String): Unit = ???
 }
 
 /**

@@ -16,7 +16,7 @@ class TestEndGameSystem extends FunSuite with BeforeAndAfter {
   private var endGameSystem: EndGameSystem = _
 
   before {
-    levelContext = LevelContext()
+    levelContext = LevelContext(isSimulation = false)
   }
 
   after {

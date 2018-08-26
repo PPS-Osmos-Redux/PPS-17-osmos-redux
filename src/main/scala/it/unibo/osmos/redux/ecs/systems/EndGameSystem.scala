@@ -1,9 +1,9 @@
 package it.unibo.osmos.redux.ecs.systems
 
-import it.unibo.osmos.redux.ecs.entities.{DeathProperty, PlayerCellEntity, Property}
+import it.unibo.osmos.redux.ecs.entities.{DeathProperty, PlayerCellEntity}
 import it.unibo.osmos.redux.mvc.model.VictoryRules
-import it.unibo.osmos.redux.mvc.view.events.{GameLost, GamePending, GameWon}
 import it.unibo.osmos.redux.mvc.view.context.GameStateHolder
+import it.unibo.osmos.redux.mvc.view.events.{GameLost, GamePending, GameWon}
 
 /** System managing the level's ending rules
   *
@@ -21,18 +21,9 @@ case class EndGameSystem(levelContext: GameStateHolder, victoryRules: VictoryRul
 
   override def update(): Unit = {
     if (levelContext.gameCurrentState == GamePending) {
-
-      //TODO: if the server dies, just delete his entity
-      //TODO: if another client dies tell him
-      //TODO: if anyone win, end game
-
-      val optionalPlayer: Option[DeathProperty] = entities.find(entity => entity.isInstanceOf[PlayerCellEntity])
-
-      optionalPlayer match {
-        case Some(player) =>
-          if (victoryCondition.check(player, entities)) {
-            levelContext.notify(GameWon)
-          }
+      val player = entities.find(_.isInstanceOf[PlayerCellEntity])
+      player match {
+        case Some(player) => if (victoryCondition.check(player, entities)) levelContext.notify(GameWon)
         case None => levelContext.notify(GameLost)
       }
     }

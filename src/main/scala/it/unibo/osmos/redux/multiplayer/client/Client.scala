@@ -1,7 +1,5 @@
 package it.unibo.osmos.redux.multiplayer.client
 
-import java.util.UUID
-
 import akka.actor.{ActorRef, PoisonPill}
 import akka.pattern.ask
 import akka.util.Timeout
@@ -9,12 +7,11 @@ import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.multiplayer.lobby.ClientLobby
 import it.unibo.osmos.redux.multiplayer.players.BasicPlayer
 import it.unibo.osmos.redux.multiplayer.server.ServerActor
-import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LobbyContext}
-import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
+import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, MultiPlayerLevelContext}
+import it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity
 import it.unibo.osmos.redux.mvc.view.events.{GamePending, GameStateEventWrapper, MouseEventWrapper}
 import it.unibo.osmos.redux.utils.Constants
 
-import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Future, Promise}
@@ -42,13 +39,13 @@ trait Client {
     * Gets the uuid of the cell entity that represents this client.
     * @return The uuid
     */
-  def getUUID: UUID
+  def getUUID: String
 
   /**
     * Sets the uuid of the cell entity that represents this client.
     * @param uuid The uuid
     */
-  def setUUID(uuid: UUID): Unit
+  def setUUID(uuid: String): Unit
 
   /**
     * Kills this instance.
@@ -59,7 +56,7 @@ trait Client {
     * Initializes the game.
     * @param levelContext The level context.
     */
-  def initGame(levelContext: LevelContext): Unit
+  def initGame(levelContext: MultiPlayerLevelContext): Unit
 
   /**
     * Leaves the game.
@@ -118,7 +115,7 @@ trait Client {
     * Notifies the client to redraw.
     * @param entities The entities to draw.
     */
-  def notifyRedraw(entities: Seq[DrawableWrapper]): Unit
+  def notifyRedraw(entities: Seq[DrawableEntity]): Unit
 }
 
 object Client {
@@ -129,20 +126,17 @@ object Client {
     //the username of this specific client
     private var username: String = _
     //the uuid of the cell entity that represents this client
-    private var uuid: UUID = _
+    private var uuid: String = _
 
     //the current lobby
     private var lobby: Option[ClientLobby] = None
-
     //the server actor
     private var server: Option[ActorRef] = None
     //the client actor
     private var ref: Option[ActorRef] = None
 
-    //the observers of the game status
-    private var gameStatusObservers: mutable.Set[GameStatusChangedObserver] = mutable.Set()
-    //the observer for draw entity event
-    private var drawEntityObservers: mutable.Set[DrawEntityObserver] = mutable.Set()
+    //the level context of the current level
+    private var levelContext: Option[MultiPlayerLevelContext] = None
 
     //MAIN METHODS
 
@@ -165,12 +159,16 @@ object Client {
       promise
     }
 
-    override def getUUID: UUID = uuid
+    override def getUUID: String = uuid
 
-    override def setUUID(uuid: UUID): Unit = this.uuid = uuid
+    override def setUUID(uuid: String): Unit = {
+      this.uuid = uuid
+    }
 
     override def kill(): Unit = {
-      gameStatusObservers.clear()
+      if (levelContext.nonEmpty) {
+        levelContext = None
+      }
       if (ref.nonEmpty) {
         ref.get ! PoisonPill
         ref = None
@@ -183,34 +181,16 @@ object Client {
 
     //GAME MANAGEMENT
 
-    override def initGame(levelContext: LevelContext): Unit = {
-
+    override def initGame(levelContext: MultiPlayerLevelContext): Unit = {
       if (lobby.isEmpty) throw new IllegalStateException("The player entered no lobby, unable to initialize the game.")
+      if (this.levelContext.nonEmpty) throw new IllegalStateException("The server already hold a level context, unable to initialize the game.")
 
       //register client to the mouse event listener to send input events to the server
       levelContext.subscribe(e => { signalPlayerInput(e) })
 
-      //TODO: update with something more appropriate instead of observers
+      this.levelContext = Some(levelContext)
 
-      //subscribe to draw entity event and call interface to draw them
-      subscribeRedraw (entities => {
-        //TODO: drawablewrapper must have uuid
-        /*
-        val player = entities find (e => e.uuid == client.getUUID)
-        if (player.isEmpty) throw new IllegalArgumentException("Unable to draw entities because the player is not found")
-        levelContext.drawEntities(player, entities)
-        */
-      })
-
-      //subscribe to game status changed event to detect the beginning or the end of the game
-      subscribeGameStatusChanged {
-        case GamePending =>
-          //starts the game
-          lobby.get.startGame(levelContext)
-        case s =>
-          //game is won or lost
-          levelContext.notify(s)
-      }
+      //TODO: probably from now lobby is no more useful
     }
 
     override def leaveGame(): Unit = {
@@ -221,7 +201,6 @@ object Client {
 
     //INPUT MANAGEMENT
 
-    //TODO: add UUID to Mouse
     override def signalPlayerInput(event: MouseEventWrapper): Unit = server.get ! ClientActor.PlayerInput(event)
 
     //LOBBY
@@ -232,7 +211,7 @@ object Client {
       this.username = username
 
       val promise = Promise[Boolean]()
-      server.get ? ClientActor.EnterLobby(username) onComplete { //TODO: forse necessario passare actorRef
+      server.get ? ClientActor.EnterLobby(username) onComplete { //TODO: maybe actorRef needs to be passed
         case Success(result) => result match {
           case ServerActor.LobbyInfo(players) =>
             lobby = Some(ClientLobby(lobbyContext))
@@ -250,6 +229,7 @@ object Client {
       if (username.isEmpty) throw new IllegalStateException("The player entered no lobby, unable to leave.")
 
       server.get.tell(ClientActor.LeaveLobby(username), ref.get)
+      lobby.get.leaveLobby()
       lobby = None
     }
 
@@ -268,13 +248,20 @@ object Client {
 
     //OBSERVERS MANAGEMENT
 
-    override def notifyGameStatusChanged(status: GameStateEventWrapper): Unit = gameStatusObservers foreach(o => o.update(status))
+    override def notifyGameStatusChanged(status: GameStateEventWrapper): Unit = status match {
+      case GamePending =>
+        //notify lobby that the game is started
+        lobby.get.startGame(levelContext.get)
+      case gameState =>
+        //game is won or lost
+        levelContext.get.notify(gameState)
+    }
 
-    override def notifyRedraw(entities: Seq[DrawableWrapper]): Unit = drawEntityObservers foreach(o => o.update(entities))
-
-    private def subscribeGameStatusChanged(observer: GameStatusChangedObserver): Unit = gameStatusObservers += observer
-
-    private def subscribeRedraw(observer: DrawEntityObserver): Unit = drawEntityObservers += observer
+    override def notifyRedraw(entities: Seq[DrawableEntity]): Unit = {
+      val player = entities.find(_.getUUID == getUUID)
+      if (player.isEmpty) throw new IllegalArgumentException("Unable to draw entities because the player was not found")
+      levelContext.get.drawEntities(player, entities)
+    }
 
     //HELPERS
 

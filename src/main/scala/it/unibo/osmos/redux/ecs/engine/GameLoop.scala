@@ -82,8 +82,11 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
     * Kills the execution.
     */
   def kill(): Unit = {
-    if (lock.isLocked) lock.unlock()
-    stopFlag = true
+    try {
+      if (lock.isLocked) lock.unlock()
+    } finally {
+      stopFlag = true
+    }
   }
 
   /**

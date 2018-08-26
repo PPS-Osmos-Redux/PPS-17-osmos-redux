@@ -1,11 +1,12 @@
 package it.unibo.osmos.redux.mvc.view
 
-import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 import it.unibo.osmos.redux.mvc.controller.Controller
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
-import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextType, LobbyContext}
+import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LobbyContext}
 import it.unibo.osmos.redux.mvc.view.stages.{OsmosReduxPrimaryStage, PrimaryStageListener}
 import scalafx.application.JFXApp
+
+import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
 /**
   * View base trait

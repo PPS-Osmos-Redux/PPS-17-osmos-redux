@@ -1,7 +1,5 @@
 package it.unibo.osmos.redux.mvc.view.context
 
-import java.util.UUID
-
 import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.drawables.{DrawableWrapper, EntitiesDrawer}
 import it.unibo.osmos.redux.mvc.view.events._
@@ -33,18 +31,23 @@ trait LevelContext extends EventWrapperObservable[MouseEventWrapper] with Entiti
     * @param event the mouse event
     */
   def notifyMouseEvent(event: MouseEventWrapper)
+
+  /**
+    * The UUID of the current player, used to discriminate between different users
+    * @return Some(uuid) if it's defined and the current game mode is not simulation; otherwise None.
+    */
+  override def getPlayerUUID: String
+
+  /**
+    * Sets the current player uuid.
+    */
+  def setPlayerUUID(playerUUID: String): Unit
 }
 
 /**
   * LevelContext used in multplayer sessions
   */
 trait MultiPlayerLevelContext extends LevelContext {
-
-  /**
-    * The level context UUID, used in multiplayer to discriminate between different users
-    * @return the uuid
-    */
-  def getUUID: UUID
 
 }
 
@@ -53,12 +56,20 @@ trait MultiPlayerLevelContext extends LevelContext {
   */
 object LevelContext {
 
-  def apply(): LevelContext = new LevelContextImpl()
+  /**
+    * Apply method to create a new single-player level context
+    * @param isSimulation If it's a simulation or not.
+    * @return A new instance of a LevelContext
+    */
+  def apply(isSimulation: Boolean): LevelContext =
+    new LevelContextImpl(levelContextType = if (isSimulation) LevelContextType.simulation else LevelContextType.normal)
 
-  def apply(levelContextType: LevelContextType.Value): LevelContext = levelContextType match {
-    case LevelContextType.multiplayer => new MultiPlayerLevelContextImpl
-    case _ => new LevelContextImpl(levelContextType)
-  }
+  /**
+    * Apply method to create a new multi-player level context
+    * @param playerUUID The current player UUID
+    * @return A new instance of a MultiPlayerLevelContext
+    */
+  def apply(playerUUID: String): MultiPlayerLevelContext = new MultiPlayerLevelContextImpl(playerUUID)
 
   /**
     * Base abstract implementation of the LevelContext trait
@@ -94,13 +105,12 @@ object LevelContext {
     override def subscribe(eventObserver: EventWrapperObserver[MouseEventWrapper]): Unit = mouseEventObserver = Option(eventObserver)
 
     override def unsubscribe(eventObserver: EventWrapperObserver[MouseEventWrapper]): Unit = mouseEventObserver = Option.empty
-
   }
 
   /**
     * Implementation of the LevelContext trait
     */
-  private class LevelContextImpl(override val levelContextType: LevelContextType.Value = LevelContextType.normal) extends AbstractLevelContext(levelContextType) {
+  private class LevelContextImpl(private var playerUUID: String = "", override val levelContextType: LevelContextType.Value = LevelContextType.normal) extends AbstractLevelContext(levelContextType) {
 
     /**
       * The current game state
@@ -122,6 +132,11 @@ object LevelContext {
       }
     }
 
+    override def getPlayerUUID: String = playerUUID
+
+    //TODO: player uuid is always available once the controller parses the level definition from the disk. So this setter is mandatory. Another way would be to let the interface to load level definition to have the player uuid available before the creation of the level context.
+    override def setPlayerUUID(playerUUID: String): Unit = this.playerUUID = playerUUID
+
     /**
       * Called on a event T type
       *
@@ -135,11 +150,8 @@ object LevelContext {
   /**
     * Implementation of the MultiPlayerLevelContext trait, override LevelContextImpl
     */
-  private class MultiPlayerLevelContextImpl() extends LevelContextImpl() with MultiPlayerLevelContext {
-
-    override def getUUID: UUID = UUID.randomUUID()
+  private class MultiPlayerLevelContextImpl(private val playerUUID: String) extends LevelContextImpl(playerUUID, LevelContextType.multiplayer) with MultiPlayerLevelContext {
   }
-
 }
 
 /**

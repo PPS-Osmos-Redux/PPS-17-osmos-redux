@@ -1,12 +1,13 @@
 package it.unibo.osmos.redux.mvc.controller
 
 import it.unibo.osmos.redux.ecs.engine.GameEngine
+import it.unibo.osmos.redux.ecs.entities.PlayerCellEntity
 import it.unibo.osmos.redux.multiplayer.client.Client
 import it.unibo.osmos.redux.multiplayer.common.{ActorSystemHolder, MultiPlayerMode}
 import it.unibo.osmos.redux.multiplayer.server.Server
 import it.unibo.osmos.redux.mvc.model.{Level, MultiPlayerLevels, SinglePlayerLevels}
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
-import it.unibo.osmos.redux.mvc.view.context.{GameStateHolder, LevelContext, LevelContextType, LobbyContext}
+import it.unibo.osmos.redux.mvc.view.context._
 import it.unibo.osmos.redux.mvc.view.events._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -103,7 +104,7 @@ case class ControllerImpl() extends Controller with Observer {
   //multi-player variables
   private var multiPlayerMode: Option[MultiPlayerMode] = None
   private var server: Option[Server] = None
-  private var client: Option[Client] = None //TODO: maybe it can be removed
+  private var client: Option[Client] = None
 
   override def initLevel(levelContext: LevelContext, chosenLevel: Int): Unit = {
 
@@ -113,9 +114,17 @@ case class ControllerImpl() extends Controller with Observer {
     //if (isCustomLevel) loadedLevel = FileManager.loadCustomLevel(chosenLevel.toString)
 
     if (loadedLevel.isDefined) {
+
       loadedLevel.get.isSimulation = levelContext.levelContextType == LevelContextType.simulation
+
+      val player = loadedLevel.get.entities.find(_.isInstanceOf[PlayerCellEntity])
+      if (player.isEmpty && !loadedLevel.get.isSimulation) throw new IllegalStateException("")
+      //assign current player uuid to the
+      levelContext.setPlayerUUID(player.get.getUUID)
+      //create and initialize the game engine
       if (engine.isEmpty) engine = Some(GameEngine())
       engine.get.init(loadedLevel.get, levelContext)
+      //signals the interface that the game is ready to start
       levelContext.setupLevel(loadedLevel.get.levelMap.mapShape)
     } else {
       //println("File ", chosenLevel, " not found! is a custom level? ", isCustomLevel)
@@ -125,10 +134,7 @@ case class ControllerImpl() extends Controller with Observer {
   override def initLobby(user: User, lobbyContext: LobbyContext): Promise[Boolean] = {
     val promise = Promise[Boolean]()
 
-    //TODO: lobbyContext will have the chosenLevel, save it in the lobby and get it in the initMultiPlayerLevel
-
     multiPlayerMode = Some(if (user.isServer) MultiPlayerMode.Server else MultiPlayerMode.Client)
-
     multiPlayerMode match {
       case Some(MultiPlayerMode.Server) =>
 
@@ -153,7 +159,7 @@ case class ControllerImpl() extends Controller with Observer {
           case Success(true) =>
             this.client = Some(client)
             //creates the level context
-            val levelContext = LevelContext(null)
+            val levelContext = LevelContext("dummy") //TODO: think about a better way, technically clients will never need to call geUUID in levelContext
             //initializes the game
             client.initGame(levelContext)
             //fulfill promise
@@ -171,7 +177,7 @@ case class ControllerImpl() extends Controller with Observer {
     val promise = Promise[Boolean]()
 
     //load level definition
-    //TODO: for not there is only one multi-player level
+    //TODO: for not there is only one multi-player level (lobbyContext has the chosenLevel property)
     val loadedLevel = FileManager.loadResource("0", isMultiPlayer = true).get
 
     multiPlayerMode.get match {

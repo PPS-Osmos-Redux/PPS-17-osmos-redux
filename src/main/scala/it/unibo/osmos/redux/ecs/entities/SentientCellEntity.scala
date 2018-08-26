@@ -1,7 +1,5 @@
 package it.unibo.osmos.redux.ecs.entities
 
-import java.util.UUID
-
 import it.unibo.osmos.redux.ecs.components._
 
 /** Trait representing a sentient cell */
@@ -18,7 +16,7 @@ object SentientCellEntity {
 
   private case class SentientCellEntityImpl(cellEntity: CellEntity) extends SentientCellEntity {
 
-    override def getUUID: UUID = cellEntity.getUUID
+    override def getUUID: String = cellEntity.getUUID
 
     override def getAccelerationComponent: AccelerationComponent = cellEntity.getAccelerationComponent
 
