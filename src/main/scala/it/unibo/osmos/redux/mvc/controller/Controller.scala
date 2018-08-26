@@ -152,20 +152,21 @@ case class ControllerImpl() extends Controller with Observer {
         //initialize the client, connects to the server and enters the lobby
         val client = Client()
         client.bind(ActorSystemHolder.createActor(client))
-        client.connect(user.ip, user.port.toInt).future andThen {
-          case Success(true) => client.enterLobby(user.username, lobbyContext).future
-          case Success(false) => false
-        } andThen {
-          case Success(true) =>
-            this.client = Some(client)
-            //creates the level context
-            val levelContext = LevelContext("dummy") //TODO: think about a better way, technically clients will never need to call geUUID in levelContext
-            //initializes the game
-            client.initGame(levelContext)
-            //fulfill promise
-            promise success true
-          case Success(false) =>
-            promise success false
+        client.connect(user.ip, user.port).future onComplete {
+          case Success(true) => client.enterLobby(user.username, lobbyContext).future onComplete {
+            case Success(true) =>
+              this.client = Some(client)
+              //creates the level context
+              val levelContext = LevelContext("dummy") //TODO: think about a better way, technically clients will never need to call geUUID in levelContext
+              //initializes the game
+              client.initGame(levelContext)
+              //fulfill promise
+              promise success true
+            case Success(false) =>
+              promise success false
+            case _ => promise failure _
+          }
+          case Success(false) => promise success false
         }
       case _ =>
         promise failure new IllegalArgumentException("Cannot initialize the lobby if the multi-player mode is not defined")
