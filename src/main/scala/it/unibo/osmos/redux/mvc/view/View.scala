@@ -66,7 +66,7 @@ object View {
       * @param lobbyContext the lobby context, which may be used by the server to configure existing lobby users
       * @param callback the callback
       */
-    override def onLobbyClick(user: User, lobbyContext: LobbyContext, callback: (User, LobbyContext, Boolean) => Unit): Unit = checkController(() => controller.get.initLobby(user, lobbyContext).future.onComplete((res) => callback(user, lobbyContext, res.get)))
+    override def onLobbyClick(user: User, lobbyContext: LobbyContext, callback: (User, LobbyContext, Boolean) => Unit): Unit = checkController(() => controller.get.initLobby(user, lobbyContext).future.onComplete(res => callback(user, lobbyContext, res.get)))
 
     override def onStartMultiplayerGameClick(): Unit = checkController(() => controller.get.initMultiPlayerLevel())
   }

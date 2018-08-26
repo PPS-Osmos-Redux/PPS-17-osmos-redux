@@ -7,6 +7,7 @@ import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.multiplayer.lobby.ClientLobby
 import it.unibo.osmos.redux.multiplayer.players.BasicPlayer
 import it.unibo.osmos.redux.multiplayer.server.ServerActor
+import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, MultiPlayerLevelContext}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity
 import it.unibo.osmos.redux.mvc.view.events.{GamePending, GameStateEventWrapper, MouseEventWrapper}
@@ -211,13 +212,15 @@ object Client {
       this.username = username
 
       val promise = Promise[Boolean]()
-      server.get ? ClientActor.EnterLobby(username) onComplete { //TODO: maybe actorRef needs to be passed
+      server.get ? ClientActor.EnterLobby(username) onComplete {
         case Success(result) => result match {
           case ServerActor.LobbyInfo(players) =>
             lobby = Some(ClientLobby(lobbyContext))
             lobby.get.addPlayers(players: _*)
+            //because the interface is not ready yet, set users list into lobby context
+            lobbyContext.users = players.map(p => new User(p, false))
             promise success true
-          case ServerActor.UsernameAlreadyTaken =>
+          case ServerActor.UsernameAlreadyTaken | ServerActor.LobbyFull =>
             promise success false
         }
         case Failure(_) => promise failure _

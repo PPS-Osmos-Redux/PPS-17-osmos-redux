@@ -163,7 +163,7 @@ object Server {
     }
 
     override def broadcastMessage(message: Any, clientsToExclude: String*): Unit = {
-      val usernameToExclude = clientsToExclude +: this.username
+      val usernameToExclude = clientsToExclude ++ this.username
       lobby.get.getPlayers.filterNot(p => usernameToExclude contains p.username).foreach(p => p.actorRef ! message)
     }
 
@@ -229,8 +229,8 @@ object Server {
     override def addPlayerToLobby(actorRef: ActorRef, player: BasicPlayer): Boolean = {
       if (!lobby.get.isFull) {
         val newPlayer = ReferablePlayer(player.username, player.address, player.port, actorRef)
-        lobby.get.addPlayer(newPlayer)
         broadcastMessage(PlayerEnteredLobby(newPlayer.toBasicPlayer))
+        lobby.get.addPlayer(newPlayer)
         true
       } else false
     }

@@ -27,6 +27,8 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
   def lobbyContext: Option[LobbyContext] = _lobbyContext
   def lobbyContext_= (lobbyContext: LobbyContext): Unit = {
     _lobbyContext = Option(lobbyContext)
+    /* subscribe to lobby context events */
+    lobbyContext.setListener(this)
     /* fill table with existing users */
     userList ++= lobbyContext.users.map(_.getUserWithProperty)
   }
@@ -100,7 +102,7 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
 
   override def updateUsers(users: Seq[User]): Unit = {
     userList clear()
-    userList ++ users
+    userList ++= users.map(_.getUserWithProperty)
   }
 
   override def onMultiPlayerGameStarted(multiPlayerLevelContext: MultiPlayerLevelContext): Unit = {
