@@ -216,7 +216,7 @@ object Server {
       val address = ActorSystemHolder.systemAddress
       //add the server itself
       val serverPlayer = BasicPlayer(username, PlayerInfo(address.host.getOrElse("0.0.0.0"), address.port.getOrElse(0)))
-      lobby.get.notifyUserAdded(new User(serverPlayer, true))
+      lobbyContext.users = Seq(new User(serverPlayer, true))
     }
 
     override def closeLobby(): Unit = {

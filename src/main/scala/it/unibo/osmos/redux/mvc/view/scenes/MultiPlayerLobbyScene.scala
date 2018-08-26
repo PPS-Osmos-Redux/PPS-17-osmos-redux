@@ -24,23 +24,22 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     */
   private var _lobbyContext: Option[LobbyContext] = Option.empty
   def lobbyContext: Option[LobbyContext] = _lobbyContext
-  def lobbyContext_= (lobbyContext: LobbyContext): Unit = _lobbyContext = Option(lobbyContext)
+  def lobbyContext_= (lobbyContext: LobbyContext): Unit = {
+    _lobbyContext = Option(lobbyContext)
+    /* fill table with existing users */
+    userList ++= lobbyContext.users.map(_.getUserWithProperty)
+  }
 
   /**
     * ObservableBuffer holding the current users
     */
-  private val userList = ObservableBuffer[UserWithProperties](
-    User("Marco", "0.0.0.0", "0000", isServer = true).getUserWithProperty,
-    User("Davide", "0.0.0.1", "0001", isServer = false).getUserWithProperty,
-    User("Placu", "0.0.0.2", "0002", isServer = false).getUserWithProperty,
-    User("Turi", "0.0.0.3", "0003", isServer = false).getUserWithProperty,
-    User("Proc", "0.0.0.4", "0004", isServer = false).getUserWithProperty
-  )
+  private val userList = ObservableBuffer[UserWithProperties]()
 
   /**
     * TableView linked with the user list
     */
   val usersTable: TableView[UserWithProperties] = new TableView[UserWithProperties](userList) {
+    columnResizePolicy = TableView.ConstrainedResizePolicy
     columns ++= List(
       new TableColumn[UserWithProperties, String]() {
         text = "Username"
@@ -62,7 +61,6 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
 
     alignment = Pos.Center
     children = Seq(usersTable)
-
   }
 
   /**
