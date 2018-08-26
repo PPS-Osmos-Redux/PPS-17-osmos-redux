@@ -3,6 +3,7 @@ package it.unibo.osmos.redux.mvc.view.scenes
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.{User, UserWithProperties}
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, LobbyContextListener, MultiPlayerLevelContext}
 import it.unibo.osmos.redux.mvc.view.events.{LobbyEventWrapper, UserRemoved}
+import scalafx.beans.property.ObjectProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.TableColumn._
@@ -47,9 +48,9 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
       }, new TableColumn[UserWithProperties, String]() {
         text = "IP"
         cellValueFactory = {_.value.ip}
-      }, new TableColumn[UserWithProperties, String]() {
+      }, new TableColumn[UserWithProperties, Int]() {
         text = "Port"
-        cellValueFactory = {_.value.port}
+        cellValueFactory = p => { new ObjectProperty[Int](this, "Port", p.value.port.value) }
       }
     )
   }

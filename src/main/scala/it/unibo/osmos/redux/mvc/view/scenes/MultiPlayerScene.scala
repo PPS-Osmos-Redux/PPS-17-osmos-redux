@@ -1,11 +1,11 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.multiplayer.common.NetworkUtils
-import it.unibo.osmos.redux.mvc.view.components.custom.{TitledComboBox, TitledNumericTextField, TitledTextField}
+import it.unibo.osmos.redux.mvc.view.components.custom.{TitledComboBox, TitledNumericField, TitledTextField}
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.LobbyContext
 import scalafx.application.Platform
-import scalafx.beans.property.{BooleanProperty, StringProperty}
+import scalafx.beans.property.{BooleanProperty, IntegerProperty, StringProperty}
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.{Alert, Button}
 import scalafx.scene.layout.{BorderPane, HBox, VBox}
@@ -27,12 +27,13 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
   private val addressTextField = new TitledTextField(addressTitle, addressValue)
 
   private val portTitle: StringProperty = StringProperty("Server port: ")
-  private val portTextField = new TitledNumericTextField(portTitle) {
+  private val portValue: IntegerProperty = IntegerProperty(0)
+  private val portTextField = new TitledNumericField(portTitle, portValue) {
     minValue = 0
     maxValue = 65535
   }
 
-  private val mode: BooleanProperty = BooleanProperty(true)
+  private val mode: BooleanProperty = BooleanProperty(false) //default client
   private val modeComboBox = new TitledComboBox[String]("Mode: ", Seq("Client", "Server"), {
     case "Client" =>
       mode.value = false
@@ -81,22 +82,13 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
 
   private val goToLobby = new Button("Go to lobby") {
     /* We create the User */
-    private val user = if (mode.value) {
-      User(username.value, addressValue.value, portTextField.node.getText(), isServer = true)
-    } else {
-      User(username.value, isServer = false)
-    }
+    private val user = User(username.value, addressValue.value, portValue.value, isServer = mode.value)
 
     onAction = _ => {
       /* We create the lobby context */
       val lobbyContext = LobbyContext()
-      if (mode.value){
-        /* We ask to be a server */
-        listener.onLobbyClick(User(username.value, addressValue.value, portTextField.node.getText(), isServer = true), lobbyContext, onLobbyEnterResult)
-      } else{
-        /* We ask to be a client */
-        listener.onLobbyClick(User(username.value, isServer = false), lobbyContext, onLobbyEnterResult)
-      }
+      /* We ask to enter in the lobby */
+      listener.onLobbyClick(User(username.value, addressValue.value, portValue.value, isServer = mode.value), lobbyContext, onLobbyEnterResult)
     }
   }
 

@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.components.multiplayer
 
 import it.unibo.osmos.redux.multiplayer.players.BasicPlayer
-import scalafx.beans.property.{BooleanProperty, StringProperty}
+import scalafx.beans.property.{BooleanProperty, IntegerProperty, StringProperty}
 
 /**
   * User class
@@ -11,7 +11,7 @@ import scalafx.beans.property.{BooleanProperty, StringProperty}
   * @param port the port
   * @param isServer true if the user is a server, false if it's a client
   */
-case class User(username: String, ip: String = "", port: String = "", isServer: Boolean) {
+case class User(username: String, ip: String = "", port: Int = 0, isServer: Boolean) {
 
   /**
     * Secondary constructor.
@@ -19,9 +19,9 @@ case class User(username: String, ip: String = "", port: String = "", isServer: 
     * @param isServer true if the user is a server, false if it's a client
     * @return
     */
-  def this(player: BasicPlayer, isServer: Boolean) = this(player.getUsername, player.getInfo.address, player.getInfo.port.toString, isServer)
+  def this(player: BasicPlayer, isServer: Boolean) = this(player.getUsername, player.getInfo.address, player.getInfo.port, isServer)
 
-  def getUserWithProperty: UserWithProperties = UserWithProperties(StringProperty(username), StringProperty(ip), StringProperty(port), BooleanProperty(isServer))
+  def getUserWithProperty: UserWithProperties = UserWithProperties(StringProperty(username), StringProperty(ip), IntegerProperty(port), BooleanProperty(isServer))
 }
 
 /**
@@ -32,7 +32,7 @@ case class User(username: String, ip: String = "", port: String = "", isServer: 
   * @param port the port
   * @param isServer true if the user is a server, false if it's a client
   */
-case class UserWithProperties(username: StringProperty, ip: StringProperty = StringProperty(""), port: StringProperty = StringProperty(""), isServer: BooleanProperty) {
+case class UserWithProperties(username: StringProperty, ip: StringProperty = StringProperty(""), port: IntegerProperty = IntegerProperty(0), isServer: BooleanProperty) {
 
   def getUser: User = User(username.value, ip.value, port.value, isServer.value)
 

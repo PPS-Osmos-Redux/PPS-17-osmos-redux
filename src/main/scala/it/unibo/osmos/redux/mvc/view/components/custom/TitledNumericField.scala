@@ -1,14 +1,14 @@
 package it.unibo.osmos.redux.mvc.view.components.custom
 
-import scalafx.beans.property.StringProperty
+import scalafx.beans.property.{IntegerProperty, StringProperty}
 import scalafx.scene.control.TextFormatter.Change
 import scalafx.scene.control.{TextField, TextFormatter}
-import scalafx.util.converter.IntStringConverter
+import scalafx.util.converter.{IntStringConverter, NumberStringConverter}
 
-class TitledNumericTextField(override val title: StringProperty) extends TitledNode[TextField](title, vertical = false) {
+class TitledNumericField(override val title: StringProperty, private val value: IntegerProperty) extends TitledNode[TextField](title, vertical = false) {
 
-  def this(title: String) {
-    this(StringProperty(title))
+  def this(title: String,value: IntegerProperty) {
+    this(StringProperty(title), value)
   }
 
   /**
@@ -26,6 +26,7 @@ class TitledNumericTextField(override val title: StringProperty) extends TitledN
     * @return a node of type N <: Node
     */
   override def node: TextField = new TextField(){
+    text.delegate.bindBidirectional(value, new NumberStringConverter)
     editable = true
     prefWidth <== maxWidth
     textFormatter = new TextFormatter[Int](new IntStringConverter, 0, { c: Change => {
