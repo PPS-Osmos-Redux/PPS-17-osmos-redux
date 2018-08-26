@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.ecs.systems
 
-import it.unibo.osmos.redux.ecs.entities.{MovableProperty, Property}
+import it.unibo.osmos.redux.ecs.entities.MovableProperty
 import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.utils.Point
