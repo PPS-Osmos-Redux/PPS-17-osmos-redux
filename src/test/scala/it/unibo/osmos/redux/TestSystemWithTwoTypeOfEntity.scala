@@ -30,7 +30,7 @@ class TestSystemWithTwoTypeOfEntity extends FunSuite with BeforeAndAfter {
   val dimension = DimensionComponent(5)
   val position = PositionComponent(Point(0, 0))
   val visible = VisibleComponent(true)
-  val typeEntity = TypeComponent(EntityType.Material)
+  val typeEntity = TypeComponent(EntityType.Matter)
   val spawner = SpawnerComponent(false)
 
   after(EntityManager.clear())

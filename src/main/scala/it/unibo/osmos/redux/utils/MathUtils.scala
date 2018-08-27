@@ -1,5 +1,7 @@
 package it.unibo.osmos.redux.utils
 
+import it.unibo.osmos.redux.ecs.components.PositionComponent
+
 /**
   * Utility class that offers math related useful methods
   */
@@ -28,6 +30,20 @@ object MathUtils {
   }
 
   /**
+    * unitVector from point2 to point1
+    * @param point1
+    * @param point2
+    * @return unitVector
+    */
+  def unitVector(point1: Point, point2: Point): Vector = {
+    val unitVector = point1.subtract(point2)
+    val mod = math.sqrt(math.pow(unitVector.x, 2) + math.pow(unitVector.y, 2))
+    unitVector.x_(unitVector.x / mod)
+    unitVector.y_(unitVector.y / mod)
+    unitVector
+  }
+
+  /**
     * Returns the Euclidean distance in 2D space
     *
     * @param point1 first point
@@ -36,6 +52,16 @@ object MathUtils {
     */
   def euclideanDistance(point1: Point, point2: Point): Double =
     Math.sqrt(Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2))
+
+  /**
+    * Returns the Euclidean distance in 2D space
+    *
+    * @param position1 first position
+    * @param position2 second position
+    * @return Euclidean distance
+    */
+  def euclideanDistance(position1: PositionComponent, position2: PositionComponent): Double =
+    euclideanDistance(position1.point, position2.point)
 
   /**
     * Returns the area of a circle of a given radius

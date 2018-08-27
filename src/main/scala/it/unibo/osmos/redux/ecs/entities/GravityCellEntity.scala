@@ -1,14 +1,11 @@
 package it.unibo.osmos.redux.ecs.entities
+
 import java.util.UUID
 
 import it.unibo.osmos.redux.ecs.components._
 
-/**
-  * Trait representing a CellEntity with gravity force
-  */
-trait GravityCellEntity extends CellEntity with GravityProperty with SpecificWeight{
-
-}
+/** Trait representing a CellEntity with gravity force */
+trait GravityCellEntity extends CellEntity with GravityProperty with SpecificWeight {}
 
 object GravityCellEntity {
 
@@ -21,10 +18,10 @@ object GravityCellEntity {
             typeEntity: TypeComponent,
             specificWeight: SpecificWeightComponent): GravityCellEntity =
     GravityCellEntityImpl(CellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity),
-                          MassComponent(dimension,specificWeight), specificWeight)
+      MassComponent(dimension, specificWeight), specificWeight)
 
   def apply(cell: CellEntity, specificWeight: SpecificWeightComponent): GravityCellEntity =
-    GravityCellEntityImpl(cell, MassComponent(cell.getDimensionComponent,specificWeight),specificWeight)
+    GravityCellEntityImpl(cell, MassComponent(cell.getDimensionComponent, specificWeight), specificWeight)
 
   private case class GravityCellEntityImpl(cellEntity: CellEntity, mass: MassComponent, specificWeight: SpecificWeightComponent) extends GravityCellEntity {
 
@@ -46,10 +43,11 @@ object GravityCellEntity {
 
     override def getMassComponent: MassComponent = mass
 
-    /**
-      * Need to JsonProtocol to serialize the specific weight
+    /** Need to JsonProtocol to serialize the specific weight
+      *
       * @return the SpecificWeight Component
       */
     override def getSpecificWeightComponent: SpecificWeightComponent = specificWeight
   }
+
 }

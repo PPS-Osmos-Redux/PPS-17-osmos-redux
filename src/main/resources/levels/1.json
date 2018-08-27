@@ -15,7 +15,7 @@
         "canSpawn": true
       },
       "typeEntity": {
-        "entity_type": "Material"
+        "componentType": "Matter"
       },
       "position": {
         "point": {
@@ -25,7 +25,7 @@
       },
       "cellType": "playerCell",
       "dimension": {
-        "radius": 30.0
+        "radius": 20.0
       },
       "speed": {
         "speedX": 0.0,
@@ -44,7 +44,7 @@
         "collidable": true
       },
       "typeEntity": {
-        "entity_type": "Material"
+        "componentType": "Matter"
       },
       "position": {
         "point": {
@@ -54,7 +54,7 @@
       },
       "cellType": "basicCell",
       "dimension": {
-        "radius": 37.0
+        "radius": 30.0
       },
       "speed": {
         "speedX": 0.1,
@@ -73,7 +73,7 @@
         "collidable": true
       },
       "typeEntity": {
-        "entity_type": "Material"
+        "componentType": "Matter"
       },
       "position": {
         "point": {
@@ -83,65 +83,7 @@
       },
       "cellType": "basicCell",
       "dimension": {
-        "radius": 25.0
-      },
-      "speed": {
-        "speedX": 0.1,
-        "speedY": 0.5
-      }
-    },
-    {
-      "acceleration": {
-        "accelerationX": 0.0,
-        "accelerationY": 0.0
-      },
-      "visible": {
-        "visible": true
-      },
-      "collidable": {
-        "collidable": true
-      },
-      "typeEntity": {
-        "entity_type": "Material"
-      },
-      "position": {
-        "point": {
-          "x": 600.0,
-          "y": 400.0
-        }
-      },
-      "cellType": "basicCell",
-      "dimension": {
-        "radius": 25.0
-      },
-      "speed": {
-        "speedX": 0.1,
-        "speedY": 0.5
-      }
-    },
-    {
-      "acceleration": {
-        "accelerationX": 0.0,
-        "accelerationY": 0.0
-      },
-      "visible": {
-        "visible": true
-      },
-      "collidable": {
-        "collidable": true
-      },
-      "typeEntity": {
-        "entity_type": "Material"
-      },
-      "position": {
-        "point": {
-          "x": 600.0,
-          "y": 400.0
-        }
-      },
-      "cellType": "basicCell",
-      "dimension": {
-        "radius": 28.0
+        "radius": 15.0
       },
       "speed": {
         "speedX": 0.3,
@@ -160,7 +102,36 @@
         "collidable": true
       },
       "typeEntity": {
-        "entity_type": "Material"
+        "componentType": "AntiMatter"
+      },
+      "position": {
+        "point": {
+          "x": 600.0,
+          "y": 300.0
+        }
+      },
+      "cellType": "basicCell",
+      "dimension": {
+        "radius": 20.0
+      },
+      "speed": {
+        "speedX": 0.3,
+        "speedY": 0.5
+      }
+    },
+    {
+      "acceleration": {
+        "accelerationX": 0.0,
+        "accelerationY": 0.0
+      },
+      "visible": {
+        "visible": true
+      },
+      "collidable": {
+        "collidable": true
+      },
+      "typeEntity": {
+        "componentType": "Matter"
       },
       "position": {
         "point": {
@@ -170,7 +141,7 @@
       },
       "cellType": "basicCell",
       "dimension": {
-        "radius": 31.0
+        "radius": 40.0
       },
       "speed": {
         "speedX": 0.0,

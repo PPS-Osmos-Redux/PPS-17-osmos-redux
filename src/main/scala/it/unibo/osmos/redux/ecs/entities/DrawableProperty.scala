@@ -1,8 +1,4 @@
 package it.unibo.osmos.redux.ecs.entities
 
-/**
-  * Trait representing the properties needed by an entity to be drawable
-  */
-trait DrawableProperty extends Position with Dimension with Visible with Type with Speed{
-
-}
+/** Trait representing the properties needed by an entity to be drawable */
+trait DrawableProperty extends Position with Dimension with Visible with Type with Speed {}

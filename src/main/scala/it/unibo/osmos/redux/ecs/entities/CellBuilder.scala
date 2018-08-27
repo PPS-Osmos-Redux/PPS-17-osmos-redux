@@ -3,6 +3,7 @@ package it.unibo.osmos.redux.ecs.entities
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.utils.Point
 
+/** Builder for Cell Entities */
 case class CellBuilder() {
   private var acceleration = AccelerationComponent(0,0)
   private var collidable = CollidableComponent(true)
@@ -10,7 +11,7 @@ case class CellBuilder() {
   private var position = PositionComponent(Point(0,0))
   private var speed = SpeedComponent(0, 0)
   private var visible = VisibleComponent(true)
-  private var entityType = TypeComponent(EntityType.Material)
+  private var entityType = TypeComponent(EntityType.Matter)
 
   def collidable(collidable: Boolean): CellBuilder = {
     this.collidable = CollidableComponent(collidable)

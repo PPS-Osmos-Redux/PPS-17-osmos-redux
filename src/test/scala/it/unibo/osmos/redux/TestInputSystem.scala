@@ -16,7 +16,7 @@ class TestInputSystem extends FunSuite {
   val dimension = Seq(DimensionComponent(5), DimensionComponent(1), DimensionComponent(8))
   val position = Seq(PositionComponent(Point(0, 0)), PositionComponent(Point(1, 2)), PositionComponent(Point(0, 4)))
   val visibility = Seq(VisibleComponent(true), VisibleComponent(false), VisibleComponent(false))
-  val typeEntity = Seq(TypeComponent(EntityType.Material), TypeComponent(EntityType.Material), TypeComponent(EntityType.Material))
+  val typeEntity = Seq(TypeComponent(EntityType.Matter), TypeComponent(EntityType.Matter), TypeComponent(EntityType.Matter))
 
   val dummyEvent = MouseEventWrapper(Point(157,104))
 
