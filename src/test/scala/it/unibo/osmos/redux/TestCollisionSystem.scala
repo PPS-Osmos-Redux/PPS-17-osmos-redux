@@ -11,18 +11,13 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 class TestCollisionSystem extends FunSuite with BeforeAndAfter {
 
   val entity1 = CellEntity(AccelerationComponent(0, 0), CollidableComponent(true), DimensionComponent(5),
-    PositionComponent(Point(20, 30)), SpeedComponent(0, 0), VisibleComponent(true), TypeComponent(EntityType.Matter))
+    PositionComponent(Point(70, 50)), SpeedComponent(0, 0), VisibleComponent(true), TypeComponent(EntityType.Matter))
   val entity2 = CellEntity(AccelerationComponent(0, 0), CollidableComponent(true), DimensionComponent(2),
     PositionComponent(Point(60, 80)), SpeedComponent(0, 0), VisibleComponent(true), TypeComponent(EntityType.Matter))
   val antiMatterEntity = CellEntity(AccelerationComponent(0, 0), CollidableComponent(true), DimensionComponent(2),
     PositionComponent(Point(65, 81)), SpeedComponent(0, 0), VisibleComponent(true), TypeComponent(EntityType.AntiMatter))
 
   var levelInfo: Level = _
-  /*Level(1,
-    LevelMap( Rectangle((100, 100), 100, 150), CollisionRules.bouncing),
-    null,
-    VictoryRules.becomeTheBiggest,
-    false)*/
 
   before {
     setupLevelInfo(Rectangle((100, 100), 100, 150), CollisionRules.bouncing)
@@ -36,8 +31,7 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
     levelInfo = Level(1,
       LevelMap(mapShape, collisionRules),
       null,
-      VictoryRules.becomeTheBiggest,
-      false)
+      VictoryRules.becomeTheBiggest)
   }
 
   test("CollisionSystem should not collide the entity with herself") {
@@ -56,24 +50,23 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
   test("CollisionSystem should not consider entities that do not have CollisionProperty") {
     val system = CollisionSystem(levelInfo)
 
-    val position = Point(60, 80)
-    entity1.getPositionComponent.point_(position)
+    entity1.getPositionComponent.point_(Point(56, 79))
     entity2.getCollidableComponent.setCollidable(true)
-    entity2.getPositionComponent.point_(position)
+    entity2.getPositionComponent.point_(Point(60, 80))
     entity2.getCollidableComponent.setCollidable(false)
 
-    val originalDim1 = entity1.getDimensionComponent
-    val originalAccel1 = entity1.getAccelerationComponent
-    val originalDim2 = entity2.getDimensionComponent
-    val originalAccel2 = entity2.getAccelerationComponent
+    val originalDim1 = entity1.getDimensionComponent.radius
+    val originalAccel1 = entity1.getAccelerationComponent.vector
+    val originalDim2 = entity2.getDimensionComponent.radius
+    val originalAccel2 = entity2.getAccelerationComponent.vector
 
     EntityManager.add(entity1)
     EntityManager.add(entity2)
 
     system.update()
 
-    assert(entity1.getDimensionComponent == originalDim1 && entity1.getAccelerationComponent == originalAccel1 &&
-      entity2.getDimensionComponent == originalDim2 && entity2.getAccelerationComponent == originalAccel2)
+    assert(entity1.getDimensionComponent.radius == originalDim1 && entity1.getAccelerationComponent.vector == originalAccel1 &&
+      entity2.getDimensionComponent.radius == originalDim2 && entity2.getAccelerationComponent.vector == originalAccel2)
   }
 
   test("CollisionSystem should not collide two entities if the distance between the centers is greater than the sum of their radii") {
@@ -102,11 +95,6 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
     entity2.getDimensionComponent.radius_(2)
     entity2.getPositionComponent.point_(Point(66, 80))
     entity2.getCollidableComponent.setCollidable(true)
-
-    val originalDim1 = DimensionComponent(entity1.getDimensionComponent.radius)
-    val originalAccel1 = AccelerationComponent(entity1.getAccelerationComponent.vector.x, entity1.getAccelerationComponent.vector.y)
-    val originalDim2 = DimensionComponent(entity2.getDimensionComponent.radius)
-    val originalAccel2 = AccelerationComponent(entity2.getAccelerationComponent.vector.x, entity2.getAccelerationComponent.vector.y)
 
     EntityManager.add(entity1)
     EntityManager.add(entity2)
@@ -312,4 +300,33 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
     assert(cellEntity.getSpeedComponent.vector == utils.Vector(-10.0, -20.0))
     assert(cellEntity.getDimensionComponent.radius == 6.961143807781525)
   }
+
+  test("After collision between two entities, both entities remain within the map") {
+    val system = CollisionSystem(levelInfo)
+
+    entity1.getDimensionComponent.radius_(10)
+    entity1.getPositionComponent.point_(Point(61, 36))
+    entity1.getCollidableComponent.setCollidable(true)
+    entity2.getDimensionComponent.radius_(6)
+    entity2.getPositionComponent.point_(Point(60, 49))
+    entity2.getCollidableComponent.setCollidable(true)
+
+    EntityManager.add(entity1)
+    EntityManager.add(entity2)
+
+    system.update()
+    val map = levelInfo.levelMap.mapShape.asInstanceOf[Rectangle]
+    val boundaryLeft = map.center._1 - map.base/2
+    val boundaryRight = map.center._1 + map.base/2
+    val boundaryTop = map.center._2 + map.height/2
+    val boundaryBottom = map.center._2 - map.height/2
+
+    assert(entity1.getPositionComponent.point.x >= boundaryLeft + entity1.getDimensionComponent.radius)
+    assert(entity1.getPositionComponent.point.x <= boundaryRight - entity1.getDimensionComponent.radius)
+    assert(entity1.getPositionComponent.point.y >= boundaryBottom + entity1.getDimensionComponent.radius)
+    assert(entity1.getPositionComponent.point.y <= boundaryTop - entity1.getDimensionComponent.radius)
+    assert(entity2.getPositionComponent.point.x >= boundaryLeft + entity2.getDimensionComponent.radius)
+    assert(entity2.getPositionComponent.point.x <= boundaryRight - entity2.getDimensionComponent.radius)
+    assert(entity2.getPositionComponent.point.y >= boundaryBottom + entity2.getDimensionComponent.radius)
+    assert(entity2.getPositionComponent.point.y <= boundaryTop - entity2.getDimensionComponent.radius)  }
 }
