@@ -25,7 +25,9 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
   override def getGroupProperty: Class[CollidableProperty] = classOf[CollidableProperty]
 
   override def update(): Unit = {
+    //check collision with boundary
     entities foreach(e => bounceRule.checkCollision(e))
+    //check collision other entities
     for {
       (e1, xIndex) <- entities.zipWithIndex
       (e2, yIndex) <- entities.zipWithIndex
@@ -98,6 +100,12 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
     moveEntitiesAfterCollision(bigEntity, smallEntity, quantityToMove)
   }
 
+  /**
+    * move each entity in the opposite direction to the other of quantity to move, and check collision with boundary
+    * @param entity1 first entity
+    * @param entity2 second entity
+    * @param quantityToMove shift of each entity
+    */
   private def moveEntitiesAfterCollision(entity1: CollidableProperty, entity2: CollidableProperty, quantityToMove: Double): Unit = {
     val position1 = entity1.getPositionComponent
     val position2 = entity2.getPositionComponent
