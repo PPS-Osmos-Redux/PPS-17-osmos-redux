@@ -18,7 +18,7 @@ class TestCollisionSystem extends FunSuite {
     PositionComponent(Point(65, 81)), SpeedComponent(0, 0), VisibleComponent(true), TypeComponent(EntityType.AntiMatter))
 
   val levelInfo = Level(1,
-    LevelMap( Rectangle((100, 150), 100, 150), CollisionRules.bouncing),
+    LevelMap( Rectangle((100, 100), 100, 150), CollisionRules.bouncing),
     null,
     VictoryRules.becomeTheBiggest,
     false)
