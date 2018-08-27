@@ -1,15 +1,15 @@
 package it.unibo.osmos.redux.ecs.systems
 
-import it.unibo.osmos.redux.ecs.entities.{MovableProperty, Property}
+import it.unibo.osmos.redux.ecs.components.DimensionComponent
+import it.unibo.osmos.redux.ecs.entities.CollidableProperty
 import it.unibo.osmos.redux.mvc.model.CollisionRules
 import it.unibo.osmos.redux.utils.{MathUtils, Point, Vector}
 
 /** Abstract class implementing the border collision strategy
   *
   * @param levelCenter center of the level
-  * @tparam
   */
-abstract class AbstractBorder[A <: Property](levelCenter: Point) {
+abstract class AbstractBorder(levelCenter: Point, collisionRule: CollisionRules.Value) {
 
   private val cellElasticity: Double = 1.0
   private val borderElasticity: Double = 1.0
@@ -19,72 +19,69 @@ abstract class AbstractBorder[A <: Property](levelCenter: Point) {
     * If so, computes it's new position and speed
     *
     * @param entity
-    * @param collisionRule
     */
-  def checkCollision(entity: A, collisionRule: CollisionRules.Value): Unit
+  def checkCollision(entity: CollidableProperty): Unit
 }
 
 /** Implementation of a playing field with rectangular shape */
-case class RectangularBorder(levelCenter: Point, base: Double, height: Double) extends AbstractBorder[MovableProperty](levelCenter) {
+case class RectangularBorder(levelCenter: Point, collisionRule: CollisionRules.Value, base: Double, height: Double) extends AbstractBorder(levelCenter, collisionRule) {
 
-  override def checkCollision(entity: MovableProperty, collisionRule: CollisionRules.Value): Unit = {
+  override def checkCollision(entity: CollidableProperty): Unit = {
     val dimensionComponent = entity.getDimensionComponent
     val entityRadius = dimensionComponent.radius
     val speedComponent = entity.getSpeedComponent
-    val minHorizontalPoint = levelCenter.x - base / 2 + entityRadius
-    val minVerticalPoint = levelCenter.y - height / 2 + entityRadius
-    val maxHorizontalPoint = levelCenter.x + base / 2 - entityRadius
-    val maxVerticalPoint = levelCenter.y + height / 2 - entityRadius
+    val minHorizontalPoint = getLowerBoundary(entityRadius, levelCenter.x, base)
+    val maxHorizontalPoint = getUpperBoundary(entityRadius, levelCenter.x, base)
+    val minVerticalPoint = getLowerBoundary(entityRadius, levelCenter.y, height)
+    val maxVerticalPoint = getUpperBoundary(entityRadius, levelCenter.y, height)
     val positionComponent = entity.getPositionComponent
+    val position = positionComponent.point
 
     collisionRule match {
       case CollisionRules.bouncing =>
-        positionComponent.point match {
-          case p if p.x < minHorizontalPoint =>
-            speedComponent.vector.x_(-speedComponent.vector.x)
-            val newXPosition = minHorizontalPoint - (p.x - minHorizontalPoint)
-            positionComponent.point_(Point(newXPosition, p.y))
-          case p if p.x > maxHorizontalPoint =>
-            speedComponent.vector.x_(-speedComponent.vector.x)
-            val newXPosition = maxHorizontalPoint - (p.x - maxHorizontalPoint)
-            positionComponent.point_(Point(newXPosition, p.y))
-          case _ => // no border collision, do nothing
-        }
-        positionComponent.point match {
-          case p if p.y < minVerticalPoint =>
-            speedComponent.vector.y_(-speedComponent.vector.y)
-            val newYPosition = minVerticalPoint - (p.y - minVerticalPoint)
-            positionComponent.point_(Point(p.x, newYPosition))
-          case p if p.y > maxVerticalPoint =>
-            speedComponent.vector.y_(-speedComponent.vector.y)
-            val newYPosition = maxVerticalPoint - (p.y - maxVerticalPoint)
-            positionComponent.point_(Point(p.x, newYPosition))
-          case _ => // no border collision, do nothing
-        }
+        val speedVector = speedComponent.vector
+        val rx = computeNewSpeedAndPosition(speedVector.x, position.x, minHorizontalPoint, maxHorizontalPoint)
+        val ry = computeNewSpeedAndPosition(speedVector.y, position.y, minVerticalPoint, maxVerticalPoint)
+        speedComponent.vector_(Vector(rx._1, ry._1))
+        positionComponent.point_(Point(rx._2, ry._2))
       case CollisionRules.instantDeath =>
-        positionComponent.point match {
-          case p if p.x < minHorizontalPoint =>
-            dimensionComponent.radius_(entityRadius - (minHorizontalPoint - p.x))
-          case p if p.x > maxHorizontalPoint =>
-            dimensionComponent.radius_(entityRadius - (p.x - maxHorizontalPoint))
-          case _ => // no border collision, do nothing
-        }
-        positionComponent.point match {
-          case p if p.y < minVerticalPoint =>
-            dimensionComponent.radius_(entityRadius - (minVerticalPoint - p.y))
-          case p if p.y > maxVerticalPoint =>
-            dimensionComponent.radius_(entityRadius - (p.y - maxVerticalPoint))
-          case _ => // no border collision, do nothing
-        }
+        computeNewRadius(dimensionComponent, position.x, minHorizontalPoint, maxHorizontalPoint)
+        computeNewRadius(dimensionComponent, position.y, minVerticalPoint, maxVerticalPoint)
       case _ => throw new IllegalArgumentException
     }
   }
+
+  private def getLowerBoundary(radius: Double, centerCoordinate: Double, borderLength: Double): Double = {
+    centerCoordinate - borderLength / 2 + radius
+  }
+
+  private def getUpperBoundary(radius: Double, centerCoordinate: Double, borderLength: Double): Double = {
+    centerCoordinate + borderLength / 2 - radius
+  }
+
+  private def computeNewSpeedAndPosition(speed: Double, position: Double, minReachablePosition: Double, maxReachablePosition: Double): (Double, Double) = {
+    position match {
+      case p if p < minReachablePosition => (-speed, minReachablePosition - (p - minReachablePosition))
+      case p if p > maxReachablePosition => (-speed, maxReachablePosition - (p - maxReachablePosition))
+      case _ => (speed, position)
+    }
+  }
+
+  private def computeNewRadius(dimensionComponent: DimensionComponent, position: Double, minReachablePosition: Double, maxReachablePosition: Double): Unit = {
+    val entityRadius = dimensionComponent.radius
+    position match {
+      case p if p < minReachablePosition => dimensionComponent.radius_(entityRadius - (minReachablePosition - p))
+      case p if p > maxReachablePosition => dimensionComponent.radius_(entityRadius - (p - maxReachablePosition))
+      case _ => // no border collision, do nothing
+    }
+  }
+
 }
 
 /** Implementation of a playing field with circular shape */
-case class CircularBorder(levelCenter: Point, levelRadius: Double) extends AbstractBorder[MovableProperty](levelCenter) {
+case class CircularBorder(levelCenter: Point, collisionRule: CollisionRules.Value, levelRadius: Double) extends AbstractBorder(levelCenter, collisionRule) {
 
-  override def checkCollision(entity: MovableProperty, collisionRule: CollisionRules.Value): Unit = {
+  override def checkCollision(entity: CollidableProperty): Unit = {
     val positionComponent = entity.getPositionComponent
     val currentPosition = positionComponent.point
     val dimensionComponent = entity.getDimensionComponent
@@ -115,7 +112,7 @@ case class CircularBorder(levelCenter: Point, levelRadius: Double) extends Abstr
     * @param entity
     * @return
     */
-  private def computeNewPosition(levelRadius: Double, entity: MovableProperty): Point = {
+  private def computeNewPosition(levelRadius: Double, entity: CollidableProperty): Point = {
     val entityPosition = entity.getPositionComponent.point
     val entitySpeed = entity.getSpeedComponent.vector
     val A = levelCenter
@@ -156,7 +153,6 @@ case class CircularBorder(levelCenter: Point, levelRadius: Double) extends Abstr
     *
     * @param currentPosition entity current position
     * @param levelCenter     level center
-    * @param speedComponent  entity speed component
     * @return new entity speed
     */
   private def computeNewSpeed(currentPosition: Point, levelCenter: Point, speedVector: Vector): Vector = {

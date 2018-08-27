@@ -15,6 +15,13 @@ trait Point {
     */
   def y: Double
 
+  /** Point-vector addition.
+    *
+    * @param v vector to add
+    * @return addition result as a new instance of Point
+    */
+  def add(v: Vector): Point
+
   /** Point-point subtraction.
     *
     * @param p point to subtract
@@ -35,9 +42,11 @@ object Point {
 
   private case class PointImpl(override val x: Double, override val y: Double) extends Point {
 
-    override def subtract(p2: Point): Vector = Vector(x - p2.x, y - p2.y)
+    override def add(v: Vector): Point = Point(x + v.x, y + v.y)
 
-    override def subtract(p2: Vector): Vector = Vector(x - p2.x, y - p2.y)
+    override def subtract(p: Point): Vector = Vector(x - p.x, y - p.y)
+
+    override def subtract(v: Vector): Vector = Vector(x - v.x, y - v.y)
   }
 
 }

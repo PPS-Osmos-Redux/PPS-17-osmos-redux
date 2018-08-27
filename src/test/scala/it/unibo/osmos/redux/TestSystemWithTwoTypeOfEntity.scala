@@ -11,9 +11,9 @@ import scala.collection.mutable.ListBuffer
 case class FakeSystemWithTwoTypeOfEntity()
   extends AbstractSystemWithTwoTypeOfEntity[MovableProperty, InputProperty] {
 
-  override protected def getGroupProperty: Class[_ <: Property] = classOf[MovableProperty]
+  override protected def getGroupProperty: Class[MovableProperty] = classOf[MovableProperty]
 
-  override protected def getGroupPropertySecondType: Class[_ <: Property] = classOf[InputProperty]
+  override protected def getGroupPropertySecondType: Class[InputProperty] = classOf[InputProperty]
 
   override def update(): Unit = ???
 
@@ -30,7 +30,7 @@ class TestSystemWithTwoTypeOfEntity extends FunSuite with BeforeAndAfter {
   val dimension = DimensionComponent(5)
   val position = PositionComponent(Point(0, 0))
   val visible = VisibleComponent(true)
-  val typeEntity = TypeComponent(EntityType.Material)
+  val typeEntity = TypeComponent(EntityType.Matter)
   val spawner = SpawnerComponent(false)
 
   after(EntityManager.clear())
