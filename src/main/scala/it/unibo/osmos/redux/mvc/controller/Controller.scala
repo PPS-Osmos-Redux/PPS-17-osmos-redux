@@ -8,7 +8,7 @@ import it.unibo.osmos.redux.multiplayer.server.Server
 import it.unibo.osmos.redux.mvc.model.{Level, MultiPlayerLevels, SinglePlayerLevels}
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context._
-import it.unibo.osmos.redux.mvc.view.events._
+import it.unibo.osmos.redux.mvc.view.events.{AbortLobby, _}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Promise
@@ -134,6 +134,20 @@ case class ControllerImpl() extends Controller with Observer {
   override def initLobby(user: User, lobbyContext: LobbyContext): Promise[Boolean] = {
     val promise = Promise[Boolean]()
 
+    //subscribe to lobby context to intercept exit from lobby click
+    lobbyContext.subscribe {
+      case LobbyEventWrapper(AbortLobby, _) =>
+        if (server.nonEmpty) {
+          server.get.closeLobby()
+          server.get.kill()
+        }
+        if (client.nonEmpty) {
+          client.get.leaveLobby()
+          client.get.kill()
+        }
+      case _ => //do not
+    }
+
     multiPlayerMode = Some(if (user.isServer) MultiPlayerMode.Server else MultiPlayerMode.Client)
     multiPlayerMode match {
       case Some(MultiPlayerMode.Server) =>
@@ -162,9 +176,8 @@ case class ControllerImpl() extends Controller with Observer {
               client.initGame(levelContext)
               //fulfill promise
               promise success true
-            case Success(false) =>
-              promise success false
-            case _ => promise failure _
+            case Success(false) => promise success false
+            case Failure(t) => promise failure t
           }
           case Success(false) => promise success false
         }

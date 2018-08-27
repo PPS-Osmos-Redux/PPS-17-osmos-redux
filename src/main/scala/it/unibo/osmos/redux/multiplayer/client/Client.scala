@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.multiplayer.client
 
-import akka.actor.{ActorRef, PoisonPill}
+import akka.actor.ActorRef
 import akka.pattern.ask
 import akka.util.Timeout
 import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
@@ -171,7 +171,7 @@ object Client {
         levelContext = None
       }
       if (ref.nonEmpty) {
-        ref.get ! PoisonPill
+        ActorSystemHolder.stopActor(ref.get)
         ref = None
       }
       if (server.nonEmpty) {
@@ -219,11 +219,13 @@ object Client {
             lobby.get.addPlayers(players: _*)
             //because the interface is not ready yet, set users list into lobby context
             lobbyContext.users = players.map(p => new User(p, false))
+            //fulfill promise
             promise success true
           case ServerActor.UsernameAlreadyTaken | ServerActor.LobbyFull =>
+            //fulfill promise reporting an error
             promise success false
         }
-        case Failure(_) => promise failure _
+        case Failure(t) => promise failure t
       }
       promise
     }
@@ -232,8 +234,7 @@ object Client {
       if (username.isEmpty) throw new IllegalStateException("The player entered no lobby, unable to leave.")
 
       server.get.tell(ClientActor.LeaveLobby(username), ref.get)
-      lobby.get.leaveLobby()
-      lobby = None
+      clearLobby()
     }
 
     override def getLobbyPlayers: Seq[BasicPlayer] = lobby.get.getPlayers

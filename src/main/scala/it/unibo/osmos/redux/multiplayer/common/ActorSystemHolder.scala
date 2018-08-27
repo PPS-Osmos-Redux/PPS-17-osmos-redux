@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.multiplayer.common
 
-import akka.actor.{ActorRef, ActorSystem, Address}
+import akka.actor.{ActorRef, ActorSystem, Address, PoisonPill}
 import it.unibo.osmos.redux.multiplayer.client.{Client, ClientActor}
 import it.unibo.osmos.redux.multiplayer.server.{Server, ServerActor}
 import it.unibo.osmos.redux.utils.Constants
@@ -43,6 +43,13 @@ object ActorSystemHolder {
     * @param actorRef The actor ref.
     */
   def stopActor(actorRef: ActorRef): Unit = system stop actorRef
+
+  /**
+    * Clears all the actors of the actor system.
+    */
+  def clearActors(): Unit = {
+    system.actorSelection("/user/*") ! PoisonPill
+  }
 
   /**
     * Kills this instance.

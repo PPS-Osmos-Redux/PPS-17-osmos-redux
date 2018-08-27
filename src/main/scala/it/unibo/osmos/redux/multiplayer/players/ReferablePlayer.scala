@@ -12,6 +12,14 @@ import akka.actor.ActorRef
 case class ReferablePlayer(username: String, address: String, port: Int, actorRef: ActorRef) extends Player {
 
   /**
+    * Secondary constructor.
+    * @param basicPlayer The BasicPlayer.
+    * @param actorRef The actor reference.
+    * @return A new ReferablePlayer instance.
+    */
+  def this(basicPlayer: BasicPlayer, actorRef: ActorRef) = this(basicPlayer.username, basicPlayer.address, basicPlayer.port, actorRef)
+
+  /**
     * The uuid
     */
   private var uuid: String = ""

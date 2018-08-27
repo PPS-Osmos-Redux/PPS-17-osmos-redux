@@ -145,7 +145,7 @@ object Server {
 
     override def kill(): Unit = {
       if (ref.nonEmpty) {
-        ref.get ! PoisonPill
+        ActorSystemHolder.stopActor(ref.get)
         ref = None
       }
       if (lobby.nonEmpty) {
@@ -163,8 +163,9 @@ object Server {
     }
 
     override def broadcastMessage(message: Any, clientsToExclude: String*): Unit = {
-      val usernameToExclude = clientsToExclude ++ this.username
-      lobby.get.getPlayers.filterNot(p => usernameToExclude contains p.username).foreach(p => p.actorRef ! message)
+      if (ref.isEmpty) throw new IllegalStateException("Unable to broadcast the message, server is not bind to an actor.")
+      val usernameToExclude = clientsToExclude :+ this.username
+      lobby.get.getPlayers.filterNot(p => usernameToExclude contains p.username).foreach(_.actorRef.tell(message, ref.get))
     }
 
     //GAME MANAGEMENT
@@ -175,10 +176,8 @@ object Server {
       //assign player cells to lobby players
       val futures = assignCellsToPlayers(level)
       Future.sequence(futures) onComplete {
-        case Success(_) =>
-          promise success true
-        case Failure(_) =>
-          promise failure _
+        case Success(_) => promise success true
+        case Failure(_) => promise failure _
       }
       promise
     }
@@ -216,7 +215,10 @@ object Server {
       val address = ActorSystemHolder.systemAddress
       //add the server itself
       val serverPlayer = BasicPlayer(username, address.host.getOrElse("0.0.0.0"), address.port.getOrElse(0))
+      //let interface to show immediately the server player
       lobbyContext.users = Seq(new User(serverPlayer, true))
+      //add himself to the lobby
+      lobby.get.addPlayer(new ReferablePlayer(serverPlayer, ref.get))
     }
 
     override def closeLobby(): Unit = {

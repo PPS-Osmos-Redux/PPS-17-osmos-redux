@@ -16,7 +16,6 @@ class ServerActor(private val server: Server) extends Actor {
     case Connect => sender ! Established
     case EnterLobby(username) =>
       //to tell the server that you want to enter the lobby (server gets the actor ref from the sender object at his side)
-      //TODO: along with all current players in the lobby you can send UUID too
       val (address, port) = (sender.path.address.host.getOrElse("0.0.0.0"), sender.path.address.port.getOrElse(0))
       if (server.addPlayerToLobby(sender, BasicPlayer(username, address, port))) sender ! LobbyInfo(server.getLobbyPlayers.map(_.toBasicPlayer))
       else sender ! LobbyFull

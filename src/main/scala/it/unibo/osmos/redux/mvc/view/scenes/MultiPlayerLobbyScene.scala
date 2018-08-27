@@ -2,7 +2,7 @@ package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.{User, UserWithProperties}
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, LobbyContextListener, MultiPlayerLevelContext}
-import it.unibo.osmos.redux.mvc.view.events.{LobbyEventWrapper, UserRemoved}
+import it.unibo.osmos.redux.mvc.view.events.{AbortLobby, LobbyEventWrapper}
 import scalafx.beans.property.ObjectProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Pos}
@@ -17,8 +17,9 @@ import scalafx.stage.Stage
   * @param listener the MultiPlayerLobbySceneListener
   * @param user the user who requested to enter the lobby
   */
-class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: MultiPlayerLobbySceneListener, val upperSceneListener: UpperMultiPlayerLobbySceneListener, val user: User) extends BaseScene(parentStage)
- with LobbyContextListener {
+class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: MultiPlayerLobbySceneListener,
+                            val upperSceneListener: UpperMultiPlayerLobbySceneListener, val user: User)
+  extends BaseScene(parentStage) with LobbyContextListener {
 
   /**
     * The lobby context, created with the MultiPlayerLobbyScene. It still needs to be properly setup
@@ -72,7 +73,7 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
   private val exitLobby = new Button("Exit Lobby") {
     onAction = _ => lobbyContext match {
       /* We notify the lobby observer that we exited the lobby */
-      case Some(lc) => lc notifyLobbyEvent LobbyEventWrapper(UserRemoved, user); upperSceneListener.onLobbyExited()
+      case Some(lc) => lc notifyLobbyEvent LobbyEventWrapper(AbortLobby, null); upperSceneListener.onLobbyExited()
       case _ =>
     }
   }
