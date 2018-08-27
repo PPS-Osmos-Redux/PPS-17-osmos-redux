@@ -3,7 +3,7 @@
 Revisiting of Osmos game using Scala
 
 ## Doc reference
- * [Scaladoc](/test-travis-CI/docs/scaladoc)
+ * [Scaladoc](/Osmos-Redux/docs/scaladoc)
 
 
 ## Getting Started
