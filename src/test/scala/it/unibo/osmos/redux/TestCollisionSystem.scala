@@ -31,8 +31,7 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
     levelInfo = Level(1,
       LevelMap(mapShape, collisionRules),
       null,
-      VictoryRules.becomeTheBiggest,
-      false)
+      VictoryRules.becomeTheBiggest)
   }
 
   test("CollisionSystem should not collide the entity with herself") {
@@ -301,4 +300,33 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
     assert(cellEntity.getSpeedComponent.vector == utils.Vector(-10.0, -20.0))
     assert(cellEntity.getDimensionComponent.radius == 6.961143807781525)
   }
+
+  test("After collision between two entities, both entities remain within the map") {
+    val system = CollisionSystem(levelInfo)
+
+    entity1.getDimensionComponent.radius_(10)
+    entity1.getPositionComponent.point_(Point(61, 36))
+    entity1.getCollidableComponent.setCollidable(true)
+    entity2.getDimensionComponent.radius_(6)
+    entity2.getPositionComponent.point_(Point(60, 49))
+    entity2.getCollidableComponent.setCollidable(true)
+
+    EntityManager.add(entity1)
+    EntityManager.add(entity2)
+
+    system.update()
+    val map = levelInfo.levelMap.mapShape.asInstanceOf[Rectangle]
+    val boundaryLeft = map.center._1 - map.base/2
+    val boundaryRight = map.center._1 + map.base/2
+    val boundaryTop = map.center._2 + map.height/2
+    val boundaryBottom = map.center._2 - map.height/2
+
+    assert(entity1.getPositionComponent.point.x >= boundaryLeft + entity1.getDimensionComponent.radius)
+    assert(entity1.getPositionComponent.point.x <= boundaryRight - entity1.getDimensionComponent.radius)
+    assert(entity1.getPositionComponent.point.y >= boundaryBottom + entity1.getDimensionComponent.radius)
+    assert(entity1.getPositionComponent.point.y <= boundaryTop - entity1.getDimensionComponent.radius)
+    assert(entity2.getPositionComponent.point.x >= boundaryLeft + entity2.getDimensionComponent.radius)
+    assert(entity2.getPositionComponent.point.x <= boundaryRight - entity2.getDimensionComponent.radius)
+    assert(entity2.getPositionComponent.point.y >= boundaryBottom + entity2.getDimensionComponent.radius)
+    assert(entity2.getPositionComponent.point.y <= boundaryTop - entity2.getDimensionComponent.radius)  }
 }
