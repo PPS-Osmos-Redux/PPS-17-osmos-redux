@@ -3,6 +3,7 @@ import spray.json._
 import DefaultJsonProtocol._
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, GravityCellEntity, PlayerCellEntity, SentientCellEntity}
+import it.unibo.osmos.redux.mvc.model.UserProgress.UserStat
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
 import it.unibo.osmos.redux.utils.Point
 import org.apache.commons.lang3.SerializationException
@@ -320,5 +321,7 @@ object JsonProtocols {
 
   implicit val levelFormatter:RootJsonFormat[Level] = jsonFormat5(Level)
 
-  implicit val drawableWrapper:RootJsonFormat[DrawableWrapper] = jsonFormat4(DrawableWrapper)
+  implicit val drawableWrapperFormatter:RootJsonFormat[DrawableWrapper] = jsonFormat4(DrawableWrapper)
+
+  implicit val userProgressFormatter:RootJsonFormat[UserStat] = jsonFormat1(UserStat)
 }
