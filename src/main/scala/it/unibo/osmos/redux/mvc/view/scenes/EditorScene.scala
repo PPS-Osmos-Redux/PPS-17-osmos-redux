@@ -1,14 +1,18 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.ecs.components.EntityType
+import it.unibo.osmos.redux.mvc.model.{MapShape, VictoryRules}
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.components.custom.TitledComboBox
 import it.unibo.osmos.redux.mvc.view.components.editor.{CellEntityBuilder, GravityCellEntityBuilder}
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
+import javafx.collections.ObservableList
 import javafx.scene.paint.ImagePattern
+import scalafx.application.Platform
 import scalafx.beans.property.ObjectProperty
+import scalafx.geometry.Pos
 import scalafx.scene.image.ImageView
-import scalafx.scene.layout.VBox
+import scalafx.scene.layout._
 import scalafx.scene.shape.{Circle, Shape}
 import scalafx.stage.Stage
 
@@ -30,6 +34,22 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   }
 
   /**
+    * Level Type
+    */
+  private var levelType: ObjectProperty[MapShape] = ObjectProperty(MapShape.Rectangle((400, 400), 400, 400))
+  private val levelTypeBox = new TitledComboBox[String]("Level Type:", Seq(MapShape.circle, MapShape.rectangle),{
+    case MapShape.circle => levelType.value_=(MapShape.Circle((400, 400), 400))
+    case MapShape.rectangle => levelType.value_=(MapShape.Rectangle((400, 400), 400, 400))
+    case _ =>
+  })
+
+  /**
+    * Level Type
+    */
+  private var victoryRule: ObjectProperty[VictoryRules.Value] = ObjectProperty(VictoryRules.becomeTheBiggest)
+  private val victoryRuleBox = new TitledComboBox[VictoryRules.Value]("Victory Rule:", VictoryRules.values.toSeq, vr => victoryRule.value = vr)
+
+  /**
     * Entity Type
     */
   private var entityType: ObjectProperty[EntityType.Value] = ObjectProperty(EntityType.Matter)
@@ -39,18 +59,53 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   })
 
   /* Pane containing the field to configure the entities*/
-  private var cellEntityBuilder: CellEntityBuilder = new CellEntityBuilder
+  private val cellEntityBuilder: CellEntityBuilder = new CellEntityBuilder
+  /* Pane containing the field to configure the entities*/
+  private val gravityCellEntityBuilder: GravityCellEntityBuilder = new GravityCellEntityBuilder(isAttractive = true) {
+    visible = false
+  }
 
-  val verticalContainer: VBox = new VBox(10.0, entityComboBox.root, cellEntityBuilder)
-  entityType.onChange(entityType.value match {
-    case EntityType.Matter => cellEntityBuilder = new CellEntityBuilder
-    case EntityType.AntiMatter => //fill.value = new ImagePattern(ImageLoader.getImage(antiMatterTexture))
-    case EntityType.Attractive => cellEntityBuilder = new GravityCellEntityBuilder(isAttractive = true); println(cellEntityBuilder.children)
-    case EntityType.Repulse => cellEntityBuilder = new GravityCellEntityBuilder(isAttractive = false)
-    case EntityType.Sentient => //fill.value = new ImagePattern(ImageLoader.getImage(sentientTexture))
-    case EntityType.Controlled => //fill.value = new ImagePattern(ImageLoader.getImage(controllerTexture))
-    case _ => cellEntityBuilder = new CellEntityBuilder
-  })
+
+  private val entityTypeContainer: VBox = new VBox(5.0) {
+
+    /** Left builder seq */
+    private val builderSeq = Seq(cellEntityBuilder, gravityCellEntityBuilder)
+
+    /** putting the builder one on top of the other */
+    private val verticalStackPane = new StackPane() {
+      children = builderSeq
+      entityType.onChange({
+        builderSeq.foreach(cellBuilder => cellBuilder.visible = false)
+        entityType.value match {
+          case EntityType.Matter => cellEntityBuilder.visible = true; cellEntityBuilder.entityType_=(EntityType.Matter)
+          case EntityType.AntiMatter => cellEntityBuilder.visible = true; cellEntityBuilder.entityType_=(EntityType.AntiMatter)
+          case EntityType.Attractive => gravityCellEntityBuilder.visible = true; gravityCellEntityBuilder.isAttractive = true
+          case EntityType.Repulse => gravityCellEntityBuilder.visible = true; gravityCellEntityBuilder.isAttractive = false
+          case EntityType.Sentient => cellEntityBuilder.visible = true; cellEntityBuilder.entityType_=(EntityType.Sentient)
+          case EntityType.Controlled => cellEntityBuilder.visible = true; cellEntityBuilder.entityType_=(EntityType.Controlled)
+          case _ => cellEntityBuilder.visible = true; cellEntityBuilder.entityType_=(EntityType.Matter)
+        }
+      })
+    }
+
+    children = List(entityComboBox.root, verticalStackPane)
+  }
+
+  private val levelTypeContainer: VBox = new VBox(10.0) {
+
+    /** Right builder seq */
+    private val builderSeq = Seq()
+
+    private val verticalStackPane = new StackPane() {
+      children = builderSeq
+    }
+
+    children = List(levelTypeBox.root, verticalStackPane)
+  }
+
+  private val mainContainer: VBox = new VBox(10.0) {
+    children = Seq(victoryRuleBox.root, levelTypeContainer, entityTypeContainer)
+  }
 
   /**
     * The placeholder which follows the user mouse and changes appearance on EntityType change
@@ -123,9 +178,8 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     content = editorElements
   }
 
-  val editorElements = mutable.MutableList(background, verticalContainer, currentPlaceholder)
+  val editorElements = mutable.MutableList(background, mainContainer, currentPlaceholder)
   content = editorElements
-
 }
 
 /**

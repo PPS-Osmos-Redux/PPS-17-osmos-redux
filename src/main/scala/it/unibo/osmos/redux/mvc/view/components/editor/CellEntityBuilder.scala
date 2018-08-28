@@ -1,5 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.components.editor
 
+import it.unibo.osmos.redux.ecs.components.EntityType
 import it.unibo.osmos.redux.ecs.entities.{CellBuilder, CellEntity, GravityCellEntity}
 import it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField
 import scalafx.beans.property.{DoubleProperty, ObjectProperty}
@@ -10,6 +11,12 @@ import scalafx.scene.layout.{HBox, VBox}
   * A panel showing input nodes which is also capable of providing the requested CellEntity
   */
 class CellEntityBuilder extends BaseComponentBuilder[CellEntity] {
+
+  private[this] var _entityType: EntityType.Value = EntityType.Matter
+
+  def entityType_=(value: EntityType.Value): Unit = {
+    _entityType = value
+  }
 
   /* Position node */
   val x: ObjectProperty[Double] = ObjectProperty(300)
@@ -56,6 +63,7 @@ class CellEntityBuilder extends BaseComponentBuilder[CellEntity] {
     .withPosition(x.value, y.value)
     .withSpeed(xSpeed.value, ySpeed.value)
     .withAcceleration(xAcceleration.value, yAcceleration.value)
+    .withEntityType(_entityType)
 
   override def build(): CellEntity = CellEntity(getBuilder)
 
