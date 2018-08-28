@@ -141,7 +141,7 @@ object FileManager {
 
 
   val soundsPath: String = separator + "sounds" + separator
-  def loadMenuMusic(): String = getClass.getResource(soundsPath + "LevelMusic.mp3").toURI toString
+  def loadMenuMusic(): String = getClass.getResource(soundsPath + "MenuMusic.mp3").toURI toString
   def loadButtonsSound(): String = getClass.getResource(soundsPath + "ButtonSound.mp3").toURI toString
-  def loadLevelMusic(): String = getClass.getResource(soundsPath + "MenuMusic.mp3").toURI toString
+  def loadLevelMusic(): String = getClass.getResource(soundsPath + "LevelMusic.mp3").toURI toString
 }
