@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.ecs.systems
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities._
+import it.unibo.osmos.redux.ecs.entities.{SentientEnemyProperty, _}
 import it.unibo.osmos.redux.utils.{MathUtils, Vector}
 
 import scala.collection.mutable.ListBuffer
@@ -12,6 +12,7 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
   private val MAX_ACCELERATION = 0.1
   private val COEFFICIENT_DESIRED_SEPARATION = 6
   private val radiusThreshold = 4
+  private val MIN_VALUE = Double.MinPositiveValue
 
   override protected def getGroupPropertySecondType: Class[SentientEnemyProperty] = classOf[SentientEnemyProperty]
 
@@ -30,7 +31,7 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
     * @param sentient sentient entity
     * @param target target entity
     */
-  def followTarget(sentient: SentientProperty, target: SentientEnemyProperty): Unit = {
+  private def followTarget(sentient: SentientProperty, target: SentientEnemyProperty): Unit = {
     val nextPositionTarget = target.getPositionComponent.point.add(target.getSpeedComponent.vector)
     val unitVectorDesiredVelocity = MathUtils.unitVector(nextPositionTarget, sentient.getPositionComponent.point)
     val steer = computeSteer(sentient.getSpeedComponent.vector, unitVectorDesiredVelocity)
@@ -72,39 +73,48 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
                   sentient.getDimensionComponent.radius < e.getDimensionComponent.radius) toList
 
   /**
-    * applay acceleration to run away from all enemies
+    * apply acceleration to run away from all enemies
     * @param sentient sentient entity
     * @param enemies list of enemies
     */
   private def runAwayFromEnemies(sentient: SentientProperty, enemies: List[SentientEnemyProperty]): Unit = {
     val desiredSeparation = sentient.getDimensionComponent.radius * COEFFICIENT_DESIRED_SEPARATION
-    enemies.map(e => (e, computeDistance(sentient, e)))
-          .filter(p => p._2 < desiredSeparation)
-          .map(m => MathUtils.unitVector(sentient.getPositionComponent.point, m._1.getPositionComponent.point) divide m._2)
-          .foldLeft((Vector.zero(), 1)) ((acc, i) => (acc._1 add ((i subtract acc._1) divide acc._2), acc._2 + 1))._1 normalized() match {
-      case unitVectorDesiredVelocity if unitVectorDesiredVelocity == Vector(0,0) =>
-      case unitVectorDesiredVelocity =>
-        val steer = computeSteer(sentient.getSpeedComponent.vector, unitVectorDesiredVelocity)
-        applyAcceleration(sentient, steer)
+    val filteredEnemies = enemies map(e => (e, computeDistance(sentient, e))) filter(p => p._2 < desiredSeparation)
+    shiftDistance(filteredEnemies)
+      .map(m => MathUtils.unitVector(sentient.getPositionComponent.point, m._1.getPositionComponent.point) divide m._2)
+      .foldLeft((Vector.zero(), 1)) ((acc, i) => (acc._1 add ((i subtract acc._1) divide acc._2), acc._2 + 1))._1 normalized() match {
+        case unitVectorDesiredVelocity if unitVectorDesiredVelocity == Vector(0,0) =>
+        case unitVectorDesiredVelocity =>
+          val steer = computeSteer(sentient.getSpeedComponent.vector, unitVectorDesiredVelocity)
+          applyAcceleration(sentient, steer)
+      }
+  }
+
+  /**
+    * if smallest distance(second value of tuple) is less or equal of 0,
+    * shift all distance of minus smallest distance plus Double.MinPositiveValue, so
+    * the smallest distance is equal to Double.MinPositiveValue
+    * @param list list to shift
+    * @return shifted list
+    */
+  private def shiftDistance(list: List[(SentientEnemyProperty, Double)]): List[(SentientEnemyProperty, Double)] = list match {
+    case Nil => Nil
+    case _ => list.min(Ordering.by((d:(SentientEnemyProperty, Double)) => d._2)) match {
+      case min if min._2 <= 0 => list.map(e => (e._1, e._2 - min._2 + MIN_VALUE))
+      case _ => list
     }
   }
 
   private def computeDistance(sentient: SentientProperty, enemy: SentientEnemyProperty): Double = {
-    /*val dist =*/ MathUtils.euclideanDistance(sentient.getPositionComponent, enemy.getPositionComponent)
-    //dist - sentient.getDimensionComponent.radius - enemy.getDimensionComponent.radius
+    val dist = MathUtils.euclideanDistance(sentient.getPositionComponent, enemy.getPositionComponent)
+    dist - sentient.getDimensionComponent.radius - enemy.getDimensionComponent.radius
   }
 
-  private def computeSteer(actualVelocity: Vector, desiredVelovity: Vector): Vector =
-    desiredVelovity multiply MAX_SPEED subtract actualVelocity limit MAX_ACCELERATION
+  private def computeSteer(actualVelocity: Vector, desiredVelocity: Vector): Vector =
+    desiredVelocity multiply MAX_SPEED subtract actualVelocity limit MAX_ACCELERATION
 
   private def applyAcceleration(sentient: SentientProperty, acceleration: Vector): Unit = {
     val accelerationSentient = sentient.getAccelerationComponent
     accelerationSentient.vector_(accelerationSentient.vector add acceleration)
   }
-}
-
-object Test extends App {
-  val p:List[Vector] = List()
-  val d = p.foldLeft((Vector.zero(), 1)) ((acc, i) => (acc._1 add ((i subtract acc._1) divide acc._2), acc._2 + 1))._1
-  println(d)
 }
