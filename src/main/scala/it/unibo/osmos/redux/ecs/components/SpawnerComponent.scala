@@ -1,5 +1,7 @@
 package it.unibo.osmos.redux.ecs.components
 
+import it.unibo.osmos.redux.utils.Point
+
 import scala.collection.mutable
 
 /**
@@ -57,9 +59,7 @@ trait SpawnerComponent extends Component {
 object SpawnerComponent {
   def apply(canSpawn: Boolean): SpawnerComponent = SpawnerComponentImpl(canSpawn)
 
-  def apply(canSpawn: Boolean, spawnableEntities: Int): SpawnerComponent = SpawnerComponentImpl(canSpawn, spawnableEntities)
-
-  private case class SpawnerComponentImpl(var _canSpawn: Boolean, var _spawnableEntities: Int = 0) extends SpawnerComponent {
+  private case class SpawnerComponentImpl(var _canSpawn: Boolean) extends SpawnerComponent {
 
     override def canSpawn: Boolean = _canSpawn
 
@@ -74,10 +74,9 @@ object SpawnerComponent {
     override def clearActions(): Unit = actionQueue.clear()
 
     override def copy(): SpawnerComponent = {
-      val copy = SpawnerComponentImpl(_canSpawn, _spawnableEntities)
+      val copy = SpawnerComponentImpl(canSpawn)
       copy.actionQueue ++= this.actionQueue
       copy
     }
   }
 }
-
