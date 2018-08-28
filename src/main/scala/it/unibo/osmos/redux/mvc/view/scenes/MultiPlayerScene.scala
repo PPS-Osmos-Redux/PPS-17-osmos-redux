@@ -88,7 +88,7 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
       /* We create the lobby context */
       val lobbyContext = LobbyContext()
       /* We ask to enter in the lobby */
-      listener.onLobbyClick(User(username.value, addressValue.value, portValue.value, isServer = mode.value), lobbyContext, onLobbyEnterResult)
+      listener.onLobbyClick(user, lobbyContext, onLobbyEnterResult)
     }
   }
 
