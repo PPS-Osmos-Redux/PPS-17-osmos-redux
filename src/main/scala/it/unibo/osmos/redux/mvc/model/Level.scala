@@ -5,6 +5,7 @@ import it.unibo.osmos.redux.ecs.entities.CellEntity
   * List of cell types
   */
 object CellType {
+  val sentientCell = "sentientCell"
   val gravityCell = "gravityCell"
   val playerCell = "playerCell"
   val basicCell = "basicCell"
@@ -23,6 +24,9 @@ object CollisionRules extends Enumeration {
   */
 object VictoryRules extends Enumeration {
   val becomeTheBiggest: VictoryRules.Value = Value("Become_the_biggest")
+  val becomeHuge: VictoryRules.Value = Value("Become_huge")
+  val absorbTheRepulsors: VictoryRules.Value = Value("Absorb_the_repulsors")
+  val absorbTheHostileCells: VictoryRules.Value = Value("Absorb_the_hostile_cells")
 }
 
 /**
@@ -59,7 +63,7 @@ case class LevelMap(mapShape:MapShape, collisionRule:CollisionRules.Value)
   * @param victoryRule victory rule
   * @param isSimulation if it's a simulation
   */
-  case class Level(levelId:Int,
+  case class Level(levelId:String,
                    levelMap:LevelMap,
                    entities:List[CellEntity],
                    victoryRule:VictoryRules.Value, var isSimulation:Boolean = false)

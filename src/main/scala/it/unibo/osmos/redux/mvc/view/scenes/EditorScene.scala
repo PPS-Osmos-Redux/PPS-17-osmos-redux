@@ -1,21 +1,18 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.ecs.components.EntityType
-import it.unibo.osmos.redux.mvc.view.components.editor.{CellEntityBuilder, TitledComboBox}
+import it.unibo.osmos.redux.mvc.view.components.custom.TitledComboBox
+import it.unibo.osmos.redux.mvc.view.components.editor.CellEntityBuilder
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import javafx.scene.paint.ImagePattern
-import scalafx.beans.Observable
 import scalafx.beans.property.ObjectProperty
-import scalafx.beans.value.ObservableValue
-import scalafx.scene.effect.{ColorAdjust, Effect}
+import scalafx.scene.effect.ColorAdjust
 import scalafx.scene.image.ImageView
 import scalafx.scene.layout.VBox
-import scalafx.scene.paint.Color
 import scalafx.scene.shape.{Circle, Shape}
 import scalafx.stage.Stage
 
 import scala.collection.mutable
-import scala.tools.nsc.doc.model.Entity
 
 /**
   * A scene representing a level editor
@@ -39,17 +36,17 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
 
   private val entityComboBox = new TitledComboBox[EntityType.Value]("Entity Type", EntityType.values.toSeq, et => {
     entityType.value = et
-    println("val: " + entityType)
+    println(et)
 
   })
 
   private val cellEntityBuilder = new CellEntityBuilder
 
-  val verticalContainer: VBox = new VBox(10.0, entityComboBox, cellEntityBuilder)
+  val verticalContainer: VBox = new VBox(10.0, entityComboBox.root, cellEntityBuilder)
 
 
   val entityPlaceholder: Circle = new Circle() {
-    fill.value = new ImagePattern(ImageLoader.getImage("/textures/menu_level_1.png"))
+    fill.value = new ImagePattern(ImageLoader.getImage("/textures/cell_blue.png"))
     radius = 100
 
     onScroll = scroll => radius = radius.value + (scroll.getDeltaY/10) min 200 max 10

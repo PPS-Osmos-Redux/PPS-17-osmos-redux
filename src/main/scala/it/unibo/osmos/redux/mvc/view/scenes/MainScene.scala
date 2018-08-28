@@ -1,5 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
+import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.mvc.view.components.menu.{MainMenuBar, MainMenuBarListener, MainMenuCenterBox, MainMenuCenterBoxListener}
 import scalafx.scene.layout.BorderPane
 import scalafx.stage.Stage
@@ -8,7 +9,7 @@ import scalafx.stage.Stage
   * Opening scene, showing the menu and the menu bar
   */
 class MainScene(override val parentStage: Stage, val listener: MainSceneListener) extends BaseScene(parentStage)
-  with MainMenuCenterBoxListener with MainMenuBarListener {
+  with MainMenuCenterBoxListener with MainMenuBarListener with UpperMultiPlayerSceneListener {
 
   /* Requesting a structured layout */
   private val rootLayout: BorderPane = new BorderPane {
@@ -22,6 +23,8 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
 
   override def onPlayClick(): Unit = listener.onPlayClick()
 
+  override def onMultiPlayerClick(): Unit = listener.onMultiPlayerClick()
+
   override def onEditorClick(): Unit = listener.onEditorClick()
 
   override def onExitClick(): Unit = {
@@ -30,6 +33,11 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
 
   override def onFullScreenSettingClick(): Unit = {
     parentStage.fullScreen = !parentStage.fullScreen.get()
+  }
+
+  override def onMultiPlayerSceneBackClick(): Unit = {
+    ActorSystemHolder.clearActors()
+    parentStage.scene = this
   }
 }
 
@@ -42,6 +50,11 @@ trait MainSceneListener {
     * Called when the user clicks on the play button
     */
   def onPlayClick()
+
+  /**
+    * Called when the user clicks on the play button
+    */
+  def onMultiPlayerClick()
 
   /**
     * Called when the user clicks on the editor button

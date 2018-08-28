@@ -12,7 +12,7 @@ import scalafx.scene.text.Text
 /**
   * Trait which gets notified when a LevelNode event occurs
   */
-trait EditorLevelNodeListener extends LevelNodeListener{
+trait EditorLevelNodeListener extends LevelNodeListener {
 
   /**
     * This method gets called when the user wants to delete a custom level
@@ -41,7 +41,7 @@ class EditorLevelNode(override val listener: EditorLevelNodeListener, override v
   }
 
   /* The level image */
-  override lazy val imageView: ImageView = new ImageView(ImageLoader.getImage("/textures/menu_level_5.png")) {
+  override lazy val imageView: ImageView = new ImageView(ImageLoader.getImage("/textures/cell_blue.png")) {
     margin = Insets(20)
   }
 

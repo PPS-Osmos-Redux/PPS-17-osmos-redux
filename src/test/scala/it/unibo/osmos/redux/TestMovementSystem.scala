@@ -17,7 +17,7 @@ class TestMovementSystem extends FunSuite with BeforeAndAfter {
   }
 
   private def initEntityManager(mapShape: MapShape, collisionRules: CollisionRules.Value) {
-    val levelInfo = Level(1,
+    val levelInfo = Level("1",
       LevelMap(mapShape, collisionRules),
       null,
       VictoryRules.becomeTheBiggest,

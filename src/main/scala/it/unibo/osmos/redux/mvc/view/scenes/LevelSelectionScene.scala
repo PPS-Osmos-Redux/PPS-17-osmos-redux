@@ -2,7 +2,7 @@ package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.mvc.view.components.level.{LevelNode, LevelNodeListener}
 import it.unibo.osmos.redux.mvc.view.components.menu.{MainMenuBar, MainMenuBarListener}
-import it.unibo.osmos.redux.mvc.view.levels.LevelContext
+import it.unibo.osmos.redux.mvc.view.context.LevelContext
 import scalafx.geometry.Pos
 import scalafx.scene.layout.{TilePane, VBox}
 import scalafx.stage.Stage
@@ -11,7 +11,7 @@ import scalafx.stage.Stage
   * This scene lets the players choose which level they want to play
   */
 class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSelectionSceneListener) extends BaseScene(parentStage)
-  with MainMenuBarListener with LevelNodeListener with LevelSceneListener {
+  with MainMenuBarListener with LevelNodeListener {
 
   /**
     * The upper main menu bar
@@ -57,28 +57,18 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
   }
 
   def onLevelPlayClick(level: Int, simulation: Boolean): Unit = {
-    // Creating a new level scene
-    val levelScene = new LevelScene(parentStage, this)
-    // Creating a new LevelContext and setting it to the scene
-    val levelContext = LevelContext(levelScene, simulation)
+    /* Creating a listener on the run*/
+    val upperLevelSceneListener: UpperLevelSceneListener = () => parentStage.scene = this
+    /* Creating a new level scene */
+    val levelScene = new LevelScene(parentStage, listener, upperLevelSceneListener)
+    /* Creating the level context */
+    val levelContext = LevelContext(simulation)
+    levelContext.setListener(levelScene)
     levelScene.levelContext = levelContext
-    // Changing scene scene
+    /* Changing scene scene */
     parentStage.scene = levelScene
-    // Notify the view the new context
-    listener.onLevelContextCreated(levelContext, level, simulation)
-  }
-
-  override def onStartLevel(): Unit = listener.onStartLevel()
-
-  override def onPauseLevel(): Unit = listener.onPauseLevel()
-
-  override def onResumeLevel(): Unit = listener.onResumeLevel()
-
-  override def onStopLevel(): Unit = {
-    /* We set the stage scene to this */
-    parentStage.scene = this
-    /* We notify the listener */
-    listener.onStopLevel()
+    /* Notify the view the new context */
+    listener.onLevelContextCreated(levelContext, level)
   }
 
 }
@@ -92,7 +82,6 @@ trait LevelSelectionSceneListener extends LevelSceneListener {
     * This method called when the level context has been created
     * @param levelContext the new level context
     * @param level the new level index
-    * @param simulation true if the new level must be started as a simulation, false otherwise
     */
-  def onLevelContextCreated(levelContext: LevelContext, level: Int, simulation: Boolean)
+  def onLevelContextCreated(levelContext: LevelContext, level: Int)
 }

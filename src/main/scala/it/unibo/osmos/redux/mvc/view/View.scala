@@ -1,9 +1,12 @@
 package it.unibo.osmos.redux.mvc.view
 
 import it.unibo.osmos.redux.mvc.controller.Controller
-import it.unibo.osmos.redux.mvc.view.levels.LevelContext
+import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
+import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LobbyContext}
 import it.unibo.osmos.redux.mvc.view.stages.{OsmosReduxPrimaryStage, PrimaryStageListener}
 import scalafx.application.JFXApp
+
+import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
 /**
   * View base trait
@@ -29,6 +32,8 @@ object View {
     */
   class ViewImpl(private val app: JFXApp) extends View with PrimaryStageListener {
 
+    implicit val ec: ExecutionContextExecutor = ExecutionContext.global
+
     app.stage = OsmosReduxPrimaryStage(this)
     private var controller: Option[Controller] = Option.empty
 
@@ -36,31 +41,35 @@ object View {
       this.controller = Option(controller)
     }
 
-    override def onLevelContextCreated(levelContext: LevelContext, level: Int, simulation: Boolean): Unit = controller match {
-      case Some(c) => c.initLevel(levelContext, level, simulation)
+    /**
+      * Utility method that checks if controller is not empty and execute f() if that is the case
+      * @param f the function which will be executed if controller is not empty
+      */
+    private def checkController(f:() => Unit): Unit = controller match {
+      case Some(_) => f()
       case _ =>
     }
 
-    override def onStartLevel(): Unit = controller match {
-      case Some(c) => c.startLevel()
-      case _ =>
-    }
+    override def onLevelContextCreated(levelContext: LevelContext, level: Int): Unit = checkController(() =>controller.get.initLevel(levelContext, level))
 
-    override def onPauseLevel(): Unit = controller match {
-      case Some(c) => c.pauseLevel()
-      case _ =>
-    }
+    override def onStartLevel(): Unit = checkController(() => controller.get.startLevel())
 
-    override def onResumeLevel(): Unit = controller match {
-      case Some(c) => c.resumeLevel()
-      case _ =>
-    }
+    override def onPauseLevel(): Unit = checkController(() => controller.get.pauseLevel())
 
-    override def onStopLevel(): Unit = controller match {
-      case Some(c) => c.stopLevel()
-      case _ =>
-    }
+    override def onResumeLevel(): Unit = checkController(() => controller.get.resumeLevel())
+
+    override def onStopLevel(): Unit = checkController(() => controller.get.stopLevel())
+
+    /**
+      * After checking the controller, we ask to enter the lobby asynchronously and call the callback function after the future result
+      * @param user the user requesting to enter the lobby
+      * @param lobbyContext the lobby context, which may be used by the server to configure existing lobby users
+      * @param callback the callback
+      */
+    override def onLobbyClick(user: User, lobbyContext: LobbyContext, callback: (User, LobbyContext, Boolean) => Unit): Unit =
+      checkController(() => controller.get.initLobby(user, lobbyContext).future.onComplete(res => callback(user, lobbyContext, res.get)))
+
+    override def onStartMultiplayerGameClick(): Unit = checkController(() => controller.get.initMultiPlayerLevel())
   }
-
 }
 

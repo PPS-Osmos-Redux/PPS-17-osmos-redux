@@ -6,7 +6,7 @@ import it.unibo.osmos.redux.ecs.systems.DrawSystem
 import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
 import it.unibo.osmos.redux.mvc.view.events.{EventWrapperObserver, GameStateEventWrapper, MouseEventWrapper}
-import it.unibo.osmos.redux.mvc.view.levels.LevelContext
+import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextListener, LevelContextType}
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
@@ -17,6 +17,8 @@ case class DrawSystemSpy() extends LevelContext {
 
   private var _player: Option[DrawableWrapper] = None
   private var _entities: Seq[DrawableWrapper] = Seq()
+  protected var _listener: Option[LevelContextListener] = Option.empty
+
 
   def player: Option[DrawableWrapper] = _player
 
@@ -38,6 +40,14 @@ case class DrawSystemSpy() extends LevelContext {
   override def notify(event: GameStateEventWrapper): Unit = ???
 
   override def notifyMouseEvent(event: MouseEventWrapper): Unit = ???
+
+  override val levelContextType: LevelContextType.Value = LevelContextType.normal
+
+  override def setListener(levelContextListener: LevelContextListener): Unit = _listener = Option(levelContextListener)
+
+  override def getPlayerUUID: String = ""
+
+  override def setPlayerUUID(playerUUID: String): Unit = ???
 }
 
 /**

@@ -1,11 +1,8 @@
 package it.unibo.osmos.redux.ecs.systems
 
 import it.unibo.osmos.redux.ecs.components.EntityType
-import it.unibo.osmos.redux.ecs.entities.EMEvents.{EntityCreated, EntityDeleted}
 import it.unibo.osmos.redux.ecs.entities._
 import it.unibo.osmos.redux.utils.{MathUtils, Point}
-
-import scala.collection.mutable.ListBuffer
 
 case class GravitySystem() extends AbstractSystemWithTwoTypeOfEntity[MovableProperty, GravityProperty]() {
 

@@ -1,11 +1,9 @@
 package it.unibo.osmos.redux.ecs.entities
 
-import java.util.UUID
-
 import it.unibo.osmos.redux.ecs.components._
 
 /** Trait representing a CellEntity controllable by the player */
-trait PlayerCellEntity extends CellEntity with InputProperty with Spawner with SentientTargetProperty {}
+trait PlayerCellEntity extends CellEntity with InputProperty with Spawner {}
 
 object PlayerCellEntity {
   def apply(acceleration: AccelerationComponent,
@@ -24,7 +22,7 @@ object PlayerCellEntity {
 
   private case class PlayerCellEntityImpl(cellEntity: CellEntity, private val spawner: SpawnerComponent) extends PlayerCellEntity {
 
-    override def getUUID: UUID = cellEntity.getUUID
+    override def getUUID: String = cellEntity.getUUID
 
     override def getAccelerationComponent: AccelerationComponent = cellEntity.getAccelerationComponent
 

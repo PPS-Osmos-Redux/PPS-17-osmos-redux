@@ -7,23 +7,25 @@ import scalafx.scene.layout.VBox
 /**
   * Center menu shown in MainMenu
   */
-class MainMenuCenterBox(val listener: MainMenuCenterBoxListener) extends VBox {
+class MainMenuCenterBox(val listener: MainMenuCenterBoxListener) extends VBox(20.0) {
 
   alignment = Pos.Center
-  spacing = 10
 
   /* Play button */
   val playButton = new Button("Campaign Levels")
+  /* Multiplayer button */
+  val multiplayerButton = new Button("Multiplayer")
   /* Editor button */
   val editorButton = new Button("Editor Levels")
   /* Exit button */
   val exitButton = new Button("Exit")
 
-  children = List(playButton, editorButton, exitButton)
+  children = List(playButton, multiplayerButton, editorButton, exitButton)
 
-  playButton.onAction = e => listener.onPlayClick()
-  editorButton.onAction = e => listener.onEditorClick()
-  exitButton.onAction = e => listener.onExitClick()
+  playButton.onAction = _ => listener.onPlayClick()
+  multiplayerButton.onAction = _ => listener.onMultiPlayerClick()
+  editorButton.onAction = _ => listener.onEditorClick()
+  exitButton.onAction = _ => listener.onExitClick()
 }
 
 /**
@@ -35,6 +37,11 @@ trait MainMenuCenterBoxListener {
     * Called when the user clicks on the play button
     */
   def onPlayClick()
+
+  /**
+    * Called when the user clicks on the multiplayer button
+    */
+  def onMultiPlayerClick()
 
   /**
     * Called when the user clicks on the editor button

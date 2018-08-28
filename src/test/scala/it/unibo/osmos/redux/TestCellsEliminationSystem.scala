@@ -1,10 +1,9 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.{CellBuilder, CellEntity, EntityManager, PlayerCellEntity}
-import org.scalatest.FunSuite
+import it.unibo.osmos.redux.ecs.entities._
 import it.unibo.osmos.redux.ecs.systems.CellsEliminationSystem
-import it.unibo.osmos.redux.utils.Point
+import org.scalatest.FunSuite
 
 /**
   * Spy class to capture entities number
@@ -16,7 +15,7 @@ class CellEliminationSystemSpy() extends CellsEliminationSystem {
 class TestCellsEliminationSystem extends FunSuite{
   val spawner = SpawnerComponent(false)
   val ce: CellEntity = CellBuilder().build
-  val pce = PlayerCellEntity(CellBuilder().build,spawner)
+  val pce = PlayerCellEntity(CellBuilder().build, spawner)
   test("Cell elimination") {
     val system = new CellEliminationSystemSpy()
     pce.getDimensionComponent.radius_(system.radiusThreshold+1)
