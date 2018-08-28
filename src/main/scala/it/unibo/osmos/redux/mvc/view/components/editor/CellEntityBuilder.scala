@@ -29,7 +29,7 @@ class CellEntityBuilder extends BaseComponentBuilder[CellEntity] {
     text <== radius.asString()
   })
 
-  /* Position node */
+  /* Speed node */
   val xSpeed: DoubleProperty = DoubleProperty(0.0)
   val ySpeed: DoubleProperty = DoubleProperty(0.0)
   val speedNode = new VBox(2.0, new Label("Speed"),
@@ -37,10 +37,20 @@ class CellEntityBuilder extends BaseComponentBuilder[CellEntity] {
     new TitledDoubleField("y: ", ySpeed).innerNode
   )
 
-  children = Seq(positionNode, radiusNode, speedNode)
+  /* Acceleration node */
+  val xAcceleration: DoubleProperty = DoubleProperty(0.0)
+  val yAcceleration: DoubleProperty = DoubleProperty(0.0)
+  val accelerationNode = new VBox(2.0, new Label("Acceleration"),
+    new TitledDoubleField("x: ", xAcceleration).innerNode,
+    new TitledDoubleField("y: ", yAcceleration).innerNode
+  )
+
+  children = Seq(positionNode, radiusNode, speedNode, accelerationNode)
 
   override def build(): CellEntity = CellEntity(CellBuilder().visible(true)
   .collidable(true)
-  .withPosition(x.value, y.value))
+  .withPosition(x.value, y.value)
+  .withSpeed(xSpeed.value, ySpeed.value)
+  .withAcceleration(xAcceleration.value, yAcceleration.value))
 
 }
