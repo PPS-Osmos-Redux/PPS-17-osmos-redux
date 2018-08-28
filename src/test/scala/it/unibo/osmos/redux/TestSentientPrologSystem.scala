@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager, PlayerCellEntity, SentientCellEntity}
+import it.unibo.osmos.redux.ecs.entities._
 import it.unibo.osmos.redux.ecs.systems.SentientPrologSystem
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.{BeforeAndAfter, FunSuite}

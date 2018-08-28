@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.drawables
 
-import it.unibo.osmos.redux.ecs.components.EntityType
+import it.unibo.osmos.redux.ecs.entities.EntityType
 import it.unibo.osmos.redux.utils.Point
 
 /**

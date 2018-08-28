@@ -5,7 +5,7 @@ import scala.collection.mutable
 /**
   * Spawner Component
   */
-trait SpawnerComponent {
+trait SpawnerComponent extends Component {
 
   /**
     * Stack
@@ -46,12 +46,18 @@ trait SpawnerComponent {
     * Clears all queued spawn actions.
     */
   def clearActions(): Unit
+
+  /**
+    * Copy this instance.
+    * @return A new spawner component.
+    */
+  def copy(): SpawnerComponent
 }
 
 object SpawnerComponent {
   def apply(canSpawn: Boolean): SpawnerComponent = SpawnerComponentImpl(canSpawn)
 
-  private case class SpawnerComponentImpl(var _canSpawn: Boolean, var _spawnableEntities: Int = 0) extends SpawnerComponent {
+  private case class SpawnerComponentImpl(var _canSpawn: Boolean) extends SpawnerComponent {
 
     override def canSpawn: Boolean = _canSpawn
 
@@ -64,6 +70,13 @@ object SpawnerComponent {
     override def dequeueActions(): List[SpawnAction] = actionQueue.dequeueAll(_ => true).toList
 
     override def clearActions(): Unit = actionQueue.clear()
+
+    override def copy(): SpawnerComponent = {
+      val copy = SpawnerComponentImpl(canSpawn)
+      this.actionQueue.foreach(a => {
+        copy.enqueueActions(SpawnAction(a.position.copy(), a.dimension.copy(), a.speed.copy()))
+      })
+      copy
+    }
   }
 }
-

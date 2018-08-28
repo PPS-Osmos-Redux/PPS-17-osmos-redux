@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager, PlayerCellEntity, SentientCellEntity}
+import it.unibo.osmos.redux.ecs.entities._
 import it.unibo.osmos.redux.ecs.systems.EndGameSystem
 import it.unibo.osmos.redux.mvc.model.{MapShape, VictoryRules}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper

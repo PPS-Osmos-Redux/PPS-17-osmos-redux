@@ -10,7 +10,7 @@ import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.FunSuite
 
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 class TestJsonConversion extends FunSuite{
   //Components
@@ -21,12 +21,13 @@ class TestJsonConversion extends FunSuite{
   val s = SpeedComponent(4, 0)
   val v = VisibleComponent(true)
   val et = TypeComponent(EntityType.Matter)
+  val etg = TypeComponent(EntityType.Attractive)
   val sp = SpawnerComponent(true)
   val sw = SpecificWeightComponent(1)
   //Entities
   val ce = CellEntity(a, c, d, p, s, v, et)
   val pce = PlayerCellEntity(a, c, d, p, s, v, et, sp)
-  val gc = GravityCellEntity(a, c, d, p, s, v, et, sw)
+  val gc = GravityCellEntity(a, c, d, p, s, v, etg, sw)
   val sc = SentientCellEntity(a, c, d, p, s, v)
   val listCell:List[CellEntity] = List(ce, pce, gc, sc)
   //LevelMap
@@ -120,12 +121,17 @@ class TestJsonConversion extends FunSuite{
   }
 
   test("File reading and conversion") {
-    val convertedLevel = FileManager.loadResource(isSimulation = false,1)
-    assert(convertedLevel.isSuccess)
-    assert(convertedLevel.get.levelId.equals(level.levelId))
-    assert(convertedLevel.get.levelMap.equals(level.levelMap))
-    assert(convertedLevel.get.victoryRule.equals(level.victoryRule))
-    assert(convertedLevel.get.entities.size.equals(level.entities.size))
+    val convertedLevel: Level = FileManager.loadResource(isSimulation = false,1) match {
+      case Success(value) => value
+      case Failure(exception) =>
+        exception.printStackTrace()
+        null
+    }
+    assert(convertedLevel != null)
+    assert(convertedLevel.levelId.equals(level.levelId))
+    assert(convertedLevel.levelMap.equals(level.levelMap))
+    assert(convertedLevel.victoryRule.equals(level.victoryRule))
+    assert(convertedLevel.entities.size.equals(level.entities.size))
   }
 
   test("Writing and reading custom level") {

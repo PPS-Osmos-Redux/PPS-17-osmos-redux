@@ -5,7 +5,7 @@ import it.unibo.osmos.redux.utils.Vector
 /**
   *
   */
-trait VectorComponent {
+trait VectorComponent extends Component {
 
   /**
     *
