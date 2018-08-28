@@ -73,7 +73,7 @@
       "collidable": true
     },
     "typeEntity": {
-      "componentType": "Matter"
+      "componentType": "Attractive"
     },
     "position": {
       "point": {

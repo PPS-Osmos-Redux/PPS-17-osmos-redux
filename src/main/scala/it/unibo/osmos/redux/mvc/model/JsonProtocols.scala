@@ -2,7 +2,7 @@ package it.unibo.osmos.redux.mvc.model
 import spray.json._
 import DefaultJsonProtocol._
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.{CellEntity, GravityCellEntity, PlayerCellEntity, SentientCellEntity}
+import it.unibo.osmos.redux.ecs.entities._
 import it.unibo.osmos.redux.mvc.model.UserProgress.UserStat
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
 import it.unibo.osmos.redux.utils.Point
@@ -28,7 +28,7 @@ object JsonProtocols {
 
   implicit object CollidableFormatter extends RootJsonFormat[CollidableComponent] {
     def write(collidable: CollidableComponent) =
-      JsObject("collidable" -> JsBoolean(collidable.isCollidable()))
+      JsObject("collidable" -> JsBoolean(collidable.isCollidable))
     def read(value: JsValue): CollidableComponent = {
       value.asJsObject.getFields("collidable") match {
         case Seq(JsBoolean(collidable)) => CollidableComponent(collidable)
@@ -38,7 +38,7 @@ object JsonProtocols {
   }
 
   implicit object VisibleFormatter extends RootJsonFormat[VisibleComponent] {
-    def write(visible: VisibleComponent) = JsObject("visible" -> JsBoolean(visible.isVisible()))
+    def write(visible: VisibleComponent) = JsObject("visible" -> JsBoolean(visible.isVisible))
     def read(value: JsValue): VisibleComponent = {
       value.asJsObject.getFields("visible") match {
         case Seq(JsBoolean(visible)) => VisibleComponent(visible)
@@ -121,8 +121,15 @@ object JsonProtocols {
     }
   }
 
-  implicit val specificWeightFormatter:RootJsonFormat[SpecificWeightComponent] =
-                                  jsonFormat1(SpecificWeightComponent)
+  implicit object SpecificWeightFormatter extends RootJsonFormat[SpecificWeightComponent] {
+    def write(specificWeight: SpecificWeightComponent) = JsObject("specificWeight" -> JsNumber(specificWeight.specificWeight))
+    def read(value: JsValue): SpecificWeightComponent = {
+      value.asJsObject.getFields("specificWeight") match {
+        case Seq(JsNumber(specificWeight)) => SpecificWeightComponent(specificWeight.toDouble)
+        case _ => throw DeserializationException("Specific weight component expected")
+      }
+    }
+  }
 
   implicit object GravityCellEntityFormatter extends RootJsonFormat[GravityCellEntity] {
     def write(gravityCell: GravityCellEntity) = JsObject(

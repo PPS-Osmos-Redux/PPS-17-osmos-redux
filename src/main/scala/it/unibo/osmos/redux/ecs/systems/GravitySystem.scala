@@ -1,8 +1,7 @@
 package it.unibo.osmos.redux.ecs.systems
 
-import it.unibo.osmos.redux.ecs.components.EntityType
 import it.unibo.osmos.redux.ecs.entities.EMEvents.{EntityCreated, EntityDeleted}
-import it.unibo.osmos.redux.ecs.entities._
+import it.unibo.osmos.redux.ecs.entities.{EntityType, _}
 import it.unibo.osmos.redux.utils.{MathUtils, Point}
 
 import scala.collection.mutable.ListBuffer
@@ -35,7 +34,7 @@ case class GravitySystem() extends AbstractSystemWithTwoTypeOfEntity[MovableProp
 
   private def getTypeOfForce(typeOfForce: EntityType.Value): Double = typeOfForce match {
     case EntityType.Attractive => 1
-    case EntityType.Repulse => -1
+    case EntityType.Repulsive => -1
     case _ => 0
   }
 }
