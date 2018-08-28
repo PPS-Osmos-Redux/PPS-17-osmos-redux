@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.components.editor
 
-import it.unibo.osmos.redux.ecs.entities.{CellBuilder, CellEntity}
+import it.unibo.osmos.redux.ecs.entities.{CellBuilder, CellEntity, GravityCellEntity}
 import it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField
 import scalafx.beans.property.{DoubleProperty, ObjectProperty}
 import scalafx.scene.control.{Label, TextField}
@@ -24,7 +24,7 @@ class CellEntityBuilder extends BaseComponentBuilder[CellEntity] {
 
   /* Radius node*/
   val radius: ObjectProperty[Double] = ObjectProperty(150)
-  private val radiusNode = new HBox(new Label("radius: "), new TextField() {
+  private val radiusNode = new HBox(new Label("Radius: "), new TextField() {
     editable = false
     text <== radius.asString()
   })
@@ -59,4 +59,7 @@ class CellEntityBuilder extends BaseComponentBuilder[CellEntity] {
 
   override def build(): CellEntity = CellEntity(getBuilder)
 
+  /*var builder
+  build = setBuilder(base) + CellBuilder
+  setBuilder(cellBuilder)*/
 }

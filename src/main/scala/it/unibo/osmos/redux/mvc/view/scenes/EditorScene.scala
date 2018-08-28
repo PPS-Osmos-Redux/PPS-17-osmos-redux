@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.mvc.view.scenes
 import it.unibo.osmos.redux.ecs.components.EntityType
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.components.custom.TitledComboBox
-import it.unibo.osmos.redux.mvc.view.components.editor.CellEntityBuilder
+import it.unibo.osmos.redux.mvc.view.components.editor.{CellEntityBuilder, GravityCellEntityBuilder}
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import javafx.scene.paint.ImagePattern
 import scalafx.beans.property.ObjectProperty
@@ -39,7 +39,16 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     println(et)
   })
 
-  private val cellEntityBuilder = new CellEntityBuilder
+  private var cellEntityBuilder: CellEntityBuilder = new CellEntityBuilder
+  entityType.onChange(entityType.value match {
+    case EntityType.Matter => cellEntityBuilder = new CellEntityBuilder
+    case EntityType.AntiMatter => //fill.value = new ImagePattern(ImageLoader.getImage(antiMatterTexture))
+    case EntityType.Attractive => cellEntityBuilder = new GravityCellEntityBuilder(isAttractive = true); println(cellEntityBuilder.children)
+    case EntityType.Repulse => cellEntityBuilder = new GravityCellEntityBuilder(isAttractive = false)
+    case EntityType.Sentient => //fill.value = new ImagePattern(ImageLoader.getImage(sentientTexture))
+    case EntityType.Controlled => //fill.value = new ImagePattern(ImageLoader.getImage(controllerTexture))
+    case _ => cellEntityBuilder = new CellEntityBuilder
+  })
 
   val verticalContainer: VBox = new VBox(10.0, entityComboBox.root, cellEntityBuilder)
 
