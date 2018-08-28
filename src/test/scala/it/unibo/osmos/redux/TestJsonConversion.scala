@@ -1,14 +1,12 @@
 package it.unibo.osmos.redux
 
-import java.io.File
-import java.nio.file.{Files, Path}
+import java.nio.file.Files
 
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities._
 import it.unibo.osmos.redux.mvc.controller.FileManager
-import it.unibo.osmos.redux.mvc.controller.FileManager.{defaultFS, levelsDirectory}
-import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.mvc.model.MapShape._
+import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.FunSuite
 
