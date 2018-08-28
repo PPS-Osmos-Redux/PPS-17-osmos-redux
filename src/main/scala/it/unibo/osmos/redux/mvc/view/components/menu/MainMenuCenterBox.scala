@@ -17,14 +17,17 @@ class MainMenuCenterBox(val listener: MainMenuCenterBoxListener) extends VBox(20
   val multiplayerButton = new Button("Multiplayer")
   /* Editor button */
   val editorButton = new Button("Editor Levels")
+  /* Editor button */
+  val settingsButton = new Button("Settings")
   /* Exit button */
   val exitButton = new Button("Exit")
 
-  children = List(playButton, multiplayerButton, editorButton, exitButton)
+  children = List(playButton, multiplayerButton, editorButton, settingsButton, exitButton)
 
   playButton.onAction = _ => listener.onPlayClick()
   multiplayerButton.onAction = _ => listener.onMultiPlayerClick()
   editorButton.onAction = _ => listener.onEditorClick()
+  settingsButton.onAction = _ => listener.onSettingsClick()
   exitButton.onAction = _ => listener.onExitClick()
 }
 
@@ -47,6 +50,11 @@ trait MainMenuCenterBoxListener {
     * Called when the user clicks on the editor button
     */
   def onEditorClick()
+
+  /**
+    * Called when the user clicks on the settings button
+    */
+  def onSettingsClick()
 
   /**
     * Called when the user clicks on the exit button

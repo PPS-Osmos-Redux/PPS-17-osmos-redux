@@ -27,6 +27,8 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
 
   override def onEditorClick(): Unit = listener.onEditorClick()
 
+  override def onSettingsClick(): Unit = listener.onSettingsClick()
+
   override def onExitClick(): Unit = {
     System.exit(0)
   }
@@ -60,6 +62,11 @@ trait MainSceneListener {
     * Called when the user clicks on the editor button
     */
   def onEditorClick()
+
+  /**
+    * Called when the user clicks on the settings button
+    */
+  def onSettingsClick()
 
 }
 
