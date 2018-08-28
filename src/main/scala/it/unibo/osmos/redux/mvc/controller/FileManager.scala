@@ -3,15 +3,12 @@ package it.unibo.osmos.redux.mvc.controller
 import java.io.{File, PrintWriter}
 import java.nio.file.{FileSystem, FileSystems, Files, Path}
 
-import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities._
-import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.mvc.model.UserProgress.UserStat
 import it.unibo.osmos.redux.mvc.model._
-import it.unibo.osmos.redux.utils.Point
 import spray.json._
 
 import scala.io.{BufferedSource, Source}
+import scala.language.postfixOps
 import scala.util.Try
 
 object FileManager {
@@ -138,7 +135,13 @@ object FileManager {
   }
 
   def customLevelsFilesName:List[String] =
-    new File(levelsDirectory).listFiles((d, name) => name.endsWith(jsonExtension))
+    new File(levelsDirectory).listFiles((_, name) => name.endsWith(jsonExtension))
                              .map(f => f.getName.substring(0,f.getName.length-jsonExtension.length))
                              .toList
+
+
+  val soundsPath: String = separator + "sounds" + separator
+  def loadMenuMusic(): String = getClass.getResource(soundsPath + "LevelMusic.mp3").toURI toString
+  def loadButtonsSound(): String = getClass.getResource(soundsPath + "ButtonSound.mp3").toURI toString
+  def loadLevelMusic(): String = getClass.getResource(soundsPath + "MenuMusic.mp3").toURI toString
 }
