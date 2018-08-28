@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.ecs.systems
 
 import it.unibo.osmos.redux.ecs.components.{DimensionComponent, PositionComponent, SpawnAction, SpeedComponent}
-import it.unibo.osmos.redux.ecs.entities.{InputProperty, Property}
+import it.unibo.osmos.redux.ecs.entities.InputProperty
 import it.unibo.osmos.redux.utils.{InputEventQueue, MathUtils, Point}
 
 case class InputSystem() extends AbstractSystem[InputProperty] {
@@ -36,9 +36,7 @@ case class InputSystem() extends AbstractSystem[InputProperty] {
       val spawner = e.getSpawnerComponent
       val dim = e.getDimensionComponent
 
-      inputEvents foreach (ev => {
-
-        //TODO: upgrade to handle MouseEventWrapper with UUID
+      inputEvents filter (_.uuid == e.getUUID) foreach (ev => {
 
         //TODO: probably at some point there will be different events and it will be necessary to filter them before applying deceleration (es. mouse pressed)
 

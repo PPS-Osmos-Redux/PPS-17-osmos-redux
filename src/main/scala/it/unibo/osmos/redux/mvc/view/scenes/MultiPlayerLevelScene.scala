@@ -23,7 +23,7 @@ class MultiPlayerLevelScene(override val parentStage: Stage, override val listen
     * @param mouseEvent the mouse event
     */
   override protected def sendMouseEvent(mouseEvent: MouseEvent): Unit = levelContext match {
-    case Some(mplc) => mplc notifyMouseEvent MouseEventWrapper(Point(mouseEvent.getX, mouseEvent.getY), mplc.asInstanceOf[MultiPlayerLevelContext].getUUID)
+    case Some(mplc) => mplc notifyMouseEvent MouseEventWrapper(Point(mouseEvent.getX, mouseEvent.getY), mplc.getPlayerUUID)
     case _ =>
   }
 

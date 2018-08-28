@@ -1,10 +1,10 @@
 package it.unibo.osmos.redux.multiplayer.server
 
-import akka.actor.{Actor, InvalidMessageException, Props}
+import akka.actor.{Actor, Props}
 import it.unibo.osmos.redux.multiplayer.client.ClientActor._
-import it.unibo.osmos.redux.multiplayer.players.{BasicPlayer, PlayerInfo}
+import it.unibo.osmos.redux.multiplayer.players.BasicPlayer
 import it.unibo.osmos.redux.multiplayer.server.ServerActor.{Established, LobbyFull, LobbyInfo}
-import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
+import it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity
 
 /**
   * Server actor implementation
@@ -13,15 +13,14 @@ import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
 class ServerActor(private val server: Server) extends Actor {
 
   override def receive: Receive = {
-    case Connect => sender ! Established //To tell the server that you want to connect with it
+    case Connect => sender ! Established
     case EnterLobby(username) =>
       //to tell the server that you want to enter the lobby (server gets the actor ref from the sender object at his side)
-      val playerInfo = PlayerInfo(sender.path.address.host.getOrElse("0.0.0.0"), sender.path.address.port.getOrElse(0))
-      if (server.addPlayerToLobby(sender, BasicPlayer(username, playerInfo))) sender ! LobbyInfo(server.getLobbyPlayers)
+      val (address, port) = (sender.path.address.host.getOrElse("0.0.0.0"), sender.path.address.port.getOrElse(0))
+      if (server.addPlayerToLobby(sender, BasicPlayer(username, address, port))) sender ! LobbyInfo(server.getLobbyPlayers.map(_.toBasicPlayer))
       else sender ! LobbyFull
-    case LeaveLobby(username) => server.removePlayerFromLobby(username) //To tell the server that you leave the lobby
-    case PlayerInput(event) =>
-      server.notifyClientInputEvent(event) //sent to the server when a new input event is detected
+    case LeaveLobby(username) => server.removePlayerFromLobby(username)
+    case PlayerInput(event) => server.notifyClientInputEvent(event)
     case LeaveGame(username) => server.removePlayerFromGame(username)
   }
 }
@@ -39,9 +38,9 @@ object ServerActor {
   final case object LobbyClosed //when the server closes the lobby
   final case class PlayerEnteredLobby(player: BasicPlayer) //The server notify you that another player entered the lobby
   final case class PlayerLeftLobby(username: String) //Server notify you that a player left the lobby
-  final case class UpdateGame(entities: Seq[DrawableWrapper]) //server send all entities to draw
+  final case class UpdateGame(entities: Seq[DrawableEntity]) //server send all entities to draw
   final case class GameStarted(id: String) //Server wants to start the game, reply with Ready if all is ok (tell you who are you)
-  final case class GameStopped(victory: Boolean) //Server have stopped the game (and tells you if you won or lose)
+  final case class GameEnded(victory: Boolean) //Server have stopped the game (and tells you if you won or lose)
 }
 
 

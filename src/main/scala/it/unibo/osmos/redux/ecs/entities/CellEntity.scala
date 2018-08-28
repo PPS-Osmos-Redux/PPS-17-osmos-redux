@@ -30,9 +30,9 @@ object CellEntity {
                                     private val visible: VisibleComponent,
                                     private val typeEntity: TypeComponent) extends CellEntity {
 
-    private val EntityUUID: UUID = UUID.randomUUID()
+    private val EntityUUID: String = UUID.randomUUID().toString
 
-    override def getUUID: UUID = EntityUUID
+    override def getUUID: String = EntityUUID
 
     override def getAccelerationComponent: AccelerationComponent = acceleration
 

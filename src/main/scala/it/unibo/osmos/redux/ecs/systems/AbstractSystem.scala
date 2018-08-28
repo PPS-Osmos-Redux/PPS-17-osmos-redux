@@ -2,7 +2,6 @@ package it.unibo.osmos.redux.ecs.systems
 
 import it.unibo.osmos.redux.ecs.entities.EMEvents.{EntityCreated, EntityDeleted}
 import it.unibo.osmos.redux.ecs.entities._
-import it.unibo.osmos.redux.mvc.model.Level
 
 import scala.collection.mutable.ListBuffer
 

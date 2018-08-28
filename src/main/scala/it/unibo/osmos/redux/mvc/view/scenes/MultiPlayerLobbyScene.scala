@@ -2,7 +2,8 @@ package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.{User, UserWithProperties}
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, LobbyContextListener, MultiPlayerLevelContext}
-import it.unibo.osmos.redux.mvc.view.events.{LobbyEventWrapper, UserRemoved}
+import it.unibo.osmos.redux.mvc.view.events.{AbortLobby, LobbyEventWrapper}
+import scalafx.beans.property.ObjectProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.TableColumn._
@@ -16,31 +17,33 @@ import scalafx.stage.Stage
   * @param listener the MultiPlayerLobbySceneListener
   * @param user the user who requested to enter the lobby
   */
-class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: MultiPlayerLobbySceneListener, val upperSceneListener: UpperMultiPlayerLobbySceneListener, val user: User) extends BaseScene(parentStage)
- with LobbyContextListener {
+class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: MultiPlayerLobbySceneListener,
+                            val upperSceneListener: UpperMultiPlayerLobbySceneListener, val user: User)
+  extends BaseScene(parentStage) with LobbyContextListener {
 
   /**
     * The lobby context, created with the MultiPlayerLobbyScene. It still needs to be properly setup
     */
   private var _lobbyContext: Option[LobbyContext] = Option.empty
   def lobbyContext: Option[LobbyContext] = _lobbyContext
-  def lobbyContext_= (lobbyContext: LobbyContext): Unit = _lobbyContext = Option(lobbyContext)
+  def lobbyContext_= (lobbyContext: LobbyContext): Unit = {
+    _lobbyContext = Option(lobbyContext)
+    /* subscribe to lobby context events */
+    lobbyContext.setListener(this)
+    /* fill table with existing users */
+    userList ++= lobbyContext.users.map(_.getUserWithProperty)
+  }
 
   /**
     * ObservableBuffer holding the current users
     */
-  private val userList = ObservableBuffer[UserWithProperties](
-    User("Marco", "0.0.0.0", "0000", isServer = true).getUserWithProperty,
-    User("Davide", "0.0.0.1", "0001", isServer = false).getUserWithProperty,
-    User("Placu", "0.0.0.2", "0002", isServer = false).getUserWithProperty,
-    User("Turi", "0.0.0.3", "0003", isServer = false).getUserWithProperty,
-    User("Proc", "0.0.0.4", "0004", isServer = false).getUserWithProperty
-  )
+  private val userList = ObservableBuffer[UserWithProperties]()
 
   /**
     * TableView linked with the user list
     */
   val usersTable: TableView[UserWithProperties] = new TableView[UserWithProperties](userList) {
+    columnResizePolicy = TableView.ConstrainedResizePolicy
     columns ++= List(
       new TableColumn[UserWithProperties, String]() {
         text = "Username"
@@ -48,9 +51,9 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
       }, new TableColumn[UserWithProperties, String]() {
         text = "IP"
         cellValueFactory = {_.value.ip}
-      }, new TableColumn[UserWithProperties, String]() {
+      }, new TableColumn[UserWithProperties, Int]() {
         text = "Port"
-        cellValueFactory = {_.value.port}
+        cellValueFactory = p => { new ObjectProperty[Int](this, "Port", p.value.port.value) }
       }
     )
   }
@@ -62,7 +65,6 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
 
     alignment = Pos.Center
     children = Seq(usersTable)
-
   }
 
   /**
@@ -71,7 +73,7 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
   private val exitLobby = new Button("Exit Lobby") {
     onAction = _ => lobbyContext match {
       /* We notify the lobby observer that we exited the lobby */
-      case Some(lc) => lc notifyLobbyEvent LobbyEventWrapper(UserRemoved, user); upperSceneListener.onLobbyExited()
+      case Some(lc) => lc notifyLobbyEvent LobbyEventWrapper(AbortLobby, null); upperSceneListener.onLobbyExited()
       case _ =>
     }
   }
@@ -101,7 +103,7 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
 
   override def updateUsers(users: Seq[User]): Unit = {
     userList clear()
-    userList ++ users
+    userList ++= users.map(_.getUserWithProperty)
   }
 
   override def onMultiPlayerGameStarted(multiPlayerLevelContext: MultiPlayerLevelContext): Unit = {

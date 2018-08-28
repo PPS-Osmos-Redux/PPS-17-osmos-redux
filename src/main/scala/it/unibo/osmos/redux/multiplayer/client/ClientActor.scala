@@ -1,7 +1,5 @@
 package it.unibo.osmos.redux.multiplayer.client
 
-import java.util.UUID
-
 import akka.actor.{Actor, Props}
 import it.unibo.osmos.redux.multiplayer.client.ClientActor.Ready
 import it.unibo.osmos.redux.multiplayer.server.ServerActor._
@@ -20,13 +18,12 @@ class ClientActor(private val client: Client) extends Actor {
     case UpdateGame(entities) => client.notifyRedraw(entities)
     case GameStarted(uuid) =>
       //save the uuid of the player entity that represents this client
-      client.setUUID(UUID.fromString(uuid))
+      client.setUUID(uuid)
       //let interface change scene
       client.notifyGameStatusChanged(GamePending)
       //reply to server that all is ok
       sender ! Ready
-    case GameStopped(victory) =>
-      client.notifyGameStatusChanged( if(victory) GameWon else GameLost )
+    case GameEnded(victory) => client.notifyGameStatusChanged( if(victory) GameWon else GameLost )
   }
 }
 

@@ -10,12 +10,12 @@ import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import it.unibo.osmos.redux.utils.MathUtils._
 import it.unibo.osmos.redux.utils.Point
+import javafx.scene.input.MouseEvent
 import scalafx.animation.FadeTransition
 import scalafx.application.Platform
 import scalafx.beans.property.BooleanProperty
 import scalafx.scene.canvas.Canvas
 import scalafx.scene.image.Image
-import javafx.scene.input.MouseEvent
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.{Circle, Rectangle, Shape}
 import scalafx.stage.Stage
@@ -154,8 +154,8 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     * Sends a MouseEventWrapper to the LevelContextListener
     * @param mouseEvent the mouse event
     */
-  protected def sendMouseEvent(mouseEvent: MouseEvent): Unit  = levelContext match {
-    case Some(lc) => if (!paused.value) lc notifyMouseEvent MouseEventWrapper(Point(mouseEvent.getX, mouseEvent.getY))
+  protected def sendMouseEvent(mouseEvent: MouseEvent): Unit = levelContext match {
+    case Some(lc) => if (!paused.value) lc notifyMouseEvent MouseEventWrapper(Point(mouseEvent.getX, mouseEvent.getY), lc.getPlayerUUID)
     case _ =>
   }
 

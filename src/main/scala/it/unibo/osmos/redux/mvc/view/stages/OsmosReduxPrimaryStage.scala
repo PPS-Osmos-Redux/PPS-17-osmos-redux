@@ -1,7 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.stages
 
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
-import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextType}
 import it.unibo.osmos.redux.mvc.view.scenes._
 import scalafx.application.JFXApp
 

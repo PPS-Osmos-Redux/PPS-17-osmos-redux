@@ -2,11 +2,43 @@ package it.unibo.osmos.redux.multiplayer.players
 
 import akka.actor.ActorRef
 
-case class ReferablePlayer(private val username: String, private val playerInfo: PlayerInfo, private val actorRef: ActorRef) extends AbstractPlayer(username) {
+/**
+  * Lobby user with references
+  * @param username The username
+  * @param address The address
+  * @param port The port
+  * @param actorRef The actor reference
+  */
+case class ReferablePlayer(username: String, address: String, port: Int, actorRef: ActorRef) extends Player {
 
-  def getInfo: PlayerInfo = playerInfo
+  /**
+    * Secondary constructor.
+    * @param basicPlayer The BasicPlayer.
+    * @param actorRef The actor reference.
+    * @return A new ReferablePlayer instance.
+    */
+  def this(basicPlayer: BasicPlayer, actorRef: ActorRef) = this(basicPlayer.username, basicPlayer.address, basicPlayer.port, actorRef)
 
-  def getRef: ActorRef = actorRef
+  /**
+    * The uuid
+    */
+  private var uuid: String = ""
 
-  def toBasicPlayer: BasicPlayer = BasicPlayer(username, playerInfo)
+  /**
+    * Gets the UUID of the player.
+    * @return The UUID
+    */
+  def getUUID: String = uuid
+
+  /**
+    * Sets the UUID of the player.
+    * @param uuid The UUID
+    */
+  def setUUID(uuid: String): Unit = this.uuid = uuid
+
+  /**
+    * Creates a BasicPlayer object from this instance.
+    * @return The basic player object
+    */
+  def toBasicPlayer: BasicPlayer = BasicPlayer(username, address, port)
 }

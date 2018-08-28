@@ -1,13 +1,8 @@
 package it.unibo.osmos.redux.mvc.view.components.editor
 
-import java.util.regex.Pattern
-
 import it.unibo.osmos.redux.ecs.entities.{CellBuilder, CellEntity}
-import javafx.beans.value.ObservableDoubleValue
-import javafx.util.converter.IntegerStringConverter
-import scalafx.beans.property.{DoubleProperty, ObjectProperty, StringProperty}
-import scalafx.scene.control.{Spinner, TextField, TextFormatter}
-import scalafx.util.converter.DoubleStringConverter
+import scalafx.beans.property.{DoubleProperty, ObjectProperty}
+import scalafx.scene.control.TextField
 
 /**
   * A panel showing input nodes which is also capable of providing the requested CellEntity

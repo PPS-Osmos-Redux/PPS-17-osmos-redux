@@ -1,5 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
+import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.mvc.view.components.menu.{MainMenuBar, MainMenuBarListener, MainMenuCenterBox, MainMenuCenterBoxListener}
 import scalafx.scene.layout.BorderPane
 import scalafx.stage.Stage
@@ -34,8 +35,10 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
     parentStage.fullScreen = !parentStage.fullScreen.get()
   }
 
-  override def onMultiPlayerSceneBackClick(): Unit = parentStage.scene = this
-
+  override def onMultiPlayerSceneBackClick(): Unit = {
+    ActorSystemHolder.clearActors()
+    parentStage.scene = this
+  }
 }
 
 /**

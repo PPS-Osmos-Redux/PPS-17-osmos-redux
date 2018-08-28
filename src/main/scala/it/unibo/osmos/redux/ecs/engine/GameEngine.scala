@@ -1,10 +1,10 @@
 package it.unibo.osmos.redux.ecs.engine
 
-import it.unibo.osmos.redux.ecs.entities.EntityManager
+import it.unibo.osmos.redux.ecs.entities.{EntityManager, PlayerCellEntity}
 import it.unibo.osmos.redux.ecs.systems._
 import it.unibo.osmos.redux.multiplayer.server.Server
 import it.unibo.osmos.redux.mvc.model.Level
-import it.unibo.osmos.redux.mvc.view.context.LevelContext
+import it.unibo.osmos.redux.mvc.view.context.{LevelContext, MultiPlayerLevelContext}
 import it.unibo.osmos.redux.utils.InputEventQueue
 
 import scala.collection.mutable.ListBuffer
@@ -30,7 +30,7 @@ trait GameEngine {
     * @param server The server.
     * @return The context of the initialized game level.
     */
-  def init(level: Level, server: Server): LevelContext
+  def init(level: Level, server: Server): MultiPlayerLevelContext
 
   /**
     * Starts the game loop.
@@ -106,20 +106,24 @@ object GameEngine {
       gameLoop = Some(new GameLoop(this, systems.toList))
     }
 
-    override def init(level: Level, server: Server): LevelContext = {
+    override def init(level: Level, server: Server): MultiPlayerLevelContext = {
 
       //clear all
       clear()
 
+      //obtain server entity cell uuid
+      val serverPlayer = level.entities.find(_.isInstanceOf[PlayerCellEntity])
+      if (serverPlayer.isEmpty) throw new IllegalArgumentException("Game Engine cannot initialize multi-player game because no player cell entity is present in the level definition.")
+
       //create the level context
-      val levelContext = LevelContext(null)
+      val levelContext = LevelContext(serverPlayer.get.getUUID)
 
       //register InputEventQueue to the mouse event listener to collect input events
       levelContext.subscribe { InputEventQueue enqueue _ }
 
       //create systems, add to list, the order in this collection is the final system order in the game loop
       val systems = ListBuffer[System](InputSystem())
-      systems ++= initMainSystems(level, levelContext) :+ MultiPlayerSystem(server) :+ EndGameSystem(levelContext, level.victoryRule)
+      systems ++= initMainSystems(level, levelContext) :+ MultiPlayerUpdateSystem(server) :+ MultiPlayerEndGameSystem(server, levelContext, level.victoryRule)
 
       //add all entities in the entity manager (systems are subscribed to EntityManager event when created)
       level.entities foreach(EntityManager add _)

@@ -1,7 +1,5 @@
 package it.unibo.osmos.redux.ecs.entities
 
-import java.util.UUID
-
 import it.unibo.osmos.redux.ecs.components._
 
 /** Trait representing a CellEntity with gravity force */
@@ -37,7 +35,7 @@ object GravityCellEntity {
 
     override def getTypeComponent: TypeComponent = cellEntity.getTypeComponent
 
-    override def getUUID: UUID = cellEntity.getUUID
+    override def getUUID: String = cellEntity.getUUID
 
     override def getVisibleComponent: VisibleComponent = cellEntity.getVisibleComponent
 

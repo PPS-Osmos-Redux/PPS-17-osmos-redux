@@ -1,8 +1,8 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
-import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextType}
 import it.unibo.osmos.redux.mvc.view.components.level.{LevelNode, LevelNodeListener}
 import it.unibo.osmos.redux.mvc.view.components.menu.{MainMenuBar, MainMenuBarListener}
+import it.unibo.osmos.redux.mvc.view.context.LevelContext
 import scalafx.geometry.Pos
 import scalafx.scene.layout.{TilePane, VBox}
 import scalafx.stage.Stage
@@ -61,9 +61,8 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
     val upperLevelSceneListener: UpperLevelSceneListener = () => parentStage.scene = this
     /* Creating a new level scene */
     val levelScene = new LevelScene(parentStage, listener, upperLevelSceneListener)
-    val levelContextType = if (simulation) LevelContextType.simulation else LevelContextType.normal
-    /* Creating a new LevelContext and setting it to the scene */
-    val levelContext = LevelContext(levelContextType)
+    /* Creating the level context */
+    val levelContext = LevelContext(simulation)
     levelContext.setListener(levelScene)
     levelScene.levelContext = levelContext
     /* Changing scene scene */
