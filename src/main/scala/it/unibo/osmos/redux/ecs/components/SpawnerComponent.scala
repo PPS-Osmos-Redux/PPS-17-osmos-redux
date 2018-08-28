@@ -1,7 +1,5 @@
 package it.unibo.osmos.redux.ecs.components
 
-import it.unibo.osmos.redux.utils.Point
-
 import scala.collection.mutable
 
 /**
@@ -75,7 +73,9 @@ object SpawnerComponent {
 
     override def copy(): SpawnerComponent = {
       val copy = SpawnerComponentImpl(canSpawn)
-      copy.actionQueue ++= this.actionQueue
+      this.actionQueue.foreach(a => {
+        copy.enqueueActions(SpawnAction(a.position.copy(), a.dimension.copy(), a.speed.copy()))
+      })
       copy
     }
   }
