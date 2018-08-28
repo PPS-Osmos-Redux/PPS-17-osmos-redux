@@ -1,17 +1,24 @@
-package it.unibo.osmos.redux.ecs.entities
+package it.unibo.osmos.redux.ecs.entities.builders
 
 import it.unibo.osmos.redux.ecs.components._
+import it.unibo.osmos.redux.ecs.entities.CellEntity
 import it.unibo.osmos.redux.utils.Point
 
 /** Builder for Cell Entities */
-case class CellBuilder() {
-  private var acceleration = AccelerationComponent(0,0)
-  private var collidable = CollidableComponent(true)
-  private var dimension = DimensionComponent(0)
-  private var position = PositionComponent(Point(0,0))
-  private var speed = SpeedComponent(0, 0)
-  private var visible = VisibleComponent(true)
-  private var entityType = TypeComponent(EntityType.Matter)
+class CellBuilder() {
+
+  /**
+    * Flag to detect multiple builds
+    */
+  protected var multipleBuildFlag = false
+
+  protected var acceleration = AccelerationComponent(0,0)
+  protected var collidable = CollidableComponent(true)
+  protected var dimension = DimensionComponent(0)
+  protected var position = PositionComponent(Point(0,0))
+  protected var speed = SpeedComponent(0, 0)
+  protected var visible = VisibleComponent(true)
+  protected var entityType = TypeComponent(EntityType.Matter)
 
   def collidable(collidable: Boolean): CellBuilder = {
     this.collidable = CollidableComponent(collidable)
@@ -73,5 +80,16 @@ case class CellBuilder() {
     this
   }
 
-  def build: CellEntity = CellEntity(acceleration, collidable, dimension, position, speed, visible, entityType)
+  protected def checkMultipleBuild(): Unit = {
+    if (multipleBuildFlag) {
+      throw new UnsupportedOperationException("The builder cannot build multiple times.")
+    } else {
+      multipleBuildFlag = true
+    }
+  }
+
+  def build: CellEntity = {
+    checkMultipleBuild()
+    CellEntity(acceleration, collidable, dimension, position, speed, visible, entityType)
+  }
 }
