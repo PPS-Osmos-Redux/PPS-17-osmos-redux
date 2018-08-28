@@ -33,13 +33,15 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     * Entity Type
     */
   private var entityType: ObjectProperty[EntityType.Value] = ObjectProperty(EntityType.Matter)
-
   private val entityComboBox = new TitledComboBox[EntityType.Value]("Entity Type:", EntityType.values.toSeq, et => {
     entityType.value = et
     println(et)
   })
 
+  /* Pane containing the field to configure the entities*/
   private var cellEntityBuilder: CellEntityBuilder = new CellEntityBuilder
+
+  val verticalContainer: VBox = new VBox(10.0, entityComboBox.root, cellEntityBuilder)
   entityType.onChange(entityType.value match {
     case EntityType.Matter => cellEntityBuilder = new CellEntityBuilder
     case EntityType.AntiMatter => //fill.value = new ImagePattern(ImageLoader.getImage(antiMatterTexture))
@@ -49,8 +51,6 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     case EntityType.Controlled => //fill.value = new ImagePattern(ImageLoader.getImage(controllerTexture))
     case _ => cellEntityBuilder = new CellEntityBuilder
   })
-
-  val verticalContainer: VBox = new VBox(10.0, entityComboBox.root, cellEntityBuilder)
 
   /**
     * The placeholder which follows the user mouse and changes appearance on EntityType change
