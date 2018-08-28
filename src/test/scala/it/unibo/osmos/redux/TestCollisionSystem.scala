@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager}
+import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager, EntityType}
 import it.unibo.osmos.redux.ecs.systems.CollisionSystem
 import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.mvc.model._

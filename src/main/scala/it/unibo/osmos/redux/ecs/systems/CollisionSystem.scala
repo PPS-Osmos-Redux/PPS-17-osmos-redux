@@ -1,7 +1,6 @@
 package it.unibo.osmos.redux.ecs.systems
 
-import it.unibo.osmos.redux.ecs.components.EntityType
-import it.unibo.osmos.redux.ecs.entities.CollidableProperty
+import it.unibo.osmos.redux.ecs.entities.{CollidableProperty, EntityType}
 import it.unibo.osmos.redux.mvc.model.Level
 import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.utils.{MathUtils, Point}

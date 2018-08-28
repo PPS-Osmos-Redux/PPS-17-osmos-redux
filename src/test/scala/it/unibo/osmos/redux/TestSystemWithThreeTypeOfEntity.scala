@@ -40,7 +40,7 @@ class TestSystemWithThreeTypeOfEntity extends FunSuite with BeforeAndAfter {
   val specificWeight = SpecificWeightComponent(1)
   val cellEntity = CellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity)
   val playerEntity = PlayerCellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity,spawner)
-  val gravityEntity = GravityCellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity, specificWeight)
+  val gravityEntity = GravityCellEntity(acceleration, collidable, dimension, position, speed, visible, typeGravity, specificWeight)
 
   after(EntityManager.clear())
 
