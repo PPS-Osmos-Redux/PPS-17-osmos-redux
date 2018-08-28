@@ -121,8 +121,15 @@ object JsonProtocols {
     }
   }
 
-  implicit val specificWeightFormatter:RootJsonFormat[SpecificWeightComponent] =
-                                  jsonFormat1(SpecificWeightComponent)
+  implicit object SpecificWeightFormatter extends RootJsonFormat[SpecificWeightComponent] {
+    def write(specificWeight: SpecificWeightComponent) = JsObject("specificWeight" -> JsNumber(specificWeight.specificWeight))
+    def read(value: JsValue): SpecificWeightComponent = {
+      value.asJsObject.getFields("specificWeight") match {
+        case Seq(JsNumber(specificWeight)) => SpecificWeightComponent(specificWeight.toDouble)
+        case _ => throw DeserializationException("Specific weight component expected")
+      }
+    }
+  }
 
   implicit object GravityCellEntityFormatter extends RootJsonFormat[GravityCellEntity] {
     def write(gravityCell: GravityCellEntity) = JsObject(
