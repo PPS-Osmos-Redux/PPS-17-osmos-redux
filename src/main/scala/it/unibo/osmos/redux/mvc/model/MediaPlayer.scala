@@ -27,6 +27,10 @@ object MediaPlayer {
     } else if (mediaPlayer.isEmpty) {
       createMediaPlayer(sound)
       mediaPlayer.get.play()
+    } else if (mediaPlayer.isDefined && !lastLoadedSound.get.equals(sound)) {
+      mediaPlayer.get.stop()
+      createMediaPlayer(sound)
+      mediaPlayer.get.play()
     }
   }
 
