@@ -8,7 +8,7 @@ import scalafx.scene.control.{Button, CheckBox}
 import scalafx.scene.layout.VBox
 import scalafx.stage.Stage
 
-class SettingsScene(override val parentStage: Stage, listener: PrimaryStageListener, val upperSceneListener: UpperMultiPlayerSceneListener) extends BaseScene(parentStage) with MainMenuBarListener {
+class SettingsScene(override val parentStage: Stage, listener: PrimaryStageListener, val upperSceneListener: BackClickListener) extends DefaultBackScene(parentStage, upperSceneListener) with MainMenuBarListener {
 
   /**
     * The upper main menu bar
@@ -19,9 +19,9 @@ class SettingsScene(override val parentStage: Stage, listener: PrimaryStageListe
     //onAction = _ => upperSceneListener.onMultiPlayerSceneBackClick()
   }
 
-  private val goBack = new Button("Back to menù") {
+  /*private val goBack = new Button("Back to menù") {
     onAction = _ => upperSceneListener.onMultiPlayerSceneBackClick()
-  }
+  }*/
 
   /**
     * The central level container
