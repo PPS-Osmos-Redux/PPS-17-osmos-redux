@@ -2,7 +2,9 @@ package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.ecs.components.EntityType
 import it.unibo.osmos.redux.mvc.model.MapShape
-import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities._
+import it.unibo.osmos.redux.mvc.view.ViewConstants
+import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Colors._
+import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.components.level.{LevelScreen, LevelStateBox, LevelStateBoxListener}
 import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextListener}
 import it.unibo.osmos.redux.mvc.view.drawables._
@@ -26,8 +28,6 @@ import scalafx.util.Duration
   */
 class LevelScene(override val parentStage: Stage, val listener: LevelSceneListener, val upperSceneListener: UpperLevelSceneListener) extends BaseScene(parentStage)
   with LevelContextListener with LevelStateBoxListener {
-
-  private val TEXTURE_FOLDER = "/textures/"
 
   /**
     * The current game pending state: true if the game is paused
@@ -90,15 +90,15 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   /**
     * The images used to draw cells, background and level
     */
-  private val cellDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(TEXTURE_FOLDER + "cell_blue.png"), canvas.graphicsContext2D)
-  private val playerCellDrawable: CellDrawable = new CellWithSpeedDrawable(ImageLoader.getImage(TEXTURE_FOLDER + "cell_green.png"), canvas.graphicsContext2D)
-  private val attractiveDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(TEXTURE_FOLDER + "cell_red.png"), canvas.graphicsContext2D)
-  private val repulsiveDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(TEXTURE_FOLDER + "cell_yellow.png"), canvas.graphicsContext2D)
-  private val antiMatterDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(TEXTURE_FOLDER + "cell_dark_blue.png"), canvas.graphicsContext2D)
-  private val sentientDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(TEXTURE_FOLDER + "cell_purple.png"), canvas.graphicsContext2D)
-  private val opponentDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(TEXTURE_FOLDER + "cell_violet.png"), canvas.graphicsContext2D)
+  private val cellDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(cellTexture), canvas.graphicsContext2D)
+  private val playerCellDrawable: CellDrawable = new CellWithSpeedDrawable(ImageLoader.getImage(playerCellTexture), canvas.graphicsContext2D)
+  private val attractiveDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(attractiveTexture), canvas.graphicsContext2D)
+  private val repulsiveDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(repulsiveTexture), canvas.graphicsContext2D)
+  private val antiMatterDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(antiMatterTexture), canvas.graphicsContext2D)
+  private val sentientDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(sentientTexture), canvas.graphicsContext2D)
+  private val controlledDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(controllerTexture), canvas.graphicsContext2D)
 
-  private val backgroundImage: Image = ImageLoader.getImage(TEXTURE_FOLDER + "background.png")
+  private val backgroundImage: Image = ImageLoader.getImage(backgroundTexture)
   private var mapBorder: Option[Shape] = Option.empty
 
   /**
@@ -229,7 +229,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
       case EntityType.Repulse => repulsiveDrawable.draw(drawableWrapper, color)
       case EntityType.AntiMatter => antiMatterDrawable.draw(drawableWrapper, color)
       case EntityType.Sentient => sentientDrawable.draw(drawableWrapper, color)
-      case EntityType.Controlled => opponentDrawable.draw(drawableWrapper, color)
+      case EntityType.Controlled => controlledDrawable.draw(drawableWrapper, color)
       case _ => cellDrawable.draw(drawableWrapper, color)
     }
   }
@@ -291,7 +291,9 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     * @param playerColor the player Color
     * @return the sequence of pair where the first field is the entity and the second is the color
     */
-  private def calculateColors(entities: Seq[DrawableWrapper], playerEntity: DrawableWrapper, minColor: Color = Color.LightBlue, maxColor: Color = Color.DarkRed, playerColor: Color = Color.Green): Seq[(DrawableWrapper, Color)] = {
+  private def calculateColors(entities: Seq[DrawableWrapper], playerEntity: DrawableWrapper,
+                              minColor: Color = ViewConstants.Entities.Colors.defaultEntityMinColor, maxColor: Color = ViewConstants.Entities.Colors.defaultEntityMaxColor,
+                              playerColor: Color = Color.Green): Seq[(DrawableWrapper, Color)] = {
     entities match {
       case Nil => Seq()
       case _ =>

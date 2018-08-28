@@ -1,12 +1,12 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.ecs.components.EntityType
+import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.components.custom.TitledComboBox
 import it.unibo.osmos.redux.mvc.view.components.editor.CellEntityBuilder
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import javafx.scene.paint.ImagePattern
 import scalafx.beans.property.ObjectProperty
-import scalafx.scene.effect.ColorAdjust
 import scalafx.scene.image.ImageView
 import scalafx.scene.layout.VBox
 import scalafx.scene.shape.{Circle, Shape}
@@ -24,7 +24,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   /**
     * The background image
     */
-  val background: ImageView = new ImageView(ImageLoader.getImage("/textures/background.png")) {
+  val background: ImageView = new ImageView(ImageLoader.getImage(backgroundTexture)) {
     fitWidth <== parentStage.width
     fitHeight <== parentStage.height
   }
@@ -34,41 +34,49 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     */
   private var entityType: ObjectProperty[EntityType.Value] = ObjectProperty(EntityType.Matter)
 
-  private val entityComboBox = new TitledComboBox[EntityType.Value]("Entity Type", EntityType.values.toSeq, et => {
+  private val entityComboBox = new TitledComboBox[EntityType.Value]("Entity Type:", EntityType.values.toSeq, et => {
     entityType.value = et
     println(et)
-
   })
 
   private val cellEntityBuilder = new CellEntityBuilder
 
   val verticalContainer: VBox = new VBox(10.0, entityComboBox.root, cellEntityBuilder)
 
-
+  /**
+    * The placeholder which follows the user mouse and changes appearance on EntityType change
+    */
   val entityPlaceholder: Circle = new Circle() {
-    fill.value = new ImagePattern(ImageLoader.getImage("/textures/cell_blue.png"))
+    fill.value = new ImagePattern(ImageLoader.getImage(cellTexture))
     radius = 100
 
-    onScroll = scroll => radius = radius.value + (scroll.getDeltaY/10) min 200 max 10
+    /* We set a min and max for the size */
+    onScroll = scroll => {
+      radius = radius.value + (scroll.getDeltaY/10) min 150 max 10
+      cellEntityBuilder.radius.value = radius.value
+    }
 
     entityType.onChange(entityType.value match {
-        case EntityType.Matter => effect = new ColorAdjust(0.0, 0, 0 ,0)
-        case EntityType.AntiMatter => effect = new ColorAdjust(0.5, 0, 0 ,0)
-        case EntityType.Attractive => effect = new ColorAdjust(0.3, 0.5, -0.8 ,0)
-        case EntityType.Repulse => effect = new ColorAdjust(-0.3, 0, 0 ,0)
-        case EntityType.Sentient => effect = new ColorAdjust(-0.7, 1,0.3 ,0)
-        case _ =>
+        case EntityType.Matter => fill.value = new ImagePattern(ImageLoader.getImage(cellTexture))
+        case EntityType.AntiMatter => fill.value = new ImagePattern(ImageLoader.getImage(antiMatterTexture))
+        case EntityType.Attractive => fill.value = new ImagePattern(ImageLoader.getImage(attractiveTexture))
+        case EntityType.Repulse => fill.value = new ImagePattern(ImageLoader.getImage(repulsiveTexture))
+        case EntityType.Sentient => fill.value = new ImagePattern(ImageLoader.getImage(sentientTexture))
+        case EntityType.Controlled => fill.value = new ImagePattern(ImageLoader.getImage(controllerTexture))
+        case _ => fill.value = new ImagePattern(ImageLoader.getImage(cellTexture))
       })
 
   }
 
   var currentPlaceholder: Shape = entityPlaceholder
 
-
   onKeyPressed = key => {
     currentPlaceholder.visible = key.isControlDown
   }
 
+  /**
+    * On mouse moved, we update the builder
+    */
   onMouseMoved = e => {
     currentPlaceholder match {
       case c:Circle => {
@@ -82,6 +90,9 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
 
   }
 
+  /**
+    * On mouse clicked, we parse the placeholder values and created a new element
+    */
   onMouseClicked = _ => {
     currentPlaceholder match {
       case c:Circle => {

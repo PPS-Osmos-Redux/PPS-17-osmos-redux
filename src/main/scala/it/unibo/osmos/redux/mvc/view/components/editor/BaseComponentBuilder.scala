@@ -7,7 +7,7 @@ import scalafx.scene.layout.VBox
   * Abstract basic EditorComponentBuilder which provide styling and utility methods
   * @tparam A the type of the element provided
   */
-abstract class BaseComponentBuilder[A] extends VBox with EditorComponentBuilder[A] {
+abstract class BaseComponentBuilder[A] extends VBox(2.0) with EditorComponentBuilder[A] {
 
   /* Style */
   padding = Insets(10.0)

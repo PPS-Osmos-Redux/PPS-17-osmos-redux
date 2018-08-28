@@ -5,7 +5,7 @@ import scalafx.scene.control.TextFormatter.Change
 import scalafx.scene.control.{TextField, TextFormatter}
 import scalafx.util.converter.{IntStringConverter, NumberStringConverter}
 
-class TitledNumericField(override val title: StringProperty, private val value: IntegerProperty) extends TitledNode[TextField](title, vertical = false) {
+class TitledIntegerField(override val title: StringProperty, private val value: IntegerProperty) extends TitledNode[TextField](title, vertical = false) {
 
   def this(title: String,value: IntegerProperty) {
     this(StringProperty(title), value)
@@ -25,7 +25,7 @@ class TitledNumericField(override val title: StringProperty, private val value: 
     *
     * @return a node of type N <: Node
     */
-  override def node: TextField = new TextField(){
+  override def innerNode: TextField = new TextField(){
     text.delegate.bindBidirectional(value, new NumberStringConverter)
     editable = true
     prefWidth <== maxWidth
