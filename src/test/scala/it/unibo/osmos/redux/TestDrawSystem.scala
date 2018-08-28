@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.{CellEntity, DrawableProperty, EntityManager, PlayerCellEntity}
+import it.unibo.osmos.redux.ecs.entities._
 import it.unibo.osmos.redux.ecs.systems.DrawSystem
 import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper

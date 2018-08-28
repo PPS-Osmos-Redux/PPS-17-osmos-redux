@@ -73,7 +73,7 @@
       "collidable": true
     },
     "typeEntity": {
-      "entity_type": "Matter"
+      "entity_type": "Attractive"
     },
     "position": {
       "point": {

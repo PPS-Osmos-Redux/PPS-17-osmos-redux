@@ -27,7 +27,7 @@ object GravityCellEntity {
 
   private case class GravityCellEntityImpl(cellEntity: CellEntity, mass: MassComponent, specificWeight: SpecificWeightComponent) extends GravityCellEntity {
 
-    require(Seq(EntityType.Attractive, EntityType.Repulse) contains cellEntity.getTypeComponent.typeEntity)
+    require(Seq(EntityType.Attractive, EntityType.Repulsive) contains cellEntity.getTypeComponent.typeEntity)
     require(specificWeight.specificWeight > 0)
 
     override def getPositionComponent: PositionComponent = cellEntity.getPositionComponent

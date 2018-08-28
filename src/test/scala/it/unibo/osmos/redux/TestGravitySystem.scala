@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager, GravityCellEntity}
+import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager, EntityType, GravityCellEntity}
 import it.unibo.osmos.redux.ecs.systems.GravitySystem
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.{BeforeAndAfter, FunSuite}
@@ -18,7 +18,7 @@ class TestGravitySystem extends FunSuite with BeforeAndAfter{
   val visible = VisibleComponent(true)
   val baseTypeEntity = TypeComponent(EntityType.Matter)
   val attractiveTypeEntity = TypeComponent(EntityType.Attractive)
-  val repulseTypeEntity = TypeComponent(EntityType.Repulse)
+  val repulseTypeEntity = TypeComponent(EntityType.Repulsive)
   val specificWeight = SpecificWeightComponent(1.5)
   val dimension1 = DimensionComponent(5)
   val position1 = PositionComponent(Point(3, 4))

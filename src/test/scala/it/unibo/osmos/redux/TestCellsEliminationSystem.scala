@@ -16,8 +16,8 @@ class CellEliminationSystemSpy() extends CellsEliminationSystem {
 
 class TestCellsEliminationSystem extends FunSuite{
   val spawner = SpawnerComponent(false)
-  val ce: CellEntity = new CellBuilder().build
-  val pce = PlayerCellEntity(new CellBuilder().build,spawner)
+  val ce: CellEntity = new CellBuilder().withDimension(1).build
+  val pce = PlayerCellEntity(new CellBuilder().withDimension(1).build,spawner)
   test("Cell elimination") {
     val system = new CellEliminationSystemSpy()
     pce.getDimensionComponent.radius_(system.radiusThreshold+1)

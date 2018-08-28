@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.ecs.entities.builders
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.CellEntity
+import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityType}
 import it.unibo.osmos.redux.utils.Point
 
 /** Builder for Cell Entities */
@@ -14,7 +14,7 @@ class CellBuilder() {
 
   protected var acceleration = AccelerationComponent(0,0)
   protected var collidable = CollidableComponent(true)
-  protected var dimension = DimensionComponent(0)
+  protected var dimension = DimensionComponent(1)
   protected var position = PositionComponent(Point(0,0))
   protected var speed = SpeedComponent(0, 0)
   protected var visible = VisibleComponent(true)

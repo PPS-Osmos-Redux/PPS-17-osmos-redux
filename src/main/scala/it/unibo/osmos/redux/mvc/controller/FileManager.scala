@@ -5,6 +5,7 @@ import java.nio.file.{FileSystem, FileSystems, Files, Path}
 
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities._
+import it.unibo.osmos.redux.mvc.controller.FileManager.getClass
 import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.mvc.model.UserProgress.UserStat
 import it.unibo.osmos.redux.mvc.model._
@@ -36,10 +37,11 @@ object FileManager {
     * @param chosenLevel  levels id
     * @return content of file wrapped into a Try
     */
-  def loadResource(isSimulation: Boolean, chosenLevel: Int): Try[Level] =
-    Try(textToLevel(Source.fromInputStream(
-      getClass.getResourceAsStream(levelStartPath + chosenLevel + jsonExtension)
-    ).mkString).get)
+  def loadResource(isSimulation: Boolean, chosenLevel: Int): Try[Level] = {
+    val path = getClass.getResourceAsStream(levelStartPath + chosenLevel.toString + jsonExtension)
+    val content = Source.fromInputStream(path).mkString
+    Try(textToLevel(content).get)
+  }
 
   /**
     * Save a level on file
