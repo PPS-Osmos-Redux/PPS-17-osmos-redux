@@ -68,8 +68,12 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
 
   }
 
+  /**
+    * The currently visible placeholder, which may be an entity or a level shape
+    */
   var currentPlaceholder: Shape = entityPlaceholder
 
+  /* On control key pressed we hide the placeholder to let the user insert values in the panes */
   onKeyPressed = key => {
     currentPlaceholder.visible = key.isControlDown
   }

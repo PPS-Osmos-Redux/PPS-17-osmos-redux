@@ -47,10 +47,16 @@ class CellEntityBuilder extends BaseComponentBuilder[CellEntity] {
 
   children = Seq(positionNode, radiusNode, speedNode, accelerationNode)
 
-  override def build(): CellEntity = CellEntity(CellBuilder().visible(true)
-  .collidable(true)
-  .withPosition(x.value, y.value)
-  .withSpeed(xSpeed.value, ySpeed.value)
-  .withAcceleration(xAcceleration.value, yAcceleration.value))
+  /**
+    * Method that returns a CellBuilder with the current CellEntityBuilder stored value. It can be overridden by subclasses to add other features.
+    * @return the cell builder
+    */
+  def getBuilder: CellBuilder = CellBuilder().visible(true)
+    .collidable(true)
+    .withPosition(x.value, y.value)
+    .withSpeed(xSpeed.value, ySpeed.value)
+    .withAcceleration(xAcceleration.value, yAcceleration.value)
+
+  override def build(): CellEntity = CellEntity(getBuilder)
 
 }
