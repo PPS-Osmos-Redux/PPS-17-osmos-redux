@@ -5,6 +5,7 @@ import it.unibo.osmos.redux.multiplayer.client.ClientActor._
 import it.unibo.osmos.redux.multiplayer.players.BasicPlayer
 import it.unibo.osmos.redux.multiplayer.server.ServerActor.{Established, LobbyFull, LobbyInfo}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity
+import it.unibo.osmos.redux.utils.Logger
 
 /**
   * Server actor implementation
@@ -22,6 +23,12 @@ class ServerActor(private val server: Server) extends Actor {
     case LeaveLobby(username) => server.removePlayerFromLobby(username)
     case PlayerInput(event) => server.notifyClientInputEvent(event)
     case LeaveGame(username) => server.removePlayerFromGame(username)
+    case unknownMessage => Logger.log("Received unknown message: " + unknownMessage)("ServerActor")
+  }
+
+  override def postStop(): Unit = {
+    println("Actor is shutting down...")
+    super.postStop()
   }
 }
 

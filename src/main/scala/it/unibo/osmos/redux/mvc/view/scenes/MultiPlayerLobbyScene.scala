@@ -104,6 +104,8 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
   override def updateUsers(users: Seq[User]): Unit = {
     userList clear()
     userList ++= users.map(_.getUserWithProperty)
+
+    if (userList.size > 1) { startGame.setVisible(true) }
   }
 
   override def onMultiPlayerGameStarted(multiPlayerLevelContext: MultiPlayerLevelContext): Unit = {

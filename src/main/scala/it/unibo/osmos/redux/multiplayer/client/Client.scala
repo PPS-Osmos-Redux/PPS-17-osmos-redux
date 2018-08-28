@@ -11,7 +11,7 @@ import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, MultiPlayerLevelContext}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity
 import it.unibo.osmos.redux.mvc.view.events.{GamePending, GameStateEventWrapper, MouseEventWrapper}
-import it.unibo.osmos.redux.utils.Constants
+import it.unibo.osmos.redux.utils.{Constants, Logger}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
@@ -20,7 +20,7 @@ import scala.util.{Failure, Success}
 
 trait Client {
 
-  implicit val timeout: Timeout = Timeout(5.seconds)
+  implicit val timeout: Timeout = Timeout(5.minutes) //TODO: change to 5 sec
 
   /**
     * Binds this instance with the input ActorRef.
@@ -124,6 +124,8 @@ object Client {
 
   final case class ClientImpl() extends Client {
 
+    implicit val who: String = "Client"
+
     //the username of this specific client
     private var username: String = _
     //the uuid of the cell entity that represents this client
@@ -141,9 +143,15 @@ object Client {
 
     //MAIN METHODS
 
-    override def bind(actorRef: ActorRef): Unit = ref = Some(actorRef)
+    override def bind(actorRef: ActorRef): Unit = ref = {
+      Logger.log("bind")
+
+      Some(actorRef)
+    }
 
     override def connect(address: String, port: Int): Promise[Boolean] = {
+      Logger.log("connect")
+
       val promise = Promise[Boolean]()
       resolveRemotePath(generateRemoteActorPath(address, port)) onComplete {
         case Success(serverRef) =>
@@ -162,11 +170,11 @@ object Client {
 
     override def getUUID: String = uuid
 
-    override def setUUID(uuid: String): Unit = {
-      this.uuid = uuid
-    }
+    override def setUUID(uuid: String): Unit = this.uuid = uuid
 
     override def kill(): Unit = {
+      Logger.log("kill")
+
       if (levelContext.nonEmpty) {
         levelContext = None
       }
@@ -183,6 +191,8 @@ object Client {
     //GAME MANAGEMENT
 
     override def initGame(levelContext: MultiPlayerLevelContext): Unit = {
+      Logger.log("initGame")
+
       if (lobby.isEmpty) throw new IllegalStateException("The player entered no lobby, unable to initialize the game.")
       if (this.levelContext.nonEmpty) throw new IllegalStateException("The server already hold a level context, unable to initialize the game.")
 
@@ -195,6 +205,8 @@ object Client {
     }
 
     override def leaveGame(): Unit = {
+      Logger.log("leaveGame")
+
       if (username.isEmpty) throw new IllegalStateException("The player entered no lobby, unable to leave.")
       server.get ! ClientActor.LeaveGame(username)
       kill()
@@ -202,11 +214,17 @@ object Client {
 
     //INPUT MANAGEMENT
 
-    override def signalPlayerInput(event: MouseEventWrapper): Unit = server.get ! ClientActor.PlayerInput(event)
+    override def signalPlayerInput(event: MouseEventWrapper): Unit = {
+      Logger.log("signalPlayerInput")
+
+      server.get ! ClientActor.PlayerInput(event)
+    }
 
     //LOBBY
 
     override def enterLobby(username: String, lobbyContext: LobbyContext): Promise[Boolean] = {
+      Logger.log("enterLobby")
+
       if (lobby.nonEmpty) throw new IllegalStateException("Unable to enter lobby if the client is already entered in another one")
       //Save username locally
       this.username = username
@@ -231,19 +249,35 @@ object Client {
     }
 
     override def leaveLobby(): Unit = {
+      Logger.log("leaveLobby")
+
       if (username.isEmpty) throw new IllegalStateException("The player entered no lobby, unable to leave.")
 
       server.get.tell(ClientActor.LeaveLobby(username), ref.get)
       clearLobby()
     }
 
-    override def getLobbyPlayers: Seq[BasicPlayer] = lobby.get.getPlayers
+    override def getLobbyPlayers: Seq[BasicPlayer] = {
+      Logger.log("getLobbyPlayers")
 
-    override def addPlayerToLobby(player: BasicPlayer): Unit = lobby.get.addPlayer(player)
+      lobby.get.getPlayers
+    }
 
-    override def removePlayerFromLobby(username: String): Unit = lobby.get.removePlayer(username)
+    override def addPlayerToLobby(player: BasicPlayer): Unit = {
+      Logger.log("addPlayerToLobby")
+
+      lobby.get.addPlayer(player)
+    }
+
+    override def removePlayerFromLobby(username: String): Unit = {
+      Logger.log("removePlayerFromLobby")
+
+      lobby.get.removePlayer(username)
+    }
 
     override def clearLobby(): Unit = {
+      Logger.log("clearLobby")
+
       if (lobby.nonEmpty) {
         lobby.get.clear()
         lobby = None
@@ -252,16 +286,22 @@ object Client {
 
     //OBSERVERS MANAGEMENT
 
-    override def notifyGameStatusChanged(status: GameStateEventWrapper): Unit = status match {
-      case GamePending =>
-        //notify lobby that the game is started
-        lobby.get.startGame(levelContext.get)
-      case gameState =>
-        //game is won or lost
-        levelContext.get.notify(gameState)
+    override def notifyGameStatusChanged(status: GameStateEventWrapper): Unit = {
+      Logger.log("notifyGameStatusChanged")
+
+      status match {
+        case GamePending =>
+          //notify lobby that the game is started
+          lobby.get.startGame(levelContext.get)
+        case gameState =>
+          //game is won or lost
+          levelContext.get.notify(gameState)
+      }
     }
 
     override def notifyRedraw(entities: Seq[DrawableEntity]): Unit = {
+      Logger.log("notifyRedraw")
+
       val player = entities.find(_.getUUID == getUUID)
       if (player.isEmpty) throw new IllegalArgumentException("Unable to draw entities because the player was not found")
       levelContext.get.drawEntities(player, entities)
@@ -274,6 +314,8 @@ object Client {
     }
 
     private def resolveRemotePath(remotePath: String): Future[ActorRef] = {
+      Logger.log("resolveRemotePath")
+
       val selection = ActorSystemHolder.getSystem.actorSelection(remotePath)
       selection resolveOne()
     }

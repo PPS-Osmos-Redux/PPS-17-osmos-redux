@@ -4,6 +4,7 @@ import akka.actor.{Actor, Props}
 import it.unibo.osmos.redux.multiplayer.client.ClientActor.Ready
 import it.unibo.osmos.redux.multiplayer.server.ServerActor._
 import it.unibo.osmos.redux.mvc.view.events._
+import it.unibo.osmos.redux.utils.Logger
 
 /**
   * Client actor implementation
@@ -24,6 +25,12 @@ class ClientActor(private val client: Client) extends Actor {
       //reply to server that all is ok
       sender ! Ready
     case GameEnded(victory) => client.notifyGameStatusChanged( if(victory) GameWon else GameLost )
+    case unknownMessage => Logger.log("Received unknown message: " + unknownMessage)("ClientActor")
+  }
+
+  override def postStop(): Unit = {
+    println("Actor is shutting down...")
+    super.postStop()
   }
 }
 

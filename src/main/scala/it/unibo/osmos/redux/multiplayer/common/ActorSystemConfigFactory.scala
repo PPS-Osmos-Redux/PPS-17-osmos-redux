@@ -22,8 +22,6 @@ object ActorSystemConfigFactory {
          netty.tcp {
            port = 0
          }
-         log-sent-messages = on
-         log-received-messages = on
        }
      }
       """
