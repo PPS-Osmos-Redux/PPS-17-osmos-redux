@@ -81,10 +81,9 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
   }
 
   private val goToLobby = new Button("Go to lobby") {
-    /* We create the User */
-    private val user = User(username.value, addressValue.value, portValue.value, isServer = mode.value)
-
     onAction = _ => {
+      /* We create the User */
+      val user = User(username.value, addressValue.value, portValue.value, isServer = mode.value)
       /* We create the lobby context */
       val lobbyContext = LobbyContext()
       /* We ask to enter in the lobby */
