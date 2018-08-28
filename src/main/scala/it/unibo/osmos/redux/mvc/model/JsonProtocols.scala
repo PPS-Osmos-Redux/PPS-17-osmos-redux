@@ -28,7 +28,7 @@ object JsonProtocols {
 
   implicit object CollidableFormatter extends RootJsonFormat[CollidableComponent] {
     def write(collidable: CollidableComponent) =
-      JsObject("collidable" -> JsBoolean(collidable.isCollidable()))
+      JsObject("collidable" -> JsBoolean(collidable.isCollidable))
     def read(value: JsValue): CollidableComponent = {
       value.asJsObject.getFields("collidable") match {
         case Seq(JsBoolean(collidable)) => CollidableComponent(collidable)
@@ -38,7 +38,7 @@ object JsonProtocols {
   }
 
   implicit object VisibleFormatter extends RootJsonFormat[VisibleComponent] {
-    def write(visible: VisibleComponent) = JsObject("visible" -> JsBoolean(visible.isVisible()))
+    def write(visible: VisibleComponent) = JsObject("visible" -> JsBoolean(visible.isVisible))
     def read(value: JsValue): VisibleComponent = {
       value.asJsObject.getFields("visible") match {
         case Seq(JsBoolean(visible)) => VisibleComponent(visible)

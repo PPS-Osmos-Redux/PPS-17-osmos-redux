@@ -31,7 +31,7 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
       (e1, xIndex) <- entities.zipWithIndex
       (e2, yIndex) <- entities.zipWithIndex
       if xIndex < yIndex //skip useless double checks
-      if e1.getCollidableComponent.isCollidable() && e2.getCollidableComponent.isCollidable()
+      if e1.getCollidableComponent.isCollidable && e2.getCollidableComponent.isCollidable
       overlap = computeOverlap(e1, e2)
       if overlap > 0 //check if they overlap (collide)
     } yield applyCollisionEffects(e1, e2, overlap)
