@@ -36,6 +36,9 @@ class MainMenuCenterBox(val listener: MainMenuCenterBoxListener) extends VBox(20
   */
 trait MainMenuCenterBoxListener {
 
+  /** Called when the user clicks on the back to menu button */
+  def backToMainMenu()
+
   /**
     * Called when the user clicks on the play button
     */

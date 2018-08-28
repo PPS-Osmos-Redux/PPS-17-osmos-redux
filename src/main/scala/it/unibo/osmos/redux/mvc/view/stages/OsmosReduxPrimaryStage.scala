@@ -1,8 +1,10 @@
 package it.unibo.osmos.redux.mvc.view.stages
 
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
+import it.unibo.osmos.redux.mvc.view.containers.{LevelSelectionContainer, SettingsContainer}
 import it.unibo.osmos.redux.mvc.view.scenes._
 import scalafx.application.JFXApp
+import scalafx.scene.Parent
 
 /**
   * Primary stage which holds and manages all the different game scenes
@@ -42,13 +44,19 @@ object OsmosReduxPrimaryStage {
       */
     scene = mainScene
 
-    override def onPlayClick(): Unit = scene = new LevelSelectionScene(this, listener)
+    override def onPlayClick(): Unit =  {
+      //mainScene.root = new LevelSelectionContainer(mainScene.parentStage).getContainer
+      scene = new LevelSelectionScene(this, listener)
+    }
 
     override def onMultiPlayerClick(): Unit = scene = new MultiPlayerScene(this, listener, mainScene)
 
     override def onEditorClick(): Unit = scene = new EditorLevelSelectionScene(this, listener)
 
-    override def onSettingsClick(): Unit = scene = new SettingsScene(this, listener, mainScene)
+    override def onSettingsClick(container: Parent): Unit = {
+      mainScene.root = container
+      //scene = new SettingsScene(this, listener, mainScene)
+    }
 
     /* Stopping the game when the user closes the window */
     onCloseRequest = _ => System.exit(0)

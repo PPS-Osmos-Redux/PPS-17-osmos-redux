@@ -2,6 +2,8 @@ package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.mvc.view.components.menu.{MainMenuBar, MainMenuBarListener, MainMenuCenterBox, MainMenuCenterBoxListener}
+import it.unibo.osmos.redux.mvc.view.containers.SettingsContainer
+import scalafx.scene.Parent
 import scalafx.scene.layout.BorderPane
 import scalafx.stage.Stage
 
@@ -21,13 +23,29 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
   /* Enabling the layout */
   root = rootLayout
 
-  override def onPlayClick(): Unit = listener.onPlayClick()
+  /*val main = new MainContainer(parentStage, listener)
+  root = main.getRootLayout
+  */
+  override def backToMainMenu(): Unit = {
+    //val main = new MainContainer(parentStage, listener)
+    //root = main.getRootLayout
+  }
+
+  override def onPlayClick(): Unit = {
+    //root = new LevelSelectionContainer(parentStage).getContainer
+    listener.onPlayClick()
+  }
 
   override def onMultiPlayerClick(): Unit = listener.onMultiPlayerClick()
 
   override def onEditorClick(): Unit = listener.onEditorClick()
 
-  override def onSettingsClick(): Unit = listener.onSettingsClick()
+  override def onSettingsClick(): Unit = {
+    // TODO: this will change only the root, pressing back won't go on the correct main menu
+    val v = new SettingsContainer(parentStage, listener)
+    root = v.container
+    //listener.onSettingsClick()
+  }
 
   override def onExitClick(): Unit = {
     System.exit(0)
@@ -68,7 +86,7 @@ trait MainSceneListener {
   /**
     * Called when the user clicks on the settings button
     */
-  def onSettingsClick()
+  def onSettingsClick(container: Parent)
 
 }
 

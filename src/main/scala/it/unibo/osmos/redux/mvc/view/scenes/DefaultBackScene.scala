@@ -3,10 +3,10 @@ package it.unibo.osmos.redux.mvc.view.scenes
 import scalafx.scene.control.Button
 import scalafx.stage.Stage
 
-class DefaultBackScene(override val parentStage: Stage, backClickListener: BackClickListener) extends BaseScene(parentStage) {
+class DefaultBackScene(override val parentStage: Stage, previousSceneListener: BackClickListener) extends BaseScene(parentStage) {
 
-  protected val goBack: Button = new Button("Back to menù") {
-    onAction = _ => backClickListener.onBackClick()
+  protected val goBack: Button = new Button("Back to menu") {
+    onAction = _ => previousSceneListener.onBackClick()
   }
 }
 

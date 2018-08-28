@@ -17,7 +17,7 @@ import scalafx.stage.Stage
   * @param listener the MultiPlayerSceneListener
   * @param upperSceneListener the UpperMultiPlayerSceneListener
   */
-class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlayerSceneListener, val upperSceneListener: UpperMultiPlayerSceneListener) extends BaseScene(parentStage) {
+class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlayerSceneListener, val upperSceneListener: BackClickListener) extends DefaultBackScene(parentStage, upperSceneListener) {
 
   private val username: StringProperty = StringProperty("")
   private val usernameTextField = new TitledTextField("Username: ", username)
@@ -48,10 +48,6 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
       if (addressValue.isEmpty.get()) addressValue.setValue(NetworkUtils.getLocalIPAddress)
       if (!portTextField.node.getText.equals("0")) portTextField.node.setText("0")
   }, vertical = false)
-
-  private val goBack = new Button("Go back") {
-    onAction = _ => upperSceneListener.onMultiPlayerSceneBackClick()
-  }
 
   /**
     * Result parsing function.
