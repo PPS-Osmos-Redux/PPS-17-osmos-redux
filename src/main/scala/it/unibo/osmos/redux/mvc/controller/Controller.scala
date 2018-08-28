@@ -192,7 +192,7 @@ case class ControllerImpl() extends Controller with Observer {
 
     //load level definition
     //TODO: for not there is only one multi-player level (lobbyContext has the chosenLevel property)
-    val loadedLevel = FileManager.loadResource("0", isMultiPlayer = true).get
+    val loadedLevel = FileManager.loadResource("1", isMultiPlayer = true).get
 
     multiPlayerMode.get match {
       case MultiPlayerMode.Server =>

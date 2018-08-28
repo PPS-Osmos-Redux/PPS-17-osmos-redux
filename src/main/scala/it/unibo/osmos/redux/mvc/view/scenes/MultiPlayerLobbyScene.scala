@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.mvc.view.scenes
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.{User, UserWithProperties}
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, LobbyContextListener, MultiPlayerLevelContext}
 import it.unibo.osmos.redux.mvc.view.events.{AbortLobby, LobbyEventWrapper}
-import scalafx.beans.property.ObjectProperty
+import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.TableColumn._
@@ -38,6 +38,7 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     * ObservableBuffer holding the current users
     */
   private val userList = ObservableBuffer[UserWithProperties]()
+  private val isStartGameVisible = BooleanProperty(false)
 
   /**
     * TableView linked with the user list
@@ -83,7 +84,11 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     */
   private val startGame = new Button("Start Game") {
     /* Only visible if the user is a server and there are at least two players*/
-    visible = user.isServer && userList.size >= 2
+    if (user.isServer) {
+      visible <== isStartGameVisible
+    } else {
+      visible = false
+    }
     onAction = _ => listener.onStartMultiplayerGameClick()
   }
 
@@ -104,6 +109,8 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
   override def updateUsers(users: Seq[User]): Unit = {
     userList clear()
     userList ++= users.map(_.getUserWithProperty)
+    /* Updating the observable property */
+    isStartGameVisible.value_=(userList.size >= 2)
   }
 
   override def onMultiPlayerGameStarted(multiPlayerLevelContext: MultiPlayerLevelContext): Unit = {

@@ -43,6 +43,38 @@
       "collidable": {
         "collidable": true
       },
+      "spawner": {
+        "canSpawn": true
+      },
+      "typeEntity": {
+        "componentType": "Matter"
+      },
+      "position": {
+        "point": {
+          "x": 483.0,
+          "y": 184.0
+        }
+      },
+      "cellType": "playerCell",
+      "dimension": {
+        "radius": 10.0
+      },
+      "speed": {
+        "speedX": 0.0,
+        "speedY": 0.0
+      }
+    },
+    {
+      "acceleration": {
+        "accelerationX": 0.0,
+        "accelerationY": 0.0
+      },
+      "visible": {
+        "visible": true
+      },
+      "collidable": {
+        "collidable": true
+      },
       "typeEntity": {
         "componentType": "Matter"
       },
