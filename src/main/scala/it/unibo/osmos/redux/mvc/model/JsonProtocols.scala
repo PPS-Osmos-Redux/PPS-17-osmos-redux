@@ -276,27 +276,29 @@ object JsonProtocols {
     def write(mapShape: MapShape): JsObject = mapShape match {
       case mapShape:MapShape.Rectangle => JsObject("centerX" -> JsNumber(mapShape.center._1),
         "centerY" -> JsNumber(mapShape.center._2),
-        "mapShape" -> JsString(mapShape.mapShape),
+        "mapShape" -> JsString(mapShape.mapShape.toString),
         "height" -> JsNumber(mapShape.height),
         "base" -> JsNumber(mapShape.base))
       case mapShape:MapShape.Circle => JsObject("centerX" -> JsNumber(mapShape.center._1),
         "centerY" -> JsNumber(mapShape.center._2),
-        "mapShape" -> JsString(mapShape.mapShape),
+        "mapShape" -> JsString(mapShape.mapShape.toString),
         "radius" -> JsNumber(mapShape.radius))
       case _ => throw new SerializationException("Shape " + mapShape.mapShape + " not managed!")
     }
 
     def read(value: JsValue): MapShape = {
+      val rectangle  = MapShapeType.RECTANGLE.toString
+      val circle  = MapShapeType.CIRCLE.toString
       value.asJsObject.getFields("centerX",
         "centerY",
         "mapShape",
         "height",
         "base",
         "radius") match {
-        case Seq(JsNumber(centerX),JsNumber(centerY),JsString(MapShape.rectangle),
+        case Seq(JsNumber(centerX),JsNumber(centerY),JsString(`rectangle`),
         JsNumber(height), JsNumber(base)) =>
           MapShape.Rectangle((centerX.toDouble, centerY.toDouble), height.toDouble, base.toDouble)
-        case Seq(JsNumber(centerX),JsNumber(centerY),JsString(MapShape.circle), JsNumber(radius)) =>
+        case Seq(JsNumber(centerX),JsNumber(centerY),JsString(`circle`), JsNumber(radius)) =>
           MapShape.Circle((centerX.toDouble, centerY.toDouble),radius.toDouble)
         case _ => throw DeserializationException("Map shape expected")
       }
