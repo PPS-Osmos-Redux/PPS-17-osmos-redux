@@ -1,47 +1,52 @@
 package it.unibo.osmos.redux.mvc.controller
 import it.unibo.osmos.redux.ecs.engine.GameEngine
-import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels
-import it.unibo.osmos.redux.mvc.view.levels.LevelContext
+import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.LevelInfo
+import it.unibo.osmos.redux.mvc.model.{Level, MultiPlayerLevels, SinglePlayerLevels}
+import it.unibo.osmos.redux.mvc.view.events._
+import it.unibo.osmos.redux.mvc.view.levels.{GameStateHolder, LevelContext}
+
+trait Observable {
+  def subscribe(observer:Observer)
+}
+
+trait Observer {
+  def notify(event: GameStateEventWrapper, levelContext: GameStateHolder)
+}
 
 /**
   * Controller base trait
   */
 trait Controller {
-  def initLevel(levelContext: LevelContext, chosenLevel:Int, isSimulation:Boolean)
+  def initLevel(levelContext: LevelContext, chosenLevel:String, isSimulation:Boolean, isCustomLevel:Boolean)
   def startLevel()
   def stopLevel()
   def pauseLevel()
   def resumeLevel()
-  def getSinglePlayerLevels:List[(Int,Boolean)] = SinglePlayerLevels.levels.toList
-  def getCustomLevels:List[String]
-  def initCustomLevel(levelContext: LevelContext, chosenLevel:String, isSimulation:Boolean)
+  def saveNewCustomLevel(customLevel:Level):Boolean
+  def getSinglePlayerLevels:List[LevelInfo] = SinglePlayerLevels.getLevels
+  def getMultiPlayerLevels:List[String] = MultiPlayerLevels.getLevels
+  def getCustomLevels:List[String] = FileManager.customLevelsFilesName
 }
 
-case class ControllerImpl() extends Controller {
+case class ControllerImpl() extends Controller with Observer {
   var engine:Option[GameEngine] = None
 
   override def initLevel(levelContext: LevelContext,
-                          chosenLevel:Int,
-                          isSimulation:Boolean): Unit = {
+                         chosenLevel:String,
+                         isSimulation:Boolean,
+                         isCustomLevel:Boolean): Unit = {
 
-    val loadedLevel = FileManager.loadResource(isSimulation, chosenLevel).get
-    if (isSimulation) loadedLevel.isSimulation = true
-    if(engine.isEmpty) engine = Some(GameEngine())
-    engine.get.init(loadedLevel, levelContext)
-    levelContext.setupLevel(loadedLevel.levelMap.mapShape)
-  }
+    var loadedLevel:Option[Level] = None
+    if (isCustomLevel) loadedLevel = FileManager.loadCustomLevel(chosenLevel)
+    else loadedLevel = FileManager.loadResource(chosenLevel).toOption
 
-  override def initCustomLevel(levelContext: LevelContext,
-                               chosenLevel:String,
-                               isSimulation:Boolean): Unit = {
-    val loadedLevel = FileManager.loadCustomLevel(chosenLevel)
     if(loadedLevel.isDefined) {
       if (isSimulation) loadedLevel.get.isSimulation = true
       if(engine.isEmpty) engine = Some(GameEngine())
-      engine.get.init(loadedLevel.get, levelContext)
+      engine.get.init(loadedLevel.get, levelContext/*, this*/)
       levelContext.setupLevel(loadedLevel.get.levelMap.mapShape)
     } else {
-      println("File ", chosenLevel, " not found")
+      println("Level ", chosenLevel, " not found! is a custom level? ", isCustomLevel)
     }
   }
 
@@ -53,5 +58,14 @@ case class ControllerImpl() extends Controller {
 
   override def resumeLevel(): Unit = if (engine.isDefined) engine.get.resume()
 
-  override def getCustomLevels: List[String] = FileManager.customLevelsFilesName
+  override def notify(event: GameStateEventWrapper, levelContext: GameStateHolder): Unit = {
+    if(event.equals(GameWon)) {
+      SinglePlayerLevels.unlockNextLevel()
+      FileManager.saveUserProgress(SinglePlayerLevels.toUserProgression)
+    }
+    levelContext.notify(event)
+  }
+
+  override def saveNewCustomLevel(customLevel: Level): Boolean =
+    FileManager.saveLevel(customLevel, customLevel.levelId).isDefined
 }

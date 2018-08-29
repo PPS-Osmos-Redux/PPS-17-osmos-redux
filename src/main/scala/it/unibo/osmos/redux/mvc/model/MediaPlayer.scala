@@ -17,7 +17,7 @@ object MediaPlayer {
   private var mediaPlayer:Option[MediaPlayer] = None
   private var lastLoadedSound:Option[String] = None
   private var buttonAudioClip:Option[AudioClip] = None
-  private var generalVolume:Double = 100
+  private var generalVolume:Double = 1
 
   /**
     * Play a sound

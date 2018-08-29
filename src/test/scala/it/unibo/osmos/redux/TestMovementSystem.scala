@@ -12,9 +12,9 @@ class TestMovementSystem extends FunSuite with BeforeAndAfter {
     EntityManager.clear()
   }
 
+
   test("MovableProperty entities' acceleration, speed and position are updated correctly") {
     val movementSystem = MovementSystem()
-
     val ca = AccelerationComponent(1, 1)
     val cc = CollidableComponent(true)
     val cd = DimensionComponent(5)

@@ -17,7 +17,7 @@ class TestMapBoundariesCheck extends FunSuite{
   val etg = TypeComponent(EntityType.Attractive)
   val sp = SpawnerComponent(true)
   val sw = SpecificWeightComponent(1)
-
+  val levelId:String = 1.toString
   test("Rectangular map boundaries") {
     val p = PositionComponent(Point(-3, -3))
     val p1 = PositionComponent(Point(3, -3))
@@ -34,7 +34,7 @@ class TestMapBoundariesCheck extends FunSuite{
     val rectangle:MapShape = Rectangle((0,0),10,10)
     val levelMap:LevelMap = LevelMap(rectangle, CollisionRules.bouncing)
     //Level
-    var level:Level = Level(levelId = 1,
+    var level:Level = Level(levelId,
                             levelMap,
                             listCells,
                             VictoryRules.becomeTheBiggest)
@@ -45,7 +45,7 @@ class TestMapBoundariesCheck extends FunSuite{
     pce.getPositionComponent.point_(Point(5, -5))
     gc.getPositionComponent.point_(Point(0,12))
     sc.getPositionComponent.point_(Point(12, 0))
-    level = Level(levelId = 1, levelMap, List(ce,pce,gc,sc), VictoryRules.becomeTheBiggest)
+    level = Level(levelId, levelMap, List(ce,pce,gc,sc), VictoryRules.becomeTheBiggest)
     level.checkCellPosition()
     assert(level.entities.isEmpty)
   }
@@ -66,7 +66,7 @@ class TestMapBoundariesCheck extends FunSuite{
     val circle:MapShape = Circle((0,0), 5)
     val levelMap:LevelMap = LevelMap(circle, CollisionRules.bouncing)
     //Level
-    var level:Level = Level(levelId = 1,
+    var level:Level = Level(levelId,
                             levelMap,
                             listCells,
                             VictoryRules.becomeTheBiggest)
@@ -77,7 +77,7 @@ class TestMapBoundariesCheck extends FunSuite{
     pce.getPositionComponent.point_(Point(2, 2))
     gc.getPositionComponent.point_(Point(2,-2))
     sc.getPositionComponent.point_(Point(-2, -2))
-    level = Level(levelId = 1, levelMap, List(ce,pce,gc,sc), VictoryRules.becomeTheBiggest)
+    level = Level(levelId, levelMap, List(ce,pce,gc,sc), VictoryRules.becomeTheBiggest)
     level.checkCellPosition()
     assert(level.entities.size.equals(listCells.size))
   }

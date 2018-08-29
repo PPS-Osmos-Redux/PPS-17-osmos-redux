@@ -79,7 +79,7 @@ case class LevelMap(mapShape:MapShape, collisionRule:CollisionRules.Value)
   * @param victoryRule victory rule
   * @param isSimulation if it's a simulation
   */
-case class Level(levelId:Int,
+case class Level(levelId:String,
                  levelMap:LevelMap,
                  var entities:List[CellEntity],
                  victoryRule:VictoryRules.Value, var isSimulation:Boolean = false) {
@@ -123,5 +123,4 @@ case class Level(levelId:Int,
                                                                       ent.getDimensionComponent.radius))
                        .filterNot(tup => tup._2 > circle.radius)
                        .map(t => t._1)
-
 }
