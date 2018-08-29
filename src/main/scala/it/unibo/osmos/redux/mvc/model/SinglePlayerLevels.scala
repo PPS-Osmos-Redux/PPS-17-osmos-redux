@@ -13,13 +13,19 @@ object SinglePlayerLevels {
     LevelInfo("4", isAvailable = false, VictoryRules.becomeTheBiggest),
     LevelInfo("5", isAvailable = false, VictoryRules.becomeTheBiggest))
 
+  /**
+    * get the campaign levels
+    * @return campaign levels
+    */
   def getLevels:List[LevelInfo] = levels.toList
 
   /**
-    * Return the last unlocked level.
-    * @return the last unlocked level
+    * reset the user progress
     */
-  //def toDoLevel:LevelInfo = levels.find(level => !level.isAvailable).getOrElse(levels(levels.size-1))
+  def reset():Unit = {
+    levels.filter(lv => !lv.name.equals(levels.head.name)).foreach(lv => lv.isAvailable = false)
+    userStat = UserStat()
+  }
 
   /**
     * Return the last unlocked level.
@@ -85,7 +91,7 @@ object SinglePlayerLevels {
     * @param isAvailable is the level is available
     * @param victoryRule level victory rule
     */
-  case class LevelInfo(name:String, isAvailable:Boolean = false, victoryRule:VictoryRules.Value)
+  case class LevelInfo(name:String, var isAvailable:Boolean = false, victoryRule:VictoryRules.Value)
 
   /**
     * Statistics of a level
