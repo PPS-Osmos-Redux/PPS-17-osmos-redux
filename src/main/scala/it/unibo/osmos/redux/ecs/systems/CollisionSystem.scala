@@ -1,7 +1,6 @@
 package it.unibo.osmos.redux.ecs.systems
 
-import it.unibo.osmos.redux.ecs.components.EntityType
-import it.unibo.osmos.redux.ecs.entities.CollidableProperty
+import it.unibo.osmos.redux.ecs.entities.{CollidableProperty, EntityType}
 import it.unibo.osmos.redux.mvc.model.Level
 import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.utils.{MathUtils, Point}
@@ -32,7 +31,7 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
       (e1, xIndex) <- entities.zipWithIndex
       (e2, yIndex) <- entities.zipWithIndex
       if xIndex < yIndex //skip useless double checks
-      if e1.getCollidableComponent.isCollidable() && e2.getCollidableComponent.isCollidable()
+      if e1.getCollidableComponent.isCollidable && e2.getCollidableComponent.isCollidable
       overlap = computeOverlap(e1, e2)
       if overlap > 0 //check if they overlap (collide)
     } yield applyCollisionEffects(e1, e2, overlap)

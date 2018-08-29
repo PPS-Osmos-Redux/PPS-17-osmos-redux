@@ -1,7 +1,8 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.{CellBuilder, CellEntity, EntityManager, PlayerCellEntity}
+import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
+import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager, PlayerCellEntity}
 import org.scalatest.FunSuite
 import it.unibo.osmos.redux.ecs.systems.CellsEliminationSystem
 import it.unibo.osmos.redux.utils.Point
@@ -15,8 +16,8 @@ class CellEliminationSystemSpy() extends CellsEliminationSystem {
 
 class TestCellsEliminationSystem extends FunSuite{
   val spawner = SpawnerComponent(false)
-  val ce: CellEntity = CellBuilder().build
-  val pce = PlayerCellEntity(CellBuilder().build,spawner)
+  val ce: CellEntity = new CellBuilder().withDimension(1).build
+  val pce = PlayerCellEntity(new CellBuilder().withDimension(1).build,spawner)
   test("Cell elimination") {
     val system = new CellEliminationSystemSpy()
     pce.getDimensionComponent.radius_(system.radiusThreshold+1)
