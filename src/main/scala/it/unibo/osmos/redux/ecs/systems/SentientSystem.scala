@@ -1,6 +1,5 @@
 package it.unibo.osmos.redux.ecs.systems
 
-import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.{SentientEnemyProperty, _}
 import it.unibo.osmos.redux.utils.{MathUtils, Vector}
 
@@ -19,11 +18,14 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
   override protected def getGroupProperty: Class[SentientProperty] = classOf[SentientProperty]
 
   override def update(): Unit = entities foreach(sentient => {
-    findTarget(sentient, entitiesSecondType) match {
+
+    val escapeAcceleration = escapeFromEnemies(sentient, findEnemies(sentient, entitiesSecondType))
+    val followTargetAcceleration = findTarget(sentient, entitiesSecondType) match {
       case Some(target) => followTarget(sentient, target)
-      case _ =>
+      case _ => Vector.zero()
     }
-    runAwayFromEnemies(sentient, findEnemies(sentient, entitiesSecondType))
+
+    applyAcceleration(sentient, escapeAcceleration, followTargetAcceleration)
   })
 
   /**
@@ -31,11 +33,10 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
     * @param sentient sentient entity
     * @param target target entity
     */
-  private def followTarget(sentient: SentientProperty, target: SentientEnemyProperty): Unit = {
+  private def followTarget(sentient: SentientProperty, target: SentientEnemyProperty): Vector = {
     val nextPositionTarget = target.getPositionComponent.point.add(target.getSpeedComponent.vector)
     val unitVectorDesiredVelocity = MathUtils.unitVector(nextPositionTarget, sentient.getPositionComponent.point)
-    val steer = computeSteer(sentient.getSpeedComponent.vector, unitVectorDesiredVelocity)
-    applyAcceleration(sentient, steer)
+    computeSteer(sentient.getSpeedComponent.vector, unitVectorDesiredVelocity)
   }
 
   /**
@@ -77,16 +78,15 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
     * @param sentient sentient entity
     * @param enemies list of enemies
     */
-  private def runAwayFromEnemies(sentient: SentientProperty, enemies: List[SentientEnemyProperty]): Unit = {
+  private def escapeFromEnemies(sentient: SentientProperty, enemies: List[SentientEnemyProperty]): Vector = {
     val desiredSeparation = sentient.getDimensionComponent.radius * COEFFICIENT_DESIRED_SEPARATION
     val filteredEnemies = enemies map(e => (e, computeDistance(sentient, e))) filter(p => p._2 < desiredSeparation)
     shiftDistance(filteredEnemies)
       .map(m => MathUtils.unitVector(sentient.getPositionComponent.point, m._1.getPositionComponent.point) divide m._2)
       .foldLeft((Vector.zero(), 1)) ((acc, i) => (acc._1 add ((i subtract acc._1) divide acc._2), acc._2 + 1))._1 normalized() match {
-        case unitVectorDesiredVelocity if unitVectorDesiredVelocity == Vector(0,0) =>
+        case unitVectorDesiredVelocity if unitVectorDesiredVelocity == Vector(0,0) => Vector.zero()
         case unitVectorDesiredVelocity =>
-          val steer = computeSteer(sentient.getSpeedComponent.vector, unitVectorDesiredVelocity)
-          applyAcceleration(sentient, steer)
+          computeSteer(sentient.getSpeedComponent.vector, unitVectorDesiredVelocity)
       }
   }
 
@@ -111,10 +111,12 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
   }
 
   private def computeSteer(actualVelocity: Vector, desiredVelocity: Vector): Vector =
-    desiredVelocity multiply MAX_SPEED subtract actualVelocity limit MAX_ACCELERATION
+    desiredVelocity multiply MAX_SPEED subtract actualVelocity
 
-  private def applyAcceleration(sentient: SentientProperty, acceleration: Vector): Unit = {
+  private def applyAcceleration(sentient: SentientProperty, acceleration: Vector, accelerations: Vector*): Unit = {
+    val totalAcceleration = (acceleration add accelerations.reduce((a1,a2) => a1 add a2)) limit MAX_ACCELERATION
     val accelerationSentient = sentient.getAccelerationComponent
-    accelerationSentient.vector_(accelerationSentient.vector add acceleration)
+    accelerationSentient.vector_(accelerationSentient.vector add totalAcceleration)
+    //TODO spawn entity
   }
 }
