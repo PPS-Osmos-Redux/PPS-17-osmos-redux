@@ -141,4 +141,16 @@ object FileManager {
     new File(levelsDirectory).listFiles((d, name) => name.endsWith(jsonExtension))
                              .map(f => f.getName.substring(0,f.getName.length-jsonExtension.length))
                              .toList
+
+  def getStyle: String = {
+    try {
+      val url = getClass.getResource("/style/style.css")
+      //println("style url: " + url)
+      url.toString
+    } catch {
+      case _: NullPointerException =>
+        println("Error: style.css file not found")
+        throw new NullPointerException("style.css file not found");
+    }
+  }
 }

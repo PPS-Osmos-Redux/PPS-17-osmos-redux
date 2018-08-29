@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.multiplayer.common.NetworkUtils
-import it.unibo.osmos.redux.mvc.view.components.custom.{TitledComboBox, TitledNumericField, TitledTextField}
+import it.unibo.osmos.redux.mvc.view.components.custom.{StyledButton, TitledComboBox, TitledNumericField, TitledTextField}
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.LobbyContext
 import scalafx.application.Platform
@@ -17,7 +17,7 @@ import scalafx.stage.Stage
   * @param listener the MultiPlayerSceneListener
   * @param upperSceneListener the UpperMultiPlayerSceneListener
   */
-class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlayerSceneListener, val upperSceneListener: UpperMultiPlayerSceneListener) extends BaseScene(parentStage) {
+class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlayerSceneListener, val upperSceneListener: BackClickListener) extends DefaultBackScene(parentStage, upperSceneListener) {
 
   private val username: StringProperty = StringProperty("")
   private val usernameTextField = new TitledTextField("Username: ", username)
@@ -49,10 +49,6 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
       if (!portTextField.node.getText.equals("0")) portTextField.node.setText("0")
   }, vertical = false)
 
-  private val goBack = new Button("Go back") {
-    onAction = _ => upperSceneListener.onMultiPlayerSceneBackClick()
-  }
-
   /**
     * Result parsing function.
     * @return a function which will send the user to the MultiPlayerLobbyScene if the result is true, showing an error otherwise
@@ -80,7 +76,7 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
     })
   }
 
-  private val goToLobby = new Button("Go to lobby") {
+  private val goToLobby = new StyledButton("Go to lobby") {
     onAction = _ => {
       /* We create the User */
       val user = User(username.value, addressValue.value, portValue.value, isServer = mode.value)
