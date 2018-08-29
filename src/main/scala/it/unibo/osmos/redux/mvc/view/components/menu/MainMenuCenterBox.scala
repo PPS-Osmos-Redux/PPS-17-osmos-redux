@@ -13,9 +13,9 @@ class MainMenuCenterBox(val listener: MainMenuCenterBoxListener) extends VBox(20
   alignment = Pos.Center
 
   /* Single Player button */
-  val singlePlayerButton = new StyledButton("Single Player")
+  val singlePlayerButton = new StyledButton("Single-Player")
   /* Multiplayer button */
-  val multiplayerButton = new StyledButton("Multiplayer")
+  val multiPlayerButton = new StyledButton("Multi-Player")
   /* Editor button */
   val levelEditorButton = new StyledButton("Level Editor")
   /* Editor button */
@@ -23,10 +23,10 @@ class MainMenuCenterBox(val listener: MainMenuCenterBoxListener) extends VBox(20
   /* Exit button */
   val exitButton = new StyledButton("Exit")
 
-  children = List(singlePlayerButton, multiplayerButton, levelEditorButton, settingsButton, exitButton)
+  children = List(singlePlayerButton, multiPlayerButton, levelEditorButton, settingsButton, exitButton)
 
   singlePlayerButton.onAction = _ => listener.onPlayClick()
-  multiplayerButton.onAction = _ => listener.onMultiPlayerClick()
+  multiPlayerButton.onAction = _ => listener.onMultiPlayerClick()
   levelEditorButton.onAction = _ => listener.onEditorClick()
   settingsButton.onAction = _ => listener.onSettingsClick()
   exitButton.onAction = _ => listener.onExitClick()
