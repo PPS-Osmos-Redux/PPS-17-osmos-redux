@@ -4,7 +4,7 @@ import it.unibo.osmos.redux.ecs.components.EntityType
 import it.unibo.osmos.redux.mvc.model.{MapShape, VictoryRules}
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.components.custom.TitledComboBox
-import it.unibo.osmos.redux.mvc.view.components.editor.{CellEntityBuilder, GravityCellEntityBuilder}
+import it.unibo.osmos.redux.mvc.view.components.editor.{CellEntityBuilder, CircleLevelBuilder, GravityCellEntityBuilder}
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import javafx.collections.ObservableList
 import javafx.scene.paint.ImagePattern
@@ -43,6 +43,9 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     case _ =>
   })
 
+  /** Pane containing the field to configure the circular level */
+  private val circlularLevelBuilder: CircleLevelBuilder = new CircleLevelBuilder
+
   /**
     * Level Type
     */
@@ -60,7 +63,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
 
   /* Pane containing the field to configure the entities*/
   private val cellEntityBuilder: CellEntityBuilder = new CellEntityBuilder
-  /* Pane containing the field to configure the entities*/
+  /* Pane containing the field to configure the gravity entities*/
   private val gravityCellEntityBuilder: GravityCellEntityBuilder = new GravityCellEntityBuilder(isAttractive = true) {
     visible = false
   }
@@ -94,10 +97,18 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   private val levelTypeContainer: VBox = new VBox(10.0) {
 
     /** Right builder seq */
-    private val builderSeq = Seq()
+    private val builderSeq = Seq(circlularLevelBuilder)
 
     private val verticalStackPane = new StackPane() {
       children = builderSeq
+      levelType.onChange({
+        builderSeq.foreach(levelBuilder => levelBuilder.visible = false)
+        levelType.value match {
+          case _: MapShape.Circle => circlularLevelBuilder.visible = true
+          case _: MapShape.Rectangle =>
+          case _ =>
+        }
+      })
     }
 
     children = List(levelTypeBox.root, verticalStackPane)

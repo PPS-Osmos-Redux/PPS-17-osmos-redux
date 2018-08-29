@@ -30,7 +30,7 @@ class CellEntityBuilder extends BaseComponentBuilder[CellEntity] {
   }))
 
   /* Radius node*/
-  val radius: ObjectProperty[Double] = ObjectProperty(150)
+  val radius: ObjectProperty[Double] = ObjectProperty(50)
   private val radiusNode = new HBox(new Label("Radius: "), new TextField() {
     editable = false
     text <== radius.asString()
