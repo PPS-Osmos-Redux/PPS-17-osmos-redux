@@ -9,6 +9,7 @@ import it.unibo.osmos.redux.mvc.view.levels.{GameStateHolder, LevelContext}
   * Controller base trait
   */
 trait Controller {
+  //TODO: choosen level must be a string and i need to know if the level is custom
   def initLevel(levelContext: LevelContext, chosenLevel:Int/*chosenLevel:String*/ ,isSimulation:Boolean/*, isCustomLevel:Boolean*/)
   def startLevel()
   def stopLevel()
@@ -40,6 +41,7 @@ case class ControllerImpl() extends Controller with GameStateHolder {
     if(loadedLevel.isDefined) {
       if (isSimulation) loadedLevel.get.isSimulation = true
       if(engine.isEmpty) engine = Some(GameEngine())
+      //TODO: engine must need a GameStateHolder for the EndGameSystem
       engine.get.init(loadedLevel.get, levelContext/*, this*/)
       levelContext.setupLevel(loadedLevel.get.levelMap.mapShape)
     } else {
@@ -62,9 +64,9 @@ case class ControllerImpl() extends Controller with GameStateHolder {
     * A generic definition of the game state
     *
     * @return a GameStateEventWrapper
-    */
+    *///TODO useless for controller
   override def gameCurrentState: GameStateEventWrapper = ???
-
+  //TODO: need MediaPlayer
   override def getSoundPath(soundType: String): String = ???
 
   /**
