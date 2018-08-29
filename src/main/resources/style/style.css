@@ -11,6 +11,7 @@
   -fx-text-fill: black;
   -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 3, 0.0 , 0 , 1 );
   -fx-font-size: 20px;
+  -fx-pref-width: 200px;
 }
 
 .default-style-button:hover {
