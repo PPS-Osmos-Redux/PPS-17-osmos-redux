@@ -3,6 +3,7 @@ package it.unibo.osmos.redux.mvc.view.scenes
 import it.unibo.osmos.redux.ecs.components.EntityType
 import it.unibo.osmos.redux.ecs.entities.CellEntity
 import it.unibo.osmos.redux.mvc.model.{MapShape, VictoryRules}
+import it.unibo.osmos.redux.mvc.view.ViewConstants
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.components.custom.TitledComboBox
 import it.unibo.osmos.redux.mvc.view.components.editor.{CellEntityBuilder, CircleLevelBuilder, GravityCellEntityBuilder, RectangleLevelBuilder}
@@ -10,7 +11,7 @@ import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import javafx.scene.paint.ImagePattern
 import scalafx.beans.property.ObjectProperty
 import scalafx.geometry.{Insets, Pos}
-import scalafx.scene.control.{Button, TextInputDialog}
+import scalafx.scene.control.{Alert, Button, TextInputDialog}
 import scalafx.scene.image.ImageView
 import scalafx.scene.layout._
 import scalafx.scene.paint.Color
@@ -24,7 +25,7 @@ import scala.collection.mutable.ListBuffer
   * @param parentStage the parent stage
   * @param listener the EditorSceneListener
   */
-class EditorScene (override val parentStage: Stage, val listener: EditorSceneListener) extends BaseScene(parentStage) {
+class EditorScene (override val parentStage: Stage, val listener: EditorSceneListener, val upperListener: UpperLevelSceneListener) extends BaseScene(parentStage) {
 
   /* Entities currently built */
   var builtEntities: ListBuffer[CellEntity] = ListBuffer()
@@ -49,17 +50,17 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
 
   /** Pane containing the field to configure the circular level */
   private val circularLevelBuilder: CircleLevelBuilder = new CircleLevelBuilder {
-    xCenter.value = 800.0
-    yCenter.value = 400.0
-    radius.value = 300.0
+    xCenter.value = ViewConstants.Window.defaultWindowWidth / 2
+    yCenter.value = ViewConstants.Window.defaultWindowHeight / 2
+    radius.value = 400.0
   }
   /** Pane containing the field to configure the rectangular level */
   private val rectangularLevelBuilder: RectangleLevelBuilder = new RectangleLevelBuilder {
     visible = false
-    xCenter.value = 500.0
-    yCenter.value = 200.0
-    levelWidth.value = 600.0
-    levelHeight.value = 400.0
+    levelWidth.value = 800.0
+    levelHeight.value = 600.0
+    xCenter.value = ViewConstants.Window.defaultWindowWidth / 2 - levelWidth.value / 2
+    yCenter.value = ViewConstants.Window.defaultWindowHeight / 2 - levelHeight.value / 2
   }
 
   /**
@@ -74,7 +75,6 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   private var entityType: ObjectProperty[EntityType.Value] = ObjectProperty(EntityType.Matter)
   private val entityComboBox = new TitledComboBox[EntityType.Value]("Entity Type:", EntityType.values.toSeq, et => {
     entityType.value = et
-    println(et)
   })
 
   /* Pane containing the field to configure the entities*/
@@ -87,7 +87,8 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   /** The entity builders */
   private val entityBuilders = Seq(cellEntityBuilder, gravityCellEntityBuilder)
 
-  private val entityTypeContainer: VBox = new VBox(1.0) {
+  /* The entity container*/
+  private val entityContainer: VBox = new VBox(1.0) {
     margin = Insets(10.0)
 
     /** Left builder seq */
@@ -113,6 +114,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     children = List(entityComboBox.root, verticalStackPane)
   }
 
+  /** The level container */
   private val levelTypeContainer: VBox = new VBox(1.0) {
 
     /** Right builder seq */
@@ -136,27 +138,58 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     children = List(levelTypeBox.root, verticalStackPane)
   }
 
+  /** The main container, wrapping the other panes*/
   private val mainContainer: BorderPane = new BorderPane() {
     prefWidth <== parentStage.width
     prefHeight <== parentStage.height
-    left = entityTypeContainer
+    left = entityContainer
     right = new VBox(5.0, victoryRuleBox.root, levelTypeContainer) {
       margin = Insets(10.0)
       padding = Insets(0.0, 10.0, 0.0, 0.0)
     }
-    top = new Button("aaaaaaa") {
-      onAction = _ => {
-        /* We show a confirmation dialog in which we ask for a name */
-        val dialog: TextInputDialog = new TextInputDialog("") {
-          headerText = "Insert your new level name"
+    top = new HBox(20.0, new Button("Save Level") {
+      /** We begin the procedure to save the level */
+      onAction = _ => saveLevel()
+    }, new Button("Exit Level") {
+      /* We go back */
+      onAction = _ => upperListener.onStopLevel()
+    }) {
+      margin = Insets(10.0)
+      alignment = Pos.Center
+    }
+  }
 
+  /** Save level procedure */
+  private def saveLevel(): Unit = {
+    /* We show a confirmation dialog in which we ask for a name */
+    val dialog: TextInputDialog = new TextInputDialog("") {
+      headerText = "Insert your new level name"
+    }
+    val levelName = dialog.showAndWait()
+    levelName match {
+      case Some(name) =>
+        /** Check if the name is empty */
+        if (name isEmpty) {
+          val alert = new Alert(Alert.AlertType.Error) {
+            title = "Error"
+            contentText.value = "The level name cannot be empty"
+          }
+          alert.showAndWait()
+        } else {
+          /** The name is valid, we have to retrieve the elements */
+          /** Level */
+          val level = levelType.value match {
+            case c:MapShape.Circle => circularLevelBuilder.build()
+            case r:MapShape.Rectangle => rectangularLevelBuilder.build()
+          }
+          /** Victory rules */
+          val victoryRules = victoryRule.value
+
+          /* Save the level */
+          //TODO: saveLevel(name: String, level.MapShape.Value, victoryRules: VictoryRules.Value, entities: Seq[CellEntities])
         }
-        val levelName = dialog.showAndWait()
-        levelName match {
-          case Some(name) => println(name)
-          case _ =>
-        }
-      }
+
+      case _ =>
     }
   }
 
@@ -248,8 +281,8 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
 
     /** Insert an entity to the built entities list */
     entityBuilders.filter((b) => b.visible.value).head match {
-      case c: CellEntityBuilder => builtEntities += c.build()
       case gc: GravityCellEntityBuilder => builtEntities += gc.build()
+      case c: CellEntityBuilder => builtEntities += c.build()
       case _ =>
     }
 
@@ -259,6 +292,17 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   val editorElements = ListBuffer(background, mainContainer, entityPlaceholder, currentLevelPlaceholder)
   content = editorElements
 
+}
+
+/**
+  * Trait used by EditorScene to notify an event to the upper scene
+  */
+trait UpperEditorSceneListener {
+
+  /**
+    * Called once when the user quits the editor
+    */
+  def onExitEditor()
 }
 
 /**

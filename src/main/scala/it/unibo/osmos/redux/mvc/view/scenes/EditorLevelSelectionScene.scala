@@ -13,7 +13,7 @@ class EditorLevelSelectionScene(override val parentStage: Stage, override val li
     alignment = Pos.BottomCenter
     alignmentInParent = Pos.BottomCenter
     /* We open the editor */
-    onAction = _ => parentStage.scene = new EditorScene(parentStage, EditorLevelSelectionScene.this)
+    onAction = _ => parentStage.scene = new EditorScene(parentStage, EditorLevelSelectionScene.this, () => parentStage.scene = EditorLevelSelectionScene.this)
   }
 
   container.children.add(newLevelButton)
