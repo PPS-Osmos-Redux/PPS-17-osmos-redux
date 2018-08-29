@@ -3,13 +3,24 @@ package it.unibo.osmos.redux
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager, PlayerCellEntity}
 import it.unibo.osmos.redux.ecs.systems.MovementSystem
-import it.unibo.osmos.redux.utils.Point
+import it.unibo.osmos.redux.utils.{Point, Vector}
+import org.scalactic.Tolerance._
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 class TestMovementSystem extends FunSuite with BeforeAndAfter {
 
   after {
     EntityManager.clear()
+  }
+
+  val TOLERANCE = 0.01
+
+  implicit def toPair(point: Point): (Double, Double) = (point.x, point.y)
+
+  implicit def toPair(vector: Vector): (Double, Double) = (vector.x, vector.y)
+
+  def ===(actual: (Double, Double), expected: (Double, Double)): Boolean = {
+    actual._1 === expected._1 +- TOLERANCE && actual._2 === expected._2 +- TOLERANCE
   }
 
   test("MovableProperty entities' acceleration, speed and position are updated correctly") {
@@ -19,7 +30,7 @@ class TestMovementSystem extends FunSuite with BeforeAndAfter {
     val cc = CollidableComponent(true)
     val cd = DimensionComponent(5)
     val cp = PositionComponent(Point(110, 170))
-    val cs = SpeedComponent(4, 0)
+    val cs = SpeedComponent(2, 0)
     val cv = VisibleComponent(true)
     val ct = TypeComponent(EntityType.Matter)
     val cellEntity = CellEntity(ca, cc, cd, cp, cs, cv, ct)
@@ -39,13 +50,34 @@ class TestMovementSystem extends FunSuite with BeforeAndAfter {
 
     movementSystem.update()
 
-    assert(cellEntity.getSpeedComponent == SpeedComponent(5.0, 1.0))
-    assert(cellEntity.getPositionComponent.point == Point(115.0, 171.0))
-    assert(cellEntity.getAccelerationComponent == AccelerationComponent(0.0, 0.0))
+    assert(cellEntity.getSpeedComponent.vector == Vector(3.0, 1.0))
+    assert(cellEntity.getPositionComponent.point == Point(113.0, 171.0))
+    assert(cellEntity.getAccelerationComponent.vector == Vector(0.0, 0.0))
 
-    assert(playerCellEntity.getSpeedComponent == SpeedComponent(0.0, -1.0))
+    assert(playerCellEntity.getSpeedComponent.vector == Vector(0.0, -1.0))
     assert(playerCellEntity.getPositionComponent.point == Point(130.0, 149.0))
-    assert(playerCellEntity.getAccelerationComponent == AccelerationComponent(0.0, 0.0))
+    assert(playerCellEntity.getAccelerationComponent.vector == Vector(0.0, 0.0))
+  }
+
+  test("MovableProperty entities' speed does not exceed max speed") {
+    val movementSystem = MovementSystem()
+
+    val ca = AccelerationComponent(4, 2)
+    val cc = CollidableComponent(true)
+    val cd = DimensionComponent(5)
+    val cp = PositionComponent(Point(110, 170))
+    val cs = SpeedComponent(2, 2)
+    val cv = VisibleComponent(true)
+    val ct = TypeComponent(EntityType.Matter)
+    val cellEntity = CellEntity(ca, cc, cd, cp, cs, cv, ct)
+
+    EntityManager.add(cellEntity)
+
+    movementSystem.update()
+
+    assert(===(cellEntity.getSpeedComponent.vector, Vector(3.328, 2.218)))
+    assert(===(cellEntity.getPositionComponent.point, Point(113.328, 172.218)))
+    assert(cellEntity.getAccelerationComponent.vector === Vector(0.0, 0.0))
   }
 }
 
