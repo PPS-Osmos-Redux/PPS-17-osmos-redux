@@ -8,25 +8,33 @@ import it.unibo.osmos.redux.mvc.view.events._
 abstract class AbstractLobby[T <: Player](private val lobbyContext: LobbyContext) extends Lobby[T] {
 
   /**
-    * Notify the interface that the game is started passing the context of the level to play.
+    * Notify to lobby context that the game is started passing the context of the level to play.
     * @param levelContext The level context
+    * @param asServer If the game needs to be started as server or not (optional, default false)
     */
-  def startGame(levelContext: MultiPlayerLevelContext): Unit = lobbyContext.notifyLobbyEvent(LobbyEventWrapper(StartGame(levelContext), null))
+  def notifyGameStarted(levelContext: MultiPlayerLevelContext, asServer: Boolean = false): Unit = {
+    if (asServer) lobbyContext.notifyLobbyEvent(LobbyEventWrapper(StartGame(levelContext), None))
+    else lobbyContext.notify(LobbyEventWrapper(StartGame(levelContext), None))
+  }
 
   /**
-    * Notify the interface that the lobby have been closed by the server.
+    * Notify to lobby context that the lobby have been closed.
+    * @param fromServer If the game needs to be started as server or not (optional, default false)
     */
-  def leaveLobby(): Unit = lobbyContext.notifyLobbyEvent(LobbyEventWrapper(AbortLobby, null))
+  def notifyLobbyClosed(fromServer: Boolean = false): Unit = {
+    if (fromServer) lobbyContext.notify(LobbyEventWrapper(AbortLobby, None))
+    else lobbyContext.notifyLobbyEvent(LobbyEventWrapper(AbortLobby, None))
+  }
 
   /**
     * Notify the lobby context that a new user have been added to the lobby.
     * @param user The user
     */
-  def notifyUserAdded(user: User): Unit = lobbyContext.notify(LobbyEventWrapper(UserAdded, user))
+  def notifyUserAdded(user: User): Unit = lobbyContext.notify(LobbyEventWrapper(UserAdded, Some(user)))
 
   /**
     * Notify the lobby context that a user have been removed from the lobby.
     * @param user The user
     */
-  def notifyUserRemoved(user: User): Unit = lobbyContext.notify(LobbyEventWrapper(UserRemoved, user))
+  def notifyUserRemoved(user: User): Unit = lobbyContext.notify(LobbyEventWrapper(UserRemoved, Some(user)))
 }

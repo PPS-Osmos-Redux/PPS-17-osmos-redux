@@ -73,7 +73,7 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
   private val exitLobby = new Button("Exit Lobby") {
     onAction = _ => lobbyContext match {
       /* We notify the lobby observer that we exited the lobby */
-      case Some(lc) => lc notifyLobbyEvent LobbyEventWrapper(AbortLobby, null); upperSceneListener.onLobbyExited()
+      case Some(lc) => lc notifyLobbyEvent LobbyEventWrapper(AbortLobby, Some(user)); upperSceneListener.onLobbyExited()
       case _ =>
     }
   }
@@ -116,7 +116,6 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
   }
 
   override def onLobbyAborted(): Unit = upperSceneListener.onLobbyExited()
-
 }
 
 /**
@@ -125,7 +124,7 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
 trait UpperMultiPlayerLobbySceneListener {
 
   /**
-    * Called when the the user exits from the lobby
+    * Called when the user exits from the lobby
     */
   def onLobbyExited()
 

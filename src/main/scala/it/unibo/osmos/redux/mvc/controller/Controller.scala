@@ -142,14 +142,22 @@ case class ControllerImpl() extends Controller with Observer {
 
     //subscribe to lobby context to intercept exit from lobby click
     lobbyContext.subscribe {
-      case LobbyEventWrapper(AbortLobby, _) =>
-        if (server.nonEmpty) {
-          server.get.closeLobby()
-          server.get.kill()
-        }
-        if (client.nonEmpty) {
-          client.get.leaveLobby()
-          client.get.kill()
+      //if user is defined that the event is from the user and not from the server
+      case LobbyEventWrapper(AbortLobby, Some(_)) =>
+        multiPlayerMode match {
+          case Some(MultiPlayerMode.Server) =>
+            if (server.nonEmpty) {
+              server.get.closeLobby()
+              server.get.kill()
+            }
+            client = None
+          case Some(MultiPlayerMode.Client) =>
+            if (client.nonEmpty) {
+              client.get.leaveLobby()
+              client.get.kill()
+            }
+            server = None
+          case _ => //do not
         }
       case _ => //do not
     }
@@ -185,7 +193,7 @@ case class ControllerImpl() extends Controller with Observer {
             case Success(false) => promise success false
             case Failure(t) => promise failure t
           }
-          case Success(false) => promise success false
+          case Success(false) => promise success false //TODO: show alert
           case Failure(t) => promise failure t
         }
       case _ =>
@@ -219,7 +227,7 @@ case class ControllerImpl() extends Controller with Observer {
 
             //fulfill the promise
             promise success true
-          case Failure(_) => promise failure _
+          case Failure(t) => promise failure t
         }
         //fulfill the promise
         promise success true

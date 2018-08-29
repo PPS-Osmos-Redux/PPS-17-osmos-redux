@@ -1,12 +1,12 @@
 package it.unibo.osmos.redux.multiplayer.server
 
-import akka.actor.ActorRef
-import akka.pattern.{ask, gracefulStop}
+import akka.actor.{ActorRef, PoisonPill}
+import akka.pattern.ask
 import akka.util.Timeout
 import it.unibo.osmos.redux.ecs.entities.{EntityManager, PlayerCellEntity}
 import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
-import it.unibo.osmos.redux.multiplayer.lobby.ServerLobby
-import it.unibo.osmos.redux.multiplayer.players.{BasicPlayer, ReferablePlayer}
+import it.unibo.osmos.redux.multiplayer.lobby.GameLobby
+import it.unibo.osmos.redux.multiplayer.players.{BasePlayer, ReferablePlayer}
 import it.unibo.osmos.redux.multiplayer.server.ServerActor._
 import it.unibo.osmos.redux.mvc.model.Level
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
@@ -16,12 +16,13 @@ import it.unibo.osmos.redux.utils.{InputEventQueue, Logger}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
-import scala.concurrent.{Await, Future, Promise}
+import scala.concurrent.{Future, Promise}
 import scala.util.{Failure, Success}
 
 trait Server {
 
-  implicit val timeout: Timeout = Timeout(5.minutes) //TODO: change to 5 sec
+  type ServerState = ServerState.Value
+  implicit val timeout: Timeout = Timeout(5.seconds) //TODO: change to 5 sec
 
   /**
     * Binds this instance with the input ActorRef.
@@ -119,21 +120,29 @@ trait Server {
     * @param player The player to add.
     * @return True, if the player is added correctly; false if the lobby is full.
     */
-  def addPlayerToLobby(actorRef: ActorRef, player: BasicPlayer): Boolean
+  def addPlayerToLobby(actorRef: ActorRef, player: BasePlayer): Boolean
 }
 
 object Server {
-  def apply(username: String = ""): Server = ServerImpl(username)
+
+  /**
+    * The server username in the lobby.
+    * @param username The username
+    * @return A ServerImpl instance
+    */
+  def apply(username: String): Server = ServerImpl(username)
 
   final case class ServerImpl(private var username: String) extends Server {
 
     implicit val who: String = "Server"
 
+    //current state of the server
+    private var status: ServerState = ServerState.Idle
     //the uuid of the cell entity that represents this client
     private var uuid: String = _
 
     //the current lobby
-    private var lobby: Option[ServerLobby] = None
+    private var lobby: Option[GameLobby[ReferablePlayer]] = None
     //the actor ref used to send and receive
     private var ref: Option[ActorRef] = None
 
@@ -153,20 +162,14 @@ object Server {
       Logger.log("kill")
 
       if (ref.nonEmpty) {
-        //attempt to wait all mailbox messages delivery
-        try {
-          val stopped: Future[Boolean] = gracefulStop(ref.get, 4 seconds)
-          Await.result(stopped, 5 seconds)
-        } catch {
-          case e: Throwable => e.printStackTrace()
-        } finally {
-          ActorSystemHolder.stopActor(ref.get)
-        }
+        ref.get ! PoisonPill
         ref = None
       }
       if (lobby.nonEmpty) {
-        lobby.get.clear()
+        lobby = None
       }
+
+      status = ServerState.Dead
     }
 
     //COMMUNICATION
@@ -174,8 +177,8 @@ object Server {
     override def deliverMessage(username: String, message: Any): Unit = {
       Logger.log("deliverMessage")
 
-      lobby.get.getPlayers.find(_.username == username) match  {
-        case Some(player) => player.actorRef ! message
+      lobby.get.getPlayers.find(_.getUsername == username) match  {
+        case Some(player) => player.getActorRef ! message
         case None => throw new IllegalArgumentException("Cannot deliver message to specific client if the username does not match any player.")
       }
     }
@@ -185,7 +188,7 @@ object Server {
 
       if (ref.isEmpty) throw new IllegalStateException("Unable to broadcast the message, server is not bind to an actor.")
       val usernameToExclude = clientsToExclude :+ this.username
-      val actors = lobby.get.getPlayers.filterNot(p => usernameToExclude contains p.username).map(_.actorRef)
+      val actors = lobby.get.getPlayers.filterNot(p => usernameToExclude contains p.getUsername).map(_.getActorRef)
       actors.foreach(a => a ! message)
     }
 
@@ -200,7 +203,7 @@ object Server {
       val futures = assignCellsToPlayers(level)
       Future.sequence(futures) onComplete {
         case Success(_) => promise success true
-        case Failure(_) => promise failure _
+        case Failure(t) => promise failure t
       }
       promise
     }
@@ -208,7 +211,8 @@ object Server {
     override def startGame(levelContext: MultiPlayerLevelContext): Unit = {
       Logger.log("startGame")
 
-      lobby.get.startGame(levelContext)
+      lobby.get.notifyGameStarted(levelContext, asServer = true)
+      status = ServerState.Game
     }
 
     override def stopGame(): Unit = {
@@ -232,7 +236,7 @@ object Server {
       if (player.isEmpty) throw new IllegalArgumentException("Cannot remove player from game because it was not found.")
 
       //notify player that he has lost
-      if (notify) player.get.actorRef ! GameEnded(false)
+      if (notify) player.get.getActorRef ! GameEnded(false)
 
       val playerEntity = EntityManager.filterEntities(classOf[PlayerCellEntity]).find(_.getUUID == player.get.getUUID)
       if (player.isEmpty) throw new IllegalArgumentException("Cannot remove player cell from game because it was not found.")
@@ -246,30 +250,32 @@ object Server {
     override def createLobby(lobbyContext: LobbyContext): Unit = {
       Logger.log("createLobby")
 
-      lobby = Some(ServerLobby(lobbyContext))
+      if (lobby.nonEmpty) throw new IllegalStateException("Server does not have an active lobby, unable to close it.")
+      if (status != ServerState.Idle) throw new IllegalStateException(s"Server cannot close lobby because it's in the state: $status")
+
+      lobby = Some(GameLobby(lobbyContext))
       val address = ActorSystemHolder.systemAddress
       //add the server itself
-      val serverPlayer = BasicPlayer(username, address.host.getOrElse("0.0.0.0"), address.port.getOrElse(0))
+      val serverPlayer = BasePlayer(username, address.host.getOrElse("0.0.0.0"), address.port.getOrElse(0))
       //let interface to show immediately the server player
       lobbyContext.users = Seq(new User(serverPlayer, true))
       //add himself to the lobby
       lobby.get.addPlayer(new ReferablePlayer(serverPlayer, ref.get))
+
+      status = ServerState.Lobby
     }
 
     override def closeLobby(): Unit = {
-      Logger.log("createLobby")
+      Logger.log("closeLobby")
+
+      if (lobby.isEmpty) throw new IllegalStateException("Server does not have an active lobby, unable to close it.")
+      if (status != ServerState.Lobby) throw new IllegalStateException(s"Server cannot close lobby because it's in the state: $status")
 
       broadcastMessage(LobbyClosed)
+      lobby.get.notifyLobbyClosed() //signal interface to change scene
       lobby = None
-    }
 
-    def broadcastWithReply(message: Any, clientsToExclude: String*): Seq[Future[Any]] = {
-      Logger.log("broadcastWithReply")
-
-      if (ref.isEmpty) throw new IllegalStateException("Unable to broadcast the message, server is not bind to an actor.")
-      val usernameToExclude = clientsToExclude :+ this.username
-      val actors = lobby.get.getPlayers.filterNot(p => usernameToExclude contains p.username).map(_.actorRef)
-      actors.map(a => a ? message)
+      status = ServerState.Idle
     }
 
     override def getLobbyPlayers: Seq[ReferablePlayer] = {
@@ -278,22 +284,32 @@ object Server {
       lobby.get.getPlayers
     }
 
-    override def addPlayerToLobby(actorRef: ActorRef, player: BasicPlayer): Boolean = {
-      Logger.log("addPlayerToLobby")
+    override def addPlayerToLobby(actorRef: ActorRef, player: BasePlayer): Boolean = {
+      Logger.log(s"addPlayerToLobby -> ${player.getUsername}, $actorRef")
 
-      if (!lobby.get.isFull) {
-        val newPlayer = ReferablePlayer(player.username, player.address, player.port, actorRef)
-        broadcastMessage(PlayerEnteredLobby(newPlayer.toBasicPlayer))
-        lobby.get.addPlayer(newPlayer)
-        true
-      } else false
+      status match {
+        case ServerState.Lobby =>
+          if (!lobby.get.isFull) {
+            val newPlayer = new ReferablePlayer(player.getUsername, player.getAddress, player.getPort, actorRef)
+            broadcastMessage(PlayerEnteredLobby(newPlayer.toBasicPlayer))
+            lobby.get.addPlayer(newPlayer)
+            true
+          } else false
+        case _ =>
+          Logger.log(s"Unable to add player to lobby because the server status is $status")
+          false
+      }
     }
 
     override def removePlayerFromLobby(username: String): Unit = {
       Logger.log("removePlayerFromLobby")
 
-      lobby.get.removePlayer(username)
-      broadcastMessage(PlayerLeftLobby(username))
+      status match {
+        case ServerState.Lobby =>
+          lobby.get.removePlayer(username)
+          broadcastMessage(PlayerLeftLobby(username))
+        case _ =>
+      }
     }
 
     //HELPER METHODS
@@ -302,7 +318,7 @@ object Server {
       Logger.log("assignCellsToPlayers")
 
       val availablePlayerCells = level.entities.filter(_.isInstanceOf[PlayerCellEntity]).map(p => Some(p.getUUID))
-      val otherPlayers = lobby.get.getPlayers.filterNot(_.username == this.username)
+      val otherPlayers = lobby.get.getPlayers.filterNot(_.getUsername == this.username)
 
       if (availablePlayerCells.size <= 0) throw new IllegalStateException()
 
@@ -310,7 +326,7 @@ object Server {
       this.uuid = availablePlayerCells.head.get
 
       otherPlayers.zipAll(availablePlayerCells.tail, null, None).map {
-        case (p, Some(id)) =>  p.setUUID(id); p.actorRef ? GameStarted(id)
+        case (p, Some(id)) =>  p.setUUID(id); p.getActorRef ? GameStarted(id)
         case (_, None) => throw new IllegalStateException("Not enough player cells for all the clients")
       }
     }
@@ -318,7 +334,7 @@ object Server {
     private def getPlayerFromLobby(username: String): Option[ReferablePlayer] = {
       Logger.log("getPlayerFromLobby")
 
-      lobby.get.getPlayers.find(_.username == username)
+      lobby.get.getPlayers.find(_.getUsername == username)
     }
   }
 }

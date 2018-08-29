@@ -1,12 +1,13 @@
 package it.unibo.osmos.redux.multiplayer.client
 
-import akka.actor.ActorRef
+import akka.actor.{ActorRef, PoisonPill}
 import akka.pattern.ask
 import akka.util.Timeout
+import it.unibo.osmos.redux.multiplayer.client.ClientActor.LeaveLobby
 import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
-import it.unibo.osmos.redux.multiplayer.lobby.ClientLobby
-import it.unibo.osmos.redux.multiplayer.players.BasicPlayer
-import it.unibo.osmos.redux.multiplayer.server.ServerActor
+import it.unibo.osmos.redux.multiplayer.lobby.GameLobby
+import it.unibo.osmos.redux.multiplayer.players.BasePlayer
+import it.unibo.osmos.redux.multiplayer.server.ServerActor._
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, MultiPlayerLevelContext}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity
@@ -81,7 +82,7 @@ trait Client {
     * Gets the lobby players.
     * @return All players in the lobby.
     */
-  def getLobbyPlayers: Seq[BasicPlayer]
+  def getLobbyPlayers: Seq[BasePlayer]
 
   /**
     * Removes a player from the lobby.
@@ -93,12 +94,13 @@ trait Client {
     * Adds a player to the lobby.
     * @param player The player to add.
     */
-  def addPlayerToLobby(player: BasicPlayer): Unit
+  def addPlayerToLobby(player: BasePlayer): Unit
 
   /**
-    * Clears the lobby.
+    * Closes the lobby.
+    * @param fromServer If the close request comes from the server or not.
     */
-  def clearLobby(): Unit
+  def closeLobby(fromServer: Boolean = false): Unit
 
   /**
     * Forwards player into to the server.
@@ -126,13 +128,15 @@ object Client {
 
     implicit val who: String = "Client"
 
+    //temp id useful for handshaking
+    private var tempID: String = _
     //the username of this specific client
     private var username: String = _
     //the uuid of the cell entity that represents this client
     private var uuid: String = _
 
     //the current lobby
-    private var lobby: Option[ClientLobby] = None
+    private var lobby: Option[GameLobby[BasePlayer]] = None
     //the server actor
     private var server: Option[ActorRef] = None
     //the client actor
@@ -150,20 +154,21 @@ object Client {
     }
 
     override def connect(address: String, port: Int): Promise[Boolean] = {
-      Logger.log("connect")
+      Logger.log(s"connect --> $address:$port")
 
       val promise = Promise[Boolean]()
       resolveRemotePath(generateRemoteActorPath(address, port)) onComplete {
         case Success(serverRef) =>
           server = Some(serverRef)
-          serverRef ? ClientActor.Connect onComplete {
-            case Success(response) => response match {
-              case ServerActor.Established => promise success true
-              case _ => promise success false
-            }
-            case Failure(_) => promise failure _
+          Logger.log(s"Server found --> ${server.get.path}")
+          serverRef ? ClientActor.Connect(ref.get) onComplete {
+            case Success(Connected(id)) =>
+              Logger.log(s"Received tempID --> $id")
+              this.tempID = id; promise success true
+            case Success(_) => promise success false
+            case Failure(t) => kill(); promise failure t
           }
-        case Failure(_) => promise failure _
+        case Failure(t) => kill(); promise failure t
       }
       promise
     }
@@ -175,17 +180,19 @@ object Client {
     override def kill(): Unit = {
       Logger.log("kill")
 
+      if (ref.nonEmpty) {
+        ref.get ! PoisonPill
+        ref = None
+      }
       if (levelContext.nonEmpty) {
         levelContext = None
-      }
-      if (ref.nonEmpty) {
-        ActorSystemHolder.stopActor(ref.get)
-        ref = None
       }
       if (server.nonEmpty) {
         server = None
       }
-      clearLobby()
+      if (lobby.nonEmpty) {
+        lobby = None
+      }
     }
 
     //GAME MANAGEMENT
@@ -226,24 +233,24 @@ object Client {
       Logger.log("enterLobby")
 
       if (lobby.nonEmpty) throw new IllegalStateException("Unable to enter lobby if the client is already entered in another one")
+      if (tempID.isEmpty) throw new IllegalStateException("Unable to enter lobby if the client hasn't yet received the temp id from the server")
+
       //Save username locally
       this.username = username
 
       val promise = Promise[Boolean]()
-      server.get ? ClientActor.EnterLobby(username) onComplete {
-        case Success(result) => result match {
-          case ServerActor.LobbyInfo(players) =>
-            lobby = Some(ClientLobby(lobbyContext))
-            lobby.get.addPlayers(players: _*)
-            //because the interface is not ready yet, set users list into lobby context
-            lobbyContext.users = players.map(p => new User(p, false))
-            //fulfill promise
-            promise success true
-          case ServerActor.UsernameAlreadyTaken | ServerActor.LobbyFull =>
-            //fulfill promise reporting an error
-            promise success false
-        }
-        case Failure(t) => promise failure t
+      server.get ? ClientActor.EnterLobby(tempID, username) onComplete {
+        case Success(LobbyInfo(players)) =>
+          lobby = Some(GameLobby(lobbyContext))
+          lobby.get.addPlayers(players: _*)
+          //because the interface is not ready yet, set users list into lobby context
+          lobbyContext.users = players.map(p => new User(p, false))
+          //fulfill promise
+          promise success true
+        case Success(Disconnected) | Success(UsernameAlreadyTaken) | Success(LobbyFull) => kill(); promise success false
+        case Success(unknown) =>
+          kill(); promise failure new IllegalArgumentException(s"Server unexpected replied to enterLobby with unknown message: $unknown")
+        case Failure(t) => kill(); promise failure t
       }
       promise
     }
@@ -253,17 +260,17 @@ object Client {
 
       if (username.isEmpty) throw new IllegalStateException("The player entered no lobby, unable to leave.")
 
-      server.get.tell(ClientActor.LeaveLobby(username), ref.get)
-      clearLobby()
+      server.get ! LeaveLobby(username)
+      closeLobby()
     }
 
-    override def getLobbyPlayers: Seq[BasicPlayer] = {
+    override def getLobbyPlayers: Seq[BasePlayer] = {
       Logger.log("getLobbyPlayers")
 
       lobby.get.getPlayers
     }
 
-    override def addPlayerToLobby(player: BasicPlayer): Unit = {
+    override def addPlayerToLobby(player: BasePlayer): Unit = {
       Logger.log("addPlayerToLobby")
 
       lobby.get.addPlayer(player)
@@ -275,11 +282,11 @@ object Client {
       lobby.get.removePlayer(username)
     }
 
-    override def clearLobby(): Unit = {
+    override def closeLobby(byServer: Boolean = false): Unit = {
       Logger.log("clearLobby")
 
       if (lobby.nonEmpty) {
-        lobby.get.clear()
+        lobby.get.notifyLobbyClosed(byServer)
         lobby = None
       }
     }
@@ -291,8 +298,8 @@ object Client {
 
       status match {
         case GamePending =>
-          //notify lobby that the game is started
-          lobby.get.startGame(levelContext.get)
+          //notify lobby that the game is started (prepares the view)
+          lobby.get.notifyGameStarted(levelContext.get)
         case gameState =>
           //game is won or lost
           levelContext.get.notify(gameState)

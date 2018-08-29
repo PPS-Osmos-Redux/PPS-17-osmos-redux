@@ -50,15 +50,15 @@ object LobbyContext {
     //TODO: call the listener
     override def notify(event: LobbyEventWrapper): Unit = listener match {
       case Some(l) =>
-        event.lobbyEvent match {
+        event match {
           /* A user entered the lobby */
-          case UserAdded => if (!users.contains(event.user)) users = users :+ event.user; l.updateUsers(users)
+          case LobbyEventWrapper(UserAdded, Some(user)) => if (!users.contains(user)) users = users :+ user; l.updateUsers(users)
           /* A user exited from the lobby */
-          case UserRemoved => if (users.contains(event.user)) users = users filterNot(u => u.username == event.user.username); l.updateUsers(users)
+          case LobbyEventWrapper(UserRemoved, Some(user)) => if (users.contains(user)) users = users filterNot(u => u.username == user.username); l.updateUsers(users)
           /* The game has started, we can create a new MultiPlayerLevelScene */
-          case StartGame(multiPlayerLevelContext) => l.onMultiPlayerGameStarted(multiPlayerLevelContext)
+          case LobbyEventWrapper(StartGame(multiPlayerLevelContext), _) => l.onMultiPlayerGameStarted(multiPlayerLevelContext)
           /* The lobby has been aborted, we have to go back */
-          case AbortLobby => l.onLobbyAborted()
+          case LobbyEventWrapper(AbortLobby, _) => l.onLobbyAborted()
           case _ =>
         }
       case _ =>
