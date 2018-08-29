@@ -30,8 +30,9 @@ class TitledDoubleField(override val title: StringProperty, private val value: D
     editable = true
     prefWidth <== maxWidth
     textFormatter = new TextFormatter[Double](new DoubleStringConverter(), 0, { c: Change => {
+      println(c)
       val input = c.getText
-      val isNumber = input.matches("\\d+[.d+]?")
+      val isNumber = input.matches("^[0-9]+(\\.[0-9]+)?$")
       if (!isNumber) c.setText("")
       if (isNumber && (maxValue < c.getControlNewText.toDouble || minValue > c.getControlNewText.toDouble)) c.setText("")
       c

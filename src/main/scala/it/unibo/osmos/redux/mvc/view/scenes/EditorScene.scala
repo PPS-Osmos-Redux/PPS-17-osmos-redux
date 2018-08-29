@@ -4,19 +4,18 @@ import it.unibo.osmos.redux.ecs.components.EntityType
 import it.unibo.osmos.redux.mvc.model.{MapShape, VictoryRules}
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.components.custom.TitledComboBox
-import it.unibo.osmos.redux.mvc.view.components.editor.{CellEntityBuilder, CircleLevelBuilder, GravityCellEntityBuilder}
+import it.unibo.osmos.redux.mvc.view.components.editor.{CellEntityBuilder, CircleLevelBuilder, GravityCellEntityBuilder, RectangleLevelBuilder}
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
-import javafx.collections.ObservableList
 import javafx.scene.paint.ImagePattern
-import scalafx.application.Platform
 import scalafx.beans.property.ObjectProperty
-import scalafx.geometry.Pos
 import scalafx.scene.image.ImageView
 import scalafx.scene.layout._
-import scalafx.scene.shape.{Circle, Shape}
+import scalafx.scene.paint.Color
+import scalafx.scene.shape.{Circle, Rectangle, Shape}
 import scalafx.stage.Stage
 
 import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 
 /**
   * A scene representing a level editor
@@ -36,7 +35,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   /**
     * Level Type
     */
-  private var levelType: ObjectProperty[MapShape] = ObjectProperty(MapShape.Rectangle((400, 400), 400, 400))
+  private var levelType: ObjectProperty[MapShape] = ObjectProperty(MapShape.Circle((400, 400), 400))
   private val levelTypeBox = new TitledComboBox[String]("Level Type:", Seq(MapShape.circle, MapShape.rectangle),{
     case MapShape.circle => levelType.value_=(MapShape.Circle((400, 400), 400))
     case MapShape.rectangle => levelType.value_=(MapShape.Rectangle((400, 400), 400, 400))
@@ -44,7 +43,19 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   })
 
   /** Pane containing the field to configure the circular level */
-  private val circlularLevelBuilder: CircleLevelBuilder = new CircleLevelBuilder
+  private val circularLevelBuilder: CircleLevelBuilder = new CircleLevelBuilder {
+    xCenter.value = 800.0
+    yCenter.value = 400.0
+    radius.value = 300.0
+  }
+  /** Pane containing the field to configure the rectangular level */
+  private val rectangularLevelBuilder: RectangleLevelBuilder = new RectangleLevelBuilder {
+    visible = false
+    xCenter.value = 500.0
+    yCenter.value = 200.0
+    levelWidth.value = 600.0
+    levelHeight.value = 400.0
+  }
 
   /**
     * Level Type
@@ -69,7 +80,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   }
 
 
-  private val entityTypeContainer: VBox = new VBox(5.0) {
+  private val entityTypeContainer: VBox = new VBox(1.0) {
 
     /** Left builder seq */
     private val builderSeq = Seq(cellEntityBuilder, gravityCellEntityBuilder)
@@ -94,27 +105,30 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     children = List(entityComboBox.root, verticalStackPane)
   }
 
-  private val levelTypeContainer: VBox = new VBox(10.0) {
+  private val levelTypeContainer: VBox = new VBox(1.0) {
 
     /** Right builder seq */
-    private val builderSeq = Seq(circlularLevelBuilder)
+    private val builderSeq = Seq(circularLevelBuilder, rectangularLevelBuilder)
 
     private val verticalStackPane = new StackPane() {
       children = builderSeq
       levelType.onChange({
         builderSeq.foreach(levelBuilder => levelBuilder.visible = false)
+        editorElements -= currentLevelPlaceholder
         levelType.value match {
-          case _: MapShape.Circle => circlularLevelBuilder.visible = true
-          case _: MapShape.Rectangle =>
+          case _: MapShape.Circle => circularLevelBuilder.visible = true; currentLevelPlaceholder = circularLevelPlaceholder
+          case _: MapShape.Rectangle => rectangularLevelBuilder.visible = true; currentLevelPlaceholder = rectangularLevelPlaceholder
           case _ =>
         }
+        editorElements += currentLevelPlaceholder
+        EditorScene.this.content = editorElements
       })
     }
 
     children = List(levelTypeBox.root, verticalStackPane)
   }
 
-  private val mainContainer: VBox = new VBox(10.0) {
+  private val mainContainer: VBox = new VBox(2.0) {
     children = Seq(victoryRuleBox.root, levelTypeContainer, entityTypeContainer)
   }
 
@@ -144,7 +158,39 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   }
 
   /**
-    * The currently visible placeholder, which may be an entity or a level shape
+    * The placeholder which models the circular level
+    */
+  val circularLevelPlaceholder: Circle = new Circle() {
+    centerX <== circularLevelBuilder.xCenter
+    centerY <== circularLevelBuilder.yCenter
+    radius <== circularLevelBuilder.radius
+    stroke = Color.White
+    strokeWidth = 2.0
+    fill = Color.Transparent
+    mouseTransparent = true
+  }
+
+  /**
+    * The placeholder which models the rectangular level
+    */
+  val rectangularLevelPlaceholder: Rectangle = new Rectangle() {
+    x <== rectangularLevelBuilder.xCenter
+    y <== rectangularLevelBuilder.yCenter
+    width <== rectangularLevelBuilder.levelWidth
+    height <== rectangularLevelBuilder.levelHeight
+    stroke = Color.White
+    strokeWidth = 2.0
+    fill = Color.Transparent
+    mouseTransparent = true
+  }
+
+  /**
+    * The currently visible level placeholder
+    */
+  var currentLevelPlaceholder: Shape = circularLevelPlaceholder
+
+  /**
+    * The currently visible entity placeholder
     */
   var currentPlaceholder: Shape = entityPlaceholder
 
@@ -166,30 +212,30 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
       }
       case _ =>
     }
-
   }
 
   /**
     * On mouse clicked, we parse the placeholder values and created a new element
     */
   onMouseClicked = _ => {
-    currentPlaceholder match {
-      case c:Circle => {
-        editorElements += new Circle {
-          fill.value_=(c.fill.value)
-          centerX = c.centerX.value
-          centerY = c.centerY.value
-          radius = c.radius.value
-          effect.value_=(c.effect.value)
-        }
-      }
-      case _ =>
-    }
+    if (currentPlaceholder.visible.value) {
+      currentPlaceholder match {
+        case c:Circle =>
+          editorElements += new Circle {
+            fill.value_=(c.fill.value)
+            centerX = c.centerX.value
+            centerY = c.centerY.value
+            radius = c.radius.value
+            effect.value_=(c.effect.value)
 
-    content = editorElements
+          }
+        case _ =>
+      }
+      content = editorElements
+    }
   }
 
-  val editorElements = mutable.MutableList(background, mainContainer, currentPlaceholder)
+  val editorElements = ListBuffer(background, mainContainer, currentPlaceholder, currentLevelPlaceholder)
   content = editorElements
 }
 
