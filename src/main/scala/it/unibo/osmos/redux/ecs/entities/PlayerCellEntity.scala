@@ -5,7 +5,7 @@ import java.util.UUID
 import it.unibo.osmos.redux.ecs.components._
 
 /** Trait representing a CellEntity controllable by the player */
-trait PlayerCellEntity extends CellEntity with InputProperty with Spawner with SentientTargetProperty {}
+trait PlayerCellEntity extends CellEntity with InputProperty with Spawner {}
 
 object PlayerCellEntity {
   def apply(acceleration: AccelerationComponent,
