@@ -35,14 +35,14 @@ object VictoryRules extends Enumeration {
 /**
   * Map shape data structure
   */
+object MapShapeType extends Enumeration {
+  val Rectangle, Circle = Value
+}
 sealed trait MapShape {
-  val mapShape:String
+  val mapShape:MapShapeType.Value
   val center:(Double,Double)
 }
 object MapShape {
-  val rectangle:String = "RECTANGLE"
-  val circle:String = "CIRCLE"
-
   /**
     * Rectangular level map
     * @param center center of map
@@ -51,7 +51,7 @@ object MapShape {
     */
   case class Rectangle(override val center: (Double, Double), height:Double, base:Double)
                                                                           extends MapShape {
-    override val mapShape: String = MapShape.rectangle
+    override val mapShape: MapShapeType.Value = MapShapeType.Rectangle
   }
 
   /**
@@ -60,7 +60,7 @@ object MapShape {
     * @param radius circle radius
     */
   case class Circle(override val center: (Double, Double), radius:Double) extends MapShape {
-    override val mapShape: String = MapShape.circle
+    override val mapShape: MapShapeType.Value = MapShapeType.Circle
   }
 }
 
