@@ -4,7 +4,7 @@ import it.unibo.osmos.redux.mvc.view.components.menu.{MainMenuBar, MainMenuBarLi
 import it.unibo.osmos.redux.mvc.view.context.LevelContext
 import it.unibo.osmos.redux.mvc.view.stages.PrimaryStageListener
 import scalafx.geometry.Pos
-import scalafx.scene.control.{Button, CheckBox}
+import scalafx.scene.control.CheckBox
 import scalafx.scene.layout.VBox
 import scalafx.stage.Stage
 

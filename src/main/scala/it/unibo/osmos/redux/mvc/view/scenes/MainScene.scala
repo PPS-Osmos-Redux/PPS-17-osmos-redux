@@ -4,7 +4,7 @@ import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.mvc.view.components.menu.{MainMenuBar, MainMenuBarListener, MainMenuCenterBox, MainMenuCenterBoxListener}
 import it.unibo.osmos.redux.mvc.view.containers.SettingsContainer
 import scalafx.scene.Parent
-import scalafx.scene.layout.BorderPane
+import scalafx.scene.layout._
 import scalafx.stage.Stage
 
 /**
@@ -19,7 +19,7 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
     top = new MainMenuBar(MainScene.this)
     center = new MainMenuCenterBox(MainScene.this)
   }
-
+  //rootLayout.getStyleClass.add("root")
   /* Enabling the layout */
   root = rootLayout
 

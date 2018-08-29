@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.multiplayer.common.NetworkUtils
-import it.unibo.osmos.redux.mvc.view.components.custom.{TitledComboBox, TitledNumericField, TitledTextField}
+import it.unibo.osmos.redux.mvc.view.components.custom.{StyledButton, TitledComboBox, TitledNumericField, TitledTextField}
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.LobbyContext
 import scalafx.application.Platform
@@ -76,7 +76,7 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
     })
   }
 
-  private val goToLobby = new Button("Go to lobby") {
+  private val goToLobby = new StyledButton("Go to lobby") {
     onAction = _ => {
       /* We create the User */
       val user = User(username.value, addressValue.value, portValue.value, isServer = mode.value)
