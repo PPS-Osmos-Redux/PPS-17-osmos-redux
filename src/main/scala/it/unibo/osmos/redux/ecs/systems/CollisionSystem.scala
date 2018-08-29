@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.ecs.systems
 import it.unibo.osmos.redux.ecs.entities.{CollidableProperty, EntityType}
 import it.unibo.osmos.redux.mvc.model.Level
 import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
-import it.unibo.osmos.redux.utils.{MathUtils, Point}
+import it.unibo.osmos.redux.utils.{MathUtils, Point, Vector}
 
 case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidableProperty] {
 
@@ -13,6 +13,8 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
   private val decelerationAmount = 0.1
   //constant that define the initial acceleration of a steady entity when a collision occurs
   private val initialAcceleration = 0.001
+
+  private val initialAccelerationVector = Vector(initialAcceleration, initialAcceleration)
 
   private val collisionRule = levelInfo.levelMap.collisionRule
   private val bounceRule = levelInfo.levelMap.mapShape match {
@@ -126,11 +128,12 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
 
     //gain acceleration even if the entity is still
     if (accel.vector.x == 0) {
-      entity.getAccelerationComponent.vector.x_(initialAcceleration * percentage)
-      entity.getAccelerationComponent.vector.y_(initialAcceleration * percentage)
+      entity.getAccelerationComponent.vector_(initialAccelerationVector.multiply(percentage))
     } else {
-      entity.getAccelerationComponent.vector.x_(accel.vector.x - accel.vector.x * percentage)
-      entity.getAccelerationComponent.vector.y_(accel.vector.y - accel.vector.y * percentage)
+      val temp = accel.vector.multiply(percentage)
+      entity.getAccelerationComponent.vector_(accel.vector.subtract(temp))
+      //entity.getAccelerationComponent.vector.x_(accel.vector.x - accel.vector.x * percentage)
+      //entity.getAccelerationComponent.vector.y_(accel.vector.y - accel.vector.y * percentage)
     }
   }
 }

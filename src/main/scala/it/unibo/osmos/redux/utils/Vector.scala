@@ -15,18 +15,6 @@ trait Vector {
     */
   def y: Double
 
-  /** Setter for the vector x component
-    *
-    * @param newX new x component
-    */
-  def x_(newX: Double): Unit
-
-  /** Setter for the vector y component
-    *
-    * @param newY new y component
-    */
-  def y_(newY: Double): Unit
-
   /** Vector addition. Leaves this vector unchanged.
     *
     * @param v vector to add
@@ -69,24 +57,24 @@ trait Vector {
     */
   def divide(v: Double): Vector = Vector(x / v, y / v)
 
-  /** TODO
+  /** Gets the module of the vector applying parallelogram law
     *
-    * @return
+    * @return module of this vector
     */
   def getLength: Double = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))
 
-  /** TODO
+  /** Scales this vector module with the desired one
     *
-    * @param newLength
-    * @return
+    * @param newLength new length of the module
+    * @return a new vector with the specified module
     */
   def getNewLength(newLength: Double): Vector = {
     val temp = newLength / getLength
     Vector(x * temp, y * temp)
   }
 
-  /**
-    * Limit the vector's length
+  /** Limits the vector's length
+    *
     * @param maxLength max length of the vector
     * @return the limited vector
     */
@@ -94,7 +82,7 @@ trait Vector {
     if (getLength > maxLength) {
       getNewLength(maxLength)
     } else {
-      Vector(x,y)
+      Vector(x, y)
     }
   }
 
@@ -112,7 +100,7 @@ trait Vector {
   def normalized(): Vector = {
     val length = getLength
     if (length != 0) {
-      Vector(x / length, y / length)
+      this.divide(length)
     } else {
       Vector(x, y)
     }
@@ -122,17 +110,13 @@ trait Vector {
 object Vector {
   def apply(x: Double, y: Double): Vector = VectorImpl(x, y)
 
-  def zero(): Vector = VectorImpl(0,0)
+  def zero(): Vector = VectorImpl(0, 0)
 
   private case class VectorImpl(var _x: Double, var _y: Double) extends Vector {
 
     override def x: Double = _x
 
     override def y: Double = _y
-
-    override def x_(newX: Double): Unit = _x = newX
-
-    override def y_(newY: Double): Unit = _y = newY
   }
 
 }
