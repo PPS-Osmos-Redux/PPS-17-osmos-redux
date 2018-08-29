@@ -8,13 +8,14 @@ import it.unibo.osmos.redux.mvc.view.components.editor.{CellEntityBuilder, Circl
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import javafx.scene.paint.ImagePattern
 import scalafx.beans.property.ObjectProperty
+import scalafx.geometry.Pos
+import scalafx.scene.control.Button
 import scalafx.scene.image.ImageView
 import scalafx.scene.layout._
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.{Circle, Rectangle, Shape}
 import scalafx.stage.Stage
 
-import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 /**
@@ -192,51 +193,40 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   /**
     * The currently visible entity placeholder
     */
-  var currentPlaceholder: Shape = entityPlaceholder
+  var currentEntityPlaceholder: Circle = entityPlaceholder
 
   /* On control key pressed we hide the placeholder to let the user insert values in the panes */
   onKeyPressed = key => {
-    currentPlaceholder.visible = key.isControlDown
+    currentEntityPlaceholder.visible = key.isControlDown
   }
 
   /**
     * On mouse moved, we update the builder
     */
   onMouseMoved = e => {
-    currentPlaceholder match {
-      case c:Circle => {
-        c.centerX.value = e.getX
-        c.centerY.value = e.getY
-        cellEntityBuilder.x.value = e.getX
-        cellEntityBuilder.y.value = e.getY
-      }
-      case _ =>
-    }
+    currentEntityPlaceholder.centerX.value = e.getX
+    currentEntityPlaceholder.centerY.value = e.getY
+    cellEntityBuilder.x.value = e.getX
+    cellEntityBuilder.y.value = e.getY
   }
 
   /**
     * On mouse clicked, we parse the placeholder values and created a new element
     */
-  onMouseClicked = _ => {
-    if (currentPlaceholder.visible.value) {
-      currentPlaceholder match {
-        case c:Circle =>
-          editorElements += new Circle {
-            fill.value_=(c.fill.value)
-            centerX = c.centerX.value
-            centerY = c.centerY.value
-            radius = c.radius.value
-            effect.value_=(c.effect.value)
-
-          }
-        case _ =>
-      }
+  onMouseClicked = _ => if (currentEntityPlaceholder.visible.value) {
+    editorElements += new Circle {
+      fill.value_=(currentEntityPlaceholder.fill.value)
+      centerX = currentEntityPlaceholder.centerX.value
+      centerY = currentEntityPlaceholder.centerY.value
+      radius = currentEntityPlaceholder.radius.value
+      effect.value_=(currentEntityPlaceholder.effect.value)
       content = editorElements
     }
   }
 
-  val editorElements = ListBuffer(background, mainContainer, currentPlaceholder, currentLevelPlaceholder)
+  val editorElements = ListBuffer(background, mainContainer, currentEntityPlaceholder, currentLevelPlaceholder)
   content = editorElements
+
 }
 
 /**
