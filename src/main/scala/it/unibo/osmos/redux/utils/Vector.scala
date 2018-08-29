@@ -15,18 +15,6 @@ trait Vector {
     */
   def y: Double
 
-  /** Setter for the vector x component
-    *
-    * @param newX new x component
-    */
-  def x_(newX: Double): Unit
-
-  /** Setter for the vector y component
-    *
-    * @param newY new y component
-    */
-  def y_(newY: Double): Unit
-
   /** Vector addition. Leaves this vector unchanged.
     *
     * @param v vector to add
@@ -129,10 +117,6 @@ object Vector {
     override def x: Double = _x
 
     override def y: Double = _y
-
-    override def x_(newX: Double): Unit = _x = newX
-
-    override def y_(newY: Double): Unit = _y = newY
   }
 
 }
