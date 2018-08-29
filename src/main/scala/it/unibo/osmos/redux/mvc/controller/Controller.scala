@@ -1,5 +1,6 @@
 package it.unibo.osmos.redux.mvc.controller
 import it.unibo.osmos.redux.ecs.engine.GameEngine
+import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.LevelInfo
 import it.unibo.osmos.redux.mvc.model.{Level, MultiPlayerLevels, SinglePlayerLevels}
 import it.unibo.osmos.redux.mvc.view.events._
 import it.unibo.osmos.redux.mvc.view.levels.{GameStateHolder, LevelContext}
@@ -22,7 +23,7 @@ trait Controller {
   def pauseLevel()
   def resumeLevel()
   def saveNewCustomLevel(customLevel:Level):Boolean
-  def getSinglePlayerLevels:List[(String,Boolean)] = SinglePlayerLevels.getLevels
+  def getSinglePlayerLevels:List[LevelInfo] = SinglePlayerLevels.getLevels
   def getMultiPlayerLevels:List[String] = MultiPlayerLevels.getLevels
   def getCustomLevels:List[String] = FileManager.customLevelsFilesName
 }
