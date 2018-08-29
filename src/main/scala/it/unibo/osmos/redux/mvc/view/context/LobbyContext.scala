@@ -47,7 +47,6 @@ object LobbyContext {
     protected var listener: Option[LobbyContextListener] = Option.empty
     override def setListener(lobbyContextListener: LobbyContextListener): Unit = listener = Option(lobbyContextListener)
 
-    //TODO: call the listener
     override def notify(event: LobbyEventWrapper): Unit = listener match {
       case Some(l) =>
         event match {

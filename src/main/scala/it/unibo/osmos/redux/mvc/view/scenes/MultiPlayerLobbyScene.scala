@@ -3,11 +3,11 @@ package it.unibo.osmos.redux.mvc.view.scenes
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.{User, UserWithProperties}
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, LobbyContextListener, MultiPlayerLevelContext}
 import it.unibo.osmos.redux.mvc.view.events.{AbortLobby, LobbyEventWrapper}
-import scalafx.beans.property.ObjectProperty
+import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.TableColumn._
-import scalafx.scene.control.{Button, TableColumn, TableView}
+import scalafx.scene.control.{TableColumn, TableView}
 import scalafx.scene.layout.{BorderPane, HBox, VBox}
 import scalafx.stage.Stage
 
@@ -25,8 +25,9 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     * The lobby context, created with the MultiPlayerLobbyScene. It still needs to be properly setup
     */
   private var _lobbyContext: Option[LobbyContext] = Option.empty
+
   def lobbyContext: Option[LobbyContext] = _lobbyContext
-  def lobbyContext_= (lobbyContext: LobbyContext): Unit = {
+  def lobbyContext_=(lobbyContext: LobbyContext): Unit = {
     _lobbyContext = Option(lobbyContext)
     /* subscribe to lobby context events */
     lobbyContext.setListener(this)
@@ -70,10 +71,12 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
   /**
     * Exit lobby button
     */
-  private val exitLobby = new Button("Exit Lobby") {
+  private val exitLobby = new StyledButton("Exit Lobby") {
     onAction = _ => lobbyContext match {
       /* We notify the lobby observer that we exited the lobby */
-      case Some(lc) => lc notifyLobbyEvent LobbyEventWrapper(AbortLobby, Some(user)); upperSceneListener.onLobbyExited()
+      case Some(lc) =>
+        lc notifyLobbyEvent LobbyEventWrapper(AbortLobby, Some(user))
+        upperSceneListener.onLobbyExited()
       case _ =>
     }
   }
@@ -81,9 +84,13 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
   /**
     * Start game button
     */
-  private val startGame = new Button("Start Game") {
+  private val startGame = new StyledButton("Start Game") {
     /* Only visible if the user is a server and there are at least two players*/
-    visible = user.isServer && userList.size >= 2
+    if (user.isServer) {
+      visible <== isStartGameVisible
+    } else {
+      visible = false
+    }
     onAction = _ => listener.onStartMultiplayerGameClick()
   }
 
@@ -104,8 +111,8 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
   override def updateUsers(users: Seq[User]): Unit = {
     userList clear()
     userList ++= users.map(_.getUserWithProperty)
-
-    if (userList.size > 1) { startGame.setVisible(true) }
+    /* Updating the observable property */
+    isStartGameVisible.value_=(userList.size >= 2)
   }
 
   override def onMultiPlayerGameStarted(multiPlayerLevelContext: MultiPlayerLevelContext): Unit = {
@@ -116,6 +123,7 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
   }
 
   override def onLobbyAborted(): Unit = upperSceneListener.onLobbyExited()
+
 }
 
 /**

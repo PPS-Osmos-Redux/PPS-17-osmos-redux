@@ -1,8 +1,10 @@
 package it.unibo.osmos.redux.mvc.view.stages
 
+import it.unibo.osmos.redux.mvc.controller.FileManager
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
 import it.unibo.osmos.redux.mvc.view.scenes._
 import scalafx.application.JFXApp
+import scalafx.scene.Parent
 
 /**
   * Primary stage which holds and manages all the different game scenes
@@ -22,10 +24,11 @@ object OsmosReduxPrimaryStage {
 
   /**
     * Primary stage implementation
-    * @param listener the primary stage listener
+    *
+    * @param listener          the primary stage listener
     * @param fullScreenEnabled true if we want the stage to be shown fullscreen, false otherwise
-    * @param windowWidth the window width
-    * @param windowHeight the window height
+    * @param windowWidth       the window width
+    * @param windowHeight      the window height
     */
   class OsmosReduxPrimaryStageImpl(val listener: PrimaryStageListener, val fullScreenEnabled: Boolean, val windowWidth: Double, val windowHeight: Double) extends OsmosReduxPrimaryStage
     with MainSceneListener {
@@ -35,23 +38,34 @@ object OsmosReduxPrimaryStage {
     width = windowWidth
     height = windowHeight
 
-    private val mainScene = new MainScene(this, this)
+    private val mainScene = new MainScene(this, this) {
+      // TODO: changing scene will ignore the imported style
+      stylesheets.addAll(FileManager.getStyle)
+    }
 
     /**
       * The scene field represents the scene currently shown to the screen
       */
     scene = mainScene
 
-    override def onPlayClick(): Unit = scene = new LevelSelectionScene(this, listener)
+    override def onPlayClick(): Unit = {
+      //mainScene.root = new LevelSelectionContainer(mainScene.parentStage).getContainer
+      scene = new LevelSelectionScene(this, listener)
+    }
 
     override def onMultiPlayerClick(): Unit = scene = new MultiPlayerScene(this, listener, mainScene)
 
     override def onEditorClick(): Unit = scene = new EditorLevelSelectionScene(this, listener)
 
+    override def onSettingsClick(container: Parent): Unit = {
+      mainScene.root = container
+      //scene = new SettingsScene(this, listener, mainScene)
+    }
+
     /* Stopping the game when the user closes the window */
     onCloseRequest = _ => System.exit(0)
-
   }
+
 }
 
 /**
