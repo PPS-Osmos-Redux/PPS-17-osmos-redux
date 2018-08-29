@@ -12,25 +12,9 @@ class TestMovementSystem extends FunSuite with BeforeAndAfter {
     EntityManager.clear()
   }
 
-<<<<<<< HEAD
-  private def initEntityManager(mapShape: MapShape, collisionRules: CollisionRules.Value) {
-    val levelInfo = Level("1",
-      LevelMap(mapShape, collisionRules),
-      null,
-      VictoryRules.becomeTheBiggest,
-      false)
-    movementSystem = MovementSystem(levelInfo)
-    EntityManager.subscribe(movementSystem, null)
-  }
 
-  test("Test speed and position update") {
-    val mapShape = Rectangle((100, 150), 100, 150)
-    initEntityManager(mapShape, CollisionRules.bouncing)
-=======
   test("MovableProperty entities' acceleration, speed and position are updated correctly") {
     val movementSystem = MovementSystem()
->>>>>>> develop
-
     val ca = AccelerationComponent(1, 1)
     val cc = CollidableComponent(true)
     val cd = DimensionComponent(5)

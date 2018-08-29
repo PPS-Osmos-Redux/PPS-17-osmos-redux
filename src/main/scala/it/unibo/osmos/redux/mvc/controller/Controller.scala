@@ -42,10 +42,10 @@ case class ControllerImpl() extends Controller with Observer {
     if(loadedLevel.isDefined) {
       if (isSimulation) loadedLevel.get.isSimulation = true
       if(engine.isEmpty) engine = Some(GameEngine())
-      engine.get.init(loadedLevel.get, levelContext, this)
+      engine.get.init(loadedLevel.get, levelContext/*, this*/)
       levelContext.setupLevel(loadedLevel.get.levelMap.mapShape)
     } else {
-      println("File ", chosenLevel, " not found! is a custom level? ", isCustomLevel)
+      println("Level ", chosenLevel, " not found! is a custom level? ", isCustomLevel)
     }
   }
 

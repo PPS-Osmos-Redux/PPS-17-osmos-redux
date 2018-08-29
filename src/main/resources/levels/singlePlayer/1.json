@@ -156,7 +156,7 @@
   },
   "levelMap": {
     "mapShape": {
-      "mapShape": "CIRCLE",
+      "mapShape": "Circle",
       "radius": 350.0,
       "centerX": 683.0,
       "centerY": 384.0
