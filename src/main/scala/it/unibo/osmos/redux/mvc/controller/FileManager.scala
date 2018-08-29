@@ -6,13 +6,13 @@ import java.nio.file.{FileSystem, FileSystems, Files, Path}
 import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.UserStat
 import it.unibo.osmos.redux.mvc.model._
 import spray.json._
-
+import it.unibo.osmos.redux.mvc.model.JsonProtocols._
 import scala.io.{BufferedSource, Source}
 import scala.util.Try
 
 object FileManager {
   val separator: String = "/"
-  val levelStartPath: String = separator + "levels" + separator
+  val levelStartPath: String = separator + "levels"
   val singlePlayerLevelsPath: String = levelStartPath + separator + "singlePlayer" + separator
   val multiPlayerLevelsPath: String = levelStartPath + separator + "multiPlayer" + separator
   val jsonExtension = ".json"
@@ -33,13 +33,12 @@ object FileManager {
     * @param chosenLevel  levels id
     * @return content of file wrapped into a Option
     */
-  def loadResource(chosenLevel: String, isMultiplayer:Boolean = false): Option[Level] = {
+  def loadResource(chosenLevel: String, isMultiplayer:Boolean = false): Try[Level] = {
     val levelsPath = if (isMultiplayer) multiPlayerLevelsPath else singlePlayerLevelsPath
     Try(textToLevel(Source.fromInputStream(
       getClass.getResourceAsStream(levelsPath + chosenLevel + jsonExtension)
-    ).mkString).get).toOption
+    ).mkString).get)
   }
-
 
   /**
     * Save a level on file
@@ -63,7 +62,6 @@ object FileManager {
     } while (flag)
     val levelFile = new File(path.toUri)
     createDirectoriesTree(levelFile)
-    import it.unibo.osmos.redux.mvc.model.JsonProtocols.levelFormatter
     if (saveToFile(levelFile, level.toJson.prettyPrint)) Some(path) else None
   }
 
@@ -71,12 +69,10 @@ object FileManager {
     val path: Path = defaultFS.getPath(userProgressDirectory + userProgressFileName + jsonExtension)
     val upFile = new File(path.toUri)
     createDirectoriesTree(upFile)
-    import it.unibo.osmos.redux.mvc.model.JsonProtocols._
     if (saveToFile(upFile, userProgress.toJson.prettyPrint)) Some(path) else None
   }
 
   def loadUserProgress(): UserStat = {
-    import it.unibo.osmos.redux.mvc.model.JsonProtocols._
     loadFile(userProgressDirectory + userProgressFileName + jsonExtension) match {
       case Some(text) => text.parseJson.convertTo[UserStat]
       case _ => saveUserProgress(SinglePlayerLevels.toUserProgression)
@@ -134,12 +130,11 @@ object FileManager {
     * @return Try with Level if it doesn't fail
     */
   def textToLevel(text: String): Try[Level] = {
-    import it.unibo.osmos.redux.mvc.model.JsonProtocols.levelFormatter
     Try(text.parseJson.convertTo[Level])
   }
 
   def customLevelsFilesName:List[String] =
-    new File(levelsDirectory).listFiles((d, name) => name.endsWith(jsonExtension))
+    new File(levelsDirectory).listFiles((_, name) => name.endsWith(jsonExtension))
                              .map(f => f.getName.substring(0,f.getName.length-jsonExtension.length))
                              .toList
 }

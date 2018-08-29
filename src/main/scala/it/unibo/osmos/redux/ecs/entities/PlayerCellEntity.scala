@@ -1,11 +1,10 @@
 package it.unibo.osmos.redux.ecs.entities
 
-import java.util.UUID
-
 import it.unibo.osmos.redux.ecs.components._
+import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 
 /** Trait representing a CellEntity controllable by the player */
-trait PlayerCellEntity extends CellEntity with InputProperty with Spawner with SentientTargetProperty {}
+trait PlayerCellEntity extends CellEntity with InputProperty with Spawner {}
 
 object PlayerCellEntity {
   def apply(acceleration: AccelerationComponent,
@@ -15,16 +14,16 @@ object PlayerCellEntity {
             speed: SpeedComponent,
             visible: VisibleComponent,
             typeEntity: TypeComponent,
-            spawner: SpawnerComponent): PlayerCellEntity = PlayerCellEntityImpl(CellEntity(acceleration,
-    collidable, dimension, position, speed, visible, typeEntity), spawner)
+            spawner: SpawnerComponent): PlayerCellEntity =
+    PlayerCellEntityImpl(CellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity), spawner)
 
   def apply(cell: CellEntity, spawner: SpawnerComponent): PlayerCellEntity = PlayerCellEntityImpl(cell, spawner)
 
-  def apply(builder: CellBuilder, spawner: SpawnerComponent): PlayerCellEntity = PlayerCellEntityImpl(builder.build, spawner)
+  def apply(builder: CellBuilder, spawner: SpawnerComponent): PlayerCellEntity = apply(builder.build, spawner)
 
   private case class PlayerCellEntityImpl(cellEntity: CellEntity, private val spawner: SpawnerComponent) extends PlayerCellEntity {
 
-    override def getUUID: UUID = cellEntity.getUUID
+    override def getUUID: String = cellEntity.getUUID
 
     override def getAccelerationComponent: AccelerationComponent = cellEntity.getAccelerationComponent
 
@@ -42,5 +41,4 @@ object PlayerCellEntity {
 
     override def getSpawnerComponent: SpawnerComponent = spawner
   }
-
 }

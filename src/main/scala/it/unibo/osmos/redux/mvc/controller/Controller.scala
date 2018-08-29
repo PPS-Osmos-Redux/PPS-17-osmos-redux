@@ -37,7 +37,7 @@ case class ControllerImpl() extends Controller with Observer {
 
     var loadedLevel:Option[Level] = None
     if (isCustomLevel) loadedLevel = FileManager.loadCustomLevel(chosenLevel)
-    else loadedLevel = FileManager.loadResource(chosenLevel)
+    else loadedLevel = FileManager.loadResource(chosenLevel).toOption
 
     if(loadedLevel.isDefined) {
       if (isSimulation) loadedLevel.get.isSimulation = true

@@ -1,18 +1,16 @@
 package it.unibo.osmos.redux
 
-import java.io.File
-import java.nio.file.{Files, Path}
+import java.nio.file.Files
 
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities._
 import it.unibo.osmos.redux.mvc.controller.FileManager
-import it.unibo.osmos.redux.mvc.controller.FileManager.{defaultFS, levelsDirectory}
-import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.mvc.model.MapShape._
+import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.FunSuite
 
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 class TestJsonConversion extends FunSuite{
   //Components
@@ -23,12 +21,13 @@ class TestJsonConversion extends FunSuite{
   val s = SpeedComponent(4, 0)
   val v = VisibleComponent(true)
   val et = TypeComponent(EntityType.Matter)
+  val etg = TypeComponent(EntityType.Attractive)
   val sp = SpawnerComponent(true)
   val sw = SpecificWeightComponent(1)
   //Entities
   val ce = CellEntity(a, c, d, p, s, v, et)
   val pce = PlayerCellEntity(a, c, d, p, s, v, et, sp)
-  val gc = GravityCellEntity(a, c, d, p, s, v, et, sw)
+  val gc = GravityCellEntity(a, c, d, p, s, v, etg, sw)
   val sc = SentientCellEntity(a, c, d, p, s, v)
   val listCell:List[CellEntity] = List(ce, pce, gc, sc)
   //LevelMap
@@ -122,14 +121,24 @@ class TestJsonConversion extends FunSuite{
   }
 
   test("File reading and conversion (SinglePlayer + MultiPlayer)") {
-    val spConvertedLevel = FileManager.loadResource(1.toString)
-    assert(spConvertedLevel.isDefined)
+    val spConvertedLevel = FileManager.loadResource(1.toString) match {
+      case Success(value) => value
+      case Failure(exception) =>
+        exception.printStackTrace()
+        null
+    }
+    assert(spConvertedLevel != null)
 //    assert(spConvertedLevel.get.levelId.equals(level.levelId))
 //    assert(spConvertedLevel.get.levelMap.equals(level.levelMap))
 //    assert(spConvertedLevel.get.victoryRule.equals(level.victoryRule))
 //    assert(spConvertedLevel.get.entities.size.equals(level.entities.size))
-    val mpConvertedLevel = FileManager.loadResource(4.toString)
-    assert(mpConvertedLevel.isDefined)
+    val mpConvertedLevel = FileManager.loadResource(1.toString, isMultiplayer = true)  match {
+      case Success(value) => value
+      case Failure(exception) =>
+        exception.printStackTrace()
+        null
+    }
+    assert(mpConvertedLevel != null)
 //    assert(mpConvertedLevel.get.levelId.equals(level.levelId))
 //    assert(mpConvertedLevel.get.levelMap.equals(level.levelMap))
 //    assert(mpConvertedLevel.get.victoryRule.equals(level.victoryRule))
