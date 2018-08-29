@@ -9,7 +9,7 @@ import it.unibo.osmos.redux.mvc.view.levels.{GameStateHolder, LevelContext}
   * Controller base trait
   */
 trait Controller {
-  def initLevel(levelContext: LevelContext, chosenLevel:String, isSimulation:Boolean, isCustomLevel:Boolean)
+  def initLevel(levelContext: LevelContext, chosenLevel:Int/*chosenLevel:String*/ ,isSimulation:Boolean/*, isCustomLevel:Boolean*/)
   def startLevel()
   def stopLevel()
   def pauseLevel()
@@ -26,16 +26,16 @@ case class ControllerImpl() extends Controller with GameStateHolder {
   var engine:Option[GameEngine] = None
 
   override def initLevel(levelContext: LevelContext,
-                         chosenLevel:String,
+                         chosenLevel:Int/*chosenLevel:String*/,
                          isSimulation:Boolean,
-                         isCustomLevel:Boolean): Unit = {
+                         /*isCustomLevel:Boolean*/): Unit = {
 
     var loadedLevel:Option[Level] = None
-    if (isCustomLevel) loadedLevel = FileManager.loadCustomLevel(chosenLevel)
-    else {
-      loadedLevel = FileManager.loadResource(chosenLevel).toOption
-      lastLoadedLevel = Some(chosenLevel)
-    }
+    //if (isCustomLevel) loadedLevel = FileManager.loadCustomLevel(chosenLevel)
+    //else {
+      loadedLevel = FileManager.loadResource(chosenLevel.toString).toOption
+      lastLoadedLevel = Some(chosenLevel.toString)
+    //}
 
     if(loadedLevel.isDefined) {
       if (isSimulation) loadedLevel.get.isSimulation = true
@@ -43,7 +43,7 @@ case class ControllerImpl() extends Controller with GameStateHolder {
       engine.get.init(loadedLevel.get, levelContext/*, this*/)
       levelContext.setupLevel(loadedLevel.get.levelMap.mapShape)
     } else {
-      println("Level ", chosenLevel, " not found! is a custom level? ", isCustomLevel)
+      println("Level ", chosenLevel, " not found! is a custom level? "/*, isCustomLevel*/)
     }
   }
 
