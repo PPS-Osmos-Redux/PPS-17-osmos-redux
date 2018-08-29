@@ -99,7 +99,7 @@
     "mapShape": {
       "centerX": 50.1,
       "centerY": 50.2,
-      "mapShape": "CIRCLE",
+      "mapShape": "Circle",
       "radius": 250
     },
     "collisionRule": "Bouncing"

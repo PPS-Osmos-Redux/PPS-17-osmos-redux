@@ -150,7 +150,7 @@
   },
   "levelMap": {
     "mapShape": {
-      "mapShape": "RECTANGLE",
+      "mapShape": "Rectangle",
       "height": 600.1,
       "base": 500.6,
       "centerX": 300.0,

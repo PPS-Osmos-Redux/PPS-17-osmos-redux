@@ -287,8 +287,8 @@ object JsonProtocols {
     }
 
     def read(value: JsValue): MapShape = {
-      val rectangle  = MapShapeType.RECTANGLE.toString
-      val circle  = MapShapeType.CIRCLE.toString
+      val rectangle  = MapShapeType.Rectangle.toString
+      val circle  = MapShapeType.Circle.toString
       value.asJsObject.getFields("centerX",
         "centerY",
         "mapShape",
