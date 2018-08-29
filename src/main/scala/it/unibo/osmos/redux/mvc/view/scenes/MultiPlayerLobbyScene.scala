@@ -1,5 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
+import it.unibo.osmos.redux.mvc.view.components.custom.StyledButton
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.{User, UserWithProperties}
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, LobbyContextListener, MultiPlayerLevelContext}
 import it.unibo.osmos.redux.mvc.view.events.{AbortLobby, LobbyEventWrapper}
@@ -39,6 +40,10 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     * ObservableBuffer holding the current users
     */
   private val userList = ObservableBuffer[UserWithProperties]()
+  /**
+    * BooleanProperty representing the visibility of the start button
+    */
+  private val isStartGameVisible = BooleanProperty(false)
 
   /**
     * TableView linked with the user list
