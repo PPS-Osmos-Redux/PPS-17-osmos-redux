@@ -75,7 +75,7 @@ object FileManager {
   def loadUserProgress(): UserStat = {
     loadFile(userProgressDirectory + userProgressFileName + jsonExtension) match {
       case Some(text) => text.parseJson.convertTo[UserStat]
-      case _ => saveUserProgress(SinglePlayerLevels.toUserProgression)
+      case _ => saveUserProgress(SinglePlayerLevels.userStatistics())
                 loadUserProgress()
     }
   }

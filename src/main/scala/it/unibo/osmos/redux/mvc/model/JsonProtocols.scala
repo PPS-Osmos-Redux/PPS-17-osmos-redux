@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.model
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.UserStat
+import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.{LevelStat, UserStat}
 import it.unibo.osmos.redux.ecs.entities._
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
 import it.unibo.osmos.redux.utils.Point
@@ -336,5 +336,7 @@ object JsonProtocols {
 
   implicit val drawableWrapperFormatter:RootJsonFormat[DrawableWrapper] = jsonFormat4(DrawableWrapper)
 
-  implicit val userProgressFormatter:RootJsonFormat[UserStat] = jsonFormat1(UserStat)
+  implicit  val levelStatFormatter:RootJsonFormat[LevelStat] = jsonFormat3(LevelStat)
+
+  implicit val userProgressFormatter:RootJsonFormat[UserStat] = jsonFormat2(UserStat)
 }

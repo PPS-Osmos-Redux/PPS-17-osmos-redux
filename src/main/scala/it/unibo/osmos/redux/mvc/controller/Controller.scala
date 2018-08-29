@@ -5,14 +5,6 @@ import it.unibo.osmos.redux.mvc.model.{Level, MultiPlayerLevels, SinglePlayerLev
 import it.unibo.osmos.redux.mvc.view.events._
 import it.unibo.osmos.redux.mvc.view.levels.{GameStateHolder, LevelContext}
 
-trait Observable {
-  def subscribe(observer:Observer)
-}
-
-trait Observer {
-  def notify(event: GameStateEventWrapper, levelContext: GameStateHolder)
-}
-
 /**
   * Controller base trait
   */
@@ -29,7 +21,8 @@ trait Controller {
   def getCustomLevels:List[String] = FileManager.customLevelsFilesName
 }
 
-case class ControllerImpl() extends Controller with Observer {
+case class ControllerImpl() extends Controller with GameStateHolder {
+  var lastLoadedLevel:Option[String] = None
   var engine:Option[GameEngine] = None
 
   override def initLevel(levelContext: LevelContext,
@@ -39,7 +32,10 @@ case class ControllerImpl() extends Controller with Observer {
 
     var loadedLevel:Option[Level] = None
     if (isCustomLevel) loadedLevel = FileManager.loadCustomLevel(chosenLevel)
-    else loadedLevel = FileManager.loadResource(chosenLevel).toOption
+    else {
+      loadedLevel = FileManager.loadResource(chosenLevel).toOption
+      lastLoadedLevel = Some(chosenLevel)
+    }
 
     if(loadedLevel.isDefined) {
       if (isSimulation) loadedLevel.get.isSimulation = true
@@ -59,16 +55,27 @@ case class ControllerImpl() extends Controller with Observer {
 
   override def resumeLevel(): Unit = if (engine.isDefined) engine.get.resume()
 
-  override def notify(event: GameStateEventWrapper, levelContext: GameStateHolder): Unit = {
-    if(event.equals(GameWon)) {
-      SinglePlayerLevels.unlockNextLevel()
-      FileManager.saveUserProgress(SinglePlayerLevels.toUserProgression)
-    }
-    levelContext.notify(event)
-  }
-
   override def saveNewCustomLevel(customLevel: Level): Boolean =
     FileManager.saveLevel(customLevel, customLevel.levelId).isDefined
 
+   /**
+    * A generic definition of the game state
+    *
+    * @return a GameStateEventWrapper
+    */
+  override def gameCurrentState: GameStateEventWrapper = ???
+
   override def getSoundPath(soundType: String): String = ???
+
+  /**
+    * Called on a event T type
+    *
+    * @param event the event
+    */
+  override def notify(event: GameStateEventWrapper): Unit = {
+    if(lastLoadedLevel.isDefined) {
+      SinglePlayerLevels.newEndGameEvent(event, lastLoadedLevel.get)
+      FileManager.saveUserProgress(SinglePlayerLevels.userStatistics())
+    }
+  }
 }

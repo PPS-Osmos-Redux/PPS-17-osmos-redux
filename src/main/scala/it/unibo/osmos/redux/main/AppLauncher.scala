@@ -12,7 +12,7 @@ object AppLauncher extends JFXApp {
 
   //TODO: replace null with proper implementation
   val model: Model = null
-  SinglePlayerLevels.syncWithFile(FileManager.loadUserProgress())
+  SinglePlayerLevels.updateUserStat(FileManager.loadUserProgress())
   val controller: Controller = new ControllerImpl
   val view = View(this)
   view.setController(controller)
