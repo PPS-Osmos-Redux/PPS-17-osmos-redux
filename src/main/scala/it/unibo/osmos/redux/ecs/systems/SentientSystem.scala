@@ -12,7 +12,7 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
   private val MAX_ACCELERATION = 0.1
   private val COEFFICIENT_DESIRED_SEPARATION = 6
   private val radiusThreshold = 4
-  private val MIN_VALUE = Double.MinPositiveValue
+  private val MIN_VALUE = 1
 
   override protected def getGroupPropertySecondType: Class[SentientEnemyProperty] = classOf[SentientEnemyProperty]
 
@@ -100,7 +100,7 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
   private def shiftDistance(list: List[(SentientEnemyProperty, Double)]): List[(SentientEnemyProperty, Double)] = list match {
     case Nil => Nil
     case _ => list.min(Ordering.by((d:(SentientEnemyProperty, Double)) => d._2)) match {
-      case min if min._2 <= 0 => list.map(e => (e._1, e._2 - min._2 + MIN_VALUE))
+      case min if min._2 <= 1 => list.map(e => (e._1, e._2 - min._2 + MIN_VALUE))
       case _ => list
     }
   }

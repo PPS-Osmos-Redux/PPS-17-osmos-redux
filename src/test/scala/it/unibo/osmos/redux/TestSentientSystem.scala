@@ -22,7 +22,7 @@ class TestSentientSystem extends FunSuite with BeforeAndAfter{
   val position1 = PositionComponent(Point(18, 4))
   val speed1 = SpeedComponent(4, 0)
   val dimension2 = DimensionComponent(10)
-  val position2 = PositionComponent(Point(9, 9))
+  val position2 = PositionComponent(Point(17, 17))
 
   after{
     EntityManager.clear()
@@ -59,7 +59,8 @@ class TestSentientSystem extends FunSuite with BeforeAndAfter{
     EntityManager.add(cellEntity1)
     EntityManager.add(sentienCellEntity)
     system.update()
+    println(sentienCellEntity.getAccelerationComponent.vector)
     assert(sentienCellEntity.getAccelerationComponent.vector.x === -0.094 +- TOLERANCE)
-    assert(sentienCellEntity.getAccelerationComponent.vector.y === -0.031 +- TOLERANCE)
+    assert(sentienCellEntity.getAccelerationComponent.vector.y === -0.011 +- TOLERANCE)
   }
 }
