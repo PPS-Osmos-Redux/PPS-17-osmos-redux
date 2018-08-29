@@ -1,6 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.ecs.components.EntityType
+import it.unibo.osmos.redux.ecs.entities.CellEntity
 import it.unibo.osmos.redux.mvc.model.{MapShape, VictoryRules}
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.components.custom.TitledComboBox
@@ -8,8 +9,8 @@ import it.unibo.osmos.redux.mvc.view.components.editor.{CellEntityBuilder, Circl
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import javafx.scene.paint.ImagePattern
 import scalafx.beans.property.ObjectProperty
-import scalafx.geometry.Pos
-import scalafx.scene.control.Button
+import scalafx.geometry.{Insets, Pos}
+import scalafx.scene.control.{Button, TextInputDialog}
 import scalafx.scene.image.ImageView
 import scalafx.scene.layout._
 import scalafx.scene.paint.Color
@@ -24,6 +25,9 @@ import scala.collection.mutable.ListBuffer
   * @param listener the EditorSceneListener
   */
 class EditorScene (override val parentStage: Stage, val listener: EditorSceneListener) extends BaseScene(parentStage) {
+
+  /* Entities currently built */
+  var builtEntities: ListBuffer[CellEntity] = ListBuffer()
 
   /**
     * The background image
@@ -80,11 +84,14 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     visible = false
   }
 
+  /** The entity builders */
+  private val entityBuilders = Seq(cellEntityBuilder, gravityCellEntityBuilder)
 
   private val entityTypeContainer: VBox = new VBox(1.0) {
+    margin = Insets(10.0)
 
     /** Left builder seq */
-    private val builderSeq = Seq(cellEntityBuilder, gravityCellEntityBuilder)
+    private val builderSeq = entityBuilders
 
     /** putting the builder one on top of the other */
     private val verticalStackPane = new StackPane() {
@@ -129,33 +136,28 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     children = List(levelTypeBox.root, verticalStackPane)
   }
 
-  private val mainContainer: VBox = new VBox(2.0) {
-    children = Seq(victoryRuleBox.root, levelTypeContainer, entityTypeContainer)
-  }
-
-  /**
-    * The placeholder which follows the user mouse and changes appearance on EntityType change
-    */
-  val entityPlaceholder: Circle = new Circle() {
-    fill.value = new ImagePattern(ImageLoader.getImage(cellTexture))
-    radius = 100
-
-    /* We set a min and max for the size */
-    onScroll = scroll => {
-      radius = radius.value + (scroll.getDeltaY/10) min 150 max 10
-      cellEntityBuilder.radius.value = radius.value
+  private val mainContainer: BorderPane = new BorderPane() {
+    prefWidth <== parentStage.width
+    prefHeight <== parentStage.height
+    left = entityTypeContainer
+    right = new VBox(5.0, victoryRuleBox.root, levelTypeContainer) {
+      margin = Insets(10.0)
+      padding = Insets(0.0, 10.0, 0.0, 0.0)
     }
+    top = new Button("aaaaaaa") {
+      onAction = _ => {
+        /* We show a confirmation dialog in which we ask for a name */
+        val dialog: TextInputDialog = new TextInputDialog("") {
+          headerText = "Insert your new level name"
 
-    entityType.onChange(entityType.value match {
-        case EntityType.Matter => fill.value = new ImagePattern(ImageLoader.getImage(cellTexture))
-        case EntityType.AntiMatter => fill.value = new ImagePattern(ImageLoader.getImage(antiMatterTexture))
-        case EntityType.Attractive => fill.value = new ImagePattern(ImageLoader.getImage(attractiveTexture))
-        case EntityType.Repulse => fill.value = new ImagePattern(ImageLoader.getImage(repulsiveTexture))
-        case EntityType.Sentient => fill.value = new ImagePattern(ImageLoader.getImage(sentientTexture))
-        case EntityType.Controlled => fill.value = new ImagePattern(ImageLoader.getImage(controllerTexture))
-        case _ => fill.value = new ImagePattern(ImageLoader.getImage(cellTexture))
-      })
-
+        }
+        val levelName = dialog.showAndWait()
+        levelName match {
+          case Some(name) => println(name)
+          case _ =>
+        }
+      }
+    }
   }
 
   /**
@@ -191,21 +193,41 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   var currentLevelPlaceholder: Shape = circularLevelPlaceholder
 
   /**
-    * The currently visible entity placeholder
+    * The placeholder which follows the user mouse and changes appearance on EntityType change
     */
-  var currentEntityPlaceholder: Circle = entityPlaceholder
+  val entityPlaceholder: Circle = new Circle() {
+    fill.value = new ImagePattern(ImageLoader.getImage(cellTexture))
+    radius = 100
+
+    /* We set a min and max for the size */
+    onScroll = scroll => {
+      radius = radius.value + (scroll.getDeltaY/10) min 150 max 10
+      cellEntityBuilder.radius.value = radius.value
+    }
+
+    entityType.onChange(entityType.value match {
+      case EntityType.Matter => fill.value = new ImagePattern(ImageLoader.getImage(cellTexture))
+      case EntityType.AntiMatter => fill.value = new ImagePattern(ImageLoader.getImage(antiMatterTexture))
+      case EntityType.Attractive => fill.value = new ImagePattern(ImageLoader.getImage(attractiveTexture))
+      case EntityType.Repulse => fill.value = new ImagePattern(ImageLoader.getImage(repulsiveTexture))
+      case EntityType.Sentient => fill.value = new ImagePattern(ImageLoader.getImage(sentientTexture))
+      case EntityType.Controlled => fill.value = new ImagePattern(ImageLoader.getImage(controllerTexture))
+      case _ => fill.value = new ImagePattern(ImageLoader.getImage(cellTexture))
+    })
+
+  }
 
   /* On control key pressed we hide the placeholder to let the user insert values in the panes */
   onKeyPressed = key => {
-    currentEntityPlaceholder.visible = key.isControlDown
+    entityPlaceholder.visible = key.isControlDown
   }
 
   /**
     * On mouse moved, we update the builder
     */
   onMouseMoved = e => {
-    currentEntityPlaceholder.centerX.value = e.getX
-    currentEntityPlaceholder.centerY.value = e.getY
+    entityPlaceholder.centerX.value = e.getX
+    entityPlaceholder.centerY.value = e.getY
     cellEntityBuilder.x.value = e.getX
     cellEntityBuilder.y.value = e.getY
   }
@@ -213,18 +235,28 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   /**
     * On mouse clicked, we parse the placeholder values and created a new element
     */
-  onMouseClicked = _ => if (currentEntityPlaceholder.visible.value) {
+  onMouseClicked = e => if (entityPlaceholder.visible.value) {
+    /** Insert an element to be shown */
     editorElements += new Circle {
-      fill.value_=(currentEntityPlaceholder.fill.value)
-      centerX = currentEntityPlaceholder.centerX.value
-      centerY = currentEntityPlaceholder.centerY.value
-      radius = currentEntityPlaceholder.radius.value
-      effect.value_=(currentEntityPlaceholder.effect.value)
-      content = editorElements
+      fill.value_=(entityPlaceholder.fill.value)
+      centerX = entityPlaceholder.centerX.value
+      centerY = entityPlaceholder.centerY.value
+      radius = entityPlaceholder.radius.value
+      effect.value_=(entityPlaceholder.effect.value)
     }
+    content = editorElements
+
+    /** Insert an entity to the built entities list */
+    entityBuilders.filter((b) => b.visible.value).head match {
+      case c: CellEntityBuilder => builtEntities += c.build()
+      case gc: GravityCellEntityBuilder => builtEntities += gc.build()
+      case _ =>
+    }
+
   }
 
-  val editorElements = ListBuffer(background, mainContainer, currentEntityPlaceholder, currentLevelPlaceholder)
+  /** The main editor elements */
+  val editorElements = ListBuffer(background, mainContainer, entityPlaceholder, currentLevelPlaceholder)
   content = editorElements
 
 }

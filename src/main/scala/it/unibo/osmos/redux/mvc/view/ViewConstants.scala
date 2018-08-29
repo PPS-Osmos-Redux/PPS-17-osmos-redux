@@ -1,6 +1,7 @@
 package it.unibo.osmos.redux.mvc.view
 
 import scalafx.scene.paint.Color
+import scalafx.stage.Screen
 
 /**
   *  View constants
@@ -12,8 +13,8 @@ object ViewConstants {
     */
   object Window {
     val defaultWindowTitle: String = "Osmos-Redux"
-    val defaultWindowWidth: Double = 1366
-    val defaultWindowHeight: Double = 768
+    val defaultWindowWidth: Double = Screen.primary.visualBounds.width
+    val defaultWindowHeight: Double = Screen.primary.visualBounds.height
   }
 
   object Entities {
