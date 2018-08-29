@@ -23,6 +23,7 @@ trait Controller {
   def pauseLevel()
   def resumeLevel()
   def saveNewCustomLevel(customLevel:Level):Boolean
+  def getSoundPath(soundType:String): String
   def getSinglePlayerLevels:List[LevelInfo] = SinglePlayerLevels.getLevels
   def getMultiPlayerLevels:List[String] = MultiPlayerLevels.getLevels
   def getCustomLevels:List[String] = FileManager.customLevelsFilesName
@@ -68,4 +69,6 @@ case class ControllerImpl() extends Controller with Observer {
 
   override def saveNewCustomLevel(customLevel: Level): Boolean =
     FileManager.saveLevel(customLevel, customLevel.levelId).isDefined
+
+  override def getSoundPath(soundType: String): String = ???
 }
