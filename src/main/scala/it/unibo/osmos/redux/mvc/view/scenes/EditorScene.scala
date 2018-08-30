@@ -4,7 +4,7 @@ import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityType}
 import it.unibo.osmos.redux.mvc.model.{MapShape, MapShapeType, VictoryRules}
 import it.unibo.osmos.redux.mvc.view.ViewConstants
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
-import it.unibo.osmos.redux.mvc.view.components.custom.TitledComboBox
+import it.unibo.osmos.redux.mvc.view.components.custom.{StyledButton, TitledComboBox}
 import it.unibo.osmos.redux.mvc.view.components.editor.{CellEntityBuilder, CircleLevelBuilder, GravityCellEntityBuilder, RectangleLevelBuilder}
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import javafx.scene.paint.ImagePattern
@@ -142,10 +142,10 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
       margin = Insets(10.0)
       padding = Insets(0.0, 10.0, 0.0, 0.0)
     }
-    top = new HBox(20.0, new Button("Save Level") {
+    top = new HBox(20.0, new StyledButton("Save Level") {
       /** We begin the procedure to save the level */
       onAction = _ => saveLevel()
-    }, new Button("Exit Level") {
+    }, new StyledButton("Exit Level") {
       /* We go back */
       onAction = _ => upperListener.onStopLevel()
     }) {
