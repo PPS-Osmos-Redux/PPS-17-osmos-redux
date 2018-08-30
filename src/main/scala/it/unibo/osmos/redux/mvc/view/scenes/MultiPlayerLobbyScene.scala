@@ -4,6 +4,7 @@ import it.unibo.osmos.redux.mvc.view.components.custom.StyledButton
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.{User, UserWithProperties}
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, LobbyContextListener, MultiPlayerLevelContext}
 import it.unibo.osmos.redux.mvc.view.events.{AbortLobby, LobbyEventWrapper}
+import scalafx.application.Platform
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Pos}
@@ -124,7 +125,9 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     /* Creating a multiplayer level*/
     val multiPlayerLevelScene = new MultiPlayerLevelScene(parentStage, listener, () => parentStage.scene = this)
     multiPlayerLevelScene.levelContext = multiPlayerLevelContext
-    parentStage.scene = multiPlayerLevelScene
+
+    //requires UI thread execution
+    Platform.runLater({ parentStage.scene = multiPlayerLevelScene })
   }
 
   override def onLobbyAborted(): Unit = upperSceneListener.onLobbyExited()

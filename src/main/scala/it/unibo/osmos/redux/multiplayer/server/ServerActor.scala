@@ -5,6 +5,7 @@ import it.unibo.osmos.redux.multiplayer.client.ClientActor._
 import it.unibo.osmos.redux.multiplayer.common.ClientsManager
 import it.unibo.osmos.redux.multiplayer.players.BasePlayer
 import it.unibo.osmos.redux.multiplayer.server.ServerActor._
+import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity
 import it.unibo.osmos.redux.utils.Logger
 
@@ -75,7 +76,7 @@ class ServerActor(private val server: Server) extends Actor {
   }
 
   override def postStop(): Unit = {
-    println("Actor is shutting down...")
+    Logger.log("Actor is shutting down...")
     super.postStop()
   }
 }
@@ -100,7 +101,7 @@ object ServerActor {
 
   final case class UpdateGame(entities: Seq[DrawableEntity]) //server send all entities to draw
 
-  final case class GameStarted(id: String) //Server wants to start the game, reply with Ready if all is ok (tell you who are you)
+  final case class GameStarted(id: String, mapShape: MapShape) //Server wants to start the game, reply with Ready if all is ok (tell you who are you)
   final case class GameEnded(victory: Boolean) //Server have stopped the game (and tells you if you won or lose)
 }
 

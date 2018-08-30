@@ -200,7 +200,7 @@ object Server {
       val promise = Promise[Boolean]()
 
       //assign player cells to lobby players
-      val futures = assignCellsToPlayers(level)
+      val futures = setupClients(level)
       Future.sequence(futures) onComplete {
         case Success(_) => promise success true
         case Failure(t) => promise failure t
@@ -314,7 +314,7 @@ object Server {
 
     //HELPER METHODS
 
-    private def assignCellsToPlayers(level: Level): Seq[Future[Any]] = {
+    private def setupClients(level: Level): Seq[Future[Any]] = {
       Logger.log("assignCellsToPlayers")
 
       val availablePlayerCells = level.entities.filter(_.isInstanceOf[PlayerCellEntity]).map(p => Some(p.getUUID))
@@ -325,8 +325,11 @@ object Server {
       //assign first available player cell to the server
       this.uuid = availablePlayerCells.head.get
 
+      //get map shape and send to the clients along with the assigned uuid
+      val mapShape = level.levelMap.mapShape
+
       otherPlayers.zipAll(availablePlayerCells.tail, null, None).map {
-        case (p, Some(id)) =>  p.setUUID(id); p.getActorRef ? GameStarted(id)
+        case (p, Some(id)) =>  p.setUUID(id); p.getActorRef ? GameStarted(id, mapShape)
         case (_, None) => throw new IllegalStateException("Not enough player cells for all the clients")
       }
     }

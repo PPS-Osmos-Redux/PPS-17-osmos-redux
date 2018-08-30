@@ -36,6 +36,7 @@ sealed trait MapShape {
   val mapShape:String
   val center:(Double,Double)
 }
+
 object MapShape {
   val rectangle:String = "RECTANGLE"
   val circle:String = "CIRCLE"
