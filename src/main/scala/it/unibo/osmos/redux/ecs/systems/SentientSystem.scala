@@ -1,7 +1,8 @@
 package it.unibo.osmos.redux.ecs.systems
 
+import it.unibo.osmos.redux.ecs.components.{DimensionComponent, PositionComponent, SpawnAction, SpeedComponent}
 import it.unibo.osmos.redux.ecs.entities.{SentientEnemyProperty, _}
-import it.unibo.osmos.redux.utils.{MathUtils, Vector}
+import it.unibo.osmos.redux.utils.{MathUtils, Point, Vector}
 
 import scala.collection.mutable.ListBuffer
 
@@ -9,9 +10,21 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
 
   private val MAX_SPEED = 2
   private val MAX_ACCELERATION = 0.1
-  private val COEFFICIENT_DESIRED_SEPARATION = 6
+  private val COEFFICIENT_DESIRED_SEPARATION = 2
   private val MIN_VALUE = 1
-  private val PERCENTAGE_OF_LOST_RADIUS_FOR_MAGNITUDE_ACCELERATION = 0.2
+  private val PERCENTAGE_OF_LOST_RADIUS_FOR_MAGNITUDE_ACCELERATION = 0.02
+  private val WEIGHT_OF_ESCAPE_ACCELERATION = 2
+  /**
+    * The lost mass spawn point offset (starting from the perimeter of the entity, where to spawn lost mass due to movement)
+    */
+  val lostMassSpawnOffset: Double = 0.1
+
+  /**
+    * The initial velocity of the lost mass
+    */
+  val lostMassInitialVelocity: Double = 4.0
+
+  var radiusAmount = 0.0
 
   override protected def getGroupPropertySecondType: Class[SentientEnemyProperty] = classOf[SentientEnemyProperty]
 
@@ -95,7 +108,7 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
       .foldLeft((Vector.zero(), 1)) ((acc, i) => (acc._1 add ((i subtract acc._1) divide acc._2), acc._2 + 1))._1 normalized() match {
         case unitVectorDesiredVelocity if unitVectorDesiredVelocity == Vector(0,0) => Vector.zero()
         case unitVectorDesiredVelocity =>
-          computeSteer(sentient.getSpeedComponent.vector, unitVectorDesiredVelocity)
+          computeSteer(sentient.getSpeedComponent.vector, unitVectorDesiredVelocity) multiply WEIGHT_OF_ESCAPE_ACCELERATION
       }
   }
 
@@ -123,10 +136,28 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
     desiredVelocity multiply MAX_SPEED subtract actualVelocity
 
   private def applyAcceleration(sentient: SentientProperty, acceleration: Vector, accelerations: Vector*): Unit = {
-    val totalAcceleration = (acceleration add accelerations.reduce((a1,a2) => a1 add a2)) limit MAX_ACCELERATION
+    val totalAcceleration = (acceleration add accelerations.reduce((a1, a2) => a1 add a2)) limit MAX_ACCELERATION
     val accelerationSentient = sentient.getAccelerationComponent
     accelerationSentient.vector_(accelerationSentient.vector add totalAcceleration)
-    // TODO spawn entity
-    // TODO perdita massa
+    if (totalAcceleration.getLength > 0) {
+      val radiusSentient = sentient.getDimensionComponent
+      val lostRadiusAmount = radiusSentient.radius * totalAcceleration.getLength * PERCENTAGE_OF_LOST_RADIUS_FOR_MAGNITUDE_ACCELERATION
+
+      radiusSentient.radius_(radiusSentient.radius - lostRadiusAmount)
+      radiusAmount = radiusAmount + lostRadiusAmount
+      if (radiusAmount > 1) {
+        // spawn
+        val sentientPosition = sentient.getPositionComponent.point
+        val directionVector = totalAcceleration multiply -1 normalized()
+
+        val spawnPoint = sentientPosition add (directionVector multiply (radiusSentient.radius + lostMassSpawnOffset + radiusAmount))
+
+        sentient.getSpawnerComponent.enqueueActions(SpawnAction(
+          PositionComponent(Point(spawnPoint.x, spawnPoint.y)),
+          DimensionComponent(radiusAmount),
+          SpeedComponent(directionVector.x * lostMassInitialVelocity, directionVector.y * lostMassInitialVelocity)))
+        radiusAmount = 0.0
+      }
+    }
   }
 }
