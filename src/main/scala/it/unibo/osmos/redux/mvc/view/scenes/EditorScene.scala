@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityType}
-import it.unibo.osmos.redux.mvc.model.{MapShape, VictoryRules}
+import it.unibo.osmos.redux.mvc.model.{MapShape, MapShapeType, VictoryRules}
 import it.unibo.osmos.redux.mvc.view.ViewConstants
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.components.custom.TitledComboBox
@@ -40,12 +40,8 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   /**
     * Level Type
     */
-  private var levelType: ObjectProperty[MapShape] = ObjectProperty(MapShape.Circle((400, 400), 400))
-  private val levelTypeBox = null /*new TitledComboBox[MapShape]("Level Type:", Seq(MapShape.Circle, MapShape.Rectangle),{
-    case MapShape.Circle => levelType.value_=(MapShape.Circle((400, 400), 400))
-    case MapShape.Rectangle => levelType.value_=(MapShape.Rectangle((400, 400), 400, 400))
-    case _ =>
-  })*/
+  private var levelType: ObjectProperty[MapShapeType.Value] = ObjectProperty(MapShapeType.Circle)
+  private val levelTypeBox = new TitledComboBox[MapShapeType.Value]("Level Type:", MapShapeType.values.toSeq, mapType => levelType.value = mapType)
 
   /** Pane containing the field to configure the circular level */
   private val circularLevelBuilder: CircleLevelBuilder = new CircleLevelBuilder {
@@ -125,16 +121,16 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
         builderSeq.foreach(levelBuilder => levelBuilder.visible = false)
         editorElements -= currentLevelPlaceholder
         levelType.value match {
-          case _: MapShape.Circle => circularLevelBuilder.visible = true; currentLevelPlaceholder = circularLevelPlaceholder
-          case _: MapShape.Rectangle => rectangularLevelBuilder.visible = true; currentLevelPlaceholder = rectangularLevelPlaceholder
+          case MapShapeType.Circle => circularLevelBuilder.visible = true; currentLevelPlaceholder = circularLevelPlaceholder
+          case MapShapeType.Rectangle => rectangularLevelBuilder.visible = true; currentLevelPlaceholder = rectangularLevelPlaceholder
           case _ =>
         }
         editorElements += currentLevelPlaceholder
         EditorScene.this.content = editorElements
       })
     }
-    //TODO: Fix levelTypebox
-    children = List(/*levelTypeBox.root,*/ verticalStackPane)
+
+    children = List(levelTypeBox.root, verticalStackPane)
   }
 
   /** The main container, wrapping the other panes*/
@@ -178,8 +174,9 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
           /** The name is valid, we have to retrieve the elements */
           /** Level */
           val level = levelType.value match {
-            case c:MapShape.Circle => circularLevelBuilder.build()
-            case r:MapShape.Rectangle => rectangularLevelBuilder.build()
+            case MapShapeType.Circle => circularLevelBuilder.build()
+            case MapShapeType.Rectangle => rectangularLevelBuilder.build()
+            case _ =>
           }
           /** Victory rules */
           val victoryRules = victoryRule.value

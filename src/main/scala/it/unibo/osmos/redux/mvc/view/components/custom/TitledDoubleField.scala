@@ -1,5 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.components.custom
 
+import java.util.Locale
+
 import scalafx.beans.property.{DoubleProperty, StringProperty}
 import scalafx.scene.control.TextFormatter.Change
 import scalafx.scene.control.{TextField, TextFormatter}
@@ -26,11 +28,11 @@ class TitledDoubleField(override val title: StringProperty, private val value: D
     * @return a node of type N <: Node
     */
   override def innerNode: TextField = new TextField(){
-    text.delegate.bindBidirectional(value, new NumberStringConverter)
+    text.delegate.bindBidirectional(value, new NumberStringConverter(Locale.US))
     editable = true
     prefWidth <== maxWidth
     textFormatter = new TextFormatter[Double](new DoubleStringConverter(), 0, { c: Change => {
-      val input = c.getText
+      val input = c.controlNewText
       val isNumber = input.matches("^[0-9]+(\\.[0-9]+)?$")
       if (!isNumber) c.setText("")
       if (isNumber && (maxValue < c.getControlNewText.toDouble || minValue > c.getControlNewText.toDouble)) c.setText("")

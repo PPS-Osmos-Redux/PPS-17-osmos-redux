@@ -36,7 +36,7 @@ object VictoryRules extends Enumeration {
   * Map shape data structure
   */
 object MapShapeType extends Enumeration {
-  val Rectangle, Circle = Value
+  val Circle, Rectangle= Value
 }
 sealed trait MapShape {
   val mapShape:MapShapeType.Value
