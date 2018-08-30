@@ -59,6 +59,9 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     */
   private val pauseScreen = LevelScreen.Builder(this)
     .withText("Game paused", 30, Color.White)
+    // TODO: the buttons are not working correctly
+    .withButton("Resume", _ => onResume())
+    .withButton("Return to Level Selection", _ => onExit())
     .build()
   pauseScreen.visible <== paused
 
@@ -127,9 +130,9 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   def levelContext_=(levelContext: LevelContext): Unit = _levelContext = Option(levelContext)
 
   override def onPause(): Unit = {
-    paused.value = true
+    //paused.value = true
     canvas.opacity = 0.5
-
+    //content.add(pauseScreen)
     listener.onPauseLevel()
   }
 
