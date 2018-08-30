@@ -57,6 +57,6 @@ case class AbsorbCellsWithTypeVictoryCondition(entityType: EntityType.Value) ext
 case class AbsorbAllOtherPlayersCondition() extends AbstractVictoryCondition[DeathProperty] {
 
   override def check(playerCellEntity: DeathProperty, entityList: ListBuffer[DeathProperty]): Boolean = {
-    !entityList.exists(entity => entity.getTypeComponent.typeEntity == EntityType.Controlled)
+    !entityList.exists(entity => entity.getTypeComponent.typeEntity == EntityType.Controlled && entity.getUUID != playerCellEntity.getUUID)
   }
 }

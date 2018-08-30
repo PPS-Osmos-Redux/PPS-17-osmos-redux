@@ -75,7 +75,7 @@
       "mapShape": "RECTANGLE",
       "height": 600,
       "base": 1000,
-      "centerX": 300,
+      "centerX": 500,
       "centerY": 300
     },
     "collisionRule": "Bouncing",
