@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
-import it.unibo.osmos.redux.ecs.components.EntityType
+import it.unibo.osmos.redux.ecs.entities.EntityType
 import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.ViewConstants
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Colors._
@@ -226,7 +226,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   private def drawEntity(drawableWrapper: DrawableWrapper, color: Color): Unit = {
     drawableWrapper.entityType match {
       case EntityType.Attractive => attractiveDrawable.draw(drawableWrapper, color)
-      case EntityType.Repulse => repulsiveDrawable.draw(drawableWrapper, color)
+      case EntityType.Repulsive => repulsiveDrawable.draw(drawableWrapper, color)
       case EntityType.AntiMatter => antiMatterDrawable.draw(drawableWrapper, color)
       case EntityType.Sentient => sentientDrawable.draw(drawableWrapper, color)
       case EntityType.Controlled => controlledDrawable.draw(drawableWrapper, color)

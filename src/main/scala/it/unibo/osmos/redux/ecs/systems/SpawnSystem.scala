@@ -1,6 +1,7 @@
 package it.unibo.osmos.redux.ecs.systems
 
 import it.unibo.osmos.redux.ecs.entities._
+import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 
 case class SpawnSystem() extends AbstractSystem[Spawner] {
 
@@ -13,7 +14,7 @@ case class SpawnSystem() extends AbstractSystem[Spawner] {
     entities foreach(e => {
       e.getSpawnerComponent.dequeueActions() foreach (a => {
         EntityManager.add(
-          CellBuilder()
+          new CellBuilder()
             .collidable(true)
             .visible(true)
             .withSpeed(a.speed)

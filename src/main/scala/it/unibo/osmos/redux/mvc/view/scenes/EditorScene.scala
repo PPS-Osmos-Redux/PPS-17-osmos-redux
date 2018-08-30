@@ -1,7 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
-import it.unibo.osmos.redux.ecs.components.EntityType
-import it.unibo.osmos.redux.ecs.entities.CellEntity
+import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityType}
 import it.unibo.osmos.redux.mvc.model.{MapShape, VictoryRules}
 import it.unibo.osmos.redux.mvc.view.ViewConstants
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
@@ -42,11 +41,11 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     * Level Type
     */
   private var levelType: ObjectProperty[MapShape] = ObjectProperty(MapShape.Circle((400, 400), 400))
-  private val levelTypeBox = new TitledComboBox[String]("Level Type:", Seq(MapShape.circle, MapShape.rectangle),{
-    case MapShape.circle => levelType.value_=(MapShape.Circle((400, 400), 400))
-    case MapShape.rectangle => levelType.value_=(MapShape.Rectangle((400, 400), 400, 400))
+  private val levelTypeBox = null /*new TitledComboBox[MapShape]("Level Type:", Seq(MapShape.Circle, MapShape.Rectangle),{
+    case MapShape.Circle => levelType.value_=(MapShape.Circle((400, 400), 400))
+    case MapShape.Rectangle => levelType.value_=(MapShape.Rectangle((400, 400), 400, 400))
     case _ =>
-  })
+  })*/
 
   /** Pane containing the field to configure the circular level */
   private val circularLevelBuilder: CircleLevelBuilder = new CircleLevelBuilder {
@@ -103,7 +102,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
           case EntityType.Matter => cellEntityBuilder.visible = true; cellEntityBuilder.entityType_=(EntityType.Matter)
           case EntityType.AntiMatter => cellEntityBuilder.visible = true; cellEntityBuilder.entityType_=(EntityType.AntiMatter)
           case EntityType.Attractive => gravityCellEntityBuilder.visible = true; gravityCellEntityBuilder.isAttractive = true
-          case EntityType.Repulse => gravityCellEntityBuilder.visible = true; gravityCellEntityBuilder.isAttractive = false
+          case EntityType.Repulsive => gravityCellEntityBuilder.visible = true; gravityCellEntityBuilder.isAttractive = false
           case EntityType.Sentient => cellEntityBuilder.visible = true; cellEntityBuilder.entityType_=(EntityType.Sentient)
           case EntityType.Controlled => cellEntityBuilder.visible = true; cellEntityBuilder.entityType_=(EntityType.Controlled)
           case _ => cellEntityBuilder.visible = true; cellEntityBuilder.entityType_=(EntityType.Matter)
@@ -134,8 +133,8 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
         EditorScene.this.content = editorElements
       })
     }
-
-    children = List(levelTypeBox.root, verticalStackPane)
+    //TODO: Fix levelTypebox
+    children = List(/*levelTypeBox.root,*/ verticalStackPane)
   }
 
   /** The main container, wrapping the other panes*/
@@ -242,7 +241,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
       case EntityType.Matter => fill.value = new ImagePattern(ImageLoader.getImage(cellTexture))
       case EntityType.AntiMatter => fill.value = new ImagePattern(ImageLoader.getImage(antiMatterTexture))
       case EntityType.Attractive => fill.value = new ImagePattern(ImageLoader.getImage(attractiveTexture))
-      case EntityType.Repulse => fill.value = new ImagePattern(ImageLoader.getImage(repulsiveTexture))
+      case EntityType.Repulsive => fill.value = new ImagePattern(ImageLoader.getImage(repulsiveTexture))
       case EntityType.Sentient => fill.value = new ImagePattern(ImageLoader.getImage(sentientTexture))
       case EntityType.Controlled => fill.value = new ImagePattern(ImageLoader.getImage(controllerTexture))
       case _ => fill.value = new ImagePattern(ImageLoader.getImage(cellTexture))

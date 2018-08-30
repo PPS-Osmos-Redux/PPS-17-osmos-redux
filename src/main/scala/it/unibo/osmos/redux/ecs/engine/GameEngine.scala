@@ -196,7 +196,7 @@ object GameEngine {
       * @return The list of all main systems
       */
     private def initMainSystems(level: Level, levelContext: LevelContext): List[System] = {
-      List(SpawnSystem(), GravitySystem(), MovementSystem(level), CollisionSystem(), CellsEliminationSystem(), DrawSystem(levelContext))
+      List(SpawnSystem(), GravitySystem(), MovementSystem(), CollisionSystem(level), CellsEliminationSystem(), DrawSystem(levelContext))
     }
   }
 }

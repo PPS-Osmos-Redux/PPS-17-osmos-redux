@@ -33,6 +33,7 @@ object FileManager {
     * @param chosenLevel  levels id
     * @return content of file wrapped into a Option
     */
+  //TODO: Proc check this
   def loadResource(chosenLevel: String, isMultiPlayer: Boolean = false): Option[Level] = {
     val levelsPath = if (isMultiPlayer) multiPlayerLevelsPath else singlePlayerLevelsPath
     Try(textToLevel(Source.fromInputStream(

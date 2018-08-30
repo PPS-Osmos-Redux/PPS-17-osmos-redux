@@ -258,7 +258,8 @@ case class ControllerImpl() extends Controller with Observer {
     levelContext.notify(event)
   }
 
-  override def saveNewCustomLevel(customLevel: Level): Boolean =
-    FileManager.saveLevel(customLevel, customLevel.levelId).isDefined
+  //TODO: Proc check this
+  override def saveNewCustomLevel(customLevel: Level): Boolean = true
+    //FileManager.saveLevel(customLevel, customLevel.levelId).isDefined
 
 }

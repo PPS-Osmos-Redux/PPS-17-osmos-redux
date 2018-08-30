@@ -33,7 +33,6 @@ object ViewConstants {
       val antiMatterTexture: String = textureFolder + "cell_dark_blue.png"
       val sentientTexture: String = textureFolder + "cell_purple.png"
       val controllerTexture: String = textureFolder + "cell_violet.png"
-
     }
 
   }

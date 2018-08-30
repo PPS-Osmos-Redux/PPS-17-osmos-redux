@@ -73,7 +73,7 @@
       "collidable": true
     },
     "typeEntity": {
-      "componentType": "Matter"
+      "componentType": "Attractive"
     },
     "position": {
       "point": {
@@ -122,7 +122,7 @@
   },
   "levelMap": {
     "mapShape": {
-      "mapShape": "RECTANGLE",
+      "mapShape": "Rectangle",
       "height": 10.1,
       "base": 5.6,
       "centerX": 50.0,

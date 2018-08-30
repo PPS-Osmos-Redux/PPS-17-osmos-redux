@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.model
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.{CellEntity, GravityCellEntity, PlayerCellEntity, SentientCellEntity}
+import it.unibo.osmos.redux.ecs.entities.{CellEntity, GravityCellEntity, PlayerCellEntity, SentientCellEntity, _}
 import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.UserStat
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
 import it.unibo.osmos.redux.utils.Point
@@ -28,7 +28,7 @@ object JsonProtocols {
 
   implicit object CollidableFormatter extends RootJsonFormat[CollidableComponent] {
     def write(collidable: CollidableComponent) =
-      JsObject("collidable" -> JsBoolean(collidable.isCollidable()))
+      JsObject("collidable" -> JsBoolean(collidable.isCollidable))
     def read(value: JsValue): CollidableComponent = {
       value.asJsObject.getFields("collidable") match {
         case Seq(JsBoolean(collidable)) => CollidableComponent(collidable)
@@ -38,7 +38,7 @@ object JsonProtocols {
   }
 
   implicit object VisibleFormatter extends RootJsonFormat[VisibleComponent] {
-    def write(visible: VisibleComponent) = JsObject("visible" -> JsBoolean(visible.isVisible()))
+    def write(visible: VisibleComponent) = JsObject("visible" -> JsBoolean(visible.isVisible))
     def read(value: JsValue): VisibleComponent = {
       value.asJsObject.getFields("visible") match {
         case Seq(JsBoolean(visible)) => VisibleComponent(visible)
@@ -121,8 +121,15 @@ object JsonProtocols {
     }
   }
 
-  implicit val specificWeightFormatter:RootJsonFormat[SpecificWeightComponent] =
-                                  jsonFormat1(SpecificWeightComponent)
+  implicit object SpecificWeightFormatter extends RootJsonFormat[SpecificWeightComponent] {
+    def write(specificWeight: SpecificWeightComponent) = JsObject("specificWeight" -> JsNumber(specificWeight.specificWeight))
+    def read(value: JsValue): SpecificWeightComponent = {
+      value.asJsObject.getFields("specificWeight") match {
+        case Seq(JsNumber(specificWeight)) => SpecificWeightComponent(specificWeight.toDouble)
+        case _ => throw DeserializationException("Specific weight component expected")
+      }
+    }
+  }
 
   implicit object GravityCellEntityFormatter extends RootJsonFormat[GravityCellEntity] {
     def write(gravityCell: GravityCellEntity) = JsObject(
@@ -272,32 +279,31 @@ object JsonProtocols {
     def write(mapShape: MapShape): JsObject = mapShape match {
       case mapShape: MapShape.Rectangle => JsObject("centerX" -> JsNumber(mapShape.center._1),
         "centerY" -> JsNumber(mapShape.center._2),
-        "mapShape" -> JsString(mapShape.mapShape),
+        "mapShape" -> JsString(mapShape.mapShape.toString),
         "height" -> JsNumber(mapShape.height),
         "base" -> JsNumber(mapShape.base))
       case mapShape: MapShape.Circle => JsObject("centerX" -> JsNumber(mapShape.center._1),
         "centerY" -> JsNumber(mapShape.center._2),
-        "mapShape" -> JsString(mapShape.mapShape),
+        "mapShape" -> JsString(mapShape.mapShape.toString),
         "radius" -> JsNumber(mapShape.radius))
       case _ => throw new SerializationException("Shape " + mapShape.mapShape + " not managed!")
     }
 
+    //TODO: Check if merge is correct (Procucci)
     def read(value: JsValue): MapShape = {
-      value.asJsObject.getFields("centerX", "centerY", "mapShape") match {
-        case Seq(JsNumber(centerX), JsNumber(centerY), JsString(MapShape.rectangle)) => {
-          value.asJsObject.getFields("height", "base") match {
-            case Seq(JsNumber(height), JsNumber(base)) =>
-              MapShape.Rectangle((centerX.toDouble, centerY.toDouble), height.toDouble, base.toDouble)
-            case _ => throw DeserializationException("Rectangular map expected")
-          }
-        }
-        case Seq(JsNumber(centerX), JsNumber(centerY), JsString(MapShape.circle)) => {
-          value.asJsObject.getFields("radius") match {
-            case Seq(JsNumber(radius)) =>
-              MapShape.Circle((centerX.toDouble, centerY.toDouble), radius.toDouble)
-            case _ => throw DeserializationException("Circular map expected")
-          }
-        }
+      val rectangle  = MapShapeType.Rectangle.toString
+      val circle  = MapShapeType.Circle.toString
+      value.asJsObject.getFields("centerX",
+        "centerY",
+        "mapShape",
+        "height",
+        "base",
+        "radius") match {
+        case Seq(JsNumber(centerX),JsNumber(centerY),JsString(`rectangle`),
+        JsNumber(height), JsNumber(base)) =>
+          MapShape.Rectangle((centerX.toDouble, centerY.toDouble), height.toDouble, base.toDouble)
+        case Seq(JsNumber(centerX),JsNumber(centerY),JsString(`circle`), JsNumber(radius)) =>
+          MapShape.Circle((centerX.toDouble, centerY.toDouble),radius.toDouble)
         case _ => throw DeserializationException("Map shape expected")
       }
     }

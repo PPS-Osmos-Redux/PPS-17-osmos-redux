@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.components.editor
 
-import it.unibo.osmos.redux.ecs.components.EntityType
-import it.unibo.osmos.redux.ecs.entities.{CellBuilder, CellEntity, GravityCellEntity}
+import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
+import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityType}
 import it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField
 import scalafx.beans.property.{DoubleProperty, ObjectProperty}
 import scalafx.scene.control.{Label, TextField}
@@ -58,7 +58,7 @@ class CellEntityBuilder extends BaseComponentBuilder[CellEntity] {
     * Method that returns a CellBuilder with the current CellEntityBuilder stored value. It can be overridden by subclasses to add other features.
     * @return the cell builder
     */
-  def getBuilder: CellBuilder = CellBuilder().visible(true)
+  def getBuilder: CellBuilder = new CellBuilder().visible(true)
     .collidable(true)
     .withPosition(x.value, y.value)
     .withSpeed(xSpeed.value, ySpeed.value)
