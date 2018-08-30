@@ -5,6 +5,8 @@ import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
 import it.unibo.osmos.redux.mvc.view.scenes._
 import scalafx.application.JFXApp
 import scalafx.scene.Parent
+import scalafx.scene.control.Alert
+import scalafx.scene.control.Alert.AlertType
 
 /**
   * Primary stage which holds and manages all the different game scenes
@@ -71,6 +73,12 @@ object OsmosReduxPrimaryStage {
 /**
   * Listener that manages all the events managed by the primary scene
   */
-trait PrimaryStageListener extends LevelSelectionSceneListener with MultiPlayerSceneListener with MultiPlayerLobbySceneListener {
+trait PrimaryStageListener extends LevelSelectionSceneListener with MultiPlayerSceneListener with MultiPlayerLobbySceneListener with DisplayErrorListener {
 
+}
+
+// TODO: check if it necessary elsewhere, otherwise can become a method of PrimaryStageListener
+trait DisplayErrorListener {
+
+  def onDisplayError(exception: Throwable): Unit
 }
