@@ -16,6 +16,7 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 case class DrawSystemSpy() extends LevelContext {
 
   private var _player: Option[DrawableWrapper] = None
+  private var _playerUUID: String = _
   private var _entities: Seq[DrawableWrapper] = Seq()
   protected var _listener: Option[LevelContextListener] = Option.empty
 
@@ -45,9 +46,9 @@ case class DrawSystemSpy() extends LevelContext {
 
   override def setListener(levelContextListener: LevelContextListener): Unit = _listener = Option(levelContextListener)
 
-  override def getPlayerUUID: String = ""
+  override def getPlayerUUID: String = _playerUUID
 
-  override def setPlayerUUID(playerUUID: String): Unit = ???
+  override def setPlayerUUID(playerUUID: String): Unit = _playerUUID = playerUUID
 }
 
 /**
@@ -98,6 +99,7 @@ class TestDrawSystem extends FunSuite with BeforeAndAfter {
     val system = DrawSystem(spy)
     val pce = PlayerCellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity, spawner)
     EntityManager.add(pce)
+    spy.setPlayerUUID(pce.getUUID)
     system.update()
     assert(spy.player.isDefined)
   }
@@ -107,6 +109,7 @@ class TestDrawSystem extends FunSuite with BeforeAndAfter {
     val system = DrawSystem(spy)
     val pce = PlayerCellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity, spawner)
     EntityManager.add(pce)
+    spy.setPlayerUUID(pce.getUUID)
     system.update()
     val playerWrapped = spy.player.get
     assert(playerWrapped.center.equals(pce.getPositionComponent.point))

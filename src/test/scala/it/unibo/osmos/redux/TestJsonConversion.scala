@@ -36,7 +36,7 @@ class TestJsonConversion extends FunSuite{
   val listShape:List[MapShape] = List(rectangle, circle)
   val levelMap:LevelMap = LevelMap(rectangle, CollisionRules.bouncing)
   //Level
-  val level:Level = Level("1",
+  val level:Level = Level(1,
     levelMap,
     listCell,
     VictoryRules.becomeTheBiggest)
@@ -121,7 +121,6 @@ class TestJsonConversion extends FunSuite{
   }
 
   //TODO: Fix this test
-<<<<<<< HEAD
   test("File reading and conversion (SinglePlayer + MultiPlayer)") {
     val spConvertedLevel = FileManager.loadResource(1.toString)
     assert(spConvertedLevel.isDefined)
@@ -135,20 +134,6 @@ class TestJsonConversion extends FunSuite{
 //    assert(mpConvertedLevel.get.levelMap.equals(level.levelMap))
 //    assert(mpConvertedLevel.get.victoryRule.equals(level.victoryRule))
 //    assert(mpConvertedLevel.get.entities.size.equals(level.entities.size))
-=======
-  test("File reading and conversion") {
-    val convertedLevel: Level = FileManager.loadResource(isSimulation = false,1) match {
-      case Success(value) => value
-      case Failure(exception) =>
-        exception.printStackTrace()
-        null
-    }
-    assert(convertedLevel != null)
-    assert(convertedLevel.levelId.equals(level.levelId))
-    assert(convertedLevel.levelMap.equals(level.levelMap))
-    assert(convertedLevel.victoryRule.equals(level.victoryRule))
-    assert(convertedLevel.entities.size.equals(level.entities.size))
->>>>>>> develop
   }
 
   test("Writing and reading custom level") {
