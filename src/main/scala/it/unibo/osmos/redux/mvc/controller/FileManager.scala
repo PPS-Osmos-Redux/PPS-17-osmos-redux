@@ -8,6 +8,7 @@ import it.unibo.osmos.redux.mvc.model._
 import spray.json._
 import it.unibo.osmos.redux.mvc.model.JsonProtocols._
 import scala.io.{BufferedSource, Source}
+import scala.language.postfixOps
 import scala.util.Try
 
 object FileManager {

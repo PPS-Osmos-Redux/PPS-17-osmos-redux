@@ -66,6 +66,7 @@ case class ControllerImpl() extends Controller with GameStateHolder {
     * @return a GameStateEventWrapper
     *///TODO useless for controller
   override def gameCurrentState: GameStateEventWrapper = ???
+
   //TODO: need MediaPlayer
   override def getSoundPath(soundType: String): String = ???
 
