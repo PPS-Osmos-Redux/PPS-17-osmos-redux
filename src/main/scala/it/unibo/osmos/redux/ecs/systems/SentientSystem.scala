@@ -30,16 +30,16 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
 
   override protected def getGroupProperty: Class[SentientProperty] = classOf[SentientProperty]
 
-  override def update(): Unit = entities foreach(sentient => {
+  override def update(): Unit = entities.filter(e => e.getCollidableComponent.isCollidable)
+    .foreach(sentient => {
+      val escapeAcceleration = escapeFromEnemies(sentient, findEnemies(sentient, entitiesSecondType))
+      val followTargetAcceleration = findTarget(sentient, entitiesSecondType, escapeAcceleration) match {
+        case Some(target) => followTarget(sentient, target)
+        case _ => Vector.zero()
+      }
 
-    val escapeAcceleration = escapeFromEnemies(sentient, findEnemies(sentient, entitiesSecondType))
-    val followTargetAcceleration = findTarget(sentient, entitiesSecondType, escapeAcceleration) match {
-      case Some(target) => followTarget(sentient, target)
-      case _ => Vector.zero()
-    }
-
-    applyAcceleration(sentient, escapeAcceleration, followTargetAcceleration)
-  })
+      applyAcceleration(sentient, escapeAcceleration, followTargetAcceleration)
+    })
 
   /**
     * apply a acceleration to the sentient to follow the target
@@ -60,13 +60,14 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
     */
   private def findTarget(sentient: SentientProperty, enemies: ListBuffer[SentientEnemyProperty], escapeAcceleration: Vector): Option[SentientEnemyProperty] = {
     val escapeVelocity = sentient.getSpeedComponent.vector add (escapeAcceleration limit MAX_ACCELERATION)
-    enemies.filter(e => !(e.getTypeComponent.typeEntity == EntityType.AntiMatter) &&
-               sentient.getDimensionComponent.radius > e.getDimensionComponent.radius)
-           .map(e => (e, targetCoefficient(sentient, e, escapeVelocity)))
-           .filter(e => e._2 > 0) match {
-      case list if list.isEmpty => None
-      case list => Some(list.max(Ordering.by((d: (SentientEnemyProperty, Double)) => d._2))._1)
-    }
+    enemies.filter(e => e.getCollidableComponent.isCollidable &&
+        !(e.getTypeComponent.typeEntity == EntityType.AntiMatter) &&
+        sentient.getDimensionComponent.radius > e.getDimensionComponent.radius)
+      .map(e => (e, targetCoefficient(sentient, e, escapeVelocity)))
+      .filter(e => e._2 > 0) match {
+        case list if list.isEmpty => None
+        case list => Some(list.max(Ordering.by((d: (SentientEnemyProperty, Double)) => d._2))._1)
+      }
   }
 
   /**
@@ -92,8 +93,9 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
     * @return list of sentient's enemies
     */
   private def findEnemies(sentient: SentientProperty, enemies: ListBuffer[SentientEnemyProperty]): List[SentientEnemyProperty] =
-    enemies.filter(e => e.getTypeComponent.typeEntity == EntityType.AntiMatter ||
-                  sentient.getDimensionComponent.radius < e.getDimensionComponent.radius) toList
+    enemies.filter(e => e.getCollidableComponent.isCollidable &&
+                  (e.getTypeComponent.typeEntity == EntityType.AntiMatter ||
+                  sentient.getDimensionComponent.radius < e.getDimensionComponent.radius)) toList
 
   /**
     * apply acceleration to run away from all enemies
