@@ -4,17 +4,24 @@
   -fx-background-size: cover;
 }
 
-.default-style-button {
-  -fx-background-color: gray;
+.default-button-style {
   -fx-background-radius: 30;
-  -fx-background-insets: 0,0,0,0;
+  -fx-background-insets: 0, 0, 0, 0;
   -fx-text-fill: black;
-  -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 3, 0.0 , 0 , 1 );
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 3, 0.0, 0, 1);
   -fx-font-size: 24px;
   -fx-pref-width: 220px;
 }
 
-.default-style-button:hover {
+.enabled-button-style {
+  -fx-background-color: gray;
+}
+
+.enabled-button-style:hover {
   -fx-background-color: white;
   -fx-font-weight: bold;
+}
+
+.disabled-button-style {
+  -fx-background: #dddddd;
 }
