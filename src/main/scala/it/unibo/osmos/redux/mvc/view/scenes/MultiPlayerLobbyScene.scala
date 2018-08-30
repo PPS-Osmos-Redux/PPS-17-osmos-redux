@@ -81,7 +81,7 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     onAction = _ => lobbyContext match {
       /* We notify the lobby observer that we exited the lobby */
       case Some(lc) =>
-        lc notifyLobbyEvent LobbyEventWrapper(AbortLobby, user)
+        lc notifyLobbyEvent LobbyEventWrapper(AbortLobby, Some(user))
         upperSceneListener.onLobbyExited()
       case _ =>
     }
