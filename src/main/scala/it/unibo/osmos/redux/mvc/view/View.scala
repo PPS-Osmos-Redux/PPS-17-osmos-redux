@@ -51,7 +51,7 @@ object View {
       case _ =>
     }
 
-    override def onLevelContextCreated(levelContext: LevelContext, level: Int): Unit = checkController(() =>controller.get.initLevel(levelContext, level))
+    override def onLevelContextCreated(levelContext: LevelContext, level: Int): Unit = checkController(() => controller.get.initLevel(levelContext, level))
 
     override def onStartLevel(): Unit = checkController(() => controller.get.startLevel())
 

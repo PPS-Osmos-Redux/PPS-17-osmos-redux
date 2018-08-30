@@ -81,7 +81,7 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     onAction = _ => lobbyContext match {
       /* We notify the lobby observer that we exited the lobby */
       case Some(lc) =>
-        lc notifyLobbyEvent LobbyEventWrapper(AbortLobby, Some(user))
+        lc notifyLobbyEvent LobbyEventWrapper(AbortLobby, user)
         upperSceneListener.onLobbyExited()
       case _ =>
     }
@@ -124,9 +124,11 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
   override def onMultiPlayerGameStarted(multiPlayerLevelContext: MultiPlayerLevelContext): Unit = {
     /* Creating a multiplayer level*/
     val multiPlayerLevelScene = new MultiPlayerLevelScene(parentStage, listener, () => parentStage.scene = this)
+
+    multiPlayerLevelContext.setListener(multiPlayerLevelScene)
     multiPlayerLevelScene.levelContext = multiPlayerLevelContext
 
-    //requires UI thread execution
+    //TODO: requires main thread execution
     Platform.runLater({ parentStage.scene = multiPlayerLevelScene })
   }
 
