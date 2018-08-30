@@ -216,7 +216,6 @@ case class ControllerImpl() extends Controller with Observer {
         //assign clients to players and wait confirmation
         server.get.initGame(loadedLevel).future onComplete {
           case Success(_) =>
-
             //create the engine
             if (engine.isEmpty) engine = Some(GameEngine())
             //initialize the engine and let him create the levelContext
@@ -229,8 +228,6 @@ case class ControllerImpl() extends Controller with Observer {
             promise success true
           case Failure(t) => promise failure t
         }
-        //fulfill the promise
-        promise success true
       case _ =>
         promise failure new IllegalStateException("Unable to initialize multi-player level if no lobby have been created.")
     }
