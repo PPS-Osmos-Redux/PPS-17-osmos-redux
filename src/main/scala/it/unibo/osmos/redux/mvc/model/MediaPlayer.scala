@@ -20,22 +20,22 @@ object MediaPlayer {
   private var buttonAudioClip:Option[AudioClip] = None
   private var generalVolume:Double = 1
 
-
   def setController(controller: Controller): Unit = this.controller = Some(controller)
 
   /**
     * Play a sound
     * @param sound the sound to play
     */
-  def play(sound:SoundsType.Value): Unit = {
-    val soundPath = controller.get.getSoundPath(sound)
-    if(soundPath.isDefined) {
-      sound match {
-        case s if s.equals(SoundsType.level) || s.equals(SoundsType.menu) => checkMediaPlayerStatus(soundPath.get)
-        case SoundsType.button => playButtonSound(soundPath.get)
-        case _ => println("Sound not managed! [MediaPlayer play]")
-      }
-    }
+  def play(sound:SoundsType.Value): Unit = controller match {
+    case Some(_) => val soundPath = controller.get.getSoundPath(sound)
+                    if(soundPath.isDefined) {
+                      sound match {
+                        case s if s.equals(SoundsType.level) || s.equals(SoundsType.menu) => checkMediaPlayerStatus(soundPath.get)
+                        case SoundsType.button => playButtonSound(soundPath.get)
+                        case _ => println("Sound not managed! [MediaPlayer play]")
+                      }
+                    }
+    case _ => println("Error: controller is not defined [MediaPlayer play]")
   }
 
   /**
@@ -59,6 +59,21 @@ object MediaPlayer {
       case _ => generalVolume = volume
     }
     updateMPVolume()
+  }
+
+  /**
+    * Return current application volume
+    * @return application volume
+    */
+  def getVolume: Double = generalVolume
+
+  /**
+    * Return current media player status
+    * @return Option of MediaPlayer.Status
+    */
+  def getMediaPlayerStatus: Option[Status] = mediaPlayer match {
+    case Some(mp) => Option(mp.getStatus)
+    case _ => None
   }
 
   private def updateMPVolume(): Unit = if(mediaPlayer.isDefined) mediaPlayer.get.setVolume(generalVolume)

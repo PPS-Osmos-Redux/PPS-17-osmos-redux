@@ -31,7 +31,6 @@ class TestLevelsProgression extends FunSuite with BeforeAndAfter {
   }
 
   test("Test user statistics") {
-    println(SinglePlayerLevels.toDoLevel)
     assert(SinglePlayerLevels.toDoLevel.equals(SinglePlayerLevels.getLevels.head.name))
 
     SinglePlayerLevels.newEndGameEvent(GameWon, SinglePlayerLevels.getLevels.head.name)
