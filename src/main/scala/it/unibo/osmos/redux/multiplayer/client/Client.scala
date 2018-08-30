@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.multiplayer.client
 import akka.actor.{ActorRef, PoisonPill}
 import akka.pattern.ask
 import akka.util.Timeout
-import it.unibo.osmos.redux.multiplayer.client.ClientActor.LeaveLobby
+import it.unibo.osmos.redux.multiplayer.client.ClientActor.{LeaveGame, LeaveLobby}
 import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.multiplayer.lobby.GameLobby
 import it.unibo.osmos.redux.multiplayer.players.BasePlayer
@@ -180,9 +180,10 @@ object Client {
     override def kill(): Unit = {
       Logger.log("kill")
 
-      if (ref.nonEmpty) {
-        ref.get ! PoisonPill
-        ref = None
+      if (lobby.nonEmpty && server.nonEmpty) {
+        if (uuid.nonEmpty && levelContext.nonEmpty) server.get ! LeaveGame(username)
+        else server.get ! LeaveLobby(username)
+        lobby = None
       }
       if (levelContext.nonEmpty) {
         levelContext = None
@@ -190,8 +191,9 @@ object Client {
       if (server.nonEmpty) {
         server = None
       }
-      if (lobby.nonEmpty) {
-        lobby = None
+      if (ref.nonEmpty) {
+        ref.get ! PoisonPill
+        ref = None
       }
     }
 

@@ -161,12 +161,17 @@ object Server {
     override def kill(): Unit = {
       Logger.log("kill")
 
-      if (ref.nonEmpty) {
-        ref.get ! PoisonPill
-        ref = None
+      status match {
+        case ServerState.Game => broadcastMessage(GameEnded(false))
+        case ServerState.Lobby => broadcastMessage(LobbyClosed)
+        case _ => //do nothing is other states
       }
       if (lobby.nonEmpty) {
         lobby = None
+      }
+      if (ref.nonEmpty) {
+        ref.get ! PoisonPill
+        ref = None
       }
 
       status = ServerState.Dead
