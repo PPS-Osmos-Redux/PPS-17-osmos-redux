@@ -2,6 +2,7 @@ package it.unibo.osmos.redux.mvc.view.context
 
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.events._
+import it.unibo.osmos.redux.utils.Logger
 
 /**
   * Basic LobbyContext trait, seen as a LobbyEvent wrapper and a User container
@@ -58,9 +59,9 @@ object LobbyContext {
           case LobbyEventWrapper(StartGame(multiPlayerLevelContext), _) => l.onMultiPlayerGameStarted(multiPlayerLevelContext)
           /* The lobby has been aborted, we have to go back */
           case LobbyEventWrapper(AbortLobby, _) => l.onLobbyAborted()
-          case _ =>
+          case _ => Logger.log(s"Unknown lobby event received: $event")("LobbyContext")
         }
-      case _ =>
+      case _ => Logger.log("Cannot notify listener about the new lobby event because is not set")("LobbyContext")
 
     }
 
@@ -73,7 +74,7 @@ object LobbyContext {
 
     override def notifyLobbyEvent(event: LobbyEventWrapper): Unit = lobbyContextObserver match {
       case Some(lco) => lco.notify(event)
-      case _ =>
+      case _ => Logger.log("Cannot notify observer with the new lobby event becase is not set")("LobbyContext")
     }
   }
 

@@ -3,6 +3,7 @@ package it.unibo.osmos.redux.mvc.view.context
 import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.drawables.{DrawableWrapper, EntitiesDrawer}
 import it.unibo.osmos.redux.mvc.view.events._
+import it.unibo.osmos.redux.utils.Logger
 
 /**
   * Trait modelling the context of a level
@@ -89,17 +90,17 @@ object LevelContext {
 
     override def setupLevel(mapShape: MapShape): Unit = listener match {
       case Some(l) => l.onLevelSetup(mapShape)
-      case _ =>
+      case _ => Logger.log("Cannot setup level because listener is not set")("LevelContext")
     }
 
     override def notifyMouseEvent(event: MouseEventWrapper): Unit = mouseEventObserver match {
       case Some(meo) => meo.notify(event)
-      case _ =>
+      case _ => Logger.log("Cannot notify mouse event because listener is not set")("LevelContext")
     }
 
     override def drawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = listener match {
       case Some(l) => l.onDrawEntities(playerEntity, entities)
-      case _ =>
+      case _ => Logger.log("Cannot draw entities because listener is not set")("LevelContext")
     }
 
     override def subscribe(eventObserver: EventWrapperObserver[MouseEventWrapper]): Unit = mouseEventObserver = Option(eventObserver)
