@@ -27,6 +27,7 @@ object VictoryRules extends Enumeration {
   val becomeHuge: VictoryRules.Value = Value("Become_huge")
   val absorbTheRepulsors: VictoryRules.Value = Value("Absorb_the_repulsors")
   val absorbTheHostileCells: VictoryRules.Value = Value("Absorb_the_hostile_cells")
+  val absorbAllOtherPlayers: VictoryRules.Value = Value("Absorb_all_other_players")
 }
 
 /**

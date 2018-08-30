@@ -20,6 +20,7 @@ case class MultiPlayerEndGameSystem(server: Server, levelContext: GameStateHolde
     case VictoryRules.becomeHuge => BecomeHugeVictoryCondition()
     case VictoryRules.absorbTheRepulsors => AbsorbCellsWithTypeVictoryCondition(EntityType.Repulse)
     case VictoryRules.absorbTheHostileCells => AbsorbCellsWithTypeVictoryCondition(EntityType.Sentient)
+    case VictoryRules.absorbAllOtherPlayers => AbsorbAllOtherPlayersCondition()
     case _ => throw new NotImplementedError()
   }
 
@@ -30,7 +31,7 @@ case class MultiPlayerEndGameSystem(server: Server, levelContext: GameStateHolde
   override def update(): Unit = {
     if (levelContext.gameCurrentState == GamePending) {
 
-      val (alivePlayers, deadPlayers) = server.getLobbyPlayers partition(p => entities.map(_.getUUID) contains p.getUsername)
+      val (deadPlayers, alivePlayers) = server.getLobbyPlayers partition(p => entities.map(_.getUUID) contains p.getUsername)
       val aliveCells = entitiesSecondType.filterNot(c => deadPlayers.map(_.getUUID) contains c.getUUID)
 
       //notify all dead players and remove them

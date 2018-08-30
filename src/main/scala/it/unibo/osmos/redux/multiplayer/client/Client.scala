@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.multiplayer.client
 import akka.actor.{ActorRef, PoisonPill}
 import akka.pattern.ask
 import akka.util.Timeout
-import it.unibo.osmos.redux.multiplayer.client.ClientActor.{LeaveGame, LeaveLobby}
+import it.unibo.osmos.redux.multiplayer.client.ClientActor.{LeaveGame, LeaveLobby, PlayerInput}
 import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.multiplayer.lobby.GameLobby
 import it.unibo.osmos.redux.multiplayer.players.BasePlayer
@@ -214,6 +214,8 @@ object Client {
     override def startGame(uuid: String, mapShape: MapShape): Unit = {
       //save entity uuid
       this.uuid = uuid
+      //update level context uuid
+      levelContext.get.setPlayerUUID(uuid)
       //notify lobby that the game is started (prepares the view)
       lobby.get.notifyGameStarted(levelContext.get)
       //actually starts the game
@@ -240,7 +242,7 @@ object Client {
     override def signalPlayerInput(event: MouseEventWrapper): Unit = {
       Logger.log("signalPlayerInput")
 
-      server.get ! ClientActor.PlayerInput(event)
+      server.get ! PlayerInput(event)
     }
 
     //LOBBY
