@@ -1,6 +1,7 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
+import it.unibo.osmos.redux.ecs.entities.builders.{CellBuilder, SentientCellBuilder}
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager, EntityType, SentientCellEntity}
 import it.unibo.osmos.redux.ecs.systems.SentientSystem
 import it.unibo.osmos.redux.utils.Point
@@ -47,6 +48,19 @@ class TestSentientSystem extends FunSuite with BeforeAndAfter{
     EntityManager.add(sentienCellEntity)
     system.update()
     assert(sentienCellEntity.getAccelerationComponent.vector.x === 0.1 +- TOLERANCE)
+    assert(sentienCellEntity.getAccelerationComponent.vector.y === 0.0 +- TOLERANCE)
+  }
+
+  test("Acceleration of SentientCellEntity should choose the correct target and change its acceleration accordingly") {
+    val cellEntity = new CellBuilder().withPosition(4,4).withDimension(4).build
+    val cellEntity1 = new CellBuilder().withPosition(8,16).withDimension(2).build
+    val sentienCellEntity = SentientCellBuilder().withPosition(14,7).withDimension(5).withSpeed(-2,3.5).build
+    val system = SentientSystem()
+    EntityManager.add(cellEntity)
+    EntityManager.add(cellEntity1)
+    EntityManager.add(sentienCellEntity)
+    system.update()
+    assert(sentienCellEntity.getAccelerationComponent.vector.x === 0.0 +- TOLERANCE)
     assert(sentienCellEntity.getAccelerationComponent.vector.y === 0.0 +- TOLERANCE)
   }
 
