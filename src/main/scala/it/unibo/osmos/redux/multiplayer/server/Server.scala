@@ -216,7 +216,7 @@ object Server {
     override def startGame(levelContext: MultiPlayerLevelContext): Unit = {
       Logger.log("startGame")
 
-      lobby.get.notifyGameStarted(levelContext, asServer = true)
+      lobby.get.notifyGameStarted(levelContext)
       status = ServerState.Game
     }
 

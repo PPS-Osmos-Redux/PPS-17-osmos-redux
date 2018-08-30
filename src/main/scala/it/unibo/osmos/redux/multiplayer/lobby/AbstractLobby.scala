@@ -10,11 +10,9 @@ abstract class AbstractLobby[T <: Player](private val lobbyContext: LobbyContext
   /**
     * Notify to lobby context that the game is started passing the context of the level to play.
     * @param levelContext The level context
-    * @param asServer If the game needs to be started as server or not (optional, default false)
     */
-  def notifyGameStarted(levelContext: MultiPlayerLevelContext, asServer: Boolean = false): Unit = {
-    if (asServer) lobbyContext.notifyLobbyEvent(LobbyEventWrapper(StartGame(levelContext), None))
-    else lobbyContext.notify(LobbyEventWrapper(StartGame(levelContext), None))
+  def notifyGameStarted(levelContext: MultiPlayerLevelContext): Unit = {
+    lobbyContext.notify(LobbyEventWrapper(StartGame(levelContext), None))
   }
 
   /**
