@@ -185,7 +185,7 @@ case class ControllerImpl() extends Controller with Observer {
             case Success(true) =>
               this.client = Some(client)
               //creates the level context
-              val levelContext = LevelContext("dummy") //TODO: think about a better way, technically clients will never need to call geUUID in levelContext
+              val levelContext = LevelContext("<dummy>") //TODO: think about a better way, technically getUUID method of the client won't be called until the game is started (the GameStarted message will carry along this value).
               //initializes the game
               client.initGame(levelContext)
               //fulfill promise
@@ -223,6 +223,8 @@ case class ControllerImpl() extends Controller with Observer {
 
             //signal server that the game is ready to be started
             server.get.startGame(levelContext)
+            //tell view to actually start the game
+            levelContext.setupLevel(loadedLevel.levelMap.mapShape)
 
             //fulfill the promise
             promise success true

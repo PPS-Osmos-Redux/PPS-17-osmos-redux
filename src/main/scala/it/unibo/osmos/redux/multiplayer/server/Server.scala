@@ -161,12 +161,17 @@ object Server {
     override def kill(): Unit = {
       Logger.log("kill")
 
-      if (ref.nonEmpty) {
-        ref.get ! PoisonPill
-        ref = None
+      status match {
+        case ServerState.Game => broadcastMessage(GameEnded(false))
+        case ServerState.Lobby => broadcastMessage(LobbyClosed)
+        case _ => //do nothing is other states
       }
       if (lobby.nonEmpty) {
         lobby = None
+      }
+      if (ref.nonEmpty) {
+        ref.get ! PoisonPill
+        ref = None
       }
 
       status = ServerState.Dead
@@ -200,7 +205,7 @@ object Server {
       val promise = Promise[Boolean]()
 
       //assign player cells to lobby players
-      val futures = assignCellsToPlayers(level)
+      val futures = setupClients(level)
       Future.sequence(futures) onComplete {
         case Success(_) => promise success true
         case Failure(t) => promise failure t
@@ -211,7 +216,7 @@ object Server {
     override def startGame(levelContext: MultiPlayerLevelContext): Unit = {
       Logger.log("startGame")
 
-      lobby.get.notifyGameStarted(levelContext, asServer = true)
+      lobby.get.notifyGameStarted(levelContext)
       status = ServerState.Game
     }
 
@@ -239,7 +244,7 @@ object Server {
       if (notify) player.get.getActorRef ! GameEnded(false)
 
       val playerEntity = EntityManager.filterEntities(classOf[PlayerCellEntity]).find(_.getUUID == player.get.getUUID)
-      if (player.isEmpty) throw new IllegalArgumentException("Cannot remove player cell from game because it was not found.")
+      if (playerEntity.isEmpty) throw new IllegalArgumentException("Cannot remove player cell from game because it was not found.")
 
       EntityManager.delete(playerEntity.get)
       lobby.get.removePlayer(username)
@@ -314,7 +319,7 @@ object Server {
 
     //HELPER METHODS
 
-    private def assignCellsToPlayers(level: Level): Seq[Future[Any]] = {
+    private def setupClients(level: Level): Seq[Future[Any]] = {
       Logger.log("assignCellsToPlayers")
 
       val availablePlayerCells = level.entities.filter(_.isInstanceOf[PlayerCellEntity]).map(p => Some(p.getUUID))
@@ -325,8 +330,11 @@ object Server {
       //assign first available player cell to the server
       this.uuid = availablePlayerCells.head.get
 
+      //get map shape and send to the clients along with the assigned uuid
+      val mapShape = level.levelMap.mapShape
+
       otherPlayers.zipAll(availablePlayerCells.tail, null, None).map {
-        case (p, Some(id)) =>  p.setUUID(id); p.getActorRef ? GameStarted(id)
+        case (p, Some(id)) =>  p.setUUID(id); p.getActorRef ? GameStarted(id, mapShape)
         case (_, None) => throw new IllegalStateException("Not enough player cells for all the clients")
       }
     }

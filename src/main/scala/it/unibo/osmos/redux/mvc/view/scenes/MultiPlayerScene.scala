@@ -33,6 +33,8 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
     maxValue = 65535
   }
 
+  private val startButtonText: StringProperty = StringProperty("Go to lobby")
+
   private val mode: BooleanProperty = BooleanProperty(false) //default client
   private val modeComboBox = new TitledComboBox[String]("Mode: ", Seq("Client", "Server"), {
     case "Client" =>
@@ -41,10 +43,12 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
       portTitle.setValue("Server port:")
       if (addressValue.getValue.equals(NetworkUtils.getLocalIPAddress)) addressValue.setValue("")
       portTextField.node.setText("0")
+      startButtonText.setValue("Go to lobby")
     case "Server" =>
       mode.value = true
       addressTitle.setValue("Address:")
       portTitle.setValue("Port:")
+      startButtonText.setValue("Create lobby")
       if (addressValue.isEmpty.get()) addressValue.setValue(NetworkUtils.getLocalIPAddress)
       if (!portTextField.node.getText.equals("0")) portTextField.node.setText("0")
   }, vertical = false)
@@ -76,7 +80,8 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
     })
   }
 
-  private val goToLobby = new StyledButton("Go to lobby") {
+  private val goToLobby = new StyledButton("Go To Lobby") {
+    text <== startButtonText
     onAction = _ => {
       /* We create the User */
       val user = User(username.value, addressValue.value, portValue.value, isServer = mode.value)

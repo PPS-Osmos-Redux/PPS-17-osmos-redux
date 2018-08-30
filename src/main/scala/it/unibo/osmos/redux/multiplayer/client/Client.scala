@@ -3,15 +3,16 @@ package it.unibo.osmos.redux.multiplayer.client
 import akka.actor.{ActorRef, PoisonPill}
 import akka.pattern.ask
 import akka.util.Timeout
-import it.unibo.osmos.redux.multiplayer.client.ClientActor.LeaveLobby
+import it.unibo.osmos.redux.multiplayer.client.ClientActor.{LeaveGame, LeaveLobby, PlayerInput}
 import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.multiplayer.lobby.GameLobby
 import it.unibo.osmos.redux.multiplayer.players.BasePlayer
 import it.unibo.osmos.redux.multiplayer.server.ServerActor._
+import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, MultiPlayerLevelContext}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity
-import it.unibo.osmos.redux.mvc.view.events.{GamePending, GameStateEventWrapper, MouseEventWrapper}
+import it.unibo.osmos.redux.mvc.view.events.{GameLost, GameWon, MouseEventWrapper}
 import it.unibo.osmos.redux.utils.{Constants, Logger}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -44,12 +45,6 @@ trait Client {
   def getUUID: String
 
   /**
-    * Sets the uuid of the cell entity that represents this client.
-    * @param uuid The uuid
-    */
-  def setUUID(uuid: String): Unit
-
-  /**
     * Kills this instance.
     */
   def kill(): Unit
@@ -59,6 +54,19 @@ trait Client {
     * @param levelContext The level context.
     */
   def initGame(levelContext: MultiPlayerLevelContext): Unit
+
+  /**
+    * Starts the game.
+    * @param uuid The entity uuid assigned to this client by the server
+    * @param mapShape The shape of the level
+    */
+  def startGame(uuid: String, mapShape: MapShape): Unit
+
+  /**
+    * Stops the game.
+    * @param victorious If this client won or not.
+    */
+  def stopGame(victorious: Boolean): Unit
 
   /**
     * Leaves the game.
@@ -107,12 +115,6 @@ trait Client {
     * @param event The event.
     */
   def signalPlayerInput(event: MouseEventWrapper): Unit
-
-  /**
-    * Notifies the client that the game status have changed.
-    * @param status The current status of the game.
-    */
-  def notifyGameStatusChanged(status: GameStateEventWrapper): Unit
 
   /**
     * Notifies the client to redraw.
@@ -175,14 +177,13 @@ object Client {
 
     override def getUUID: String = uuid
 
-    override def setUUID(uuid: String): Unit = this.uuid = uuid
-
     override def kill(): Unit = {
       Logger.log("kill")
 
-      if (ref.nonEmpty) {
-        ref.get ! PoisonPill
-        ref = None
+      if (lobby.nonEmpty && server.nonEmpty) {
+        if (uuid.nonEmpty && levelContext.nonEmpty) server.get ! LeaveGame(username)
+        else server.get ! LeaveLobby(username)
+        lobby = None
       }
       if (levelContext.nonEmpty) {
         levelContext = None
@@ -190,8 +191,9 @@ object Client {
       if (server.nonEmpty) {
         server = None
       }
-      if (lobby.nonEmpty) {
-        lobby = None
+      if (ref.nonEmpty) {
+        ref.get ! PoisonPill
+        ref = None
       }
     }
 
@@ -207,8 +209,24 @@ object Client {
       levelContext.subscribe(e => { signalPlayerInput(e) })
 
       this.levelContext = Some(levelContext)
+    }
 
-      //TODO: probably from now lobby is no more useful
+    override def startGame(uuid: String, mapShape: MapShape): Unit = {
+      //save entity uuid
+      this.uuid = uuid
+      //update level context uuid
+      levelContext.get.setPlayerUUID(uuid)
+      //notify lobby that the game is started (prepares the view)
+      lobby.get.notifyGameStarted(levelContext.get)
+      //actually starts the game
+      levelContext.get.setupLevel(mapShape)
+    }
+
+    override def stopGame(victorious: Boolean): Unit = {
+      Logger.log("notifyGameStatusChanged")
+
+      //game is won or lost
+      levelContext.get.notify(if (victorious) GameWon else GameLost)
     }
 
     override def leaveGame(): Unit = {
@@ -224,7 +242,7 @@ object Client {
     override def signalPlayerInput(event: MouseEventWrapper): Unit = {
       Logger.log("signalPlayerInput")
 
-      server.get ! ClientActor.PlayerInput(event)
+      server.get ! PlayerInput(event)
     }
 
     //LOBBY
@@ -264,6 +282,15 @@ object Client {
       closeLobby()
     }
 
+    override def closeLobby(byServer: Boolean = false): Unit = {
+      Logger.log("clearLobby")
+
+      if (lobby.nonEmpty) {
+        lobby.get.notifyLobbyClosed(byServer)
+        lobby = None
+      }
+    }
+
     override def getLobbyPlayers: Seq[BasePlayer] = {
       Logger.log("getLobbyPlayers")
 
@@ -282,29 +309,7 @@ object Client {
       lobby.get.removePlayer(username)
     }
 
-    override def closeLobby(byServer: Boolean = false): Unit = {
-      Logger.log("clearLobby")
-
-      if (lobby.nonEmpty) {
-        lobby.get.notifyLobbyClosed(byServer)
-        lobby = None
-      }
-    }
-
     //OBSERVERS MANAGEMENT
-
-    override def notifyGameStatusChanged(status: GameStateEventWrapper): Unit = {
-      Logger.log("notifyGameStatusChanged")
-
-      status match {
-        case GamePending =>
-          //notify lobby that the game is started (prepares the view)
-          lobby.get.notifyGameStarted(levelContext.get)
-        case gameState =>
-          //game is won or lost
-          levelContext.get.notify(gameState)
-      }
-    }
 
     override def notifyRedraw(entities: Seq[DrawableEntity]): Unit = {
       Logger.log("notifyRedraw")
