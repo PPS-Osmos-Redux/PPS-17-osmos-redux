@@ -24,7 +24,7 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
   protected val levelsContainer: TilePane = new TilePane() {
     alignmentInParent = Pos.Center
     alignment = Pos.Center
-    prefColumns = numLevels
+    prefColumns = levels.size
     prefRows = 1
     prefHeight <== parentStage.height
   }
@@ -39,18 +39,17 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
   /* Setting the root container*/
   root = container
 
-  //TODO: get the proper number of levels
   /**
-    * The number of levels
-    * @return the number of levels
+    * The levels shown
+    * @return the list of levels as tuples where the first element is the name and the second a boolean (true if the level is available, false otherwise)
     */
-  def numLevels: Int = 5
+  def levels: List[(String, Boolean)] = listener.getSingleLevels
 
-  //TODO: parse actual available values
   /**
     * This method loads the level into the level container, thus letting the player choose them
     */
-  def loadLevels(): Unit = for (i <- 1 to numLevels) levelsContainer.children.add(new LevelNode(LevelSelectionScene.this, i, i == 1))
+  //TODO: FIX HERE STRING OR INT?
+  def loadLevels(): Unit = levels foreach((level) => levelsContainer.children.add(new LevelNode(LevelSelectionScene.this, 1 /*level._1*/, level._2)))
 
   override def onFullScreenSettingClick(): Unit = {
     parentStage.fullScreen = !parentStage.fullScreen.get()
@@ -84,4 +83,10 @@ trait LevelSelectionSceneListener extends LevelSceneListener {
     * @param level the new level index
     */
   def onLevelContextCreated(levelContext: LevelContext, level: Int)
+
+  /**
+    * This method retrieves the levels that must be shown as node
+    * @return a list of tuples where a single tuple represent a level name and a boolean (true if available, false otherwise)
+    */
+  def getSingleLevels: List[(String, Boolean)]
 }

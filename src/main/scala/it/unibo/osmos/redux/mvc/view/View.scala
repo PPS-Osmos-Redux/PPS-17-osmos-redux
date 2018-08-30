@@ -40,7 +40,6 @@ object View {
 
     implicit val ec: ExecutionContextExecutor = ExecutionContext.global
 
-
     app.stage = OsmosReduxPrimaryStage(this)
     private var controller: Option[Controller] = Option.empty
 
@@ -59,6 +58,16 @@ object View {
     }
 
     override def onLevelContextCreated(levelContext: LevelContext, level: Int): Unit = checkController(() => controller.get.initLevel(levelContext, level))
+
+    override def getSingleLevels: List[(String, Boolean)] = controller match {
+      case Some(c) => c.getSinglePlayerLevels
+      case _ => List()
+    }
+
+    override def getCustomLevels: List[String] = controller match {
+      case Some(c) => c.getCustomLevels
+      case _ => List()
+    }
 
     override def onStartLevel(): Unit = checkController(() => controller.get.startLevel())
 
@@ -108,6 +117,7 @@ object View {
       case Failure(e) => onDisplayError(e)
       case Success(_) => //do nothing
     })
+
   }
 
 }

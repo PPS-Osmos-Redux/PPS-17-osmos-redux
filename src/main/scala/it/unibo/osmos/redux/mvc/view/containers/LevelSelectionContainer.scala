@@ -1,14 +1,12 @@
 package it.unibo.osmos.redux.mvc.view.containers
 
 import it.unibo.osmos.redux.mvc.view.components.level.{LevelNode, LevelNodeListener}
-import it.unibo.osmos.redux.mvc.view.components.menu.MainMenuBar
 import it.unibo.osmos.redux.mvc.view.context.LevelContext
-import it.unibo.osmos.redux.mvc.view.scenes.{LevelScene, LevelSelectionSceneListener, MainSceneListener, UpperLevelSceneListener}
 import scalafx.geometry.Pos
 import scalafx.scene.layout.{TilePane, VBox}
 import scalafx.stage.Stage
 
-class LevelSelectionContainer(parentStage: Stage) extends LevelSelectionSceneListener with LevelNodeListener {
+class LevelSelectionContainer(parentStage: Stage) extends LevelNodeListener {
 
   /**
     * The central level container
@@ -59,7 +57,7 @@ class LevelSelectionContainer(parentStage: Stage) extends LevelSelectionSceneLis
     ???
   }
 
-  override def onLevelContextCreated(levelContext: LevelContext, level: Int): Unit = ???
+  /*override def onLevelContextCreated(levelContext: LevelContext, level: Int): Unit = ???
 
   override def onStartLevel(): Unit = ???
 
@@ -67,5 +65,5 @@ class LevelSelectionContainer(parentStage: Stage) extends LevelSelectionSceneLis
 
   override def onResumeLevel(): Unit = ???
 
-  override def onStopLevel(): Unit = ???
+  override def onStopLevel(): Unit = ???*/
 }
