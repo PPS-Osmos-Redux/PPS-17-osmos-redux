@@ -43,8 +43,9 @@ case class InputSystem() extends AbstractSystem[InputProperty] {
         val newPoint = MathUtils.normalizePoint(Point(pos.point.x - ev.point.x, pos.point.y - ev.point.y))
 
         //apply acceleration
-        accel.vector.x_(accel.vector.x + newPoint.x * accelCoefficient)
-        accel.vector.y_(accel.vector.y + newPoint.y * accelCoefficient)
+        accel.vector_(accel.vector.add(newPoint.multiply(accelCoefficient)))
+        //accel.vector.x_(accel.vector.x + newPoint.x * accelCoefficient)
+        //accel.vector.y_(accel.vector.y + newPoint.y * accelCoefficient)
 
         //create a new spawn action
         val loseMassAmount = dim.radius * lostMassPercentage

@@ -28,8 +28,9 @@ case class GravitySystem() extends AbstractSystemWithTwoTypeOfEntity[MovableProp
     val gravityAcceleration = (gravityProperty.getMassComponent.mass / distance) *typeOfForce
     val unitVector = MathUtils.normalizePoint(Point(gravityCenter.x - entityCenter.x, gravityCenter.y - entityCenter.y))
     val acceleration = movableProperty.getAccelerationComponent
-    acceleration.vector.x_(acceleration.vector.x + unitVector.x*gravityAcceleration)
-    acceleration.vector.y_(acceleration.vector.y + unitVector.y*gravityAcceleration)
+    acceleration.vector_(acceleration.vector.add(unitVector.multiply(gravityAcceleration)))
+    //acceleration.vector.x_(acceleration.vector.x + unitVector.x*gravityAcceleration)
+    //acceleration.vector.y_(acceleration.vector.y + unitVector.y*gravityAcceleration)
   }
 
   private def getTypeOfForce(typeOfForce: EntityType.Value): Double = typeOfForce match {

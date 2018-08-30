@@ -38,9 +38,9 @@ object MathUtils {
   def unitVector(point1: Point, point2: Point): Vector = {
     val unitVector = point1.subtract(point2)
     val mod = math.sqrt(math.pow(unitVector.x, 2) + math.pow(unitVector.y, 2))
-    unitVector.x_(unitVector.x / mod)
-    unitVector.y_(unitVector.y / mod)
-    unitVector
+    //unitVector.x_(unitVector.x / mod)
+    //unitVector.y_(unitVector.y / mod)
+    unitVector.divide(mod)
   }
 
   /**
