@@ -17,9 +17,12 @@
         "y": 300.0
       }
     },
+      "spawner": {
+        "canSpawn": true
+      },
     "cellType": "sentientCell",
     "dimension": {
-      "radius": 20.0
+      "radius": 30.0
     },
     "speed": {
       "speedX": 0,

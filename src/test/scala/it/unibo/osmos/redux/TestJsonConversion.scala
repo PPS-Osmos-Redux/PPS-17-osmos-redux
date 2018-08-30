@@ -24,11 +24,12 @@ class TestJsonConversion extends FunSuite{
   val etg = TypeComponent(EntityType.Attractive)
   val sp = SpawnerComponent(true)
   val sw = SpecificWeightComponent(1)
+  val spawner = SpawnerComponent(false)
   //Entities
   val ce = CellEntity(a, c, d, p, s, v, et)
   val pce = PlayerCellEntity(a, c, d, p, s, v, et, sp)
   val gc = GravityCellEntity(a, c, d, p, s, v, etg, sw)
-  val sc = SentientCellEntity(a, c, d, p, s, v)
+  val sc = SentientCellEntity(a, c, d, p, s, v, spawner)
   val listCell:List[CellEntity] = List(ce, pce, gc, sc)
   //LevelMap
   val rectangle:MapShape = Rectangle((50,50),10.1,5.6)

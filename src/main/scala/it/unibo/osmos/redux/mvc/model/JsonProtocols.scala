@@ -207,21 +207,24 @@ object JsonProtocols {
       "dimension" -> sentientCell.getDimensionComponent.toJson,
       "position" -> sentientCell.getPositionComponent.toJson,
       "speed" -> sentientCell.getSpeedComponent.toJson,
-      "visible" -> sentientCell.getVisibleComponent.toJson)
+      "visible" -> sentientCell.getVisibleComponent.toJson,
+      "spawner" -> sentientCell.getSpawnerComponent.toJson)
     def read(value: JsValue): SentientCellEntity = {
       value.asJsObject.getFields("acceleration",
         "collidable",
         "dimension",
         "position",
         "speed",
-        "visible") match {
-        case Seq(acceleration, collidable, dimension, position, speed, visible) =>
+        "visible",
+        "spawner") match {
+        case Seq(acceleration, collidable, dimension, position, speed, visible, spawner) =>
           SentientCellEntity(acceleration.convertTo[AccelerationComponent],
             collidable.convertTo[CollidableComponent],
             dimension.convertTo[DimensionComponent],
             position.convertTo[PositionComponent],
             speed.convertTo[SpeedComponent],
-            visible.convertTo[VisibleComponent])
+            visible.convertTo[VisibleComponent],
+            spawner.convertTo[SpawnerComponent])
         case _ => throw DeserializationException("Sentient cell entity expected")
       }
     }
