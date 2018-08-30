@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.mvc.controller
 import it.unibo.osmos.redux.ecs.engine.GameEngine
 import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.LevelInfo
-import it.unibo.osmos.redux.mvc.model.{Level, MultiPlayerLevels, SinglePlayerLevels}
+import it.unibo.osmos.redux.mvc.model.{Level, MultiPlayerLevels, SinglePlayerLevels, SoundsType}
 import it.unibo.osmos.redux.mvc.view.events._
 import it.unibo.osmos.redux.mvc.view.levels.{GameStateHolder, LevelContext}
 
@@ -16,7 +16,7 @@ trait Controller {
   def pauseLevel()
   def resumeLevel()
   def saveNewCustomLevel(customLevel:Level):Boolean
-  def getSoundPath(soundType:String): String
+  def getSoundPath(soundType: SoundsType.Value): Option[String]
   def getSinglePlayerLevels:List[LevelInfo] = SinglePlayerLevels.getLevels
   def getMultiPlayerLevels:List[String] = MultiPlayerLevels.getLevels
   def getCustomLevels:List[String] = FileManager.customLevelsFilesName
@@ -67,8 +67,13 @@ case class ControllerImpl() extends Controller with GameStateHolder {
     *///TODO useless for controller
   override def gameCurrentState: GameStateEventWrapper = ???
 
-  //TODO: need MediaPlayer
-  override def getSoundPath(soundType: String): String = ???
+  override def getSoundPath(soundType: SoundsType.Value): Option[String] = soundType match {
+    case SoundsType.menu => Some(FileManager.loadMenuMusic())
+    case SoundsType.level => Some(FileManager.loadLevelMusic())
+    case SoundsType.button => Some(FileManager.loadButtonsSound())
+    case _ => println("Sound type not managed!! [Controller getSoundPath]")
+              None
+  }
 
   /**
     * Called on a event T type

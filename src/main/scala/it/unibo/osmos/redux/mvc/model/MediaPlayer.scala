@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.model
 
-import it.unibo.osmos.redux.mvc.controller.FileManager
+import it.unibo.osmos.redux.mvc.controller.{Controller, FileManager}
 import javafx.scene.media.MediaPlayer.Status
 import javafx.scene.media.{Media, MediaPlayer}
 import javafx.util
@@ -14,20 +14,28 @@ object SoundsType extends Enumeration {
 }
 
 object MediaPlayer {
+  private var controller:Option[Controller] = None
   private var mediaPlayer:Option[MediaPlayer] = None
   private var lastLoadedSound:Option[String] = None
   private var buttonAudioClip:Option[AudioClip] = None
   private var generalVolume:Double = 1
 
+
+  def setController(controller: Controller): Unit = this.controller = Some(controller)
+
   /**
     * Play a sound
     * @param sound the sound to play
     */
-  def play(sound:SoundsType.Value): Unit = sound match {
-    case SoundsType.menu => checkMediaPlayerStatus(FileManager.loadMenuMusic())
-    case SoundsType.level => checkMediaPlayerStatus(FileManager.loadLevelMusic())
-    case SoundsType.button => playButtonSound(FileManager.loadButtonsSound())
-    case _ => println("Sound type not managed!");
+  def play(sound:SoundsType.Value): Unit = {
+    val soundPath = controller.get.getSoundPath(sound)
+    if(soundPath.isDefined) {
+      sound match {
+        case s if s.equals(SoundsType.level) || s.equals(SoundsType.menu) => checkMediaPlayerStatus(soundPath.get)
+        case SoundsType.button => playButtonSound(soundPath.get)
+        case _ => println("Sound not managed! [MediaPlayer play]")
+      }
+    }
   }
 
   /**
