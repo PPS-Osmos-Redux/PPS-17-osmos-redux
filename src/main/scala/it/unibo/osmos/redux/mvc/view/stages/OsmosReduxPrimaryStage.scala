@@ -5,8 +5,6 @@ import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
 import it.unibo.osmos.redux.mvc.view.scenes._
 import scalafx.application.JFXApp
 import scalafx.scene.Parent
-import scalafx.scene.control.Alert
-import scalafx.scene.control.Alert.AlertType
 
 /**
   * Primary stage which holds and manages all the different game scenes
