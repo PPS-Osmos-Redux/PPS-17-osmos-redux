@@ -244,7 +244,7 @@ object Server {
       if (notify) player.get.getActorRef ! GameEnded(false)
 
       val playerEntity = EntityManager.filterEntities(classOf[PlayerCellEntity]).find(_.getUUID == player.get.getUUID)
-      if (player.isEmpty) throw new IllegalArgumentException("Cannot remove player cell from game because it was not found.")
+      if (playerEntity.isEmpty) throw new IllegalArgumentException("Cannot remove player cell from game because it was not found.")
 
       EntityManager.delete(playerEntity.get)
       lobby.get.removePlayer(username)
