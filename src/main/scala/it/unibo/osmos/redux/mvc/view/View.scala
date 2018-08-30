@@ -4,7 +4,10 @@ import it.unibo.osmos.redux.mvc.controller.Controller
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LobbyContext}
 import it.unibo.osmos.redux.mvc.view.stages.{OsmosReduxPrimaryStage, PrimaryStageListener}
-import scalafx.application.JFXApp
+import scalafx.application.{JFXApp, Platform}
+import scalafx.scene.control.Alert.AlertType
+import scalafx.scene.control.{Alert, Label, TextArea}
+import scalafx.scene.layout.VBox
 
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 import scala.util.{Failure, Success}
@@ -17,6 +20,7 @@ trait View {
 
   /**
     * Setter. This method sets the reference to the Controller instance
+    *
     * @param controller the Controller instance
     */
   def setController(controller: Controller)
@@ -29,11 +33,13 @@ object View {
 
   /**
     * View implementation, holding the main stage and the current scene
+    *
     * @param app a reference to the JFXApp, necessary to the correct setup of the whole application
     */
   class ViewImpl(private val app: JFXApp) extends View with PrimaryStageListener {
 
     implicit val ec: ExecutionContextExecutor = ExecutionContext.global
+
 
     app.stage = OsmosReduxPrimaryStage(this)
     private var controller: Option[Controller] = Option.empty
@@ -44,9 +50,10 @@ object View {
 
     /**
       * Utility method that checks if controller is not empty and execute f() if that is the case
+      *
       * @param f the function which will be executed if controller is not empty
       */
-    private def checkController(f:() => Unit): Unit = controller match {
+    private def checkController(f: () => Unit): Unit = controller match {
       case Some(_) => f()
       case _ =>
     }
@@ -61,22 +68,47 @@ object View {
 
     override def onStopLevel(): Unit = checkController(() => controller.get.stopLevel())
 
+    override def onDisplayError(exception: Throwable): Unit = {
+      // TODO change for a better output
+      Platform.runLater {
+        val dialogPaneContent = new VBox()
+
+        val label = new Label("Stack Trace:")
+
+        val textArea = new TextArea()
+        textArea.setText(exception.getMessage)
+
+        dialogPaneContent.getChildren.addAll(label, textArea)
+
+        val alert = new Alert(AlertType.Error) {
+          title = "Error Dialog"
+          headerText = None
+          graphic = null
+        }
+        // Set content for Dialog Pane
+        alert.getDialogPane.setContent(dialogPaneContent)
+        alert.showAndWait()
+      }
+    }
+
     /**
       * After checking the controller, we ask to enter the lobby asynchronously and call the callback function after the future result
-      * @param user the user requesting to enter the lobby
+      *
+      * @param user         the user requesting to enter the lobby
       * @param lobbyContext the lobby context, which may be used by the server to configure existing lobby users
-      * @param callback the callback
+      * @param callback     the callback
       */
     override def onLobbyClick(user: User, lobbyContext: LobbyContext, callback: (User, LobbyContext, Boolean) => Unit): Unit =
-      checkController(() => controller.get.initLobby(user, lobbyContext).future.onComplete{
+      checkController(() => controller.get.initLobby(user, lobbyContext).future.onComplete {
         case Success(value) => callback(user, lobbyContext, value)
-        case Failure(e) => //TODO: show alert dialog
+        case Failure(e) => onDisplayError(e)
       })
 
-    override def onStartMultiplayerGameClick(): Unit = checkController(() => controller.get.initMultiPlayerLevel().future.onComplete{
-      case Failure(e) => //TODO: show alert dialog
+    override def onStartMultiplayerGameClick(): Unit = checkController(() => controller.get.initMultiPlayerLevel().future.onComplete {
+      case Failure(e) => onDisplayError(e)
       case Success(_) => //do nothing
     })
   }
+
 }
 
