@@ -9,6 +9,7 @@ import it.unibo.osmos.redux.mvc.model.{Level, MultiPlayerLevels, SinglePlayerLev
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context._
 import it.unibo.osmos.redux.mvc.view.events.{AbortLobby, _}
+import it.unibo.osmos.redux.utils.Logger
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Promise
@@ -99,6 +100,8 @@ trait Controller {
 
 case class ControllerImpl() extends Controller with Observer {
 
+  implicit val who: String = "Controller"
+
   private var engine: Option[GameEngine] = None
 
   //multi-player variables
@@ -107,6 +110,7 @@ case class ControllerImpl() extends Controller with Observer {
   private var client: Option[Client] = None
 
   override def initLevel(levelContext: LevelContext, chosenLevel: Int): Unit = {
+    Logger.log("initLevel")
 
     var loadedLevel: Option[Level] = FileManager.loadResource(chosenLevel.toString)
 
@@ -132,18 +136,28 @@ case class ControllerImpl() extends Controller with Observer {
   }
 
   override def initLobby(user: User, lobbyContext: LobbyContext): Promise[Boolean] = {
+    Logger.log("initLobby")
+
     val promise = Promise[Boolean]()
 
     //subscribe to lobby context to intercept exit from lobby click
     lobbyContext.subscribe {
-      case LobbyEventWrapper(AbortLobby, _) =>
-        if (server.nonEmpty) {
-          server.get.closeLobby()
-          server.get.kill()
-        }
-        if (client.nonEmpty) {
-          client.get.leaveLobby()
-          client.get.kill()
+      //if user is defined that the event is from the user and not from the server
+      case LobbyEventWrapper(AbortLobby, Some(_)) =>
+        multiPlayerMode match {
+          case Some(MultiPlayerMode.Server) =>
+            if (server.nonEmpty) {
+              server.get.closeLobby()
+              server.get.kill()
+            }
+            client = None
+          case Some(MultiPlayerMode.Client) =>
+            if (client.nonEmpty) {
+              client.get.leaveLobby()
+              client.get.kill()
+            }
+            server = None
+          case _ => //do not
         }
       case _ => //do not
     }
@@ -179,7 +193,8 @@ case class ControllerImpl() extends Controller with Observer {
             case Success(false) => promise success false
             case Failure(t) => promise failure t
           }
-          case Success(false) => promise success false
+          case Success(false) => promise success false //TODO: show alert
+          case Failure(t) => promise failure t
         }
       case _ =>
         promise failure new IllegalArgumentException("Cannot initialize the lobby if the multi-player mode is not defined")
@@ -188,6 +203,8 @@ case class ControllerImpl() extends Controller with Observer {
   }
 
   override def initMultiPlayerLevel(): Promise[Boolean] = {
+    Logger.log("initMultiPlayerLevel")
+
     val promise = Promise[Boolean]()
 
     //load level definition
@@ -199,7 +216,6 @@ case class ControllerImpl() extends Controller with Observer {
         //assign clients to players and wait confirmation
         server.get.initGame(loadedLevel).future onComplete {
           case Success(_) =>
-
             //create the engine
             if (engine.isEmpty) engine = Some(GameEngine())
             //initialize the engine and let him create the levelContext
@@ -210,10 +226,8 @@ case class ControllerImpl() extends Controller with Observer {
 
             //fulfill the promise
             promise success true
-          case Failure(_) => promise failure _
+          case Failure(t) => promise failure t
         }
-        //fulfill the promise
-        promise success true
       case _ =>
         promise failure new IllegalStateException("Unable to initialize multi-player level if no lobby have been created.")
     }
@@ -221,6 +235,8 @@ case class ControllerImpl() extends Controller with Observer {
   }
 
   override def startLevel(): Unit = {
+    Logger.log("startLevel")
+
     multiPlayerMode match {
       case Some(MultiPlayerMode.Server) | None => if (engine.isDefined) engine.get.start()
       case _ =>
@@ -228,6 +244,8 @@ case class ControllerImpl() extends Controller with Observer {
   }
 
   override def stopLevel(): Unit = {
+    Logger.log("stopLevel")
+
     multiPlayerMode match {
       case Some(MultiPlayerMode.Client) => client.get.leaveGame()
       case _ =>
@@ -237,6 +255,8 @@ case class ControllerImpl() extends Controller with Observer {
   }
 
   override def pauseLevel(): Unit = {
+    Logger.log("pauseLevel")
+
     multiPlayerMode match {
       case None => if (engine.isDefined) engine.get.pause()
       case _ => throw new UnsupportedOperationException("A multi-player level cannot be paused.")
@@ -244,6 +264,8 @@ case class ControllerImpl() extends Controller with Observer {
   }
 
   override def resumeLevel(): Unit = {
+    Logger.log("resumeLevel")
+
     multiPlayerMode match {
       case None => if (engine.isDefined) engine.get.resume()
       case _ => throw new UnsupportedOperationException("A multi-player level cannot be resumed.")
@@ -251,7 +273,7 @@ case class ControllerImpl() extends Controller with Observer {
   }
 
   override def notify(event: GameStateEventWrapper, levelContext: GameStateHolder): Unit = {
-    if(event.equals(GameWon)) {
+    if (event.equals(GameWon)) {
       SinglePlayerLevels.unlockNextLevel()
       FileManager.saveUserProgress(SinglePlayerLevels.toUserProgression)
     }

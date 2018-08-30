@@ -8,11 +8,11 @@ import it.unibo.osmos.redux.mvc.model._
 import spray.json._
 
 import scala.io.{BufferedSource, Source}
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 object FileManager {
   val separator: String = "/"
-  val levelStartPath: String = separator + "levels" + separator
+  val levelStartPath: String = separator + "levels"
   val singlePlayerLevelsPath: String = levelStartPath + separator + "singlePlayer" + separator
   val multiPlayerLevelsPath: String = levelStartPath + separator + "multiPlayer" + separator
   val jsonExtension = ".json"
@@ -35,9 +35,12 @@ object FileManager {
     */
   def loadResource(chosenLevel: String, isMultiPlayer: Boolean = false): Option[Level] = {
     val levelsPath = if (isMultiPlayer) multiPlayerLevelsPath else singlePlayerLevelsPath
-    Try(textToLevel(Source.fromInputStream(
-      getClass.getResourceAsStream(levelsPath + chosenLevel + jsonExtension)
-    ).mkString).get).toOption
+    val fileStream = getClass.getResourceAsStream(levelsPath + chosenLevel + jsonExtension)
+    val fileContent = Source.fromInputStream(fileStream).mkString
+    textToLevel(fileContent) match {
+      case Success(result) => Some(result)
+      case Failure(e: Throwable) => e.printStackTrace(); None
+    }
   }
 
   /**
