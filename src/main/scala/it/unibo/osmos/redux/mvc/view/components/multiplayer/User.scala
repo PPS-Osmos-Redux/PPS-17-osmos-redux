@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.components.multiplayer
 
-import it.unibo.osmos.redux.multiplayer.players.BasicPlayer
+import it.unibo.osmos.redux.multiplayer.players.Player
 import scalafx.beans.property.{BooleanProperty, IntegerProperty, StringProperty}
 
 /**
@@ -19,7 +19,7 @@ case class User(username: String, ip: String = "", port: Int = 0, isServer: Bool
     * @param isServer true if the user is a server, false if it's a client
     * @return
     */
-  def this(player: BasicPlayer, isServer: Boolean) = this(player.username, player.address, player.port, isServer)
+  def this(player: Player, isServer: Boolean) = this(player.getUsername, player.getAddress, player.getPort, isServer)
 
   def getUserWithProperty: UserWithProperties = UserWithProperties(StringProperty(username), StringProperty(ip), IntegerProperty(port), BooleanProperty(isServer))
 }
@@ -35,5 +35,4 @@ case class User(username: String, ip: String = "", port: Int = 0, isServer: Bool
 case class UserWithProperties(username: StringProperty, ip: StringProperty = StringProperty(""), port: IntegerProperty = IntegerProperty(0), isServer: BooleanProperty) {
 
   def getUser: User = User(username.value, ip.value, port.value, isServer.value)
-
 }

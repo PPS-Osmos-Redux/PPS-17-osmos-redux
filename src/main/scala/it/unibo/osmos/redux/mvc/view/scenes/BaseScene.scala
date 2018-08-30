@@ -1,5 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
+import it.unibo.osmos.redux.mvc.controller.FileManager
 import scalafx.scene.Scene
 import scalafx.stage.Stage
 
@@ -8,6 +9,6 @@ import scalafx.stage.Stage
   */
 case class BaseScene(parentStage: Stage) extends Scene {
 
+  // TODO: styles are loaded each time a scene changes, should be loaded one time only
+  this.getStylesheets.addAll(FileManager.getStyle)
 }
-
-

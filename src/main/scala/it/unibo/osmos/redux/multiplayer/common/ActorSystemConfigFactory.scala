@@ -14,6 +14,7 @@ object ActorSystemConfigFactory {
   def create(): Config = {
     val configString = """
      akka {
+       loglevel = "ERROR"
        actor {
          provider = remote
        }
@@ -22,8 +23,6 @@ object ActorSystemConfigFactory {
          netty.tcp {
            port = 0
          }
-         log-sent-messages = on
-         log-received-messages = on
        }
      }
       """
@@ -38,6 +37,7 @@ object ActorSystemConfigFactory {
   def create(address: String, port: String): Config = {
     val configString = s"""
      akka {
+       loglevel = "ERROR"
        actor {
          provider = remote
        }

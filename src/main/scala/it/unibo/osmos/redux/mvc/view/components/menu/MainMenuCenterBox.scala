@@ -1,5 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.components.menu
 
+import it.unibo.osmos.redux.mvc.view.components.custom.StyledButton
 import scalafx.geometry.Pos
 import scalafx.scene.control.Button
 import scalafx.scene.layout.VBox
@@ -11,20 +12,23 @@ class MainMenuCenterBox(val listener: MainMenuCenterBoxListener) extends VBox(20
 
   alignment = Pos.Center
 
-  /* Play button */
-  val playButton = new Button("Campaign Levels")
+  /* Single Player button */
+  val singlePlayerButton = new StyledButton("Single-Player")
   /* Multiplayer button */
-  val multiplayerButton = new Button("Multiplayer")
+  val multiPlayerButton = new StyledButton("Multi-Player")
   /* Editor button */
-  val editorButton = new Button("Editor Levels")
+  val levelEditorButton = new StyledButton("Level Editor")
+  /* Editor button */
+  val settingsButton = new StyledButton("Settings")
   /* Exit button */
-  val exitButton = new Button("Exit")
+  val exitButton = new StyledButton("Exit")
 
-  children = List(playButton, multiplayerButton, editorButton, exitButton)
+  children = List(singlePlayerButton, multiPlayerButton, levelEditorButton, settingsButton, exitButton)
 
-  playButton.onAction = _ => listener.onPlayClick()
-  multiplayerButton.onAction = _ => listener.onMultiPlayerClick()
-  editorButton.onAction = _ => listener.onEditorClick()
+  singlePlayerButton.onAction = _ => listener.onPlayClick()
+  multiPlayerButton.onAction = _ => listener.onMultiPlayerClick()
+  levelEditorButton.onAction = _ => listener.onEditorClick()
+  settingsButton.onAction = _ => listener.onSettingsClick()
   exitButton.onAction = _ => listener.onExitClick()
 }
 
@@ -32,6 +36,9 @@ class MainMenuCenterBox(val listener: MainMenuCenterBoxListener) extends VBox(20
   * Trait which gets notified when a MainMenuCenterBox event occurs
   */
 trait MainMenuCenterBoxListener {
+
+  /** Called when the user clicks on the back to menu button */
+  def backToMainMenu()
 
   /**
     * Called when the user clicks on the play button
@@ -47,6 +54,11 @@ trait MainMenuCenterBoxListener {
     * Called when the user clicks on the editor button
     */
   def onEditorClick()
+
+  /**
+    * Called when the user clicks on the settings button
+    */
+  def onSettingsClick()
 
   /**
     * Called when the user clicks on the exit button

@@ -8,11 +8,11 @@ import it.unibo.osmos.redux.mvc.model._
 import spray.json._
 
 import scala.io.{BufferedSource, Source}
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 object FileManager {
   val separator: String = "/"
-  val levelStartPath: String = separator + "levels" + separator
+  val levelStartPath: String = separator + "levels"
   val singlePlayerLevelsPath: String = levelStartPath + separator + "singlePlayer" + separator
   val multiPlayerLevelsPath: String = levelStartPath + separator + "multiPlayer" + separator
   val jsonExtension = ".json"
@@ -36,9 +36,12 @@ object FileManager {
   //TODO: Proc check this
   def loadResource(chosenLevel: String, isMultiPlayer: Boolean = false): Option[Level] = {
     val levelsPath = if (isMultiPlayer) multiPlayerLevelsPath else singlePlayerLevelsPath
-    Try(textToLevel(Source.fromInputStream(
-      getClass.getResourceAsStream(levelsPath + chosenLevel + jsonExtension)
-    ).mkString).get).toOption
+    val fileStream = getClass.getResourceAsStream(levelsPath + chosenLevel + jsonExtension)
+    val fileContent = Source.fromInputStream(fileStream).mkString
+    textToLevel(fileContent) match {
+      case Success(result) => Some(result)
+      case Failure(e: Throwable) => e.printStackTrace(); None
+    }
   }
 
   /**
@@ -142,4 +145,16 @@ object FileManager {
     new File(levelsDirectory).listFiles((d, name) => name.endsWith(jsonExtension))
                              .map(f => f.getName.substring(0,f.getName.length-jsonExtension.length))
                              .toList
+
+  def getStyle: String = {
+    try {
+      val url = getClass.getResource("/style/style.css")
+      //println("style url: " + url)
+      url.toString
+    } catch {
+      case _: NullPointerException =>
+        println("Error: style.css file not found")
+        throw new NullPointerException("style.css file not found");
+    }
+  }
 }

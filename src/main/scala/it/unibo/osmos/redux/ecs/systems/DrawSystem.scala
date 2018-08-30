@@ -17,8 +17,7 @@ case class DrawSystem(entitiesDrawer: EntitiesDrawer) extends AbstractSystemWith
 
   private def getPlayerEntity: Option[DrawableWrapper] =
     entitiesSecondType find (e => e.getVisibleComponent.isVisible &&
-      e.getUUID != entitiesDrawer.getPlayerUUID) map(p => drawablePropertyToDrawableWrapper(p))
-
+      e.getUUID == entitiesDrawer.getPlayerUUID) map(p => drawablePropertyToDrawableWrapper(p))
 
   private def getEntities: List[DrawableWrapper] =
     entities filter(e => e.getVisibleComponent.isVisible) map(e => drawablePropertyToDrawableWrapper(e)) toList
