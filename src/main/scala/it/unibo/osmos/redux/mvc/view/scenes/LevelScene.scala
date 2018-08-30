@@ -10,7 +10,7 @@ import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import it.unibo.osmos.redux.utils.MathUtils._
 import it.unibo.osmos.redux.utils.Point
-import javafx.scene.input.MouseEvent
+import javafx.scene.input.{KeyCode, MouseEvent}
 import scalafx.animation.FadeTransition
 import scalafx.application.Platform
 import scalafx.beans.property.BooleanProperty
@@ -34,7 +34,16 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     * The current game pending state: true if the game is paused
     */
   private var paused: BooleanProperty = BooleanProperty(false)
-
+  this.setOnKeyPressed(k => {
+    if (k.getCode == KeyCode.ESCAPE) {
+      // println("ESC key pressed")
+      paused.value match {
+        case false => onPause()
+        case true => onResume()
+        case _ => throw new IllegalStateException()
+      }
+    }
+  })
   /**
     * The canvas which will draw the elements on the screen
     */
@@ -50,6 +59,9 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     */
   private val pauseScreen = LevelScreen.Builder(this)
     .withText("Game paused", 30, Color.White)
+    // TODO: the buttons are not working correctly
+    .withButton("Resume", _ => onResume())
+    .withButton("Return to Level Selection", _ => onExit())
     .build()
   pauseScreen.visible <== paused
 
@@ -63,7 +75,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   /**
     * The upper state box
     */
-  protected val levelStateBox = new LevelStateBox(this,4.0, showPause)
+  protected val levelStateBox = new LevelStateBox(this, 4.0, showPause)
 
   /* We start the level */
   private def startLevel(): Unit = {
@@ -82,7 +94,8 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
           fromValue = 0.0
           toValue = 1.0
           /* Removing the splash screen to reduce the load. Then the level is starte */
-          onFinished = _ => content.remove(splashScreen); listener.onStartLevel()
+          onFinished = _ => content.remove(splashScreen);
+          listener.onStartLevel()
         }.play()
       }.play()
     }.play()
@@ -111,13 +124,15 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     * The level context, created with the LevelScene. It still needs to be properly setup
     */
   protected var _levelContext: Option[LevelContext] = Option.empty
+
   def levelContext: Option[LevelContext] = _levelContext
-  def levelContext_= (levelContext: LevelContext): Unit = _levelContext = Option(levelContext)
+
+  def levelContext_=(levelContext: LevelContext): Unit = _levelContext = Option(levelContext)
 
   override def onPause(): Unit = {
-    paused.value = true
+    //paused.value = true
     canvas.opacity = 0.5
-
+    //content.add(pauseScreen)
     listener.onPauseLevel()
   }
 
@@ -153,6 +168,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
 
   /**
     * Sends a MouseEventWrapper to the LevelContextListener
+    *
     * @param mouseEvent the mouse event
     */
   protected def sendMouseEvent(mouseEvent: MouseEvent): Unit = levelContext match {
@@ -186,17 +202,17 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
 
       //TODO: when called by multi-player context we're not in the main thread
       Platform.runLater({
-          /* Adding the mapBorder */
-          content.add(mapBorder.get)
+        /* Adding the mapBorder */
+        content.add(mapBorder.get)
 
-          /* Starting the level */
-          startLevel()
+        /* Starting the level */
+        startLevel()
       })
   }
 
   override def onDrawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = {
 
-    var entitiesWrappers : Seq[(DrawableWrapper, Color)] = Seq()
+    var entitiesWrappers: Seq[(DrawableWrapper, Color)] = Seq()
 
     playerEntity match {
       /* The player is present */
@@ -212,20 +228,21 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
       /* Draw the background */
       canvas.graphicsContext2D.drawImage(backgroundImage, 0, 0, width.value, height.value)
       /* Draw the entities */
-      playerEntity match  {
-        case Some(pe) => entitiesWrappers foreach(e => e._1 match {
+      playerEntity match {
+        case Some(pe) => entitiesWrappers foreach (e => e._1 match {
           case `pe` => playerCellDrawable.draw(e._1, e._2)
           case _ => drawEntity(e._1, e._2)
         })
-        case _ => entitiesWrappers foreach(e => drawEntity(e._1, e._2))
+        case _ => entitiesWrappers foreach (e => drawEntity(e._1, e._2))
       }
     })
   }
 
   /**
     * Used to draw the correct entity according to its type
+    *
     * @param drawableWrapper the drawableWrapper
-    * @param color the border color
+    * @param color           the border color
     */
   private def drawEntity(drawableWrapper: DrawableWrapper, color: Color): Unit = {
     drawableWrapper.entityType match {
@@ -264,6 +281,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
 
   /**
     * This method calculates the color of the input entities, interpolating and normalizing it according to the entities size
+    *
     * @param minColor the base lower Color
     * @param maxColor the base upper Color
     * @param entities the input entities
@@ -273,26 +291,26 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     entities match {
       case Nil => Seq()
       case _ =>
-      /* Calculate the min and max radius among the entities */
-      val endRadius = getEntitiesExtremeRadiusValues(entities)
+        /* Calculate the min and max radius among the entities */
+        val endRadius = getEntitiesExtremeRadiusValues(entities)
 
-      entities map( e => {
-        // Normalize the entity radius
-        val normalizedRadius = normalize(e.radius, endRadius._1, endRadius._2)
-        /* Create a pair where the second value is the interpolated color between the two base colors */
-        (e, minColor.interpolate(maxColor, normalizedRadius))
-      }) seq
+        entities map (e => {
+          // Normalize the entity radius
+          val normalizedRadius = normalize(e.radius, endRadius._1, endRadius._2)
+          /* Create a pair where the second value is the interpolated color between the two base colors */
+          (e, minColor.interpolate(maxColor, normalizedRadius))
+        }) seq
     }
   }
 
   /**
     * This method calculates the color of the input entities when the player is present
     *
-    * @param entities the input entities
+    * @param entities     the input entities
     * @param playerEntity the player entity
-    * @param minColor the base lower Color
-    * @param maxColor the base upper Color
-    * @param playerColor the player Color
+    * @param minColor     the base lower Color
+    * @param maxColor     the base upper Color
+    * @param playerColor  the player Color
     * @return the sequence of pair where the first field is the entity and the second is the color
     */
   private def calculateColors(entities: Seq[DrawableWrapper], playerEntity: DrawableWrapper, minColor: Color = Color.LightBlue, maxColor: Color = Color.DarkRed, playerColor: Color = Color.Green): Seq[(DrawableWrapper, Color)] = {
@@ -312,6 +330,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
 
   /**
     * This method returns a pair consisting of the min and the max radius found in the entities sequence
+    *
     * @param entities a DrawableWrapper sequence
     * @return a pair consisting of the min and the max radius found; an IllegalArgumentException on empty sequence
     */
