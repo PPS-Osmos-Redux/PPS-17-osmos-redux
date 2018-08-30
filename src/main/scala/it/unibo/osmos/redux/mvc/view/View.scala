@@ -7,6 +7,7 @@ import it.unibo.osmos.redux.mvc.view.stages.{OsmosReduxPrimaryStage, PrimaryStag
 import scalafx.application.JFXApp
 
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
+import scala.util.{Failure, Success}
 
 /**
   * View base trait
@@ -50,7 +51,7 @@ object View {
       case _ =>
     }
 
-    override def onLevelContextCreated(levelContext: LevelContext, level: Int): Unit = checkController(() =>controller.get.initLevel(levelContext, level))
+    override def onLevelContextCreated(levelContext: LevelContext, level: Int): Unit = checkController(() => controller.get.initLevel(levelContext, level))
 
     override def onStartLevel(): Unit = checkController(() => controller.get.startLevel())
 
@@ -67,9 +68,15 @@ object View {
       * @param callback the callback
       */
     override def onLobbyClick(user: User, lobbyContext: LobbyContext, callback: (User, LobbyContext, Boolean) => Unit): Unit =
-      checkController(() => controller.get.initLobby(user, lobbyContext).future.onComplete(res => callback(user, lobbyContext, res.get)))
+      checkController(() => controller.get.initLobby(user, lobbyContext).future.onComplete{
+        case Success(value) => callback(user, lobbyContext, value)
+        case Failure(e) => //TODO: show alert dialog
+      })
 
-    override def onStartMultiplayerGameClick(): Unit = checkController(() => controller.get.initMultiPlayerLevel())
+    override def onStartMultiplayerGameClick(): Unit = checkController(() => controller.get.initMultiPlayerLevel().future.onComplete{
+      case Failure(e) => //TODO: show alert dialog
+      case Success(_) => //do nothing
+    })
   }
 }
 

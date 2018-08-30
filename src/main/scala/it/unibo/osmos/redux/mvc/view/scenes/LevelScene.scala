@@ -24,8 +24,9 @@ import scalafx.util.Duration
 /**
   * This scene holds and manages a single level
   */
-class LevelScene(override val parentStage: Stage, val listener: LevelSceneListener, val upperSceneListener: UpperLevelSceneListener) extends BaseScene(parentStage)
-  with LevelContextListener with LevelStateBoxListener {
+class LevelScene(override val parentStage: Stage, val listener: LevelSceneListener,
+                 val upperSceneListener: UpperLevelSceneListener, private val showPause: Boolean = true)
+  extends BaseScene(parentStage) with LevelContextListener with LevelStateBoxListener {
 
   private val TEXTURE_FOLDER = "/textures/"
 
@@ -62,7 +63,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   /**
     * The upper state box
     */
-  protected val levelStateBox = new LevelStateBox(this,4.0)
+  protected val levelStateBox = new LevelStateBox(this,4.0, showPause)
 
   /* We start the level */
   private def startLevel(): Unit = {
@@ -183,11 +184,14 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
       mapBorder.get.strokeWidth = 2.0
       mapBorder.get.opacity <== canvas.opacity
 
-      /* Adding the mapBorder */
-      content.add(mapBorder.get)
+      //TODO: when called by multi-player context we're not in the main thread
+      Platform.runLater({
+          /* Adding the mapBorder */
+          content.add(mapBorder.get)
 
-      /* Starting the level */
-      startLevel()
+          /* Starting the level */
+          startLevel()
+      })
   }
 
   override def onDrawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = {

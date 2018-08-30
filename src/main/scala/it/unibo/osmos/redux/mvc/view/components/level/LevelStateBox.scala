@@ -13,7 +13,7 @@ class LevelStateBox(val listener: LevelStateBoxListener, val vSpacing: Double, v
   /**
     * Pause button
     */
-  private val pauseBtton = new Button("Pause") {
+  private val pauseButton = new Button("Pause") {
     var isPaused: Boolean = false
     onAction = _ => {
       isPaused = !isPaused
@@ -28,8 +28,7 @@ class LevelStateBox(val listener: LevelStateBoxListener, val vSpacing: Double, v
     onAction = _ => listener.onExit()
   }
 
-  if (showPauseButton) children = Seq(pauseBtton, exitButton) else children = Seq(exitButton)
-
+  if (showPauseButton) children = Seq(pauseButton, exitButton) else children = Seq(exitButton)
 }
 
 /**
