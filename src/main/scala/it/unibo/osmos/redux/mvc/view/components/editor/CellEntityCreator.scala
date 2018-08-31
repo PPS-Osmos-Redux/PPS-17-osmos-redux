@@ -58,7 +58,6 @@ class CellEntityCreator extends BaseEditorCreator[CellEntity] with EditorCellBui
     * @param builder the cell builder
     */
   override def configureBuilder(builder: CellBuilder, withEntityType: Boolean = true): Unit = {
-
     builder
       .visible(true)
       .collidable(true)

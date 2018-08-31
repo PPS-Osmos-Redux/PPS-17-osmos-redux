@@ -253,7 +253,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     /* We set a min and max for the size */
     onScroll = scroll => {
       radius = radius.value + (scroll.getDeltaY/10) min 150 max 10
-      cellEntityCreator.radius.value = radius.value
+      getVisibleCellBuilder.radius.value = radius.value
     }
 
     entityType.onChange(entityType.value match {
@@ -279,14 +279,15 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   onMouseMoved = e => {
     entityPlaceholder.centerX.value = e.getX
     entityPlaceholder.centerY.value = e.getY
-    cellEntityCreator.x.value = e.getX
-    cellEntityCreator.y.value = e.getY
+    val visibleBuilder = getVisibleCellBuilder
+    visibleBuilder.x.value = e.getX
+    visibleBuilder.y.value = e.getY
   }
 
   /**
     * On mouse clicked, we parse the placeholder values and created a new element
     */
-  onMouseClicked = e => if (entityPlaceholder.visible.value) {
+  onMouseClicked = _ => if (entityPlaceholder.visible.value) {
     /** Insert an element to be shown */
     editorElements += new Circle {
       fill.value_=(entityPlaceholder.fill.value)
@@ -298,9 +299,14 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     content = editorElements
 
     /** Insert an entity to the built entities list */
-    builtEntities += entityBuilders.filter((b) => b.visible.value).head create()
-    println(builtEntities)
+    builtEntities += getVisibleCellBuilder create()
   }
+
+  /**
+    * Returns the currently visible cell entity creator
+    * @return the currently visible cell entity creator
+    */
+  private def getVisibleCellBuilder: CellEntityCreator = entityBuilders.filter((b) => b.visible.value).head
 
   /** The main editor elements */
   val editorElements = ListBuffer(background, mainContainer, entityPlaceholder, currentLevelPlaceholder)
