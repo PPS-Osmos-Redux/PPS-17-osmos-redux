@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.mvc.model
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, GravityCellEntity, PlayerCellEntity, SentientCellEntity, _}
-import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.UserStat
+import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.{LevelStat, UserStat}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
 import it.unibo.osmos.redux.utils.Point
 import org.apache.commons.lang3.SerializationException
@@ -245,7 +245,7 @@ object JsonProtocols {
 
     def read(value: JsValue): CellEntity = {
       value.asJsObject.getFields("cellType") match {
-        case Seq(JsString(CellType.basicCell)) => {
+        case Seq(JsString(CellType.basicCell)) =>
           value.asJsObject.getFields("acceleration",
             "collidable",
             "dimension",
@@ -263,7 +263,6 @@ object JsonProtocols {
                 typeEntity.convertTo[TypeComponent])
             case _ => throw DeserializationException("Cell entity expected")
           }
-        }
         case Seq(JsString(CellType.sentientCell)) =>
           value.convertTo[SentientCellEntity]
         case Seq(JsString(CellType.gravityCell)) =>
@@ -289,21 +288,23 @@ object JsonProtocols {
       case _ => throw new SerializationException("Shape " + mapShape.mapShape + " not managed!")
     }
 
-    //TODO: Check if merge is correct (Procucci)
     def read(value: JsValue): MapShape = {
       val rectangle  = MapShapeType.Rectangle.toString
       val circle  = MapShapeType.Circle.toString
-      value.asJsObject.getFields("centerX",
-        "centerY",
-        "mapShape",
-        "height",
-        "base",
-        "radius") match {
-        case Seq(JsNumber(centerX),JsNumber(centerY),JsString(`rectangle`),
-        JsNumber(height), JsNumber(base)) =>
-          MapShape.Rectangle((centerX.toDouble, centerY.toDouble), height.toDouble, base.toDouble)
-        case Seq(JsNumber(centerX),JsNumber(centerY),JsString(`circle`), JsNumber(radius)) =>
-          MapShape.Circle((centerX.toDouble, centerY.toDouble),radius.toDouble)
+
+      value.asJsObject.getFields("centerX", "centerY", "mapShape") match {
+        case Seq(JsNumber(centerX), JsNumber(centerY), JsString(`rectangle`)) =>
+          value.asJsObject.getFields("height", "base") match {
+            case Seq(JsNumber(height), JsNumber(base)) =>
+              MapShape.Rectangle((centerX.toDouble, centerY.toDouble), height.toDouble, base.toDouble)
+            case _ => throw DeserializationException("Rectangular map expected")
+          }
+        case Seq(JsNumber(centerX), JsNumber(centerY), JsString(`circle`)) =>
+          value.asJsObject.getFields("radius") match {
+            case Seq(JsNumber(radius)) =>
+              MapShape.Circle((centerX.toDouble, centerY.toDouble), radius.toDouble)
+            case _ => throw DeserializationException("Circular map expected")
+          }
         case _ => throw DeserializationException("Map shape expected")
       }
     }
@@ -336,5 +337,7 @@ object JsonProtocols {
 
   implicit val drawableWrapperFormatter:RootJsonFormat[DrawableWrapper] = jsonFormat4(DrawableWrapper)
 
-  implicit val userProgressFormatter:RootJsonFormat[UserStat] = jsonFormat1(UserStat)
+  implicit  val levelStatFormatter:RootJsonFormat[LevelStat] = jsonFormat3(LevelStat)
+
+  implicit val userProgressFormatter:RootJsonFormat[UserStat] = jsonFormat2(UserStat)
 }

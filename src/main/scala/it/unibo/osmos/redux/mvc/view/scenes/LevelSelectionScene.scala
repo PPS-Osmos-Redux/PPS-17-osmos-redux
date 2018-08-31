@@ -1,5 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
+import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.level.{LevelNode, LevelNodeListener}
 import it.unibo.osmos.redux.mvc.view.components.menu.{MainMenuBar, MainMenuBarListener}
 import it.unibo.osmos.redux.mvc.view.context.LevelContext
@@ -41,21 +42,21 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
 
   /**
     * The levels shown
-    * @return the list of levels as tuples where the first element is the name and the second a boolean (true if the level is available, false otherwise)
+    * @return the list of levels as LevelInfo
     */
-  def levels: List[(String, Boolean)] = listener.getSingleLevels
+  def levels: List[LevelInfo] = listener.getSingleLevels
 
   /**
     * This method loads the level into the level container, thus letting the player choose them
     */
   //TODO: FIX HERE STRING OR INT?
-  def loadLevels(): Unit = levels foreach((level) => levelsContainer.children.add(new LevelNode(LevelSelectionScene.this, 1 /*level._1*/, level._2)))
+  def loadLevels(): Unit = levels foreach((level) => levelsContainer.children.add(new LevelNode(LevelSelectionScene.this, level.name, /*level._1*/levels.indexOf(level), level.isAvailable)))
 
   override def onFullScreenSettingClick(): Unit = {
     parentStage.fullScreen = !parentStage.fullScreen.get()
   }
 
-  def onLevelPlayClick(level: Int, simulation: Boolean): Unit = {
+  def onLevelPlayClick(level: String, simulation: Boolean): Unit = {
     /* Creating a listener on the run*/
     val upperLevelSceneListener: UpperLevelSceneListener = () => parentStage.scene = this
     /* Creating a new level scene */
@@ -80,13 +81,13 @@ trait LevelSelectionSceneListener extends LevelSceneListener {
   /**
     * This method called when the level context has been created
     * @param levelContext the new level context
-    * @param level the new level index
+    * @param level the new level name
     */
-  def onLevelContextCreated(levelContext: LevelContext, level: Int)
+  def onLevelContextCreated(levelContext: LevelContext, level: String)
 
   /**
     * This method retrieves the levels that must be shown as node
-    * @return a list of tuples where a single tuple represent a level name and a boolean (true if available, false otherwise)
+    * @return a list of LevelInfo
     */
-  def getSingleLevels: List[(String, Boolean)]
+  def getSingleLevels: List[LevelInfo]
 }

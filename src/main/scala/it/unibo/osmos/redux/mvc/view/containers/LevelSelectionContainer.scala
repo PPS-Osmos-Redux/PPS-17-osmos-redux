@@ -39,9 +39,9 @@ class LevelSelectionContainer(parentStage: Stage) extends LevelNodeListener {
   /**
     * This method loads the level into the level container, thus letting the player choose them
     */
-  def loadLevels(): Unit = for (i <- 1 to numLevels) levelsContainer.children.add(new LevelNode(LevelSelectionContainer.this, i, i == 1))
+  def loadLevels(): Unit = ??? //for (i <- 1 to numLevels) levelsContainer.children.add(new LevelNode(LevelSelectionContainer.this, levels, i == 1))
 
-  def onLevelPlayClick(level: Int, simulation: Boolean): Unit = {
+  def onLevelPlayClick(level: String, simulation: Boolean): Unit = {
     /* Creating a listener on the run*/
     /*val upperLevelSceneListener: UpperLevelSceneListener = () => parentStage.scene = parentStage
     /* Creating a new level scene */

@@ -4,10 +4,12 @@ import java.io.{File, PrintWriter}
 import java.nio.file.{FileSystem, FileSystems, Files, Path}
 
 import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.UserStat
+import it.unibo.osmos.redux.mvc.model.JsonProtocols._
 import it.unibo.osmos.redux.mvc.model._
 import spray.json._
 
 import scala.io.{BufferedSource, Source}
+import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}
 
 object FileManager {
@@ -33,7 +35,6 @@ object FileManager {
     * @param chosenLevel  levels id
     * @return content of file wrapped into a Option
     */
-  //TODO: Proc check this
   def loadResource(chosenLevel: String, isMultiPlayer: Boolean = false): Option[Level] = {
     val levelsPath = if (isMultiPlayer) multiPlayerLevelsPath else singlePlayerLevelsPath
     val fileStream = getClass.getResourceAsStream(levelsPath + chosenLevel + jsonExtension)
@@ -66,7 +67,6 @@ object FileManager {
     } while (flag)
     val levelFile = new File(path.toUri)
     createDirectoriesTree(levelFile)
-    import it.unibo.osmos.redux.mvc.model.JsonProtocols.levelFormatter
     if (saveToFile(levelFile, level.toJson.prettyPrint)) Some(path) else None
   }
 
@@ -74,15 +74,13 @@ object FileManager {
     val path: Path = defaultFS.getPath(userProgressDirectory + userProgressFileName + jsonExtension)
     val upFile = new File(path.toUri)
     createDirectoriesTree(upFile)
-    import it.unibo.osmos.redux.mvc.model.JsonProtocols._
     if (saveToFile(upFile, userProgress.toJson.prettyPrint)) Some(path) else None
   }
 
   def loadUserProgress(): UserStat = {
-    import it.unibo.osmos.redux.mvc.model.JsonProtocols._
     loadFile(userProgressDirectory + userProgressFileName + jsonExtension) match {
       case Some(text) => text.parseJson.convertTo[UserStat]
-      case _ => saveUserProgress(SinglePlayerLevels.toUserProgression)
+      case _ => saveUserProgress(SinglePlayerLevels.userStatistics())
                 loadUserProgress()
     }
   }
@@ -137,12 +135,11 @@ object FileManager {
     * @return Try with Level if it doesn't fail
     */
   def textToLevel(text: String): Try[Level] = {
-    import it.unibo.osmos.redux.mvc.model.JsonProtocols.levelFormatter
     Try(text.parseJson.convertTo[Level])
   }
 
   def customLevelsFilesName:List[String] =
-    new File(levelsDirectory).listFiles((d, name) => name.endsWith(jsonExtension))
+    new File(levelsDirectory).listFiles((_, name) => name.endsWith(jsonExtension))
                              .map(f => f.getName.substring(0,f.getName.length-jsonExtension.length))
                              .toList
 
@@ -157,4 +154,10 @@ object FileManager {
         throw new NullPointerException("style.css file not found");
     }
   }
+
+  val soundsPath: String = separator + "sounds" + separator
+  def loadMenuMusic(): String = getClass.getResource(soundsPath + "MenuMusic.mp3").toURI toString
+  def loadButtonsSound(): String = getClass.getResource(soundsPath + "ButtonSound.mp3").toURI toString
+  def loadLevelMusic(): String = getClass.getResource(soundsPath + "LevelMusic.mp3").toURI toString
+
 }

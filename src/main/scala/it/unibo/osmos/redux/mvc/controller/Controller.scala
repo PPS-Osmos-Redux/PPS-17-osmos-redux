@@ -5,7 +5,8 @@ import it.unibo.osmos.redux.ecs.entities.PlayerCellEntity
 import it.unibo.osmos.redux.multiplayer.client.Client
 import it.unibo.osmos.redux.multiplayer.common.{ActorSystemHolder, MultiPlayerMode}
 import it.unibo.osmos.redux.multiplayer.server.Server
-import it.unibo.osmos.redux.mvc.model.{Level, MultiPlayerLevels, SinglePlayerLevels}
+import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.LevelInfo
+import it.unibo.osmos.redux.mvc.model.{Level, MultiPlayerLevels, SinglePlayerLevels, SoundsType}
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context._
 import it.unibo.osmos.redux.mvc.view.events.{AbortLobby, _}
@@ -14,14 +15,6 @@ import it.unibo.osmos.redux.utils.Logger
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Promise
 import scala.util.{Failure, Success}
-
-trait Observable {
-  def subscribe(observer: Observer)
-}
-
-trait Observer {
-  def notify(event: GameStateEventWrapper, levelContext: GameStateHolder)
-}
 
 /**
   * Controller base trait
@@ -33,9 +26,9 @@ trait Controller {
   /**
     * Initializes the level and the game engine.
     * @param levelContext The level context.
-    * @param chosenLevel The index of the chosen level.
+    * @param chosenLevel The name of the chosen level.
     */
-  def initLevel(levelContext: LevelContext, chosenLevel: Int): Unit
+  def initLevel(levelContext: LevelContext, chosenLevel: String): Unit
 
   /**
     * Initializes the multi-player lobby and the server or client.
@@ -80,9 +73,9 @@ trait Controller {
 
   /**
     * Gets all the levels in the campaign.
-    * @return The list of tuples that indicates for each level index if it has been completed.
+    * @return The list of LevelInfo.
     */
-  def getSinglePlayerLevels: List[(String, Boolean)] = SinglePlayerLevels.getLevels
+  def getSinglePlayerLevels:List[LevelInfo] = SinglePlayerLevels.getLevels
 
   /**
     * Gets all multi-player levels.
@@ -96,28 +89,38 @@ trait Controller {
     */
   def getCustomLevels: List[String] = FileManager.customLevelsFilesName
 
+  //TODO: add doc
+  def getSoundPath(soundType: SoundsType.Value): Option[String]
+
 }
 
-case class ControllerImpl() extends Controller with Observer {
+case class ControllerImpl() extends Controller with GameStateHolder {
 
   implicit val who: String = "Controller"
 
-  private var engine: Option[GameEngine] = None
+  var lastLoadedLevel:Option[String] = None
+  var engine:Option[GameEngine] = None
 
   //multi-player variables
   private var multiPlayerMode: Option[MultiPlayerMode] = None
   private var server: Option[Server] = None
   private var client: Option[Client] = None
 
-  override def initLevel(levelContext: LevelContext, chosenLevel: Int): Unit = {
+  override def initLevel(levelContext: LevelContext, chosenLevel: String): Unit = {
     Logger.log("initLevel")
 
-    var loadedLevel: Option[Level] = FileManager.loadResource(chosenLevel.toString)
+    var loadedLevel:Option[Level] = None
+    //TODO custom level logic
+    //if (isCustomLevel) {
+    // loadedLevel = FileManager.loadCustomLevel(chosenLevel)
+    // lastLoadedLevel = None
+    //}
+    //else {
+    loadedLevel = FileManager.loadResource(chosenLevel)
+    lastLoadedLevel = Some(chosenLevel)
+    //}
 
-    //TODO: support custom levels (maybe add a new parameter or load custom level if the default one is not found)
-    //if (isCustomLevel) loadedLevel = FileManager.loadCustomLevel(chosenLevel.toString)
-
-    if (loadedLevel.isDefined) {
+    if(loadedLevel.isDefined) {
 
       loadedLevel.get.isSimulation = levelContext.levelContextType == LevelContextType.simulation
 
@@ -125,13 +128,14 @@ case class ControllerImpl() extends Controller with Observer {
       if (player.isEmpty && !loadedLevel.get.isSimulation) throw new IllegalStateException("")
       //assign current player uuid to the
       levelContext.setPlayerUUID(player.get.getUUID)
+
       //create and initialize the game engine
-      if (engine.isEmpty) engine = Some(GameEngine())
-      engine.get.init(loadedLevel.get, levelContext)
-      //signals the interface that the game is ready to start
+      if(engine.isEmpty) engine = Some(GameEngine())
+      //TODO: engine must need a GameStateHolder for the EndGameSystem
+      engine.get.init(loadedLevel.get, levelContext/*, this*/)
       levelContext.setupLevel(loadedLevel.get.levelMap.mapShape)
     } else {
-      //println("File ", chosenLevel, " not found! is a custom level? ", isCustomLevel)
+      println("Level ", chosenLevel, " not found! is a custom level? "/*, isCustomLevel*/)
     }
   }
 
@@ -274,16 +278,33 @@ case class ControllerImpl() extends Controller with Observer {
     }
   }
 
-  override def notify(event: GameStateEventWrapper, levelContext: GameStateHolder): Unit = {
-    if (event.equals(GameWon)) {
-      SinglePlayerLevels.unlockNextLevel()
-      FileManager.saveUserProgress(SinglePlayerLevels.toUserProgression)
-    }
-    levelContext.notify(event)
+  override def saveNewCustomLevel(customLevel: Level): Boolean =
+    FileManager.saveLevel(customLevel, customLevel.levelId).isDefined
+
+   /**
+    * A generic definition of the game state
+    *
+    * @return a GameStateEventWrapper
+    *///TODO useless for controller
+  override def gameCurrentState: GameStateEventWrapper = ???
+
+  override def getSoundPath(soundType: SoundsType.Value): Option[String] = soundType match {
+    case SoundsType.menu => Some(FileManager.loadMenuMusic())
+    case SoundsType.level => Some(FileManager.loadLevelMusic())
+    case SoundsType.button => Some(FileManager.loadButtonsSound())
+    case _ => println("Sound type not managed!! [Controller getSoundPath]")
+              None
   }
 
-  //TODO: Proc check this
-  override def saveNewCustomLevel(customLevel: Level): Boolean = true
-    //FileManager.saveLevel(customLevel, customLevel.levelId).isDefined
-
+  /**
+    * Called on a event T type
+    *
+    * @param event the event
+    */
+  override def notify(event: GameStateEventWrapper): Unit = {
+    if(lastLoadedLevel.isDefined) {
+      SinglePlayerLevels.newEndGameEvent(event, lastLoadedLevel.get)
+      FileManager.saveUserProgress(SinglePlayerLevels.userStatistics())
+    }
+  }
 }
