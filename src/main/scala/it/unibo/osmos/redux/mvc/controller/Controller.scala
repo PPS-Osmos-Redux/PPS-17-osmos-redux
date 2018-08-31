@@ -250,7 +250,8 @@ case class ControllerImpl() extends Controller with Observer {
     Logger.log("stopLevel")
 
     multiPlayerMode match {
-      case Some(MultiPlayerMode.Client) => client.get.leaveGame()
+      case Some(MultiPlayerMode.Client) =>
+        if (client.isDefined) client.get.leaveGame()
       case _ =>
         if (server.isDefined) server.get.stopGame()
         if (engine.isDefined) engine.get.stop()

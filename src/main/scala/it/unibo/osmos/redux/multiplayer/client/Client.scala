@@ -12,7 +12,7 @@ import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, MultiPlayerLevelContext}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity
-import it.unibo.osmos.redux.mvc.view.events.{GameLost, GameWon, MouseEventWrapper}
+import it.unibo.osmos.redux.mvc.view.events.{GameLost, GamePending, GameWon, MouseEventWrapper}
 import it.unibo.osmos.redux.utils.{Constants, Logger}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -236,7 +236,9 @@ object Client {
       Logger.log("leaveGame")
 
       if (username.isEmpty) throw new IllegalStateException("The player entered no lobby, unable to leave.")
-      server.get ! ClientActor.LeaveGame(username)
+
+      //send leave game only if it's the user will (a.k.a. the game state is still in pending)
+      if (levelContext.map(_.gameCurrentState == GamePending).nonEmpty) server.get ! ClientActor.LeaveGame(username)
     }
 
     //INPUT MANAGEMENT
