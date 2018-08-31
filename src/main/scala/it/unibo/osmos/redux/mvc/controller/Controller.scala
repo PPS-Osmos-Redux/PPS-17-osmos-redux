@@ -144,19 +144,23 @@ case class ControllerImpl() extends Controller with Observer {
     lobbyContext.subscribe {
       //if user is defined that the event is from the user and not from the server
       case LobbyEventWrapper(AbortLobby, Some(_)) =>
+        Logger.log("Received AbortLobby event from LobbyContext.")
         multiPlayerMode match {
           case Some(MultiPlayerMode.Server) =>
             if (server.nonEmpty) {
               server.get.closeLobby()
               server.get.kill()
+              multiPlayerMode = None
+              server = None
             }
             client = None
           case Some(MultiPlayerMode.Client) =>
             if (client.nonEmpty) {
               client.get.leaveLobby()
               client.get.kill()
+              multiPlayerMode = None
+              client = None
             }
-            server = None
           case _ => //do not
         }
       case _ => //do not

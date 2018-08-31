@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.multiplayer.client
 import akka.actor.{ActorRef, PoisonPill}
 import akka.pattern.ask
 import akka.util.Timeout
-import it.unibo.osmos.redux.multiplayer.client.ClientActor.{LeaveGame, LeaveLobby, PlayerInput}
+import it.unibo.osmos.redux.multiplayer.client.ClientActor.{LeaveGame, LeaveLobby, PlayerInput, StartWatching}
 import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.multiplayer.lobby.GameLobby
 import it.unibo.osmos.redux.multiplayer.players.BasePlayer
@@ -22,7 +22,8 @@ import scala.util.{Failure, Success}
 
 trait Client {
 
-  implicit val timeout: Timeout = Timeout(5.minutes) //TODO: change to 5 sec
+  implicit val who: String = "Client"
+  implicit val timeout: Timeout = Timeout(5.seconds)
 
   /**
     * Binds this instance with the input ActorRef.
@@ -127,8 +128,6 @@ object Client {
   def apply(): Client = ClientImpl()
 
   final case class ClientImpl() extends Client {
-
-    implicit val who: String = "Client"
 
     //temp id useful for handshaking
     private var tempID: String = _
@@ -238,7 +237,7 @@ object Client {
       if (username.isEmpty) throw new IllegalStateException("The player entered no lobby, unable to leave.")
 
       //send leave game only if it's the user will (a.k.a. the game state is still in pending)
-      if (levelContext.map(_.gameCurrentState == GamePending).nonEmpty) server.get ! ClientActor.LeaveGame(username)
+      if (levelContext.nonEmpty && levelContext.get.gameCurrentState == GamePending) server.get.tell(ClientActor.LeaveGame(username), ref.get)
     }
 
     //INPUT MANAGEMENT
@@ -267,6 +266,8 @@ object Client {
           lobby.get.addPlayers(players: _*)
           //because the interface is not ready yet, set users list into lobby context
           lobbyContext.users = players.map(p => new User(p, false))
+          //add watch to server remote actor
+          ref.get ! StartWatching(server.get)
           //fulfill promise
           promise success true
         case Success(Disconnected) | Success(UsernameAlreadyTaken) | Success(LobbyFull) => kill(); promise success false
@@ -282,7 +283,7 @@ object Client {
 
       if (username.isEmpty) throw new IllegalStateException("The player entered no lobby, unable to leave.")
 
-      server.get ! LeaveLobby(username)
+      server.get.tell(LeaveLobby(username), ref.get)
       closeLobby()
     }
 
