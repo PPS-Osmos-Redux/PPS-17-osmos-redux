@@ -72,9 +72,10 @@ object LevelScreen {
     * @param components  the screen nodes/components, shown in order top to bottom
     */
   protected class LevelScreenImpl(parentScene: Scene, components: Seq[Node]) extends VBox(spacing = 4) {
-    prefWidth <== parentScene.width
-    prefHeight <== parentScene.height
+    prefWidth <== parentScene.width / 5
+    prefHeight <== parentScene.height / 5
     alignment = Pos.Center
+    alignmentInParent = Pos.Center
     parentScene fill = Color.Black
 
     children = components
