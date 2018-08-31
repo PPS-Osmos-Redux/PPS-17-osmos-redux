@@ -20,7 +20,7 @@ class GravityCellEntityCreator(var isAttractive: Boolean) extends CellEntityCrea
 
   children.add(weightNode)
 
-  override def configureBuilder(builder: CellBuilder): Unit = {
+  override def configureBuilder(builder: CellBuilder, withEntityType: Boolean = true): Unit = {
     builder match {
       case gcb: GravityCellBuilder =>
         super.configureBuilder(gcb)

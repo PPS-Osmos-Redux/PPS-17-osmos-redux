@@ -11,7 +11,8 @@ trait EditorCellBuilderConfigurator[T <: CellBuilder] {
   /**
     * This method configure the CellBuilder
     * @param builder the CellBuilder that must be configured
+    * @param withEntityType true if the Configurator has to put the entity type in the newly created cell
     */
-  def configureBuilder(builder: T): Unit
+  def configureBuilder(builder: T, withEntityType: Boolean = true): Unit
 
 }

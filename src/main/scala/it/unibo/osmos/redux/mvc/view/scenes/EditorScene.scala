@@ -5,7 +5,7 @@ import it.unibo.osmos.redux.mvc.model.{CollisionRules, MapShape, MapShapeType, V
 import it.unibo.osmos.redux.mvc.view.ViewConstants
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.components.custom.{StyledButton, TitledComboBox}
-import it.unibo.osmos.redux.mvc.view.components.editor.{CellEntityCreator, CircleLevelCreator, GravityCellEntityCreator, RectangleLevelCreator}
+import it.unibo.osmos.redux.mvc.view.components.editor._
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import javafx.scene.paint.ImagePattern
 import scalafx.beans.property.ObjectProperty
@@ -79,14 +79,18 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   })
 
   /* Pane containing the field to configure the entities*/
-  private val cellEntityBuilder: CellEntityCreator = new CellEntityCreator
+  private val cellEntityCreator: CellEntityCreator = new CellEntityCreator
   /* Pane containing the field to configure the gravity entities*/
-  private val gravityCellEntityBuilder: GravityCellEntityCreator = new GravityCellEntityCreator(isAttractive = true) {
+  private val gravityCellEntityCreator: GravityCellEntityCreator = new GravityCellEntityCreator(isAttractive = true) {
+    visible = false
+  }
+  /* Pane containing the field to configure the sentient entities*/
+  private val sentientCellEntityCreator: SentientCellEntityCreator = new SentientCellEntityCreator {
     visible = false
   }
 
   /** The entity builders */
-  private val entityBuilders = Seq(cellEntityBuilder, gravityCellEntityBuilder)
+  private val entityBuilders = Seq(cellEntityCreator, gravityCellEntityCreator, sentientCellEntityCreator)
 
   /* The entity container*/
   private val entityContainer: VBox = new VBox(1.0) {
@@ -101,13 +105,13 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
       entityType.onChange({
         builderSeq.foreach(cellBuilder => cellBuilder.visible = false)
         entityType.value match {
-          case EntityType.Matter => cellEntityBuilder.visible = true; cellEntityBuilder.entityType_=(EntityType.Matter)
-          case EntityType.AntiMatter => cellEntityBuilder.visible = true; cellEntityBuilder.entityType_=(EntityType.AntiMatter)
-          case EntityType.Attractive => gravityCellEntityBuilder.visible = true; gravityCellEntityBuilder.isAttractive = true
-          case EntityType.Repulsive => gravityCellEntityBuilder.visible = true; gravityCellEntityBuilder.isAttractive = false
-          case EntityType.Sentient => cellEntityBuilder.visible = true; cellEntityBuilder.entityType_=(EntityType.Sentient)
-          case EntityType.Controlled => cellEntityBuilder.visible = true; cellEntityBuilder.entityType_=(EntityType.Controlled)
-          case _ => cellEntityBuilder.visible = true; cellEntityBuilder.entityType_=(EntityType.Matter)
+          case EntityType.Matter => cellEntityCreator.visible = true; cellEntityCreator.entityType_=(EntityType.Matter)
+          case EntityType.AntiMatter => cellEntityCreator.visible = true; cellEntityCreator.entityType_=(EntityType.AntiMatter)
+          case EntityType.Attractive => gravityCellEntityCreator.visible = true; gravityCellEntityCreator.isAttractive = true
+          case EntityType.Repulsive => gravityCellEntityCreator.visible = true; gravityCellEntityCreator.isAttractive = false
+          case EntityType.Sentient => sentientCellEntityCreator.visible = true;
+          case EntityType.Controlled => cellEntityCreator.visible = true; cellEntityCreator.entityType_=(EntityType.Controlled)
+          case _ => cellEntityCreator.visible = true; cellEntityCreator.entityType_=(EntityType.Matter)
         }
       })
     }
@@ -249,7 +253,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     /* We set a min and max for the size */
     onScroll = scroll => {
       radius = radius.value + (scroll.getDeltaY/10) min 150 max 10
-      cellEntityBuilder.radius.value = radius.value
+      cellEntityCreator.radius.value = radius.value
     }
 
     entityType.onChange(entityType.value match {
@@ -275,8 +279,8 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   onMouseMoved = e => {
     entityPlaceholder.centerX.value = e.getX
     entityPlaceholder.centerY.value = e.getY
-    cellEntityBuilder.x.value = e.getX
-    cellEntityBuilder.y.value = e.getY
+    cellEntityCreator.x.value = e.getX
+    cellEntityCreator.y.value = e.getY
   }
 
   /**
@@ -294,12 +298,8 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     content = editorElements
 
     /** Insert an entity to the built entities list */
-    entityBuilders.filter((b) => b.visible.value).head match {
-      case gc: GravityCellEntityCreator => builtEntities += gc.create()
-      case c: CellEntityCreator => builtEntities += c.create()
-      case _ =>
-    }
-
+    builtEntities += entityBuilders.filter((b) => b.visible.value).head create()
+    println(builtEntities)
   }
 
   /** The main editor elements */

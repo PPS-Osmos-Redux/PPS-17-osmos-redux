@@ -57,13 +57,16 @@ class CellEntityCreator extends BaseEditorCreator[CellEntity] with EditorCellBui
     * Method that configures the basic cell builder. It may be overridden by other cell entity creators
     * @param builder the cell builder
     */
-  override def configureBuilder(builder: CellBuilder): Unit = builder
-    .visible(true)
-    .collidable(true)
-    .withPosition(x.value, y.value)
-    .withSpeed(xSpeed.value, ySpeed.value)
-    .withAcceleration(xAcceleration.value, yAcceleration.value)
-    .withEntityType(_entityType)
+  override def configureBuilder(builder: CellBuilder, withEntityType: Boolean = true): Unit = {
+
+    builder
+      .visible(true)
+      .collidable(true)
+      .withPosition(x.value, y.value)
+      .withSpeed(xSpeed.value, ySpeed.value)
+      .withAcceleration(xAcceleration.value, yAcceleration.value)
+      if (withEntityType) builder.withEntityType(_entityType)
+  }
 
   override def create(): CellEntity = {
     val builder = new CellBuilder()
