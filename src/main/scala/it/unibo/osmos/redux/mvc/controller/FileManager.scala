@@ -3,8 +3,8 @@ package it.unibo.osmos.redux.mvc.controller
 import java.io.{File, PrintWriter}
 import java.nio.file._
 
-import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.{LevelInfo, UserStat}
 import it.unibo.osmos.redux.mvc.model.JsonProtocols._
+import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.{LevelInfo, UserStat}
 import it.unibo.osmos.redux.mvc.model._
 import spray.json._
 
@@ -51,20 +51,15 @@ object FileManager {
     * @return option with the file path if it doesn't fail
     */
   def saveLevel(level: Level): Option[Path] = {
-    //Check if file exists
-    var flag: Boolean = true
-    var index: Int = 1
-    var path: Path = defaultFS.getPath(levelsDirectory + level.levelId + jsonExtension)
-    do {
+    def checkFileExist(fileName:String, index:Option[Int] = None): Path = {
+      val path = defaultFS.getPath(levelsDirectory + fileName+index.getOrElse("") + jsonExtension)
       if (Files.exists(path)) {
-        //if exists i will try with a new file name
-        path = defaultFS.getPath(levelsDirectory + level.levelId + index + jsonExtension)
-        level.levelId = level.levelId + index
-        index += 1
+        checkFileExist(fileName, if(index.isDefined) Some(index.get+1) else Some(1))
       } else {
-        flag = false
+        path
       }
-    } while (flag)
+    }
+    val path = checkFileExist(level.levelId)
     val levelFile = new File(path.toUri)
     createDirectoriesTree(levelFile)
     if (saveToFile(levelFile, level.toJson.prettyPrint)) Some(path) else None
