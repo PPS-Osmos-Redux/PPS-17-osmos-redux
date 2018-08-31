@@ -92,6 +92,12 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   /** The entity builders */
   private val entityBuilders = Seq(cellEntityCreator, gravityCellEntityCreator, sentientCellEntityCreator)
 
+  /**
+    * Returns the currently visible cell entity creator
+    * @return the currently visible cell entity creator
+    */
+  private def getVisibleCellBuilder: CellEntityCreator = entityBuilders.filter((b) => b.visible.value).head
+
   /* The entity container*/
   private val entityContainer: VBox = new VBox(1.0) {
     margin = Insets(10.0)
@@ -248,7 +254,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     */
   val entityPlaceholder: Circle = new Circle() {
     fill.value = new ImagePattern(ImageLoader.getImage(cellTexture))
-    radius = 100
+    radius = getVisibleCellBuilder.radius.value
 
     /* We set a min and max for the size */
     onScroll = scroll => {
@@ -301,12 +307,6 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     /** Insert an entity to the built entities list */
     builtEntities += getVisibleCellBuilder create()
   }
-
-  /**
-    * Returns the currently visible cell entity creator
-    * @return the currently visible cell entity creator
-    */
-  private def getVisibleCellBuilder: CellEntityCreator = entityBuilders.filter((b) => b.visible.value).head
 
   /** The main editor elements */
   val editorElements = ListBuffer(background, mainContainer, entityPlaceholder, currentLevelPlaceholder)
