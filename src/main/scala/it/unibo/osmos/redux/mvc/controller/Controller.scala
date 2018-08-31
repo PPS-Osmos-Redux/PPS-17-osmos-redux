@@ -9,7 +9,7 @@ import it.unibo.osmos.redux.mvc.model.{Level, MultiPlayerLevels, SinglePlayerLev
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context._
 import it.unibo.osmos.redux.mvc.view.events.{AbortLobby, _}
-import it.unibo.osmos.redux.utils.Logger
+import it.unibo.osmos.redux.utils.{Constants, Logger}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Promise
@@ -185,7 +185,8 @@ case class ControllerImpl() extends Controller with Observer {
             case Success(true) =>
               this.client = Some(client)
               //creates the level context
-              val levelContext = LevelContext("<dummy>") //TODO: think about a better way, technically getUUID method of the client won't be called until the game is started (the GameStarted message will carry along this value).
+              //TODO: think about a better way, technically getUUID method of the client won't be called until the game is started (the GameStarted message will carry along this value).
+              val levelContext = LevelContext(Constants.defaultClientUUID)
               //initializes the game
               client.initGame(levelContext)
               //fulfill promise
@@ -193,7 +194,7 @@ case class ControllerImpl() extends Controller with Observer {
             case Success(false) => promise success false
             case Failure(t) => promise failure t
           }
-          case Success(false) => promise success false //TODO: show alert
+          case Success(false) => promise success false
           case Failure(t) => promise failure t
         }
       case _ =>

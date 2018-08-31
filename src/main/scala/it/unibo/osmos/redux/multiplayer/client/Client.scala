@@ -106,9 +106,9 @@ trait Client {
 
   /**
     * Closes the lobby.
-    * @param fromServer If the close request comes from the server or not.
+    * @param byUser If the lobby have been closed by the user or not.
     */
-  def closeLobby(fromServer: Boolean = false): Unit
+  def closeLobby(byUser: Boolean = true): Unit
 
   /**
     * Forwards player into to the server.
@@ -216,6 +216,9 @@ object Client {
       this.uuid = uuid
       //update level context uuid
       levelContext.get.setPlayerUUID(uuid)
+
+      if (uuid.equals(Constants.defaultClientUUID)) throw new IllegalArgumentException("Invalid player UUID, the client is not be able to send correct inputs to the server")
+
       //notify lobby that the game is started (prepares the view)
       lobby.get.notifyGameStarted(levelContext.get)
       //actually starts the game
@@ -234,7 +237,6 @@ object Client {
 
       if (username.isEmpty) throw new IllegalStateException("The player entered no lobby, unable to leave.")
       server.get ! ClientActor.LeaveGame(username)
-      kill()
     }
 
     //INPUT MANAGEMENT
@@ -282,13 +284,13 @@ object Client {
       closeLobby()
     }
 
-    override def closeLobby(byServer: Boolean = false): Unit = {
-      Logger.log("clearLobby")
+    override def closeLobby(byUser: Boolean = true): Unit = {
+      Logger.log("closeLobby")
 
-      if (lobby.nonEmpty) {
-        lobby.get.notifyLobbyClosed(byServer)
-        lobby = None
-      }
+      if (lobby.isEmpty) throw new IllegalStateException("The player entered no lobby, unable to leave.")
+
+      lobby.get.notifyLobbyClosed(byUser)
+      lobby = None
     }
 
     override def getLobbyPlayers: Seq[BasePlayer] = {

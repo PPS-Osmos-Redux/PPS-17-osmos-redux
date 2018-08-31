@@ -44,16 +44,12 @@ case class MultiPlayerEndGameSystem(server: Server, levelContext: GameStateHolde
           .filter(i => i._2.nonEmpty && victoryCondition.check(i._2.get, aliveCells)) //filter only players that have won
         if levelContext.gameCurrentState == GamePending //we should not check any other player if a winner is found
       ) yield {
-
-        //TODO: avoid to kill the server, incapsulate those login inside the stop
         if (isServer) {
           server.stopGame()
           levelContext.notify(GameWon)
         } else {
-          server.deliverMessage(player.getUsername, GameEnded(true))
-          server.broadcastMessage(GameEnded(false), player.getUsername)
+          server.stopGame(player.getUsername)
           levelContext.notify(GameLost)
-          server.kill()
         }
       }
     }

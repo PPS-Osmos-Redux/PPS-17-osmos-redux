@@ -17,11 +17,11 @@ abstract class AbstractLobby[T <: Player](private val lobbyContext: LobbyContext
 
   /**
     * Notify to lobby context that the lobby have been closed.
-    * @param fromServer If the game needs to be started as server or not (optional, default false)
+    * @param byUser If the lobby have been closed by the user or not (optional, default true).
     */
-  def notifyLobbyClosed(fromServer: Boolean = false): Unit = {
-    if (fromServer) lobbyContext.notify(LobbyEventWrapper(AbortLobby, None))
-    else lobbyContext.notifyLobbyEvent(LobbyEventWrapper(AbortLobby, None))
+  def notifyLobbyClosed(byUser: Boolean = true): Unit = {
+    if (byUser) lobbyContext.notifyLobbyEvent(LobbyEventWrapper(AbortLobby, None))
+    else lobbyContext.notify(LobbyEventWrapper(AbortLobby, None))
   }
 
   /**

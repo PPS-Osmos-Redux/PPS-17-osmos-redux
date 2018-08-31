@@ -16,7 +16,7 @@ class ClientActor(private val client: Client) extends Actor {
 
   override def receive: Receive = {
 
-    case LobbyClosed => client.closeLobby(true); client.kill()
+    case LobbyClosed => client.closeLobby(false); client.kill()
 
     case PlayerEnteredLobby(player) => client.addPlayerToLobby(player)
 

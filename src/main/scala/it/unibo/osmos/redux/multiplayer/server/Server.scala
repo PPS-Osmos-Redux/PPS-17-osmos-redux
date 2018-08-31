@@ -61,8 +61,9 @@ trait Server {
 
   /**
     * Signals all clients that the game have been stopped.
+    * @param winner The username of the player who won, if not declared the winner is assumed to be the server.
     */
-  def stopGame(): Unit
+  def stopGame(winner: String = ""): Unit
 
   /**
     * Delivers a message to a specified client
@@ -220,11 +221,20 @@ object Server {
       status = ServerState.Game
     }
 
-    override def stopGame(): Unit = {
+    override def stopGame(winner: String = username): Unit = {
       Logger.log("stopGame")
 
-      broadcastMessage(ServerActor.GameEnded(false))
-      kill()
+      val isServer = winner.equals(username)
+
+      //if the server won, everyone else lost
+      if (isServer) {
+        broadcastMessage(ServerActor.GameEnded(false))
+      } else {
+        deliverMessage(username, GameEnded(true))
+        broadcastMessage(GameEnded(false), username)
+      }
+
+      status = ServerState.Lobby
     }
 
     override def notifyClientInputEvent(event: MouseEventWrapper): Unit = {
@@ -277,7 +287,7 @@ object Server {
       if (status != ServerState.Lobby) throw new IllegalStateException(s"Server cannot close lobby because it's in the state: $status")
 
       broadcastMessage(LobbyClosed)
-      lobby.get.notifyLobbyClosed() //signal interface to change scene
+      lobby.get.notifyLobbyClosed()
       lobby = None
 
       status = ServerState.Idle
