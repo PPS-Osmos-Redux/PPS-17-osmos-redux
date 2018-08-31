@@ -49,50 +49,70 @@ class TestSentientSystem extends FunSuite with BeforeAndAfter{
 
 
   test("Acceleration of SentientCellEntity should not change without any target") {
-    val sentienCellEntity = SentientCellEntity(acceleration,collidable,dimension,position,speed,visible, spawner)
+    val sentientCellEntity = SentientCellEntity(acceleration,collidable,dimension,position,speed,visible, spawner)
     val sentientSystem = SentientSystem(levelInfo)
-    EntityManager.add(sentienCellEntity)
-    val originalAcceleration = AccelerationComponent(sentienCellEntity.getAccelerationComponent.vector)
+    EntityManager.add(sentientCellEntity)
+    val originalAcceleration = AccelerationComponent(sentientCellEntity.getAccelerationComponent.vector)
     sentientSystem.update()
-    assert(sentienCellEntity.getAccelerationComponent.vector.x === originalAcceleration.vector.x)
-    assert(sentienCellEntity.getAccelerationComponent.vector.y === originalAcceleration.vector.y)
+    assert(sentientCellEntity.getAccelerationComponent.vector.x === originalAcceleration.vector.x)
+    assert(sentientCellEntity.getAccelerationComponent.vector.y === originalAcceleration.vector.y)
   }
 
   test("Acceleration of SentientCellEntity should change with a target in target's direction") {
     val cellEntity = CellEntity(acceleration,collidable,dimension1,position1,speed1,visible,baseTypeEntity)
-    val sentienCellEntity = SentientCellEntity(acceleration,collidable,dimension,position,speed,visible, spawner)
+    val sentientCellEntity = SentientCellEntity(acceleration,collidable,dimension,position,speed,visible, spawner)
     val system = SentientSystem(levelInfo)
     EntityManager.add(cellEntity)
-    EntityManager.add(sentienCellEntity)
+    EntityManager.add(sentientCellEntity)
     system.update()
-    assert(sentienCellEntity.getAccelerationComponent.vector.x === 0.1 +- TOLERANCE)
-    assert(sentienCellEntity.getAccelerationComponent.vector.y === 0.0 +- TOLERANCE)
+    assert(sentientCellEntity.getAccelerationComponent.vector.x === 0.1 +- TOLERANCE)
+    assert(sentientCellEntity.getAccelerationComponent.vector.y === 0.0 +- TOLERANCE)
   }
 
   test("Acceleration of SentientCellEntity should choose the correct target and change its acceleration accordingly") {
     val cellEntity = new CellBuilder().withPosition(14,14).withDimension(4).build
     val cellEntity1 = new CellBuilder().withPosition(18,26).withDimension(2).build
-    val sentienCellEntity = SentientCellBuilder().withPosition(24,17).withDimension(5).withSpeed(-2,3).build
+    val sentientCellEntity = SentientCellBuilder().withPosition(24,17).withDimension(5).withSpeed(-2,3).build
     val system = SentientSystem(levelInfo)
     EntityManager.add(cellEntity)
     EntityManager.add(cellEntity1)
-    EntityManager.add(sentienCellEntity)
+    EntityManager.add(sentientCellEntity)
     system.update()
-    println(sentienCellEntity.getAccelerationComponent.vector)
-    assert(sentienCellEntity.getAccelerationComponent.vector.x === 0.0 +- TOLERANCE)
-    assert(sentienCellEntity.getAccelerationComponent.vector.y === -0.09 +- TOLERANCE)
+    println(sentientCellEntity.getAccelerationComponent.vector)
+    assert(sentientCellEntity.getAccelerationComponent.vector.x === 0.0 +- TOLERANCE)
+    assert(sentientCellEntity.getAccelerationComponent.vector.y === -0.09 +- TOLERANCE)
   }
 
   test("Acceleration of SentientCellEntity should change to avoid enemies") {
     val cellEntity = CellEntity(acceleration,collidable,dimension2,position1,speed1,visible,baseTypeEntity)
     val cellEntity1 = CellEntity(acceleration,collidable,dimension2,position2,speed1,visible,baseTypeEntity)
-    val sentienCellEntity = SentientCellEntity(acceleration,collidable,dimension,position,speed,visible, spawner)
+    val sentientCellEntity = SentientCellEntity(acceleration,collidable,dimension,position,speed,visible, spawner)
     val system = SentientSystem(levelInfo)
     EntityManager.add(cellEntity)
     EntityManager.add(cellEntity1)
-    EntityManager.add(sentienCellEntity)
+    EntityManager.add(sentientCellEntity)
     system.update()
-    assert(sentienCellEntity.getAccelerationComponent.vector.x === -0.094 +- TOLERANCE)
-    assert(sentienCellEntity.getAccelerationComponent.vector.y === -0.011 +- TOLERANCE)
+    assert(sentientCellEntity.getAccelerationComponent.vector.x === -0.094 +- TOLERANCE)
+    assert(sentientCellEntity.getAccelerationComponent.vector.y === -0.011 +- TOLERANCE)
+  }
+
+  test("If collision rule with boundary is bouncing, SentientCellEntity should not change it's acceleration to avoid boundary") {
+    setupLevelInfo(Rectangle((50, 100), 200, 100), CollisionRules.bouncing)
+    val acceleration = AccelerationComponent(0,0)
+    val sentientCellEntity = SentientCellBuilder().withPosition(24,14).withDimension(5).withSpeed(-2,3).withAcceleration(acceleration).build
+    val system = SentientSystem(levelInfo)
+    EntityManager.add(sentientCellEntity)
+    system.update()
+    assert(sentientCellEntity.getAccelerationComponent.vector == acceleration.vector)
+  }
+
+  test("If collision rule with boundary is instantDeath, SentientCellEntity should change it's acceleration to avoid boundary") {
+    val acceleration = AccelerationComponent(0,0)
+    val sentientCellEntity = SentientCellBuilder().withPosition(24,14).withDimension(5).withSpeed(-1,-2).withAcceleration(acceleration).build
+    val system = SentientSystem(levelInfo)
+    EntityManager.add(sentientCellEntity)
+    system.update()
+    assert(sentientCellEntity.getAccelerationComponent.vector.x === acceleration.vector.x +- TOLERANCE)
+    assert(sentientCellEntity.getAccelerationComponent.vector.y > 0)
   }
 }
