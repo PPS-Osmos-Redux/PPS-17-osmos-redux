@@ -32,7 +32,11 @@ case class ControllerImpl() extends Controller with GameStateHolder {
                          /*isCustomLevel:Boolean*/): Unit = {
 
     var loadedLevel:Option[Level] = None
-    //if (isCustomLevel) loadedLevel = FileManager.loadCustomLevel(chosenLevel)
+    //TODO custom level logic
+    //if (isCustomLevel) {
+    // loadedLevel = FileManager.loadCustomLevel(chosenLevel)
+    // lastLoadedLevel = None
+    //}
     //else {
       loadedLevel = FileManager.loadResource(chosenLevel.toString).toOption
       lastLoadedLevel = Some(chosenLevel.toString)
