@@ -3,21 +3,20 @@ package it.unibo.osmos.redux.mvc.controller
 import java.io.{File, PrintWriter}
 import java.nio.file.{FileSystem, FileSystems, Files, Path}
 
-import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities._
-import it.unibo.osmos.redux.mvc.controller.FileManager.getClass
-import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
-import it.unibo.osmos.redux.mvc.model.UserProgress.UserStat
+import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.UserStat
+import it.unibo.osmos.redux.mvc.model.JsonProtocols._
 import it.unibo.osmos.redux.mvc.model._
-import it.unibo.osmos.redux.utils.Point
 import spray.json._
 
 import scala.io.{BufferedSource, Source}
-import scala.util.Try
+import scala.language.postfixOps
+import scala.util.{Failure, Success, Try}
 
 object FileManager {
   val separator: String = "/"
-  val levelStartPath: String = separator + "levels" + separator
+  val levelStartPath: String = separator + "levels"
+  val singlePlayerLevelsPath: String = levelStartPath + separator + "singlePlayer" + separator
+  val multiPlayerLevelsPath: String = levelStartPath + separator + "multiPlayer" + separator
   val jsonExtension = ".json"
 
   val defaultFS: FileSystem = FileSystems.getDefault
@@ -33,14 +32,17 @@ object FileManager {
   /**
     * Reads a file from the resources folder
     *
-    * @param isSimulation if i have to load a simulation or a playable levels
     * @param chosenLevel  levels id
-    * @return content of file wrapped into a Try
+    * @return content of file wrapped into a Option
     */
-  def loadResource(isSimulation: Boolean, chosenLevel: Int): Try[Level] = {
-    val path = getClass.getResourceAsStream(levelStartPath + chosenLevel.toString + jsonExtension)
-    val content = Source.fromInputStream(path).mkString
-    Try(textToLevel(content).get)
+  def loadResource(chosenLevel: String, isMultiPlayer: Boolean = false): Option[Level] = {
+    val levelsPath = if (isMultiPlayer) multiPlayerLevelsPath else singlePlayerLevelsPath
+    val fileStream = getClass.getResourceAsStream(levelsPath + chosenLevel + jsonExtension)
+    val fileContent = Source.fromInputStream(fileStream).mkString
+    textToLevel(fileContent) match {
+      case Success(result) => Some(result)
+      case Failure(e: Throwable) => e.printStackTrace(); None
+    }
   }
 
   /**
@@ -65,7 +67,6 @@ object FileManager {
     } while (flag)
     val levelFile = new File(path.toUri)
     createDirectoriesTree(levelFile)
-    import it.unibo.osmos.redux.mvc.model.JsonProtocols.levelFormatter
     if (saveToFile(levelFile, level.toJson.prettyPrint)) Some(path) else None
   }
 
@@ -73,15 +74,14 @@ object FileManager {
     val path: Path = defaultFS.getPath(userProgressDirectory + userProgressFileName + jsonExtension)
     val upFile = new File(path.toUri)
     createDirectoriesTree(upFile)
-    import it.unibo.osmos.redux.mvc.model.JsonProtocols._
     if (saveToFile(upFile, userProgress.toJson.prettyPrint)) Some(path) else None
   }
 
-  def loadUserProgress(): Option[UserStat] = {
-    import it.unibo.osmos.redux.mvc.model.JsonProtocols.userProgressFormatter
+  def loadUserProgress(): UserStat = {
     loadFile(userProgressDirectory + userProgressFileName + jsonExtension) match {
-      case Some(text) => Option(text.parseJson.convertTo[UserStat])
-      case _ => None
+      case Some(text) => text.parseJson.convertTo[UserStat]
+      case _ => saveUserProgress(SinglePlayerLevels.userStatistics())
+                loadUserProgress()
     }
   }
 
@@ -135,12 +135,29 @@ object FileManager {
     * @return Try with Level if it doesn't fail
     */
   def textToLevel(text: String): Try[Level] = {
-    import it.unibo.osmos.redux.mvc.model.JsonProtocols.levelFormatter
     Try(text.parseJson.convertTo[Level])
   }
 
   def customLevelsFilesName:List[String] =
-    new File(levelsDirectory).listFiles((d, name) => name.endsWith(jsonExtension))
+    new File(levelsDirectory).listFiles((_, name) => name.endsWith(jsonExtension))
                              .map(f => f.getName.substring(0,f.getName.length-jsonExtension.length))
                              .toList
+
+  def getStyle: String = {
+    try {
+      val url = getClass.getResource("/style/style.css")
+      //println("style url: " + url)
+      url.toString
+    } catch {
+      case _: NullPointerException =>
+        println("Error: style.css file not found")
+        throw new NullPointerException("style.css file not found");
+    }
+  }
+
+  val soundsPath: String = separator + "sounds" + separator
+  def loadMenuMusic(): String = getClass.getResource(soundsPath + "MenuMusic.mp3").toURI toString
+  def loadButtonsSound(): String = getClass.getResource(soundsPath + "ButtonSound.mp3").toURI toString
+  def loadLevelMusic(): String = getClass.getResource(soundsPath + "LevelMusic.mp3").toURI toString
+
 }

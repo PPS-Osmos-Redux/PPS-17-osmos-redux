@@ -2,8 +2,8 @@ package it.unibo.osmos.redux.ecs.systems
 
 import it.unibo.osmos.redux.ecs.entities.{DeathProperty, EntityType, PlayerCellEntity}
 import it.unibo.osmos.redux.mvc.model.VictoryRules
+import it.unibo.osmos.redux.mvc.view.context.GameStateHolder
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GamePending, GameWon}
-import it.unibo.osmos.redux.mvc.view.levels.GameStateHolder
 
 /** System managing the level's ending rules
   *
@@ -30,12 +30,9 @@ case class EndGameSystem(levelContext: GameStateHolder, victoryRules: VictoryRul
         levelContext.notify(GameLost)
       } else {
         entities foreach (playerEntity => {
-          if (victoryCondition.check(playerEntity, entitiesSecondType)) {
-            levelContext.notify(GameWon)
-          }
+          if (victoryCondition.check(playerEntity, entitiesSecondType)) levelContext.notify(GameWon)
         })
       }
     }
   }
-
 }

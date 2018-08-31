@@ -11,4 +11,10 @@ trait EntitiesDrawer {
     * @param entities the other entities
     */
   def drawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper])
+
+  /**
+    * Gets the current player uuid.
+    * @return The uuid
+    */
+  def getPlayerUUID: String
 }
