@@ -23,7 +23,7 @@ class EditorLevelSelectionScene(override val parentStage: Stage, override val li
   override def levels: List[LevelInfo] = listener.getCustomLevels
   override def loadLevels(): Unit = levels foreach(level => levelsContainer.children.add(new EditorLevelNode(this, level.name)))
 
-  override def onLevelDeleteClick(level: String): Unit = {}
+  override def onLevelDeleteClick(level: String): Unit = listener.onDeleteLevel(level, (_) => parentStage.scene = new EditorLevelSelectionScene(parentStage, listener))
 
 }
 
@@ -38,5 +38,10 @@ trait EditorLevelSelectionSceneListener extends LevelSelectionSceneListener with
     */
   def getCustomLevels: List[LevelInfo]
 
-  //def onLevelDelete(level: String, callback: Boolean => Unit): Unit
+  /**
+    * Called when the user wants to delete a custom level
+    * @param level the level name
+    * @param callback the callback
+    */
+  def onDeleteLevel(level: String, callback: Boolean => Unit): Unit
 }

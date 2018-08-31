@@ -77,6 +77,8 @@ object View {
                              entities: Seq[CellEntity],
                              callback: Boolean => Unit): Unit = checkController(() => callback(controller.get.saveLevel(name, map, victoryRules, collisionRules, entities)))
 
+    override def onDeleteLevel(level: String, callback: Boolean => Unit): Unit = checkController(() => callback(controller.get.removeCustomLevel(level)))
+
     override def onStartLevel(): Unit = checkController(() => controller.get.startLevel())
 
     override def onPauseLevel(): Unit = checkController(() => controller.get.pauseLevel())
