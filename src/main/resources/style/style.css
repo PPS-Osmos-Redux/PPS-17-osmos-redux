@@ -25,3 +25,11 @@
 .disabled-button-style {
   -fx-background: #dddddd;
 }
+
+.multi-player-lobby-table {
+  -fx-font-size: 22px;
+}
+
+.table-row-cell{
+  -fx-font-size: 20px;
+}

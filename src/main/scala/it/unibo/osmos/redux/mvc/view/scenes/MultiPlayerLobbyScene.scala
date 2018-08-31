@@ -52,6 +52,7 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     * TableView linked with the user list
     */
   val usersTable: TableView[UserWithProperties] = new TableView[UserWithProperties](userList) {
+    styleClass.add("multi-player-lobby-table")
     columnResizePolicy = TableView.ConstrainedResizePolicy
     columns ++= List(
       new TableColumn[UserWithProperties, String]() {
@@ -75,8 +76,8 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
 
   private val container: VBox = new VBox(5.0) {
 
-    maxWidth <== parentStage.width / 4
-    maxHeight <== parentStage.height / 4
+    maxWidth <== parentStage.width / 2
+    //maxHeight <== parentStage.height / 4
 
     alignment = Pos.Center
     children = Seq(usersTable)

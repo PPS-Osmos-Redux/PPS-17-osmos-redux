@@ -1,13 +1,13 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.multiplayer.common.NetworkUtils
-import it.unibo.osmos.redux.mvc.view.components.custom.{StyledButton, TitledComboBox, TitledNumericField, TitledTextField}
+import it.unibo.osmos.redux.mvc.view.components.custom._
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.LobbyContext
 import scalafx.application.Platform
 import scalafx.beans.property.{BooleanProperty, IntegerProperty, StringProperty}
 import scalafx.geometry.{Insets, Pos}
-import scalafx.scene.control.{Alert, Button}
+import scalafx.scene.control.{Alert, Button, Label, TextField}
 import scalafx.scene.layout.{BorderPane, HBox, VBox}
 import scalafx.stage.Stage
 
@@ -20,7 +20,10 @@ import scalafx.stage.Stage
 class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlayerSceneListener, val upperSceneListener: BackClickListener) extends DefaultBackScene(parentStage, upperSceneListener) {
 
   private val username: StringProperty = StringProperty("")
+  private val usernameLabel = new Label("Username: ")
   private val usernameTextField = new TitledTextField("Username: ", username)
+  private val textField = new TextField()
+  private val usernameHBox = new HBox(usernameLabel, textField)
 
   private val addressTitle: StringProperty = StringProperty("Server address: ")
   private val addressValue: StringProperty = StringProperty("")
@@ -98,7 +101,8 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
     maxHeight <== parentStage.height / 4
 
     alignment = Pos.Center
-    children = Seq(usernameTextField.root, modeComboBox.root, addressTextField.root, portTextField.root)
+//new HBox(usernameTextField.root)
+    children = Seq(usernameHBox, modeComboBox.root, addressTextField.root, portTextField.root)
 
   }
 
