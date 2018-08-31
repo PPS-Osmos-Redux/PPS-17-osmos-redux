@@ -10,10 +10,9 @@ import scalafx.scene.layout.{HBox, VBox}
 /**
   * A panel showing input nodes which is also capable of providing the requested CellEntity
   */
-class CellEntityBuilder extends BaseComponentBuilder[CellEntity] {
+class CellEntityCreator extends BaseEditorCreator[CellEntity] with EditorCellBuilderConfigurator[CellBuilder] {
 
   private[this] var _entityType: EntityType.Value = EntityType.Matter
-
   def entityType_=(value: EntityType.Value): Unit = {
     _entityType = value
   }
@@ -55,19 +54,21 @@ class CellEntityBuilder extends BaseComponentBuilder[CellEntity] {
   children = Seq(positionNode, radiusNode, speedNode, accelerationNode)
 
   /**
-    * Method that returns a CellBuilder with the current CellEntityBuilder stored value. It can be overridden by subclasses to add other features.
-    * @return the cell builder
+    * Method that configures the basic cell builder. It may be overridden by other cell entity creators
+    * @param builder the cell builder
     */
-  def getBuilder: CellBuilder = new CellBuilder().visible(true)
+  override def configureBuilder(builder: CellBuilder): Unit = builder
+    .visible(true)
     .collidable(true)
     .withPosition(x.value, y.value)
     .withSpeed(xSpeed.value, ySpeed.value)
     .withAcceleration(xAcceleration.value, yAcceleration.value)
     .withEntityType(_entityType)
 
-  override def build(): CellEntity = CellEntity(getBuilder)
+  override def create(): CellEntity = {
+    val builder = new CellBuilder()
+    configureBuilder(builder)
+    builder.build
+  }
 
-  /*var builder
-  build = setBuilder(base) + CellBuilder
-  setBuilder(cellBuilder)*/
 }

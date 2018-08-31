@@ -5,7 +5,7 @@ import it.unibo.osmos.redux.mvc.model.{MapShape, MapShapeType, VictoryRules}
 import it.unibo.osmos.redux.mvc.view.ViewConstants
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.components.custom.{StyledButton, TitledComboBox}
-import it.unibo.osmos.redux.mvc.view.components.editor.{CellEntityBuilder, CircleLevelBuilder, GravityCellEntityBuilder, RectangleLevelBuilder}
+import it.unibo.osmos.redux.mvc.view.components.editor.{CellEntityCreator, CircleLevelCreator, GravityCellEntityCreator, RectangleLevelCreator}
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import javafx.scene.paint.ImagePattern
 import scalafx.beans.property.ObjectProperty
@@ -44,13 +44,13 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   private val levelTypeBox = new TitledComboBox[MapShapeType.Value]("Level Type:", MapShapeType.values.toSeq, mapType => levelType.value = mapType)
 
   /** Pane containing the field to configure the circular level */
-  private val circularLevelBuilder: CircleLevelBuilder = new CircleLevelBuilder {
+  private val circularLevelBuilder: CircleLevelCreator = new CircleLevelCreator {
     xCenter.value = ViewConstants.Window.defaultWindowWidth / 2
     yCenter.value = ViewConstants.Window.defaultWindowHeight / 2
     radius.value = 400.0
   }
   /** Pane containing the field to configure the rectangular level */
-  private val rectangularLevelBuilder: RectangleLevelBuilder = new RectangleLevelBuilder {
+  private val rectangularLevelBuilder: RectangleLevelCreator = new RectangleLevelCreator {
     visible = false
     levelWidth.value = 800.0
     levelHeight.value = 600.0
@@ -73,9 +73,9 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   })
 
   /* Pane containing the field to configure the entities*/
-  private val cellEntityBuilder: CellEntityBuilder = new CellEntityBuilder
+  private val cellEntityBuilder: CellEntityCreator = new CellEntityCreator
   /* Pane containing the field to configure the gravity entities*/
-  private val gravityCellEntityBuilder: GravityCellEntityBuilder = new GravityCellEntityBuilder(isAttractive = true) {
+  private val gravityCellEntityBuilder: GravityCellEntityCreator = new GravityCellEntityCreator(isAttractive = true) {
     visible = false
   }
 
@@ -174,8 +174,8 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
           /** The name is valid, we have to retrieve the elements */
           /** Level */
           val level = levelType.value match {
-            case MapShapeType.Circle => circularLevelBuilder.build()
-            case MapShapeType.Rectangle => rectangularLevelBuilder.build()
+            case MapShapeType.Circle => circularLevelBuilder.create()
+            case MapShapeType.Rectangle => rectangularLevelBuilder.create()
             case _ =>
           }
           /** Victory rules */
@@ -277,8 +277,8 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
 
     /** Insert an entity to the built entities list */
     entityBuilders.filter((b) => b.visible.value).head match {
-      case gc: GravityCellEntityBuilder => builtEntities += gc.build()
-      case c: CellEntityBuilder => builtEntities += c.build()
+      case gc: GravityCellEntityCreator => builtEntities += gc.create()
+      case c: CellEntityCreator => builtEntities += c.create()
       case _ =>
     }
 
