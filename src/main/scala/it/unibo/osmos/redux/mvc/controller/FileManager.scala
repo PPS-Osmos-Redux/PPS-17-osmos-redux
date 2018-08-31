@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.mvc.controller
 import java.io.{File, PrintWriter}
 import java.nio.file.{FileSystem, FileSystems, Files, Path}
 
-import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.UserStat
+import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.{LevelInfo, UserStat}
 import it.unibo.osmos.redux.mvc.model.JsonProtocols._
 import it.unibo.osmos.redux.mvc.model._
 import spray.json._
@@ -138,10 +138,13 @@ object FileManager {
     Try(text.parseJson.convertTo[Level])
   }
 
-  def customLevelsFilesName:List[String] =
-    new File(levelsDirectory).listFiles((_, name) => name.endsWith(jsonExtension))
-                             .map(f => f.getName.substring(0,f.getName.length-jsonExtension.length))
-                             .toList
+  def customLevelsFilesName:Try[List[LevelInfo]] =
+    Try(new File(levelsDirectory).listFiles((_, name) => name.endsWith(jsonExtension))
+                                 .map(f => f.getName.substring(0,f.getName.length-jsonExtension.length))
+                                 .map(lvlFileName => loadCustomLevel(lvlFileName)).filter(optLvl => optLvl.isDefined)
+                                 .map(lvl => LevelInfo(lvl.get.levelId, true, lvl.get.victoryRule)).toList)
+//                             .map(f => f.getName.substring(0,f.getName.length-jsonExtension.length))
+//                             .toList)
 
   def getStyle: String = {
     try {
