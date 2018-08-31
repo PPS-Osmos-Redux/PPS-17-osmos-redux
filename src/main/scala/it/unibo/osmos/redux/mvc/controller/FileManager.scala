@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.mvc.controller
 
 import java.io.{File, PrintWriter}
-import java.nio.file.{FileSystem, FileSystems, Files, Path}
+import java.nio.file._
 
 import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.{LevelInfo, UserStat}
 import it.unibo.osmos.redux.mvc.model.JsonProtocols._
@@ -48,18 +48,18 @@ object FileManager {
   /**
     * Save a level on file
     * @param level the level to save
-    * @param fileName the file name
     * @return option with the file path if it doesn't fail
     */
-  def saveLevel(level: Level, fileName: String): Option[Path] = {
+  def saveLevel(level: Level): Option[Path] = {
     //Check if file exists
     var flag: Boolean = true
     var index: Int = 1
-    var path: Path = defaultFS.getPath(levelsDirectory + fileName + jsonExtension)
+    var path: Path = defaultFS.getPath(levelsDirectory + level.levelId + jsonExtension)
     do {
       if (Files.exists(path)) {
         //if exists i will try with a new file name
-        path = defaultFS.getPath(levelsDirectory + fileName + index + jsonExtension)
+        path = defaultFS.getPath(levelsDirectory + level.levelId + index + jsonExtension)
+        level.levelId = level.levelId + index
         index += 1
       } else {
         flag = false
@@ -70,6 +70,18 @@ object FileManager {
     if (saveToFile(levelFile, level.toJson.prettyPrint)) Some(path) else None
   }
 
+  /**
+    * Delete file by name
+    * @param fileName file name
+    */
+  def deleteLevel(fileName:String):Try[Unit] = Try(Files.delete(Paths.get(levelsDirectory + fileName + jsonExtension)))
+
+
+  /**
+    * Saves user progress
+    * @param userProgress current user progress
+    * @return Option with file path of user progress file
+    */
   def saveUserProgress(userProgress: UserStat): Option[Path] = {
     val path: Path = defaultFS.getPath(userProgressDirectory + userProgressFileName + jsonExtension)
     val upFile = new File(path.toUri)
@@ -77,6 +89,10 @@ object FileManager {
     if (saveToFile(upFile, userProgress.toJson.prettyPrint)) Some(path) else None
   }
 
+  /**
+    * Loads user progress from file
+    * @return UserStat
+    */
   def loadUserProgress(): UserStat = {
     loadFile(userProgressDirectory + userProgressFileName + jsonExtension) match {
       case Some(text) => text.parseJson.convertTo[UserStat]
@@ -96,6 +112,7 @@ object FileManager {
       case _ => None
     }
   }
+
 
   def saveToFile(file:File, text: String): Boolean = {
     val writer = new PrintWriter(file)
@@ -121,6 +138,11 @@ object FileManager {
     None
   }
 
+  /**
+    * Creates directories tree
+    * @param file File object
+    * @return true if no Exceptions occurs
+    */
   def createDirectoriesTree(file:File):Boolean = {
     if (Try(file.getParentFile.mkdirs()).isFailure) {
       println("Error: SecurityException directories are protected")
@@ -138,13 +160,15 @@ object FileManager {
     Try(text.parseJson.convertTo[Level])
   }
 
+  /**
+    * Read from file the custom levels and if exists return their info
+    * @return if exists a list of LevelInfo
+    */
   def customLevelsFilesName:Try[List[LevelInfo]] =
     Try(new File(levelsDirectory).listFiles((_, name) => name.endsWith(jsonExtension))
                                  .map(f => f.getName.substring(0,f.getName.length-jsonExtension.length))
                                  .map(lvlFileName => loadCustomLevel(lvlFileName)).filter(optLvl => optLvl.isDefined)
-                                 .map(lvl => LevelInfo(lvl.get.levelId, true, lvl.get.victoryRule)).toList)
-//                             .map(f => f.getName.substring(0,f.getName.length-jsonExtension.length))
-//                             .toList)
+                                 .map(lvl => LevelInfo(lvl.get.levelId, lvl.get.victoryRule)).toList)
 
   def getStyle: String = {
     try {
@@ -159,8 +183,23 @@ object FileManager {
   }
 
   val soundsPath: String = separator + "sounds" + separator
+
+  /**
+    * Gets menu music path
+    * @return menu music string path
+    */
   def loadMenuMusic(): String = getClass.getResource(soundsPath + "MenuMusic.mp3").toURI toString
+
+  /**
+    * Gets button sound path
+    * @return button sound string path
+    */
   def loadButtonsSound(): String = getClass.getResource(soundsPath + "ButtonSound.mp3").toURI toString
+
+  /**
+    * Gets level music path
+    * @return level music string path
+    */
   def loadLevelMusic(): String = getClass.getResource(soundsPath + "LevelMusic.mp3").toURI toString
 
 }
