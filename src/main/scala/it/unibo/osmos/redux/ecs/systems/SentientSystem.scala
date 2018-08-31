@@ -1,19 +1,23 @@
 package it.unibo.osmos.redux.ecs.systems
 
 import it.unibo.osmos.redux.ecs.components.{DimensionComponent, PositionComponent, SpawnAction, SpeedComponent}
+import it.unibo.osmos.redux.ecs.entities.builders.SentientCellBuilder
 import it.unibo.osmos.redux.ecs.entities.{SentientEnemyProperty, _}
+import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
+import it.unibo.osmos.redux.mvc.model.{CollisionRules, Level}
 import it.unibo.osmos.redux.utils.{MathUtils, Point, Vector}
 
 import scala.collection.mutable.ListBuffer
 
-case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientProperty, SentientEnemyProperty] {
+case class SentientSystem(levelInfo: Level) extends AbstractSystemWithTwoTypeOfEntity[SentientProperty, SentientEnemyProperty] {
 
   private val MAX_SPEED = 2
   private val MAX_ACCELERATION = 0.1
   private val COEFFICIENT_DESIRED_SEPARATION = 2
   private val MIN_VALUE = 1
   private val PERCENTAGE_OF_LOST_RADIUS_FOR_MAGNITUDE_ACCELERATION = 0.02
-  private val WEIGHT_OF_ESCAPE_ACCELERATION = 2
+  private val WEIGHT_OF_ESCAPE_ACCELERATION_FROM_ENEMIES = 2
+  private val WEIGHT_OF_ESCAPE_ACCELERATION_FROM_BOUNDARY = WEIGHT_OF_ESCAPE_ACCELERATION_FROM_ENEMIES + 2
   /**
     * The lost mass spawn point offset (starting from the perimeter of the entity, where to spawn lost mass due to movement)
     */
@@ -26,19 +30,26 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
 
   var radiusAmount = 0.0
 
+  private val bounceRule = levelInfo.levelMap.mapShape match {
+    case shape: Rectangle => RectangularBorder(Point(shape.center._1, shape.center._2), CollisionRules.bouncing, shape.base, shape.height)
+    case shape: Circle => CircularBorder(Point(shape.center._1, shape.center._2), CollisionRules.bouncing, shape.radius)
+    case _ => throw new IllegalArgumentException
+  }
+
   override protected def getGroupPropertySecondType: Class[SentientEnemyProperty] = classOf[SentientEnemyProperty]
 
   override protected def getGroupProperty: Class[SentientProperty] = classOf[SentientProperty]
 
   override def update(): Unit = entities.filter(e => e.getCollidableComponent.isCollidable)
     .foreach(sentient => {
+      val escapeBoundary = escapeFromBoundary(sentient)
       val escapeAcceleration = escapeFromEnemies(sentient, findEnemies(sentient, entitiesSecondType))
       val followTargetAcceleration = findTarget(sentient, entitiesSecondType, escapeAcceleration) match {
         case Some(target) => followTarget(sentient, target)
         case _ => Vector.zero()
       }
 
-      applyAcceleration(sentient, escapeAcceleration, followTargetAcceleration)
+      applyAcceleration(sentient, escapeBoundary, escapeAcceleration, followTargetAcceleration)
     })
 
   /**
@@ -85,7 +96,6 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
     enemy.getDimensionComponent.radius - (sentient.getDimensionComponent.radius * lostRadiusPercentage)
   }
 
-
   /**
     * search sentient enemies
     * @param sentient sentient entity
@@ -110,7 +120,7 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
       .foldLeft((Vector.zero(), 1)) ((acc, i) => (acc._1 add ((i subtract acc._1) divide acc._2), acc._2 + 1))._1 normalized() match {
         case unitVectorDesiredVelocity if unitVectorDesiredVelocity == Vector(0,0) => Vector.zero()
         case unitVectorDesiredVelocity =>
-          computeSteer(sentient.getSpeedComponent.vector, unitVectorDesiredVelocity) multiply WEIGHT_OF_ESCAPE_ACCELERATION
+          computeSteer(sentient.getSpeedComponent.vector, unitVectorDesiredVelocity) multiply WEIGHT_OF_ESCAPE_ACCELERATION_FROM_ENEMIES
       }
   }
 
@@ -132,6 +142,22 @@ case class SentientSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientPr
   private def computeDistance(sentient: SentientProperty, enemy: SentientEnemyProperty): Double = {
     val dist = MathUtils.euclideanDistance(sentient.getPositionComponent, enemy.getPositionComponent)
     dist - sentient.getDimensionComponent.radius - enemy.getDimensionComponent.radius
+  }
+
+  private def escapeFromBoundary(sentient: SentientProperty): Vector = levelInfo.levelMap.collisionRule match {
+    case CollisionRules.instantDeath =>
+      val sentientCopy = SentientCellBuilder()
+        .withPosition(sentient.getPositionComponent)
+        .withDimension(sentient.getDimensionComponent.radius + sentient.getDimensionComponent.radius * COEFFICIENT_DESIRED_SEPARATION)
+        .withSpeed(sentient.getSpeedComponent).build
+      bounceRule.checkCollision(sentientCopy)
+      if(sentientCopy.getSpeedComponent.vector == sentient.getSpeedComponent.vector) {
+        Vector.zero()
+      } else {
+        val steer = computeSteer(sentient.getSpeedComponent.vector, sentientCopy.getSpeedComponent.vector normalized())
+        steer multiply WEIGHT_OF_ESCAPE_ACCELERATION_FROM_BOUNDARY
+      }
+    case _ => Vector.zero()
   }
 
   private def computeSteer(actualVelocity: Vector, desiredVelocity: Vector): Vector =
