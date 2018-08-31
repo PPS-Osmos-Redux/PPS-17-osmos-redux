@@ -13,7 +13,7 @@ case class SentientSystem(levelInfo: Level) extends AbstractSystemWithTwoTypeOfE
 
   private val MAX_SPEED = 2
   private val MAX_ACCELERATION = 0.1
-  private val COEFFICIENT_DESIRED_SEPARATION = 2
+  private val COEFFICIENT_DESIRED_SEPARATION = 20
   private val MIN_VALUE = 1
   private val PERCENTAGE_OF_LOST_RADIUS_FOR_MAGNITUDE_ACCELERATION = 0.02
   private val WEIGHT_OF_ESCAPE_ACCELERATION_FROM_ENEMIES = 2
@@ -43,13 +43,14 @@ case class SentientSystem(levelInfo: Level) extends AbstractSystemWithTwoTypeOfE
   override def update(): Unit = entities.filter(e => e.getCollidableComponent.isCollidable)
     .foreach(sentient => {
       val escapeBoundary = escapeFromBoundary(sentient)
-      val escapeAcceleration = escapeFromEnemies(sentient, findEnemies(sentient, entitiesSecondType))
+      val escapeEnemies = escapeFromEnemies(sentient, findEnemies(sentient, entitiesSecondType), escapeBoundary)
+      val escapeAcceleration = escapeBoundary add escapeEnemies
       val followTargetAcceleration = findTarget(sentient, entitiesSecondType, escapeAcceleration) match {
         case Some(target) => followTarget(sentient, target)
         case _ => Vector.zero()
       }
 
-      applyAcceleration(sentient, escapeBoundary, escapeAcceleration, followTargetAcceleration)
+      applyAcceleration(sentient, escapeAcceleration, followTargetAcceleration)
     })
 
   /**
@@ -70,7 +71,7 @@ case class SentientSystem(levelInfo: Level) extends AbstractSystemWithTwoTypeOfE
     * @return the sentient's enemy with greater target coefficient is present, else None
     */
   private def findTarget(sentient: SentientProperty, enemies: ListBuffer[SentientEnemyProperty], escapeAcceleration: Vector): Option[SentientEnemyProperty] = {
-    val escapeVelocity = sentient.getSpeedComponent.vector add (escapeAcceleration limit MAX_ACCELERATION)
+    val escapeVelocity = sentient.getSpeedComponent.vector add escapeAcceleration
     enemies.filter(e => e.getCollidableComponent.isCollidable &&
         !(e.getTypeComponent.typeEntity == EntityType.AntiMatter) &&
         sentient.getDimensionComponent.radius > e.getDimensionComponent.radius)
@@ -91,7 +92,7 @@ case class SentientSystem(levelInfo: Level) extends AbstractSystemWithTwoTypeOfE
   private def targetCoefficient(sentient: SentientProperty, enemy: SentientEnemyProperty, escapeVelocity: Vector): Double = {
     val nextPositionTarget = enemy.getPositionComponent.point.add(enemy.getSpeedComponent.vector)
     val unitVectorDesiredVelocity = MathUtils.unitVector(nextPositionTarget, sentient.getPositionComponent.point)
-    val magnitudeOfRotation = computeSteer(escapeVelocity, unitVectorDesiredVelocity).getLength
+    val magnitudeOfRotation = computeUnlimitedSteer(escapeVelocity, unitVectorDesiredVelocity).getLength
     val lostRadiusPercentage = magnitudeOfRotation * PERCENTAGE_OF_LOST_RADIUS_FOR_MAGNITUDE_ACCELERATION
     enemy.getDimensionComponent.radius - (sentient.getDimensionComponent.radius * lostRadiusPercentage)
   }
@@ -112,17 +113,19 @@ case class SentientSystem(levelInfo: Level) extends AbstractSystemWithTwoTypeOfE
     * @param sentient sentient entity
     * @param enemies list of enemies
     */
-  private def escapeFromEnemies(sentient: SentientProperty, enemies: List[SentientEnemyProperty]): Vector = {
-    val desiredSeparation = sentient.getDimensionComponent.radius * COEFFICIENT_DESIRED_SEPARATION
+  private def escapeFromEnemies(sentient: SentientProperty, enemies: List[SentientEnemyProperty], previousAcceleration: Vector): Vector = {
+    val desiredSeparation = getDesiredSeparation
     val filteredEnemies = enemies map(e => (e, computeDistance(sentient, e))) filter(p => p._2 < desiredSeparation)
     shiftDistance(filteredEnemies)
       .map(m => MathUtils.unitVector(sentient.getPositionComponent.point, m._1.getPositionComponent.point) divide m._2)
       .foldLeft((Vector.zero(), 1)) ((acc, i) => (acc._1 add ((i subtract acc._1) divide acc._2), acc._2 + 1))._1 normalized() match {
         case unitVectorDesiredVelocity if unitVectorDesiredVelocity == Vector(0,0) => Vector.zero()
         case unitVectorDesiredVelocity =>
-          computeSteer(sentient.getSpeedComponent.vector, unitVectorDesiredVelocity) multiply WEIGHT_OF_ESCAPE_ACCELERATION_FROM_ENEMIES
+          computeSteer(sentient.getSpeedComponent.vector add previousAcceleration, unitVectorDesiredVelocity) multiply WEIGHT_OF_ESCAPE_ACCELERATION_FROM_ENEMIES
       }
   }
+
+  private def getDesiredSeparation : Double = COEFFICIENT_DESIRED_SEPARATION
 
   /**
     * if smallest distance(second value of tuple) is less or equal of 0,
@@ -148,7 +151,7 @@ case class SentientSystem(levelInfo: Level) extends AbstractSystemWithTwoTypeOfE
     case CollisionRules.instantDeath =>
       val sentientCopy = SentientCellBuilder()
         .withPosition(sentient.getPositionComponent)
-        .withDimension(sentient.getDimensionComponent.radius + sentient.getDimensionComponent.radius * COEFFICIENT_DESIRED_SEPARATION)
+        .withDimension(sentient.getDimensionComponent.radius + getDesiredSeparation)
         .withSpeed(sentient.getSpeedComponent).build
       bounceRule.checkCollision(sentientCopy)
       if(sentientCopy.getSpeedComponent.vector == sentient.getSpeedComponent.vector) {
@@ -161,6 +164,9 @@ case class SentientSystem(levelInfo: Level) extends AbstractSystemWithTwoTypeOfE
   }
 
   private def computeSteer(actualVelocity: Vector, desiredVelocity: Vector): Vector =
+    computeUnlimitedSteer(actualVelocity, desiredVelocity) limit MAX_ACCELERATION
+
+  private def computeUnlimitedSteer(actualVelocity: Vector, desiredVelocity: Vector): Vector =
     desiredVelocity multiply MAX_SPEED subtract actualVelocity
 
   private def applyAcceleration(sentient: SentientProperty, acceleration: Vector, accelerations: Vector*): Unit = {
