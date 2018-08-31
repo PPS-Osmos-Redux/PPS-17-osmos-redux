@@ -12,7 +12,7 @@ import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, MultiPlayerLevelContext}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity
-import it.unibo.osmos.redux.mvc.view.events.{GameLost, GameWon, MouseEventWrapper}
+import it.unibo.osmos.redux.mvc.view.events.{GameLost, GamePending, GameWon, MouseEventWrapper}
 import it.unibo.osmos.redux.utils.{Constants, Logger}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -106,9 +106,9 @@ trait Client {
 
   /**
     * Closes the lobby.
-    * @param fromServer If the close request comes from the server or not.
+    * @param byUser If the lobby have been closed by the user or not.
     */
-  def closeLobby(fromServer: Boolean = false): Unit
+  def closeLobby(byUser: Boolean = true): Unit
 
   /**
     * Forwards player into to the server.
@@ -216,6 +216,9 @@ object Client {
       this.uuid = uuid
       //update level context uuid
       levelContext.get.setPlayerUUID(uuid)
+
+      if (uuid.equals(Constants.defaultClientUUID)) throw new IllegalArgumentException("Invalid player UUID, the client is not be able to send correct inputs to the server")
+
       //notify lobby that the game is started (prepares the view)
       lobby.get.notifyGameStarted(levelContext.get)
       //actually starts the game
@@ -233,8 +236,9 @@ object Client {
       Logger.log("leaveGame")
 
       if (username.isEmpty) throw new IllegalStateException("The player entered no lobby, unable to leave.")
-      server.get ! ClientActor.LeaveGame(username)
-      kill()
+
+      //send leave game only if it's the user will (a.k.a. the game state is still in pending)
+      if (levelContext.map(_.gameCurrentState == GamePending).nonEmpty) server.get ! ClientActor.LeaveGame(username)
     }
 
     //INPUT MANAGEMENT
@@ -282,13 +286,13 @@ object Client {
       closeLobby()
     }
 
-    override def closeLobby(byServer: Boolean = false): Unit = {
-      Logger.log("clearLobby")
+    override def closeLobby(byUser: Boolean = true): Unit = {
+      Logger.log("closeLobby")
 
-      if (lobby.nonEmpty) {
-        lobby.get.notifyLobbyClosed(byServer)
-        lobby = None
-      }
+      if (lobby.isEmpty) throw new IllegalStateException("The player entered no lobby, unable to leave.")
+
+      lobby.get.notifyLobbyClosed(byUser)
+      lobby = None
     }
 
     override def getLobbyPlayers: Seq[BasePlayer] = {

@@ -61,8 +61,9 @@ trait Server {
 
   /**
     * Signals all clients that the game have been stopped.
+    * @param winner The username of the player who won, if not declared the winner is assumed to be the server.
     */
-  def stopGame(): Unit
+  def stopGame(winner: String = ""): Unit
 
   /**
     * Delivers a message to a specified client
@@ -180,8 +181,6 @@ object Server {
     //COMMUNICATION
 
     override def deliverMessage(username: String, message: Any): Unit = {
-      Logger.log("deliverMessage")
-
       lobby.get.getPlayers.find(_.getUsername == username) match  {
         case Some(player) => player.getActorRef ! message
         case None => throw new IllegalArgumentException("Cannot deliver message to specific client if the username does not match any player.")
@@ -189,8 +188,6 @@ object Server {
     }
 
     override def broadcastMessage(message: Any, clientsToExclude: String*): Unit = {
-      Logger.log("broadcastMessage")
-
       if (ref.isEmpty) throw new IllegalStateException("Unable to broadcast the message, server is not bind to an actor.")
       val usernameToExclude = clientsToExclude :+ this.username
       val actors = lobby.get.getPlayers.filterNot(p => usernameToExclude contains p.getUsername).map(_.getActorRef)
@@ -220,11 +217,20 @@ object Server {
       status = ServerState.Game
     }
 
-    override def stopGame(): Unit = {
+    override def stopGame(winner: String = username): Unit = {
       Logger.log("stopGame")
 
-      broadcastMessage(ServerActor.GameEnded(false))
-      kill()
+      val isServer = winner.equals(username)
+
+      //if the server won, everyone else lost
+      if (isServer) {
+        broadcastMessage(ServerActor.GameEnded(false))
+      } else {
+        deliverMessage(winner, GameEnded(true))
+        broadcastMessage(GameEnded(false), winner)
+      }
+
+      status = ServerState.Lobby
     }
 
     override def notifyClientInputEvent(event: MouseEventWrapper): Unit = {
@@ -277,14 +283,14 @@ object Server {
       if (status != ServerState.Lobby) throw new IllegalStateException(s"Server cannot close lobby because it's in the state: $status")
 
       broadcastMessage(LobbyClosed)
-      lobby.get.notifyLobbyClosed() //signal interface to change scene
+      lobby.get.notifyLobbyClosed()
       lobby = None
 
       status = ServerState.Idle
     }
 
     override def getLobbyPlayers: Seq[ReferablePlayer] = {
-      Logger.log("getLobbyPlayers")
+      //Logger.log("getLobbyPlayers")
 
       lobby.get.getPlayers
     }
@@ -325,17 +331,22 @@ object Server {
       val availablePlayerCells = level.entities.filter(_.isInstanceOf[PlayerCellEntity]).map(p => Some(p.getUUID))
       val otherPlayers = lobby.get.getPlayers.filterNot(_.getUsername == this.username)
 
-      if (availablePlayerCells.size <= 0) throw new IllegalStateException()
+      if (availablePlayerCells.size <= 0) throw new IllegalStateException("Cannot setup clients if the level has no player cells.")
 
       //assign first available player cell to the server
       this.uuid = availablePlayerCells.head.get
+
+      //update uuid of the server players
+      val serverPlayer = getPlayerFromLobby(this.username)
+      if (serverPlayer.isEmpty) throw new IllegalStateException("Cannot update server player uuid because the player was not found.")
+      serverPlayer.get.setUUID(this.uuid)
 
       //get map shape and send to the clients along with the assigned uuid
       val mapShape = level.levelMap.mapShape
 
       otherPlayers.zipAll(availablePlayerCells.tail, null, None).map {
         case (p, Some(id)) =>  p.setUUID(id); p.getActorRef ? GameStarted(id, mapShape)
-        case (_, None) => throw new IllegalStateException("Not enough player cells for all the clients")
+        case (_, None) => throw new IllegalStateException("Not enough player cells for all the clients.")
       }
     }
 

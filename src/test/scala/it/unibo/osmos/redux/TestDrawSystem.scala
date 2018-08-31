@@ -90,6 +90,7 @@ class TestDrawSystem extends FunSuite with BeforeAndAfter {
     val system = DrawSystem(spy)
     val pce = PlayerCellEntity(acceleration, collidable, dimension, position, speed, notVisible, typeEntity, spawner)
     EntityManager.add(pce)
+    spy.setPlayerUUID(pce.getUUID)
     system.update()
     assert(spy.player.isEmpty)
   }
