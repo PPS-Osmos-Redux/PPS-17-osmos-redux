@@ -61,7 +61,7 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
     Platform.runLater({
       if (result) {
         /* Creating an abstract listener on the run */
-        val lobbySceneListener: UpperMultiPlayerLobbySceneListener = () => parentStage.scene = MultiPlayerScene.this
+        val lobbySceneListener: UpperMultiPlayerLobbySceneListener = () => parentStage.scene = MultiPlayerScene.this //TODO: possible cross-threading exception
         /* If the lobby was successfully created, we link the resulting lobby context and go to the next scene */
         val multiPlayerLobbyScene = new MultiPlayerLobbyScene(parentStage, listener, lobbySceneListener, user)
         /* We link the lobby context */
