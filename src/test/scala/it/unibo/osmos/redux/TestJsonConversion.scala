@@ -1,18 +1,12 @@
 package it.unibo.osmos.redux
 
-import java.nio.file.Files
-
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities._
 import it.unibo.osmos.redux.mvc.controller.FileManager
-import it.unibo.osmos.redux.mvc.controller.FileManager.{getClass, multiPlayerLevelsPath, singlePlayerLevelsPath, textToLevel}
 import it.unibo.osmos.redux.mvc.model.MapShape._
 import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.FunSuite
-
-import scala.io.Source
-import scala.util.{Failure, Success, Try}
 
 class TestJsonConversion extends FunSuite{
   //Components
@@ -122,13 +116,11 @@ class TestJsonConversion extends FunSuite{
     assert(convertedLevel.entities.size.equals(level.entities.size))
   }
 
-  //TODO: Davide check this
-  /*test("File reading and conversion (SinglePlayer + MultiPlayer)") {
+
+  test("File reading and conversion (SinglePlayer + MultiPlayer)") {
     val spConvertedLevel = FileManager.loadResource("SinglePlayerLevel") match {
       case Some(value) => value
-      case Failure(exception) =>
-        exception.printStackTrace()
-        null
+      case None => null
     }
     assert(spConvertedLevel != null)
     assert(spConvertedLevel.levelId.equals(level.levelId))
@@ -136,35 +128,39 @@ class TestJsonConversion extends FunSuite{
     assert(spConvertedLevel.victoryRule.equals(level.victoryRule))
     assert(spConvertedLevel.entities.size.equals(level.entities.size))
 
-    val mpWrongLevel = FileManager.loadResource("ShouldntWorks", isMultiplayer = true)  match {
-      case Success(value) => value
-      case Failure(exception) =>
-        exception.printStackTrace()
-        null
+    val mpWrongLevel = FileManager.loadResource("ShouldntWorks",isMultiPlayer = true)  match {
+      case Some(value) => value
+      case None => null
     }
     assert(mpWrongLevel != null)
     assert(!(mpWrongLevel.entities.count(cell => cell.isInstanceOf[PlayerCellEntity]) >= 2))
 
-    val mpRightLevel = FileManager.loadResource("ShouldWorks", isMultiplayer = true)  match {
-      case Success(value) => value
-      case Failure(exception) =>
-        exception.printStackTrace()
-        null
+    val mpRightLevel = FileManager.loadResource("ShouldWorks",isMultiPlayer = true)  match {
+      case Some(value) => value
+      case None => null
     }
     assert(mpRightLevel != null)
     assert(mpRightLevel.entities.count(cell => cell.isInstanceOf[PlayerCellEntity]) >= 2)
   }
 
   test("Writing and reading custom level") {
-    val fileName:String = "TestWritingLev3l"
-    val optFilePath = FileManager.saveLevel(level, fileName)
+    val optFilePath = FileManager.saveLevel(level)
     assert(optFilePath.isDefined)
-    val readLevel = FileManager.loadCustomLevel(fileName)
+    val readLevel = FileManager.loadCustomLevel(level.levelId)
     assert(readLevel.isDefined)
     assert(readLevel.get.levelId.equals(level.levelId))
     assert(readLevel.get.levelMap.equals(level.levelMap))
     assert(readLevel.get.victoryRule.equals(level.victoryRule))
     assert(readLevel.get.entities.size.equals(level.entities.size))
-    Try(Files.delete(optFilePath.get))
-  }*/
+
+    FileManager.saveLevel(level)
+    val secondFileName = level.levelId+1
+    val readLevel2 = FileManager.loadCustomLevel(level.levelId)
+    assert(readLevel2.isDefined)
+    assert(readLevel2.get.levelId.equals(level.levelId))
+    FileManager.deleteLevel(level.levelId)
+    assert(FileManager.loadCustomLevel(level.levelId).isEmpty)
+    FileManager.deleteLevel(secondFileName)
+    assert(FileManager.loadCustomLevel(secondFileName).isEmpty)
+  }
 }
