@@ -75,7 +75,7 @@ object View {
     override def onSaveLevel(name: String,
                              map: MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value,
                              entities: Seq[CellEntity],
-                             callback: Boolean => Unit): Unit = checkController(() => callback(controller.get.saveLevel(name, map, victoryRules, entities)))
+                             callback: Boolean => Unit): Unit = checkController(() => callback(controller.get.saveLevel(name, map, victoryRules, collisionRules, entities)))
 
     override def onStartLevel(): Unit = checkController(() => controller.get.startLevel())
 

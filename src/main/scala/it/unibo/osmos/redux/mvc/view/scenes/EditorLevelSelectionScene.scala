@@ -37,4 +37,6 @@ trait EditorLevelSelectionSceneListener extends LevelSelectionSceneListener with
     * @return a list of custom levels
     */
   def getCustomLevels: List[LevelInfo]
+
+  //def onLevelDelete(level: String, callback: Boolean => Unit): Unit
 }
