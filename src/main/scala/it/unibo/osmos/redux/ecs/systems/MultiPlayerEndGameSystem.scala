@@ -29,20 +29,16 @@ case class MultiPlayerEndGameSystem(server: Server, levelContext: GameStateHolde
   override protected def getGroupPropertySecondType: Class[DeathProperty] = classOf[DeathProperty]
 
   override def update(): Unit = {
-    if (levelContext.gameCurrentState == GamePending) {
-
+    if (isGameRunning) {
       val (deadPlayers, alivePlayers) = server.getLobbyPlayers partition(p => entities.map(_.getUUID) contains p.getUsername)
       val aliveCells = entitiesSecondType.filterNot(c => deadPlayers.map(_.getUUID) contains c.getUUID)
-
-      //notify all dead players and remove them
-      deadPlayers.foreach(p => server.removePlayerFromGame(p.getUsername))
 
       //check
       for (
         (player, _, isServer) <- alivePlayers
           .map(i => (i, entities.find(_.getUUID == i.getUUID), i.getUUID == server.getUUID)) //get player, cell and isServer
           .filter(i => i._2.nonEmpty && victoryCondition.check(i._2.get, aliveCells)) //filter only players that have won
-        if levelContext.gameCurrentState == GamePending //we should not check any other player if a winner is found
+        if levelContext.gameCurrentState == GamePending //when a winner is found do not check other players
       ) yield {
         if (isServer) {
           server.stopGame()
@@ -52,7 +48,12 @@ case class MultiPlayerEndGameSystem(server: Server, levelContext: GameStateHolde
           levelContext.notify(GameLost)
         }
       }
+
+      //notify all dead players and remove them
+      if (isGameRunning) deadPlayers.foreach(p => server.removePlayerFromGame(p.getUsername))
     }
   }
+
+  private def isGameRunning: Boolean = levelContext.gameCurrentState == GamePending
 }
 
