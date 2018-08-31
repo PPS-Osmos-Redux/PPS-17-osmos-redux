@@ -87,9 +87,13 @@ trait Controller {
     * Gets all custom levels filename.
     * @return The list of custom levels filename.
     */
-  def getCustomLevels: List[String] = FileManager.customLevelsFilesName
+  def getCustomLevels: List[LevelInfo]
 
-  //TODO: add doc
+  /**
+    * Get requested sound path
+    * @param soundType SoundsType.Value
+    * @return Some(String) if path exists
+    */
   def getSoundPath(soundType: SoundsType.Value): Option[String]
 
 }
@@ -306,5 +310,16 @@ case class ControllerImpl() extends Controller with GameStateHolder {
       SinglePlayerLevels.newEndGameEvent(event, lastLoadedLevel.get)
       FileManager.saveUserProgress(SinglePlayerLevels.userStatistics())
     }
+  }
+
+  /**
+    * Gets all custom levels filename.
+    *
+    * @return The list of custom levels filename.
+    */
+  override def getCustomLevels: List[LevelInfo] = FileManager.customLevelsFilesName match {
+    case Success(customLevels) => customLevels
+    case Failure(exception) => Logger.log(exception.getMessage)
+                               List()
   }
 }

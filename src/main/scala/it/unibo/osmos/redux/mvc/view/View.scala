@@ -65,7 +65,7 @@ object View {
       case _ => List()
     }
 
-    override def getCustomLevels: List[String] = controller match {
+    override def getCustomLevels: List[LevelInfo] = controller match {
       case Some(c) => c.getCustomLevels
       case _ => List()
     }

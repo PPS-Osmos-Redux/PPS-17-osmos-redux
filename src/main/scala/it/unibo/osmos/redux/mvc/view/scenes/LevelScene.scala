@@ -92,7 +92,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
         onFinished = _ => new FadeTransition(Duration.apply(3000), canvas) {
           fromValue = 0.0
           toValue = 1.0
-          /* Removing the splash screen to reduce the load. Then the level is starte */
+          /* Removing the splash screen to reduce the load. Then the level is started */
           onFinished = _ => content.remove(splashScreen);
           listener.onStartLevel()
         }.play()

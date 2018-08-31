@@ -20,7 +20,7 @@ class EditorLevelSelectionScene(override val parentStage: Stage, override val li
   container.children.add(newLevelButton)
 
   /** Custom levels are always available */
-  override def levels: List[LevelInfo] = listener.getCustomLevels map((name) => LevelInfo(name, true, null))
+  override def levels: List[LevelInfo] = listener.getCustomLevels
   override def loadLevels(): Unit = levels foreach(level => levelsContainer.children.add(new EditorLevelNode(this, level.name)))
 
   override def onLevelDeleteClick(level: String): Unit = {}
@@ -36,5 +36,5 @@ trait EditorLevelSelectionSceneListener extends LevelSelectionSceneListener {
     * This method retrieves the custom levels that must be shown as node
     * @return a list of custom levels
     */
-  def getCustomLevels: List[String]
+  def getCustomLevels: List[LevelInfo]
 }
