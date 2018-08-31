@@ -30,18 +30,20 @@ object VictoryRules extends Enumeration {
   val becomeHuge: VictoryRules.Value = Value("Become_huge")
   val absorbTheRepulsors: VictoryRules.Value = Value("Absorb_the_repulsors")
   val absorbTheHostileCells: VictoryRules.Value = Value("Absorb_the_hostile_cells")
+  val absorbAllOtherPlayers: VictoryRules.Value = Value("Absorb_all_other_players")
 }
 
 /**
   * Map shape data structure
   */
 object MapShapeType extends Enumeration {
-  val Rectangle, Circle = Value
+  val Circle, Rectangle= Value
 }
 sealed trait MapShape {
   val mapShape:MapShapeType.Value
   val center:(Double,Double)
 }
+
 object MapShape {
   /**
     * Rectangular level map
@@ -79,7 +81,7 @@ case class LevelMap(mapShape:MapShape, collisionRule:CollisionRules.Value)
   * @param victoryRule victory rule
   * @param isSimulation if it's a simulation
   */
-case class Level(levelId:Int,
+case class Level(levelId:String,
                  levelMap:LevelMap,
                  var entities:List[CellEntity],
                  victoryRule:VictoryRules.Value, var isSimulation:Boolean = false) {
@@ -123,5 +125,4 @@ case class Level(levelId:Int,
                                                                       ent.getDimensionComponent.radius))
                        .filterNot(tup => tup._2 > circle.radius)
                        .map(t => t._1)
-
 }

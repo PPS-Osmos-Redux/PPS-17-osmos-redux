@@ -1,13 +1,10 @@
 package it.unibo.osmos.redux.ecs.engine
 
-import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager}
-import it.unibo.osmos.redux.ecs.systems.{CollisionSystem, DrawSystem, InputSystem, MovementSystem}
-import it.unibo.osmos.redux.mvc.model.MapShape.Rectangle
-import it.unibo.osmos.redux.mvc.model.{CollisionRules, Level, LevelMap, VictoryRules}
-import it.unibo.osmos.redux.ecs.entities.EntityManager
+import it.unibo.osmos.redux.ecs.entities.{EntityManager, PlayerCellEntity}
 import it.unibo.osmos.redux.ecs.systems._
+import it.unibo.osmos.redux.multiplayer.server.Server
 import it.unibo.osmos.redux.mvc.model.Level
-import it.unibo.osmos.redux.mvc.view.levels.LevelContext
+import it.unibo.osmos.redux.mvc.view.context.{LevelContext, MultiPlayerLevelContext}
 import it.unibo.osmos.redux.utils.InputEventQueue
 
 import scala.collection.mutable.ListBuffer
@@ -26,6 +23,14 @@ trait GameEngine {
     * @param levelContext The context of the current game level.
     */
   def init(level: Level, levelContext: LevelContext): Unit
+
+  /**
+    * Initializes the game loop and server for a multi-player level.
+    * @param level The object that contains all level data.
+    * @param server The server.
+    * @return The context of the initialized game level.
+    */
+  def init(level: Level, server: Server): MultiPlayerLevelContext
 
   /**
     * Starts the game loop.
@@ -74,9 +79,9 @@ object GameEngine {
 
   /**
     * The Game engine class implementation.
-    * @param framerate The frame rate of the game.
+    * @param frameRate The frame rate of the game.
     */
-  private case class GameEngineImpl(private val framerate: Int = 30) extends GameEngine {
+  private case class GameEngineImpl(private val frameRate: Int = 30) extends GameEngine {
 
     private var gameLoop: Option[GameLoop] = _
 
@@ -91,14 +96,43 @@ object GameEngine {
       //create systems, add to list, the order in this collection is the final system order in the game loop
       val systems = ListBuffer[System]()
       if (!level.isSimulation) systems += InputSystem()
-      systems ++= List(SpawnSystem(), GravitySystem(), MovementSystem(), CollisionSystem(level), CellsEliminationSystem(), SentientSystem(level), DrawSystem(levelContext))
-      if(!level.isSimulation) systems += EndGameSystem(levelContext, level.victoryRule)
+      systems ++= initMainSystems(level, levelContext)
+      if (!level.isSimulation) systems += EndGameSystem(levelContext, level.victoryRule)
+
 
       //add all entities in the entity manager (systems are subscribed to EntityManager event when created)
       level.entities foreach(EntityManager add _)
 
       //init the gameloop
       gameLoop = Some(new GameLoop(this, systems.toList))
+    }
+
+    override def init(level: Level, server: Server): MultiPlayerLevelContext = {
+
+      //clear all
+      clear()
+
+      //obtain server entity cell uuid
+      val serverPlayer = level.entities.find(_.isInstanceOf[PlayerCellEntity])
+      if (serverPlayer.isEmpty) throw new IllegalArgumentException("Game Engine cannot initialize multi-player game because no player cell entity is present in the level definition.")
+
+      //create the level context
+      val levelContext = LevelContext(serverPlayer.get.getUUID)
+
+      //register InputEventQueue to the mouse event listener to collect input events
+      levelContext.subscribe { InputEventQueue enqueue _ }
+
+      //create systems, add to list, the order in this collection is the final system order in the game loop
+      val systems = ListBuffer[System](InputSystem())
+      systems ++= initMainSystems(level, levelContext) :+ MultiPlayerUpdateSystem(server) :+ MultiPlayerEndGameSystem(server, levelContext, level.victoryRule)
+
+      //add all entities in the entity manager (systems are subscribed to EntityManager event when created)
+      level.entities foreach(EntityManager add _)
+
+      //init the gameloop
+      gameLoop = Some(new GameLoop(this, systems.toList))
+
+      levelContext
     }
 
     override def start(): Unit = {
@@ -154,7 +188,17 @@ object GameEngine {
       }
     }
 
-    override def getFps: Int = framerate
+    override def getFps: Int = frameRate
+
+    /**
+      * Initializes the main game systems
+      * @param level The level
+      * @param levelContext The level context
+      * @return The list of all main systems
+      */
+    private def initMainSystems(level: Level, levelContext: LevelContext): List[System] = {
+      List(SpawnSystem(), GravitySystem(), MovementSystem(), CollisionSystem(level), CellsEliminationSystem(), SentientSystem(level), DrawSystem(levelContext))
+    }
   }
 }
 

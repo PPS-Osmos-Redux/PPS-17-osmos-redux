@@ -28,7 +28,7 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
   }
 
   private def setupLevelInfo(mapShape: MapShape, collisionRules: CollisionRules.Value) {
-    levelInfo = Level(1,
+    levelInfo = Level(1.toString,
       LevelMap(mapShape, collisionRules),
       null,
       VictoryRules.becomeTheBiggest)

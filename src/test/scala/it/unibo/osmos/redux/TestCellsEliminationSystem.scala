@@ -3,9 +3,8 @@ package it.unibo.osmos.redux
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager, PlayerCellEntity}
-import org.scalatest.FunSuite
 import it.unibo.osmos.redux.ecs.systems.CellsEliminationSystem
-import it.unibo.osmos.redux.utils.Point
+import org.scalatest.FunSuite
 
 /**
   * Spy class to capture entities number

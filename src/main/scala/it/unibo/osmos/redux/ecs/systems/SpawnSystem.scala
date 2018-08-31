@@ -11,7 +11,6 @@ case class SpawnSystem() extends AbstractSystem[Spawner] {
     * Performs an action on all the entities of the system
     */
   override def update(): Unit = {
-    //TODO: for each Spawner get all SpawnActions and spawn entities
     entities foreach(e => {
       e.getSpawnerComponent.dequeueActions() foreach (a => {
         EntityManager.add(

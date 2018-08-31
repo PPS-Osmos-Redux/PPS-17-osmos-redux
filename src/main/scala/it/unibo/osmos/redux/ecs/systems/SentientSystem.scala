@@ -1,8 +1,8 @@
 package it.unibo.osmos.redux.ecs.systems
 
 import it.unibo.osmos.redux.ecs.components.{DimensionComponent, PositionComponent, SpawnAction, SpeedComponent}
-import it.unibo.osmos.redux.ecs.entities.builders.SentientCellBuilder
 import it.unibo.osmos.redux.ecs.entities.{SentientEnemyProperty, _}
+import it.unibo.osmos.redux.ecs.entities.builders.SentientCellBuilder
 import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.mvc.model.{CollisionRules, Level}
 import it.unibo.osmos.redux.utils.{MathUtils, Point, Vector}

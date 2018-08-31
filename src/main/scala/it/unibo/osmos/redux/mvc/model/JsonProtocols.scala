@@ -1,12 +1,12 @@
 package it.unibo.osmos.redux.mvc.model
-import spray.json._
-import DefaultJsonProtocol._
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities._
-import it.unibo.osmos.redux.mvc.model.UserProgress.UserStat
+import it.unibo.osmos.redux.ecs.entities.{CellEntity, GravityCellEntity, PlayerCellEntity, SentientCellEntity, _}
+import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.{LevelStat, UserStat}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
 import it.unibo.osmos.redux.utils.Point
 import org.apache.commons.lang3.SerializationException
+import spray.json.DefaultJsonProtocol._
+import spray.json._
 
 /**
   * Json implicit stategies for: convert json to Level or convert Level to json
@@ -247,42 +247,44 @@ object JsonProtocols {
     }
 
     def read(value: JsValue): CellEntity = {
-      value.asJsObject.getFields("cellType",
-        "acceleration",
-        "collidable",
-        "dimension",
-        "position",
-        "speed",
-        "visible",
-        "typeEntity") match {
-        case Seq(JsString(CellType.basicCell), acceleration,
-        collidable, dimension, position, speed, visible, typeEntity) =>
-          CellEntity(acceleration.convertTo[AccelerationComponent],
-            collidable.convertTo[CollidableComponent],
-            dimension.convertTo[DimensionComponent],
-            position.convertTo[PositionComponent],
-            speed.convertTo[SpeedComponent],
-            visible.convertTo[VisibleComponent],
-            typeEntity.convertTo[TypeComponent])
-        case Seq(JsString(CellType.sentientCell), _, _, _, _, _, _) =>
+      value.asJsObject.getFields("cellType") match {
+        case Seq(JsString(CellType.basicCell)) =>
+          value.asJsObject.getFields("acceleration",
+            "collidable",
+            "dimension",
+            "position",
+            "speed",
+            "visible",
+            "typeEntity") match {
+            case Seq(acceleration, collidable, dimension, position, speed, visible, typeEntity) =>
+              CellEntity(acceleration.convertTo[AccelerationComponent],
+                collidable.convertTo[CollidableComponent],
+                dimension.convertTo[DimensionComponent],
+                position.convertTo[PositionComponent],
+                speed.convertTo[SpeedComponent],
+                visible.convertTo[VisibleComponent],
+                typeEntity.convertTo[TypeComponent])
+            case _ => throw DeserializationException("Cell entity expected")
+          }
+        case Seq(JsString(CellType.sentientCell)) =>
           value.convertTo[SentientCellEntity]
-        case Seq(JsString(CellType.gravityCell), _, _, _, _, _, _, _) =>
+        case Seq(JsString(CellType.gravityCell)) =>
           value.convertTo[GravityCellEntity]
-        case Seq(JsString(CellType.playerCell), _, _, _, _, _, _, _) =>
+        case Seq(JsString(CellType.playerCell)) =>
           value.convertTo[PlayerCellEntity]
-        case Seq(qualcosa, _, _, _, _, _, _, _) => throw DeserializationException("Cell entity expected " + qualcosa)
+        case _ => throw DeserializationException("Cell entity expected")
       }
     }
   }
 
   implicit object MapShapeFormatter extends RootJsonFormat[MapShape] {
     def write(mapShape: MapShape): JsObject = mapShape match {
-      case mapShape:MapShape.Rectangle => JsObject("centerX" -> JsNumber(mapShape.center._1),
+      case mapShape: MapShape.Rectangle => JsObject("centerX" -> JsNumber(mapShape.center._1),
         "centerY" -> JsNumber(mapShape.center._2),
         "mapShape" -> JsString(mapShape.mapShape.toString),
         "height" -> JsNumber(mapShape.height),
         "base" -> JsNumber(mapShape.base))
-      case mapShape:MapShape.Circle => JsObject("centerX" -> JsNumber(mapShape.center._1),
+      case mapShape: MapShape.Circle => JsObject("centerX" -> JsNumber(mapShape.center._1),
         "centerY" -> JsNumber(mapShape.center._2),
         "mapShape" -> JsString(mapShape.mapShape.toString),
         "radius" -> JsNumber(mapShape.radius))
@@ -292,17 +294,20 @@ object JsonProtocols {
     def read(value: JsValue): MapShape = {
       val rectangle  = MapShapeType.Rectangle.toString
       val circle  = MapShapeType.Circle.toString
-      value.asJsObject.getFields("centerX",
-        "centerY",
-        "mapShape",
-        "height",
-        "base",
-        "radius") match {
-        case Seq(JsNumber(centerX),JsNumber(centerY),JsString(`rectangle`),
-        JsNumber(height), JsNumber(base)) =>
-          MapShape.Rectangle((centerX.toDouble, centerY.toDouble), height.toDouble, base.toDouble)
-        case Seq(JsNumber(centerX),JsNumber(centerY),JsString(`circle`), JsNumber(radius)) =>
-          MapShape.Circle((centerX.toDouble, centerY.toDouble),radius.toDouble)
+
+      value.asJsObject.getFields("centerX", "centerY", "mapShape") match {
+        case Seq(JsNumber(centerX), JsNumber(centerY), JsString(`rectangle`)) =>
+          value.asJsObject.getFields("height", "base") match {
+            case Seq(JsNumber(height), JsNumber(base)) =>
+              MapShape.Rectangle((centerX.toDouble, centerY.toDouble), height.toDouble, base.toDouble)
+            case _ => throw DeserializationException("Rectangular map expected")
+          }
+        case Seq(JsNumber(centerX), JsNumber(centerY), JsString(`circle`)) =>
+          value.asJsObject.getFields("radius") match {
+            case Seq(JsNumber(radius)) =>
+              MapShape.Circle((centerX.toDouble, centerY.toDouble), radius.toDouble)
+            case _ => throw DeserializationException("Circular map expected")
+          }
         case _ => throw DeserializationException("Map shape expected")
       }
     }
@@ -335,5 +340,7 @@ object JsonProtocols {
 
   implicit val drawableWrapperFormatter:RootJsonFormat[DrawableWrapper] = jsonFormat4(DrawableWrapper)
 
-  implicit val userProgressFormatter:RootJsonFormat[UserStat] = jsonFormat1(UserStat)
+  implicit  val levelStatFormatter:RootJsonFormat[LevelStat] = jsonFormat3(LevelStat)
+
+  implicit val userProgressFormatter:RootJsonFormat[UserStat] = jsonFormat2(UserStat)
 }
