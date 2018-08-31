@@ -1,6 +1,8 @@
 package it.unibo.osmos.redux.mvc.view
 
+import it.unibo.osmos.redux.ecs.entities.CellEntity
 import it.unibo.osmos.redux.mvc.controller.Controller
+import it.unibo.osmos.redux.mvc.model.{CollisionRules, MapShape, VictoryRules}
 import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LobbyContext}
@@ -69,6 +71,11 @@ object View {
       case Some(c) => c.getCustomLevels
       case _ => List()
     }
+
+    override def onSaveLevel(name: String,
+                             map: MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value,
+                             entities: Seq[CellEntity],
+                             callback: Boolean => Unit): Unit = checkController(() => callback(controller.get.saveLevel(name, map, victoryRules, entities)))
 
     override def onStartLevel(): Unit = checkController(() => controller.get.startLevel())
 

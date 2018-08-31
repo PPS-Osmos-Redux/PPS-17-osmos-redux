@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityType}
-import it.unibo.osmos.redux.mvc.model.{CollisionRules, MapShapeType, VictoryRules}
+import it.unibo.osmos.redux.mvc.model.{CollisionRules, MapShape, MapShapeType, VictoryRules}
 import it.unibo.osmos.redux.mvc.view.ViewConstants
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.components.custom.{StyledButton, TitledComboBox}
@@ -171,24 +171,36 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
       case Some(name) =>
         /** Check if the name is empty */
         if (name isEmpty) {
-          val alert = new Alert(Alert.AlertType.Error) {
+          new Alert(Alert.AlertType.Error) {
             title = "Error"
             contentText.value = "The level name cannot be empty"
-          }
-          alert.showAndWait()
+          }.showAndWait()
         } else {
           /** The name is valid, we have to retrieve the elements */
           /** Level */
-          val level = levelType.value match {
+          val level: MapShape = levelType.value match {
             case MapShapeType.Circle => circularLevelBuilder.create()
             case MapShapeType.Rectangle => rectangularLevelBuilder.create()
-            case _ =>
           }
           /** Victory rules */
           val victoryRules = victoryRule.value
+          /** Collision rules */
+          val collisionRules = collisionRule.value
 
           /* Save the level */
-          //TODO: saveLevel(name: String, level.MapShape.Value, victoryRules: VictoryRules.Value, entities: Seq[CellEntities])
+          listener.onSaveLevel(name, level, victoryRules, collisionRules, builtEntities, {
+            /* The level has been created*/
+            case true => new Alert(Alert.AlertType.Confirmation) {
+              title = "Success"
+              contentText.value = "The custom level has been successfully saved"
+            }.showAndWait()
+            /* We show an alert */
+            case false =>
+              new Alert(Alert.AlertType.Error) {
+                title = "Error"
+                contentText.value = "The custom level could not be made"
+              }.showAndWait()
+          })
         }
 
       case _ =>
@@ -312,5 +324,15 @@ trait UpperEditorSceneListener {
   */
 trait EditorSceneListener {
 
+  /**
+    * Called when the user wants to save the level after the name has been chosen
+    * @param name the chosen level name
+    * @param map the chosen level map
+    * @param victoryRules the chosen victory rules
+    * @param collisionRules the chosen collision rules
+    * @param entities the inserted entities
+    * @param callback the callback
+    */
+  def onSaveLevel(name: String, map: MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value, entities: Seq[CellEntity], callback: Boolean => Unit)
 
 }

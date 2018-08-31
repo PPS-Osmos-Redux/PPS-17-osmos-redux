@@ -70,10 +70,11 @@ trait Controller {
     * @param name level name
     * @param map level map shape MapShape
     * @param victoryRules level victory rule VictoryRule.Value
+    * @param collisionRules level collision rule CollisionRule.Value
     * @param entities Seq of CellEntity
     * @return True, if the operation is successful; otherwise false.
     **/
-  def saveLevel(name: String, map:MapShape, victoryRules: VictoryRules.Value, entities: Seq[CellEntity]):Boolean
+  def saveLevel(name: String, map:MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value, entities: Seq[CellEntity]):Boolean
 
   /**
     * Delete from file a custom level
@@ -332,8 +333,8 @@ case class ControllerImpl() extends Controller with GameStateHolder {
   }
 
 
-  override def saveLevel(name: String, map: MapShape, victoryRules: VictoryRules.Value, entities: Seq[CellEntity]): Boolean =
-    FileManager.saveLevel(Level(name, LevelMap(map, CollisionRules.bouncing), entities.toList, victoryRules)).isDefined
+  override def saveLevel(name: String, map: MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value, entities: Seq[CellEntity]): Boolean =
+    FileManager.saveLevel(Level(name, LevelMap(map, collisionRules), entities.toList, victoryRules)).isDefined
 
   /**
     * Delete from file a custom level
