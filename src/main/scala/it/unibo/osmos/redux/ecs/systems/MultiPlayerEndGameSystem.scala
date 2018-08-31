@@ -1,7 +1,6 @@
 package it.unibo.osmos.redux.ecs.systems
 
-import it.unibo.osmos.redux.ecs.components.EntityType
-import it.unibo.osmos.redux.ecs.entities.{DeathProperty, PlayerCellEntity}
+import it.unibo.osmos.redux.ecs.entities.{DeathProperty, EntityType, PlayerCellEntity}
 import it.unibo.osmos.redux.multiplayer.server.Server
 import it.unibo.osmos.redux.multiplayer.server.ServerActor.GameEnded
 import it.unibo.osmos.redux.mvc.model.VictoryRules
@@ -18,7 +17,7 @@ case class MultiPlayerEndGameSystem(server: Server, levelContext: GameStateHolde
   private val victoryCondition = victoryRules match {
     case VictoryRules.becomeTheBiggest => BecomeTheBiggestVictoryCondition()
     case VictoryRules.becomeHuge => BecomeHugeVictoryCondition()
-    case VictoryRules.absorbTheRepulsors => AbsorbCellsWithTypeVictoryCondition(EntityType.Repulse)
+    case VictoryRules.absorbTheRepulsors => AbsorbCellsWithTypeVictoryCondition(EntityType.Repulsive)
     case VictoryRules.absorbTheHostileCells => AbsorbCellsWithTypeVictoryCondition(EntityType.Sentient)
     case VictoryRules.absorbAllOtherPlayers => AbsorbAllOtherPlayersCondition()
     case _ => throw new NotImplementedError()

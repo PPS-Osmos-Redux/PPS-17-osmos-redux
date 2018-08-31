@@ -15,10 +15,10 @@ import scalafx.util.Duration
 /**
   * Basic abstract level node, consisting of a text, an image, a play button and a simulation button
   * @param listener the LevelNodeListener
-  * @param level the level index
+  * @param level the level name
   * @param playable true if the level is actually playable
   */
-abstract class AbstractLevelNode(val listener: LevelNodeListener, val level: Int, val playable: Boolean) extends VBox {
+abstract class AbstractLevelNode(val listener: LevelNodeListener, val level: String, val playable: Boolean) extends VBox {
 
   alignment = Pos.Center
   padding = Insets(0, 30, 30, 30)
@@ -53,10 +53,10 @@ abstract class AbstractLevelNode(val listener: LevelNodeListener, val level: Int
 /**
   * Animated version of the base AbstractLevelNode, adding scaling and fading effects
   * @param listener the LevelNodeListener
-  * @param level the level index
+  * @param level the level name
   * @param playable true if the level is actually playable
   */
-abstract class AnimatedAbstractLevelNode(override val listener: LevelNodeListener, override val level: Int, override val playable: Boolean) extends AbstractLevelNode(listener, level, playable) {
+abstract class AnimatedAbstractLevelNode(override val listener: LevelNodeListener, override val level: String, override val playable: Boolean) extends AbstractLevelNode(listener, level, playable) {
 
   /* Hover event handlers */
   scaleX <== when(hover) choose 1.2 otherwise 1
@@ -93,20 +93,21 @@ trait LevelNodeListener {
 
   /**
     * This method gets called when an available level buttons get clicked
-    * @param level the level index
+    * @param level the level name
     * @param simulation true if the level must be started as a simulation, false otherwise
     */
-  def onLevelPlayClick(level: Int, simulation: Boolean)
+  def onLevelPlayClick(level: String, simulation: Boolean)
 }
 
 
 /**
   * This node represents a single selectable level from the menu
   * @param listener the LevelNodeListener
-  * @param level the level index
+  * @param level the level name
+  * @param index the level index in the selection screen
   * @param playable true if the level is currently playable, false otherwise
   */
-class LevelNode(override val listener: LevelNodeListener, override val level: Int, override val playable: Boolean) extends AnimatedAbstractLevelNode(listener, level, playable) {
+class LevelNode(override val listener: LevelNodeListener, override val level: String, val index: Int, override val playable: Boolean) extends AnimatedAbstractLevelNode(listener, level, playable) {
 
   /* The upper text */
   override lazy val text: Text = new Text() {
@@ -116,7 +117,7 @@ class LevelNode(override val listener: LevelNodeListener, override val level: In
   }
 
   /* The level image */
-  override lazy val imageView: ImageView = new ImageView(ImageLoader.getImage("/textures/" + (level match {
+  override lazy val imageView: ImageView = new ImageView(ImageLoader.getImage("/textures/" + (index match {
     case 1 => "cell_green.png"
     case 2 => "cell_yellow.png"
     case 3 => "cell_orange.png"

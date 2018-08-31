@@ -5,4 +5,5 @@ object Constants {
   final val defaultSystemName: String = "OsmosReduxMultiplayerSystem"
   final val defaultServerActorName: String = "ServerActor"
   final val defaultClientActorName: String = "ClientActor"
+  final val maxSpeed: Double = 4.0
 }

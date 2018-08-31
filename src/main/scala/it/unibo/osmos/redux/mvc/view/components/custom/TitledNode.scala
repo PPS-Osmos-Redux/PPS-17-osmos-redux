@@ -22,16 +22,17 @@ abstract class TitledNode[N <: Node](val title: StringProperty, vertical: Boolea
   root.style = "-fx-background-color : #ffffff;"
 
   private val text = new Label {
-    text <==> title
-    //fill = Color.Black
+    if (title != null) {
+      text <==> title
+    }
   }
 
   /**
     * The node that will be shown after the text
     * @return a node of type N <: Node
     */
-  def node: N
+  def innerNode: N
 
-  root.children = List(text, node)
+  root.children = List(text, innerNode)
 
 }

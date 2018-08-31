@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.multiplayer.common.NetworkUtils
-import it.unibo.osmos.redux.mvc.view.components.custom._
+import it.unibo.osmos.redux.mvc.view.components.custom.{StyledButton, TitledComboBox, TitledIntegerField, TitledTextField}
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.LobbyContext
 import scalafx.application.Platform
@@ -32,7 +32,7 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
   /* server port */
   private val portTitle: StringProperty = StringProperty("Server port: ")
   private val portValue: IntegerProperty = IntegerProperty(0)
-  private val portTextField = new TitledNumericField(portTitle, portValue) {
+  private val portTextField = new TitledIntegerField(portTitle, portValue) {
     minValue = 0
     maxValue = 65535
   }
@@ -47,7 +47,7 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
       addressTitle.setValue("Server address:")
       portTitle.setValue("Server port:")
       if (addressValue.getValue.equals(NetworkUtils.getLocalIPAddress)) addressValue.setValue("")
-      portTextField.node.setText("0")
+      portTextField.innerNode.setText("0")
       startButtonText.setValue("Go to lobby")
     case "Server" =>
       mode.value = true
@@ -55,7 +55,7 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
       portTitle.setValue("Port:")
       startButtonText.setValue("Create lobby")
       if (addressValue.isEmpty.get()) addressValue.setValue(NetworkUtils.getLocalIPAddress)
-      if (!portTextField.node.getText.equals("0")) portTextField.node.setText("0")
+      if (!portTextField.innerNode.getText.equals("0")) portTextField.innerNode.setText("0")
   }, vertical = false)
 
   /**

@@ -1,6 +1,7 @@
 package it.unibo.osmos.redux.mvc.view
 
 import it.unibo.osmos.redux.mvc.controller.Controller
+import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LobbyContext}
 import it.unibo.osmos.redux.mvc.view.stages.{OsmosReduxPrimaryStage, PrimaryStageListener}
@@ -40,7 +41,6 @@ object View {
 
     implicit val ec: ExecutionContextExecutor = ExecutionContext.global
 
-
     app.stage = OsmosReduxPrimaryStage(this)
     private var controller: Option[Controller] = Option.empty
 
@@ -58,7 +58,17 @@ object View {
       case _ =>
     }
 
-    override def onLevelContextCreated(levelContext: LevelContext, level: Int): Unit = checkController(() => controller.get.initLevel(levelContext, level))
+    override def onLevelContextCreated(levelContext: LevelContext, level: String): Unit = checkController(() => controller.get.initLevel(levelContext, level))
+
+    override def getSingleLevels: List[LevelInfo] = controller match {
+      case Some(c) => c.getSinglePlayerLevels
+      case _ => List()
+    }
+
+    override def getCustomLevels: List[LevelInfo] = controller match {
+      case Some(c) => c.getCustomLevels
+      case _ => List()
+    }
 
     override def onStartLevel(): Unit = checkController(() => controller.get.startLevel())
 
@@ -108,6 +118,7 @@ object View {
       case Failure(e) => onDisplayError(e)
       case Success(_) => //do nothing
     })
+
   }
 
 }

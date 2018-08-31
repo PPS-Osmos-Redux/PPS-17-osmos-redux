@@ -2,6 +2,7 @@ package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities._
+import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 import it.unibo.osmos.redux.ecs.systems.SpawnSystem
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.FunSuite
@@ -12,7 +13,7 @@ class TestSpawnSystem extends FunSuite {
     EntityManager.clear()
 
     val system = SpawnSystem()
-    val pce = PlayerCellEntity(CellBuilder(), SpawnerComponent(true))
+    val pce = PlayerCellEntity(new CellBuilder(), SpawnerComponent(true))
 
     pce.getSpawnerComponent.canSpawn_(false)
     EntityManager.add(pce)
@@ -25,7 +26,7 @@ class TestSpawnSystem extends FunSuite {
     EntityManager.clear()
 
     val system = SpawnSystem()
-    val pce = PlayerCellEntity(CellBuilder(), SpawnerComponent(true))
+    val pce = PlayerCellEntity(new CellBuilder(), SpawnerComponent(true))
 
     pce.getSpawnerComponent.clearActions()
     EntityManager.add(pce)
@@ -38,7 +39,7 @@ class TestSpawnSystem extends FunSuite {
     EntityManager.clear()
 
     val system = SpawnSystem()
-    val pce = PlayerCellEntity(CellBuilder(), SpawnerComponent(true))
+    val pce = PlayerCellEntity(new CellBuilder(), SpawnerComponent(true))
 
     val pos = PositionComponent(Point(100,0))
     val speed = SpeedComponent(34, 12)

@@ -16,9 +16,9 @@ trait EditorLevelNodeListener extends LevelNodeListener {
 
   /**
     * This method gets called when the user wants to delete a custom level
-    * @param level the level index
+    * @param level the level name
     */
-  def onLevelDeleteClick(level: Int)
+  def onLevelDeleteClick(level: String)
 }
 
 /**
@@ -26,7 +26,7 @@ trait EditorLevelNodeListener extends LevelNodeListener {
   * @param listener the EditorLevelNodeListener
   * @param level the level index
   */
-class EditorLevelNode(override val listener: EditorLevelNodeListener, override val level: Int) extends AnimatedAbstractLevelNode(listener, level, playable = true) {
+class EditorLevelNode(override val listener: EditorLevelNodeListener, override val level: String) extends AnimatedAbstractLevelNode(listener, level, playable = true) {
 
   effect = new DropShadow {
     color = Color.ForestGreen
