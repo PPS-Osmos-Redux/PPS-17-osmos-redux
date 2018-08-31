@@ -4,13 +4,17 @@
   -fx-background-size: cover;
 }
 
+.default-font-size {
+  -fx-font-size: 20px;
+}
+
 .default-button-style {
   -fx-background-radius: 30;
   -fx-background-insets: 0, 0, 0, 0;
   -fx-text-fill: black;
   -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 3, 0.0, 0, 1);
-  -fx-font-size: 24px;
-  -fx-pref-width: 220px;
+  -fx-font-size: 24px !important;
+  -fx-min-width: 220px;
 }
 
 .enabled-button-style {
@@ -30,6 +34,15 @@
   -fx-font-size: 22px;
 }
 
-.table-row-cell{
+/* change it in custom tag */
+/*.table-row-cell {
   -fx-font-size: 20px;
+}*/
+
+.multi-player-scene-label-style {
+  -fx-min-width: 170px;
+}
+
+.multi-player-scene-VBox-style {
+  -fx-background-color: white;
 }
