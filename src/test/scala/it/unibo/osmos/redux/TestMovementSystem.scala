@@ -13,7 +13,6 @@ class TestMovementSystem extends FunSuite with BeforeAndAfter {
     EntityManager.clear()
   }
 
-
   val TOLERANCE = 0.01
 
   implicit def toPair(point: Point): (Double, Double) = (point.x, point.y)

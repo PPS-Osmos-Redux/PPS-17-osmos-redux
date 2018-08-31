@@ -10,4 +10,5 @@ trait Component {
     * @return The new instance.
     */
   def copy(): Component
+
 }

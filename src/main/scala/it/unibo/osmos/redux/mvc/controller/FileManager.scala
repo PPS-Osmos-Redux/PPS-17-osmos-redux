@@ -4,12 +4,13 @@ import java.io.{File, PrintWriter}
 import java.nio.file.{FileSystem, FileSystems, Files, Path}
 
 import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.UserStat
+import it.unibo.osmos.redux.mvc.model.JsonProtocols._
 import it.unibo.osmos.redux.mvc.model._
 import spray.json._
-import it.unibo.osmos.redux.mvc.model.JsonProtocols._
+
 import scala.io.{BufferedSource, Source}
 import scala.language.postfixOps
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 object FileManager {
   val separator: String = "/"
@@ -34,11 +35,14 @@ object FileManager {
     * @param chosenLevel  levels id
     * @return content of file wrapped into a Option
     */
-  def loadResource(chosenLevel: String, isMultiplayer:Boolean = false): Try[Level] = {
-    val levelsPath = if (isMultiplayer) multiPlayerLevelsPath else singlePlayerLevelsPath
-    Try(textToLevel(Source.fromInputStream(
-      getClass.getResourceAsStream(levelsPath + chosenLevel + jsonExtension)
-    ).mkString).get)
+  def loadResource(chosenLevel: String, isMultiPlayer: Boolean = false): Option[Level] = {
+    val levelsPath = if (isMultiPlayer) multiPlayerLevelsPath else singlePlayerLevelsPath
+    val fileStream = getClass.getResourceAsStream(levelsPath + chosenLevel + jsonExtension)
+    val fileContent = Source.fromInputStream(fileStream).mkString
+    textToLevel(fileContent) match {
+      case Success(result) => Some(result)
+      case Failure(e: Throwable) => e.printStackTrace(); None
+    }
   }
 
   /**
@@ -139,8 +143,21 @@ object FileManager {
                              .map(f => f.getName.substring(0,f.getName.length-jsonExtension.length))
                              .toList
 
+  def getStyle: String = {
+    try {
+      val url = getClass.getResource("/style/style.css")
+      //println("style url: " + url)
+      url.toString
+    } catch {
+      case _: NullPointerException =>
+        println("Error: style.css file not found")
+        throw new NullPointerException("style.css file not found");
+    }
+  }
+
   val soundsPath: String = separator + "sounds" + separator
   def loadMenuMusic(): String = getClass.getResource(soundsPath + "MenuMusic.mp3").toURI toString
   def loadButtonsSound(): String = getClass.getResource(soundsPath + "ButtonSound.mp3").toURI toString
   def loadLevelMusic(): String = getClass.getResource(soundsPath + "LevelMusic.mp3").toURI toString
+
 }

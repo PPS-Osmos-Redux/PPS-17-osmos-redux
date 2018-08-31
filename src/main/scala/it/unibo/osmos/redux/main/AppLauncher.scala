@@ -10,8 +10,6 @@ import scalafx.application.JFXApp
   */
 object AppLauncher extends JFXApp {
 
-  //TODO: replace null with proper implementation
-  val model: Model = null
   SinglePlayerLevels.updateUserStat(FileManager.loadUserProgress())
   val controller: Controller = new ControllerImpl
   MediaPlayer.setController(controller)

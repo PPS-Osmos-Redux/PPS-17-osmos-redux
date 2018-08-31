@@ -36,7 +36,7 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
       //game loop iteration must last exactly tickTime, so sleep if the tickTime hasn't been reached yet
       val execTime = System.currentTimeMillis() - startTick
 
-      //println("Execution time: " + execTime + "ms")
+      //println(s"Execution time: $execTime ms")
 
       if (!stopFlag) {
         if (execTime < tickTime) {
@@ -82,8 +82,11 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
     * Kills the execution.
     */
   def kill(): Unit = {
-    if (lock.isLocked) lock.unlock()
-    stopFlag = true
+    try {
+      if (lock.isLocked) lock.unlock()
+    } finally {
+      stopFlag = true
+    }
   }
 
   /**

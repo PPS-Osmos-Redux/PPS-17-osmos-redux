@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.mvc.model
 import it.unibo.osmos.redux.ecs.components._
+import it.unibo.osmos.redux.ecs.entities.{CellEntity, GravityCellEntity, PlayerCellEntity, SentientCellEntity, _}
 import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.{LevelStat, UserStat}
-import it.unibo.osmos.redux.ecs.entities._
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
 import it.unibo.osmos.redux.utils.Point
 import org.apache.commons.lang3.SerializationException
@@ -291,6 +291,7 @@ object JsonProtocols {
     def read(value: JsValue): MapShape = {
       val rectangle  = MapShapeType.Rectangle.toString
       val circle  = MapShapeType.Circle.toString
+
       value.asJsObject.getFields("centerX", "centerY", "mapShape") match {
         case Seq(JsNumber(centerX), JsNumber(centerY), JsString(`rectangle`)) =>
           value.asJsObject.getFields("height", "base") match {
