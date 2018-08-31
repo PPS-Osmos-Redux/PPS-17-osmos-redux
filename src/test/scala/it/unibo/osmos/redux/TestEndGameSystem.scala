@@ -163,13 +163,14 @@ class TestEndGameSystem extends FunSuite with BeforeAndAfter {
     val spw = SpawnerComponent(false)
     val playerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv, pct, spw)
 
+    val spawner = SpawnerComponent(false)
     val sca1 = AccelerationComponent(0, 0)
     val scc1 = CollidableComponent(true)
     val scd1 = DimensionComponent(7)
     val scp1 = PositionComponent(Point(65, 64))
     val scs1 = SpeedComponent(0, 0)
     val scv1 = VisibleComponent(true)
-    val sentientCellEntity1 = SentientCellEntity(sca1, scc1, scd1, scp1, scs1, scv1)
+    val sentientCellEntity1 = SentientCellEntity(sca1, scc1, scd1, scp1, scs1, scv1, spawner)
 
     val sca2 = AccelerationComponent(0, 0)
     val scc2 = CollidableComponent(true)
@@ -177,7 +178,7 @@ class TestEndGameSystem extends FunSuite with BeforeAndAfter {
     val scp2 = PositionComponent(Point(80, 90))
     val scs2 = SpeedComponent(0, 0)
     val scv2 = VisibleComponent(true)
-    val sentientCellEntity2 = SentientCellEntity(sca2, scc2, scd2, scp2, scs2, scv2)
+    val sentientCellEntity2 = SentientCellEntity(sca2, scc2, scd2, scp2, scs2, scv2, spawner)
 
     EntityManager.add(playerCellEntity)
     EntityManager.add(sentientCellEntity1)
