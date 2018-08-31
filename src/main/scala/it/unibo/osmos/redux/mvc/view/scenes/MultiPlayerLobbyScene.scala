@@ -104,15 +104,9 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     styleClass.add("default-button-style")
     if (user.isServer) {
       disable <== isStartGameDisabled
-      if (isStartGameDisabled.value) {
-        styleClass.remove("enabled-button-style")
-        styleClass.add("disabled-button-style")
-      } else {
-        styleClass.remove("disabled-button-style")
-        styleClass.add("enabled-button-style")
-      }
+      onAction = _ => listener.onStartMultiplayerGameClick()
     } else {
-      disable = false
+      visible = false
     }
   }
 
@@ -137,6 +131,11 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     userList ++= users.map(_.getUserWithProperty)
     /* Updating the observable property */
     isStartGameDisabled.value_=(userList.size < 2)
+    if (isStartGameDisabled.value) {
+      startGame.styleClass.remove("enabled-button-style")
+    } else {
+      startGame.styleClass.add("enabled-button-style")
+    }
   }
 
   override def onMultiPlayerGameStarted(multiPlayerLevelContext: MultiPlayerLevelContext): Unit = {
