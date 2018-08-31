@@ -3,6 +3,8 @@ package it.unibo.osmos.redux.mvc.controller
 import java.io.{File, PrintWriter}
 import java.nio.file._
 
+import akka.event.jul.Logger
+import it.unibo.osmos.redux.mvc.controller.UserHomePaths.userProgressDirectory
 import it.unibo.osmos.redux.mvc.model.JsonProtocols._
 import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.{LevelInfo, UserStat}
 import it.unibo.osmos.redux.mvc.model._
@@ -12,13 +14,14 @@ import scala.io.{BufferedSource, Source}
 import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}
 
-object FileManager {
+object ResourcesPaths {
   val separator: String = "/"
   val levelStartPath: String = separator + "levels"
   val singlePlayerLevelsPath: String = levelStartPath + separator + "singlePlayer" + separator
   val multiPlayerLevelsPath: String = levelStartPath + separator + "multiPlayer" + separator
-  val jsonExtension = ".json"
+}
 
+object UserHomePaths {
   val defaultFS: FileSystem = FileSystems.getDefault
   val systemSeparator: String = defaultFS.getSeparator
   val userHome: String = System.getProperty("user.home")
@@ -28,6 +31,11 @@ object FileManager {
   val userProgressFileName = "UserProgress"
   val userProgressDirectory:String = userHome + systemSeparator + gameDirectory +
     userProgressFileName + systemSeparator
+}
+
+object FileManager {
+  implicit val who: String = "FileManager"
+  val jsonExtension = ".json"
 
   /**
     * Reads a file from the resources folder
@@ -36,8 +44,9 @@ object FileManager {
     * @return content of file wrapped into a Option
     */
   def loadResource(chosenLevel: String, isMultiPlayer: Boolean = false): Option[Level] = {
+    import ResourcesPaths._
     val levelsPath = if (isMultiPlayer) multiPlayerLevelsPath else singlePlayerLevelsPath
-    val fileStream = getClass.getResourceAsStream(levelsPath + chosenLevel + jsonExtension)
+    val fileStream = this.getClass.getResourceAsStream(levelsPath + chosenLevel + jsonExtension)
     val fileContent = Source.fromInputStream(fileStream).mkString
     textToLevel(fileContent) match {
       case Success(result) => Some(result)
@@ -51,6 +60,7 @@ object FileManager {
     * @return option with the file path if it doesn't fail
     */
   def saveLevel(level: Level): Option[Path] = {
+    import UserHomePaths._
     def checkFileExist(fileName:String, index:Option[Int] = None): Path = {
       val path = defaultFS.getPath(levelsDirectory + fileName+index.getOrElse("") + jsonExtension)
       if (Files.exists(path)) {
@@ -69,7 +79,7 @@ object FileManager {
     * Delete file by name
     * @param fileName file name
     */
-  def deleteLevel(fileName:String):Try[Unit] = Try(Files.delete(Paths.get(levelsDirectory + fileName + jsonExtension)))
+  def deleteLevel(fileName:String):Try[Unit] = Try(Files.delete(Paths.get(UserHomePaths.levelsDirectory + fileName + jsonExtension)))
 
 
   /**
@@ -77,23 +87,22 @@ object FileManager {
     * @param userProgress current user progress
     * @return Option with file path of user progress file
     */
-  def saveUserProgress(userProgress: UserStat): Option[Path] = {
-    val path: Path = defaultFS.getPath(userProgressDirectory + userProgressFileName + jsonExtension)
-    val upFile = new File(path.toUri)
+  def saveUserProgress(userProgress: UserStat): Boolean = {
+    import UserHomePaths._
+    val upFile = new File(defaultFS.getPath(userProgressDirectory + userProgressFileName + jsonExtension).toUri)
     createDirectoriesTree(upFile)
-    if (saveToFile(upFile, userProgress.toJson.prettyPrint)) Some(path) else None
+    saveToFile(upFile, userProgress.toJson.prettyPrint)
   }
 
   /**
     * Loads user progress from file
     * @return UserStat
     */
-  def loadUserProgress(): UserStat = {
-    loadFile(userProgressDirectory + userProgressFileName + jsonExtension) match {
+  def loadUserProgress(): UserStat =
+    loadFile(userProgressDirectory + UserHomePaths.userProgressFileName + jsonExtension) match {
       case Some(text) => text.parseJson.convertTo[UserStat]
       case _ => saveUserProgress(SinglePlayerLevels.userStatistics())
                 loadUserProgress()
-    }
   }
 
   /**
@@ -101,11 +110,10 @@ object FileManager {
     * @param fileName the name of file
     * @return an option with the required level if it doesn't fail
     */
-  def loadCustomLevel(fileName: String): Option[Level] = {
-    loadFile(levelsDirectory + fileName + jsonExtension) match {
+  def loadCustomLevel(implicit fileName: String): Option[Level] =
+    loadFile(UserHomePaths.levelsDirectory + fileName + jsonExtension) match {
       case Some(text) => textToLevel(text).toOption
       case _ => None
-    }
   }
 
 
@@ -122,7 +130,7 @@ object FileManager {
   }
 
   def loadFile(filePath:String):Option[String] = {
-    val source: Try[BufferedSource] = Try(Source.fromFile(defaultFS.getPath(filePath).toUri))
+    val source: Try[BufferedSource] = Try(Source.fromFile(UserHomePaths.defaultFS.getPath(filePath).toUri))
     if (source.isSuccess) {
       try return Some(source.get.mkString)
       catch {
@@ -138,12 +146,11 @@ object FileManager {
     * @param file File object
     * @return true if no Exceptions occurs
     */
-  def createDirectoriesTree(file:File):Boolean = {
-    if (Try(file.getParentFile.mkdirs()).isFailure) {
-      println("Error: SecurityException directories are protected")
-      return false
-    }
-    true
+  def createDirectoriesTree(file:File):Boolean = Try(file.getParentFile.mkdirs()) match {
+   case Success(_) =>  true
+   case Failure(exception) =>Logger("Error: SecurityException directories are protected [createDirectoriesTree]"
+                                    + exception.getMessage)
+                             false
   }
 
   /**
@@ -151,18 +158,23 @@ object FileManager {
     * @param text json string
     * @return Try with Level if it doesn't fail
     */
-  def textToLevel(text: String): Try[Level] = {
-    Try(text.parseJson.convertTo[Level])
-  }
+  def textToLevel(text: String): Try[Level] = Try(text.parseJson.convertTo[Level])
+
+  /**
+    * Return file name without json extension
+    * @param file file object
+    * @return file name
+    */
+  implicit def getFileNameWithoutJsonExtension(file:File):String = file.getName.substring(0,file.getName.length-jsonExtension.length)
 
   /**
     * Read from file the custom levels and if exists return their info
     * @return if exists a list of LevelInfo
     */
   def customLevelsFilesName:Try[List[LevelInfo]] =
-    Try(new File(levelsDirectory).listFiles((_, name) => name.endsWith(jsonExtension))
-                                 .map(f => f.getName.substring(0,f.getName.length-jsonExtension.length))
-                                 .map(lvlFileName => loadCustomLevel(lvlFileName)).filter(optLvl => optLvl.isDefined)
+    Try(new File(UserHomePaths.levelsDirectory).listFiles((_, name) => name.endsWith(jsonExtension))
+                                 .map(f => loadCustomLevel(f))
+                                 .filter(optLvl => optLvl.isDefined)
                                  .map(lvl => LevelInfo(lvl.get.levelId, lvl.get.victoryRule)).toList)
 
   def getStyle: String = {
@@ -177,8 +189,7 @@ object FileManager {
     }
   }
 
-  val soundsPath: String = separator + "sounds" + separator
-
+  val soundsPath: String = ResourcesPaths.separator + "sounds" + ResourcesPaths.separator
   /**
     * Gets menu music path
     * @return menu music string path
