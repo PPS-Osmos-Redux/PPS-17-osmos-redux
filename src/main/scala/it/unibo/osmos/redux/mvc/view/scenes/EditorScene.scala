@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityType}
-import it.unibo.osmos.redux.mvc.model.{MapShape, MapShapeType, VictoryRules}
+import it.unibo.osmos.redux.mvc.model.{CollisionRules, MapShapeType, VictoryRules}
 import it.unibo.osmos.redux.mvc.view.ViewConstants
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.components.custom.{StyledButton, TitledComboBox}
@@ -10,7 +10,7 @@ import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import javafx.scene.paint.ImagePattern
 import scalafx.beans.property.ObjectProperty
 import scalafx.geometry.{Insets, Pos}
-import scalafx.scene.control.{Alert, Button, TextInputDialog}
+import scalafx.scene.control.{Alert, TextInputDialog}
 import scalafx.scene.image.ImageView
 import scalafx.scene.layout._
 import scalafx.scene.paint.Color
@@ -24,7 +24,7 @@ import scala.collection.mutable.ListBuffer
   * @param parentStage the parent stage
   * @param listener the EditorSceneListener
   */
-class EditorScene (override val parentStage: Stage, val listener: EditorSceneListener, val upperListener: UpperLevelSceneListener) extends BaseScene(parentStage) {
+class EditorScene (override val parentStage: Stage, val listener: EditorSceneListener, val upperListener: UpperEditorSceneListener) extends BaseScene(parentStage) {
 
   /* Entities currently built */
   var builtEntities: ListBuffer[CellEntity] = ListBuffer()
@@ -40,7 +40,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   /**
     * Level Type
     */
-  private var levelType: ObjectProperty[MapShapeType.Value] = ObjectProperty(MapShapeType.Circle)
+  private val levelType: ObjectProperty[MapShapeType.Value] = ObjectProperty(MapShapeType.Circle)
   private val levelTypeBox = new TitledComboBox[MapShapeType.Value]("Level Type:", MapShapeType.values.toSeq, mapType => levelType.value = mapType)
 
   /** Pane containing the field to configure the circular level */
@@ -61,13 +61,19 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   /**
     * Level Type
     */
-  private var victoryRule: ObjectProperty[VictoryRules.Value] = ObjectProperty(VictoryRules.becomeTheBiggest)
+  private val victoryRule: ObjectProperty[VictoryRules.Value] = ObjectProperty(VictoryRules.becomeTheBiggest)
   private val victoryRuleBox = new TitledComboBox[VictoryRules.Value]("Victory Rule:", VictoryRules.values.toSeq, vr => victoryRule.value = vr)
+
+  /**
+    * Level Type
+    */
+  private val collisionRule: ObjectProperty[CollisionRules.Value] = ObjectProperty(CollisionRules.bouncing)
+  private val collisionRuleBox = new TitledComboBox[CollisionRules.Value]("Collision Rule:", CollisionRules.values.toSeq, cr => collisionRule.value = cr)
 
   /**
     * Entity Type
     */
-  private var entityType: ObjectProperty[EntityType.Value] = ObjectProperty(EntityType.Matter)
+  private val entityType: ObjectProperty[EntityType.Value] = ObjectProperty(EntityType.Matter)
   private val entityComboBox = new TitledComboBox[EntityType.Value]("Entity Type:", EntityType.values.toSeq, et => {
     entityType.value = et
   })
@@ -138,7 +144,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     prefWidth <== parentStage.width
     prefHeight <== parentStage.height
     left = entityContainer
-    right = new VBox(5.0, victoryRuleBox.root, levelTypeContainer) {
+    right = new VBox(5.0, victoryRuleBox.root, collisionRuleBox.root, levelTypeContainer) {
       margin = Insets(10.0)
       padding = Insets(0.0, 10.0, 0.0, 0.0)
     }
@@ -147,7 +153,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
       onAction = _ => saveLevel()
     }, new StyledButton("Exit Level") {
       /* We go back */
-      onAction = _ => upperListener.onStopLevel()
+      onAction = _ => upperListener.onExitEditor()
     }) {
       margin = Insets(10.0)
       alignment = Pos.Center
