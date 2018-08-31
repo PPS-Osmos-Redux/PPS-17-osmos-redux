@@ -78,7 +78,6 @@ class TestSentientSystem extends FunSuite with BeforeAndAfter{
     EntityManager.add(cellEntity1)
     EntityManager.add(sentientCellEntity)
     system.update()
-    println(sentientCellEntity.getAccelerationComponent.vector)
     assert(sentientCellEntity.getAccelerationComponent.vector.x === 0.0 +- TOLERANCE)
     assert(sentientCellEntity.getAccelerationComponent.vector.y === -0.09 +- TOLERANCE)
   }
