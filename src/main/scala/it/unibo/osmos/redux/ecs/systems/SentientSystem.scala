@@ -13,7 +13,7 @@ case class SentientSystem(levelInfo: Level) extends AbstractSystemWithTwoTypeOfE
 
   private val MAX_SPEED = 2
   private val MAX_ACCELERATION = 0.1
-  private val COEFFICIENT_DESIRED_SEPARATION = 20
+  private val COEFFICIENT_DESIRED_SEPARATION = 50
   private val MIN_VALUE = 1
   private val PERCENTAGE_OF_LOST_RADIUS_FOR_MAGNITUDE_ACCELERATION = 0.02
   private val WEIGHT_OF_ESCAPE_ACCELERATION_FROM_ENEMIES = 2
