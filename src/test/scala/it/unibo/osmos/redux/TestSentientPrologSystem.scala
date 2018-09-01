@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager, PlayerCellEntity, SentientCellEntity}
+import it.unibo.osmos.redux.ecs.entities._
 import it.unibo.osmos.redux.ecs.systems.SentientPrologSystem
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.{BeforeAndAfter, FunSuite}
@@ -16,13 +16,14 @@ class TestSentientPrologSystem extends FunSuite with BeforeAndAfter {
     val sentientPrologSystem = SentientPrologSystem()
     EntityManager.subscribe(sentientPrologSystem, null)
 
+    val spawner = SpawnerComponent(false)
     val sca = AccelerationComponent(0, 0)
     val scc = CollidableComponent(true)
     val scd = DimensionComponent(10)
     val scp = PositionComponent(Point(50, 64))
     val scs = SpeedComponent(0, 0)
     val scv = VisibleComponent(true)
-    val sentientCellEntity = SentientCellEntity(sca, scc, scd, scp, scs, scv)
+    val sentientCellEntity = SentientCellEntity(sca, scc, scd, scp, scs, scv, spawner)
 
     val sca2 = AccelerationComponent(0, 0)
     val scc2 = CollidableComponent(true)
@@ -30,7 +31,7 @@ class TestSentientPrologSystem extends FunSuite with BeforeAndAfter {
     val scp2 = PositionComponent(Point(101, 87))
     val scs2 = SpeedComponent(0, 0)
     val scv2 = VisibleComponent(true)
-    val sentientCellEntity2 = SentientCellEntity(sca2, scc2, scd2, scp2, scs2, scv2)
+    val sentientCellEntity2 = SentientCellEntity(sca2, scc2, scd2, scp2, scs2, scv2, spawner)
 
     val ca1 = AccelerationComponent(1, 1)
     val cc1 = CollidableComponent(true)

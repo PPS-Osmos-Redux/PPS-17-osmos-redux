@@ -1,7 +1,6 @@
 package it.unibo.osmos.redux.ecs.systems
 
-import it.unibo.osmos.redux.ecs.components.EntityType
-import it.unibo.osmos.redux.ecs.entities.{DeathProperty, Property}
+import it.unibo.osmos.redux.ecs.entities.{DeathProperty, EntityType, Property}
 
 import scala.collection.mutable.ListBuffer
 

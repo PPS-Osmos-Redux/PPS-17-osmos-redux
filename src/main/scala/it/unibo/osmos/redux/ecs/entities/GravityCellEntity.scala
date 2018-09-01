@@ -1,6 +1,7 @@
 package it.unibo.osmos.redux.ecs.entities
 
 import it.unibo.osmos.redux.ecs.components._
+import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 
 /** Trait representing a CellEntity with gravity force */
 trait GravityCellEntity extends CellEntity with GravityProperty with SpecificWeight {}
@@ -21,7 +22,13 @@ object GravityCellEntity {
   def apply(cell: CellEntity, specificWeight: SpecificWeightComponent): GravityCellEntity =
     GravityCellEntityImpl(cell, MassComponent(cell.getDimensionComponent, specificWeight), specificWeight)
 
+  def apply(builder: CellBuilder, specificWeight: SpecificWeightComponent): GravityCellEntity =
+    apply(builder.build, specificWeight)
+
   private case class GravityCellEntityImpl(cellEntity: CellEntity, mass: MassComponent, specificWeight: SpecificWeightComponent) extends GravityCellEntity {
+
+    require(Seq(EntityType.Attractive, EntityType.Repulsive) contains cellEntity.getTypeComponent.typeEntity)
+    require(specificWeight.specificWeight > 0)
 
     override def getPositionComponent: PositionComponent = cellEntity.getPositionComponent
 
@@ -41,11 +48,6 @@ object GravityCellEntity {
 
     override def getMassComponent: MassComponent = mass
 
-    /** Need to JsonProtocol to serialize the specific weight
-      *
-      * @return the SpecificWeight Component
-      */
     override def getSpecificWeightComponent: SpecificWeightComponent = specificWeight
   }
-
 }

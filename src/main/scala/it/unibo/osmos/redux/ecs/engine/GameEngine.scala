@@ -99,6 +99,7 @@ object GameEngine {
       systems ++= initMainSystems(level, levelContext)
       if (!level.isSimulation) systems += EndGameSystem(levelContext, level.victoryRule)
 
+
       //add all entities in the entity manager (systems are subscribed to EntityManager event when created)
       level.entities foreach(EntityManager add _)
 
@@ -196,7 +197,7 @@ object GameEngine {
       * @return The list of all main systems
       */
     private def initMainSystems(level: Level, levelContext: LevelContext): List[System] = {
-      List(SpawnSystem(), GravitySystem(), MovementSystem(level), CollisionSystem(), CellsEliminationSystem(), DrawSystem(levelContext))
+      List(SpawnSystem(), GravitySystem(), MovementSystem(), CollisionSystem(level), CellsEliminationSystem(), SentientSystem(level), DrawSystem(levelContext))
     }
   }
 }

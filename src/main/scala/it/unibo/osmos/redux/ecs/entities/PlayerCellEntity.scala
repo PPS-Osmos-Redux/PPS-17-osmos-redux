@@ -1,6 +1,7 @@
 package it.unibo.osmos.redux.ecs.entities
 
 import it.unibo.osmos.redux.ecs.components._
+import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 
 /** Trait representing a CellEntity controllable by the player */
 trait PlayerCellEntity extends CellEntity with InputProperty with Spawner {}
@@ -13,12 +14,12 @@ object PlayerCellEntity {
             speed: SpeedComponent,
             visible: VisibleComponent,
             typeEntity: TypeComponent,
-            spawner: SpawnerComponent): PlayerCellEntity = PlayerCellEntityImpl(CellEntity(acceleration,
-    collidable, dimension, position, speed, visible, typeEntity), spawner)
+            spawner: SpawnerComponent): PlayerCellEntity =
+    PlayerCellEntityImpl(CellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity), spawner)
 
   def apply(cell: CellEntity, spawner: SpawnerComponent): PlayerCellEntity = PlayerCellEntityImpl(cell, spawner)
 
-  def apply(builder: CellBuilder, spawner: SpawnerComponent): PlayerCellEntity = PlayerCellEntityImpl(builder.build, spawner)
+  def apply(builder: CellBuilder, spawner: SpawnerComponent): PlayerCellEntity = apply(builder.build, spawner)
 
   private case class PlayerCellEntityImpl(cellEntity: CellEntity, private val spawner: SpawnerComponent) extends PlayerCellEntity {
 
@@ -40,5 +41,4 @@ object PlayerCellEntity {
 
     override def getSpawnerComponent: SpawnerComponent = spawner
   }
-
 }

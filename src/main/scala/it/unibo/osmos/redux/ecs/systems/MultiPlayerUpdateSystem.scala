@@ -12,7 +12,7 @@ case class MultiPlayerUpdateSystem(server: Server) extends AbstractSystem[Drawab
   override def update(): Unit = server.broadcastMessage(UpdateGame(getEntities))
 
   private def getEntities: Seq[DrawableEntity] =
-    entities filter(_.getVisibleComponent.isVisible()) map wrapToDrawable
+    entities filter(_.getVisibleComponent.isVisible) map wrapToDrawable
 
   private def wrapToDrawable(entity: DrawableProperty): DrawableEntity =
     new DrawableEntity(entity.getUUID, entity.getPositionComponent.point, entity.getDimensionComponent.radius,

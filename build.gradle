@@ -3,7 +3,7 @@ apply plugin: 'scala'
 apply plugin: 'idea'
 apply plugin: 'application'
 
-version '1.0'
+version '1.1.0'
 
 mainClassName = 'it.unibo.osmos.redux.main.AppLauncher'
 sourceCompatibility = 1.8
@@ -63,3 +63,31 @@ task scalaTests(dependsOn: ['testClasses'], type: JavaExec) {
     args = ['-R', 'build/classes/scala/test', '-o']
     classpath = sourceSets.test.runtimeClasspath
 }
+
+// jar will be saved to build/libs
+task fatJar(type: Jar, dependsOn: subprojects.compileJava) {
+    manifest {
+        attributes 'Implementation-Title': 'Osmos-Redux',
+            'Implementation-Version': rootProject.version,
+            'Main-Class': 'it.unibo.osmos.redux.main.AppLauncher'
+    }
+    baseName = "${rootProject.name}"
+    from(configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }) {
+        // remove all signature files
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+        exclude 'build'
+        exclude '.gradle'
+        exclude 'build.gradle'
+        exclude 'gradle'
+        exclude 'gradlew'
+        exclude 'gradlew.bat'
+    }
+    with jar
+    doLast {
+        println("fatJar created")
+    }
+}
+
+defaultTasks 'clean', 'build'

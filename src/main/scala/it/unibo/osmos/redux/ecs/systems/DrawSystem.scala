@@ -6,7 +6,6 @@ import it.unibo.osmos.redux.mvc.view.drawables.{DrawableWrapper, EntitiesDrawer}
 /**
   * System to draw all the entity
   * @param entitiesDrawer entitiesDrawer for communicate the entities to the view
-  * @param playerUUID the current player uuid
   */
 case class DrawSystem(entitiesDrawer: EntitiesDrawer) extends AbstractSystemWithTwoTypeOfEntity[DrawableProperty, PlayerCellEntity] {
 
@@ -17,11 +16,11 @@ case class DrawSystem(entitiesDrawer: EntitiesDrawer) extends AbstractSystemWith
   override def update(): Unit = entitiesDrawer.drawEntities(getPlayerEntity, getEntities)
 
   private def getPlayerEntity: Option[DrawableWrapper] =
-    entitiesSecondType find (e => e.getVisibleComponent.isVisible() &&
+    entitiesSecondType find (e => e.getVisibleComponent.isVisible &&
       e.getUUID == entitiesDrawer.getPlayerUUID) map(p => drawablePropertyToDrawableWrapper(p))
 
   private def getEntities: List[DrawableWrapper] =
-    entities filter(e => e.getVisibleComponent.isVisible()) map(e => drawablePropertyToDrawableWrapper(e)) toList
+    entities filter(e => e.getVisibleComponent.isVisible) map(e => drawablePropertyToDrawableWrapper(e)) toList
 
   private def drawablePropertyToDrawableWrapper(entity: DrawableProperty): DrawableWrapper =
     DrawableWrapper(entity.getPositionComponent.point,

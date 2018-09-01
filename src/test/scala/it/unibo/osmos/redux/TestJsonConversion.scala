@@ -1,18 +1,12 @@
 package it.unibo.osmos.redux
 
-import java.io.File
-import java.nio.file.{Files, Path}
-
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities._
 import it.unibo.osmos.redux.mvc.controller.FileManager
-import it.unibo.osmos.redux.mvc.controller.FileManager.{defaultFS, levelsDirectory}
-import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.mvc.model.MapShape._
+import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.FunSuite
-
-import scala.util.Try
 
 class TestJsonConversion extends FunSuite{
   //Components
@@ -23,13 +17,15 @@ class TestJsonConversion extends FunSuite{
   val s = SpeedComponent(4, 0)
   val v = VisibleComponent(true)
   val et = TypeComponent(EntityType.Matter)
+  val etg = TypeComponent(EntityType.Attractive)
   val sp = SpawnerComponent(true)
   val sw = SpecificWeightComponent(1)
+  val spawner = SpawnerComponent(false)
   //Entities
   val ce = CellEntity(a, c, d, p, s, v, et)
   val pce = PlayerCellEntity(a, c, d, p, s, v, et, sp)
-  val gc = GravityCellEntity(a, c, d, p, s, v, et, sw)
-  val sc = SentientCellEntity(a, c, d, p, s, v)
+  val gc = GravityCellEntity(a, c, d, p, s, v, etg, sw)
+  val sc = SentientCellEntity(a, c, d, p, s, v, spawner)
   val listCell:List[CellEntity] = List(ce, pce, gc, sc)
   //LevelMap
   val rectangle:MapShape = Rectangle((50,50),10.1,5.6)
@@ -37,7 +33,7 @@ class TestJsonConversion extends FunSuite{
   val listShape:List[MapShape] = List(rectangle, circle)
   val levelMap:LevelMap = LevelMap(rectangle, CollisionRules.bouncing)
   //Level
-  val level:Level = Level("1",
+  val level:Level = Level("SinglePlayerLevel",
     levelMap,
     listCell,
     VictoryRules.becomeTheBiggest)
@@ -88,7 +84,7 @@ class TestJsonConversion extends FunSuite{
   test("List of CellEntity conversion") {
     val jsListCellEntities = listCell.toJson
     val convertedCellList = jsListCellEntities.convertTo[List[CellEntity]]
-    //Check covnerted list size
+    //Check converted list size
     assert(convertedCellList.size == listCell.size)
     //Check if the second cell is a player cell
     assert(convertedCellList(1).getClass.equals(pce.getClass))
@@ -121,31 +117,51 @@ class TestJsonConversion extends FunSuite{
     assert(convertedLevel.entities.size.equals(level.entities.size))
   }
 
+
   test("File reading and conversion (SinglePlayer + MultiPlayer)") {
-    val spConvertedLevel = FileManager.loadResource(1.toString)
-    assert(spConvertedLevel.isDefined)
-//    assert(spConvertedLevel.get.levelId.equals(level.levelId))
-//    assert(spConvertedLevel.get.levelMap.equals(level.levelMap))
-//    assert(spConvertedLevel.get.victoryRule.equals(level.victoryRule))
-//    assert(spConvertedLevel.get.entities.size.equals(level.entities.size))
-    val mpConvertedLevel = FileManager.loadResource(4.toString)
-    assert(mpConvertedLevel.isDefined)
-//    assert(mpConvertedLevel.get.levelId.equals(level.levelId))
-//    assert(mpConvertedLevel.get.levelMap.equals(level.levelMap))
-//    assert(mpConvertedLevel.get.victoryRule.equals(level.victoryRule))
-//    assert(mpConvertedLevel.get.entities.size.equals(level.entities.size))
+    val spConvertedLevel = FileManager.loadResource("SinglePlayerLevel") match {
+      case Some(value) => value
+      case None => null
+    }
+    assert(spConvertedLevel != null)
+    assert(spConvertedLevel.levelId.equals(level.levelId))
+    assert(spConvertedLevel.levelMap.equals(level.levelMap))
+    assert(spConvertedLevel.victoryRule.equals(level.victoryRule))
+    assert(spConvertedLevel.entities.size.equals(level.entities.size))
+
+    val mpWrongLevel = FileManager.loadResource("ShouldntWorks",isMultiPlayer = true)  match {
+      case Some(value) => value
+      case None => null
+    }
+    assert(mpWrongLevel != null)
+    assert(!(mpWrongLevel.entities.count(cell => cell.isInstanceOf[PlayerCellEntity]) >= 2))
+
+    val mpRightLevel = FileManager.loadResource("ShouldWorks",isMultiPlayer = true)  match {
+      case Some(value) => value
+      case None => null
+    }
+    assert(mpRightLevel != null)
+    assert(mpRightLevel.entities.count(cell => cell.isInstanceOf[PlayerCellEntity]) >= 2)
   }
 
   test("Writing and reading custom level") {
-    val fileName:String = "TestWritingLev3l"
-    val optFilePath = FileManager.saveLevel(level, fileName)
+    val optFilePath = FileManager.saveLevel(level)
     assert(optFilePath.isDefined)
-    val readLevel = FileManager.loadCustomLevel(fileName)
+    val readLevel = FileManager.loadCustomLevel(level.levelId)
     assert(readLevel.isDefined)
     assert(readLevel.get.levelId.equals(level.levelId))
     assert(readLevel.get.levelMap.equals(level.levelMap))
     assert(readLevel.get.victoryRule.equals(level.victoryRule))
     assert(readLevel.get.entities.size.equals(level.entities.size))
-    Try(Files.delete(optFilePath.get))
+
+    FileManager.saveLevel(level)
+    val secondFileName = level.levelId+1
+    val readLevel2 = FileManager.loadCustomLevel(level.levelId)
+    assert(readLevel2.isDefined)
+    assert(readLevel2.get.levelId.equals(level.levelId))
+    FileManager.deleteLevel(level.levelId)
+    assert(FileManager.loadCustomLevel(level.levelId).isEmpty)
+    FileManager.deleteLevel(secondFileName)
+    assert(FileManager.loadCustomLevel(secondFileName).isEmpty)
   }
 }

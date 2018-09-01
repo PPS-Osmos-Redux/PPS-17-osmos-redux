@@ -12,10 +12,10 @@ import scalafx.scene.control.ComboBox
   */
 class TitledComboBox[A](title: String, val items: Seq[A], val handler: A => Unit, val vertical: Boolean = true) extends TitledNode[ComboBox[A]](StringProperty(title), vertical) {
 
-  override def node: ComboBox[A] = new ComboBox[A](items) {
+  override def innerNode: ComboBox[A] = new ComboBox[A](items) {
 
     selectionModel.value.selectFirst()
-    onAction = e => handler.apply(selectionModel.value.getSelectedItem)
+    onAction = _ => handler.apply(selectionModel.value.getSelectedItem)
 
   }
 }

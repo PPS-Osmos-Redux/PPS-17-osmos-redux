@@ -11,10 +11,11 @@ object SentientCellEntity {
             dimension: DimensionComponent,
             position: PositionComponent,
             speed: SpeedComponent,
-            visible: VisibleComponent): SentientCellEntity = SentientCellEntityImpl(CellEntity(acceleration,
-    collidable, dimension, position, speed, visible, TypeComponent(EntityType.Sentient)))
+            visible: VisibleComponent,
+            spawner: SpawnerComponent): SentientCellEntity = SentientCellEntityImpl(CellEntity(acceleration,
+    collidable, dimension, position, speed, visible, TypeComponent(EntityType.Sentient)), spawner)
 
-  private case class SentientCellEntityImpl(cellEntity: CellEntity) extends SentientCellEntity {
+  private case class SentientCellEntityImpl(cellEntity: CellEntity, spawner: SpawnerComponent) extends SentientCellEntity {
 
     override def getUUID: String = cellEntity.getUUID
 
@@ -31,6 +32,8 @@ object SentientCellEntity {
     override def getVisibleComponent: VisibleComponent = cellEntity.getVisibleComponent
 
     override def getDimensionComponent: DimensionComponent = cellEntity.getDimensionComponent
+
+    override def getSpawnerComponent: SpawnerComponent = spawner
   }
 
 }

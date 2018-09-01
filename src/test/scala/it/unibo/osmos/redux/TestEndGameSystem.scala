@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager, PlayerCellEntity, SentientCellEntity}
+import it.unibo.osmos.redux.ecs.entities._
 import it.unibo.osmos.redux.ecs.systems.EndGameSystem
 import it.unibo.osmos.redux.mvc.model.{MapShape, VictoryRules}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
@@ -22,7 +22,6 @@ class TestEndGameSystem extends FunSuite with BeforeAndAfter {
     override def onLevelEnd(levelResult: Boolean): Unit = {}
   }
   private var levelContext: LevelContext = _
-  private var endGameSystem: EndGameSystem = _
 
   before {
     levelContext = LevelContext(isSimulation = false)
@@ -32,13 +31,8 @@ class TestEndGameSystem extends FunSuite with BeforeAndAfter {
     EntityManager.clear()
   }
 
-  private def initEntityManager(victoryRules: VictoryRules.Value) {
-    endGameSystem = EndGameSystem(levelContext, victoryRules)
-    EntityManager.subscribe(endGameSystem, null)
-  }
-
-  test("Become the biggest victory") {
-    initEntityManager(VictoryRules.becomeTheBiggest)
+  test("Become the biggest victory rule: the player wins having his entity radius greater than the other entities radius") {
+    val endGameSystem = EndGameSystem(levelContext, VictoryRules.becomeTheBiggest)
 
     val sca = AccelerationComponent(0, 0)
     val scc = CollidableComponent(true)
@@ -69,8 +63,8 @@ class TestEndGameSystem extends FunSuite with BeforeAndAfter {
     assert(levelContext.gameCurrentState == GameWon)
   }
 
-  test("Antimatter cells are ignored for become the biggest victory") {
-    initEntityManager(VictoryRules.becomeTheBiggest)
+  test("Become the biggest victory rule: antimatter entities radius is ignored for the player victory") {
+    val endGameSystem = EndGameSystem(levelContext, VictoryRules.becomeTheBiggest)
 
     val sca = AccelerationComponent(0, 0)
     val scc = CollidableComponent(true)
@@ -111,8 +105,8 @@ class TestEndGameSystem extends FunSuite with BeforeAndAfter {
     assert(levelContext.gameCurrentState == GameWon)
   }
 
-  test("Become huge victory") {
-    initEntityManager(VictoryRules.becomeHuge)
+  test("Become huge victory: the player wins after having his entity radius greater than a certain percentage of the total entities radius") {
+    val endGameSystem = EndGameSystem(levelContext, VictoryRules.becomeHuge)
 
     val entityList: ListBuffer[CellEntity] = ListBuffer()
 
@@ -156,8 +150,8 @@ class TestEndGameSystem extends FunSuite with BeforeAndAfter {
     assert(levelContext.gameCurrentState == GameWon)
   }
 
-  test("Absorb hostile cells victory") {
-    initEntityManager(VictoryRules.absorbTheHostileCells)
+  test("Absorb hostile cells victory rule: the player wins after no more sentient entities are alive") {
+    val endGameSystem = EndGameSystem(levelContext, VictoryRules.absorbTheHostileCells)
 
     val pca = AccelerationComponent(0, 0)
     val pcc = CollidableComponent(true)
@@ -169,13 +163,14 @@ class TestEndGameSystem extends FunSuite with BeforeAndAfter {
     val spw = SpawnerComponent(false)
     val playerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv, pct, spw)
 
+    val spawner = SpawnerComponent(false)
     val sca1 = AccelerationComponent(0, 0)
     val scc1 = CollidableComponent(true)
     val scd1 = DimensionComponent(7)
     val scp1 = PositionComponent(Point(65, 64))
     val scs1 = SpeedComponent(0, 0)
     val scv1 = VisibleComponent(true)
-    val sentientCellEntity1 = SentientCellEntity(sca1, scc1, scd1, scp1, scs1, scv1)
+    val sentientCellEntity1 = SentientCellEntity(sca1, scc1, scd1, scp1, scs1, scv1, spawner)
 
     val sca2 = AccelerationComponent(0, 0)
     val scc2 = CollidableComponent(true)
@@ -183,7 +178,7 @@ class TestEndGameSystem extends FunSuite with BeforeAndAfter {
     val scp2 = PositionComponent(Point(80, 90))
     val scs2 = SpeedComponent(0, 0)
     val scv2 = VisibleComponent(true)
-    val sentientCellEntity2 = SentientCellEntity(sca2, scc2, scd2, scp2, scs2, scv2)
+    val sentientCellEntity2 = SentientCellEntity(sca2, scc2, scd2, scp2, scs2, scv2, spawner)
 
     EntityManager.add(playerCellEntity)
     EntityManager.add(sentientCellEntity1)
@@ -200,8 +195,8 @@ class TestEndGameSystem extends FunSuite with BeforeAndAfter {
     assert(levelContext.gameCurrentState == GameWon)
   }
 
-  test("Player death loss") {
-    initEntityManager(VictoryRules.becomeTheBiggest)
+  test("The game is lost after the player's entity is not alive") {
+    val endGameSystem = EndGameSystem(levelContext, VictoryRules.becomeTheBiggest)
 
     val bca = AccelerationComponent(0, 0)
     val bcc = CollidableComponent(true)
