@@ -36,7 +36,7 @@ class ClientActor(private val client: Client) extends Actor {
 
     case Terminated(_) =>
       Logger.log(s"Received Terminated message from server.")
-      client.closeLobby()
+      client.closeLobby(false)
       client.kill()
 
     case unknownMessage => Logger.log("Received unknown message: " + unknownMessage)("ClientActor")
