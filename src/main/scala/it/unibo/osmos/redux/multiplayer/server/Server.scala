@@ -359,10 +359,20 @@ object Server {
       //get map shape and send to the clients along with the assigned uuid
       val mapShape = level.levelMap.mapShape
 
-      otherPlayers.zipAll(availablePlayerCells.tail, null, None).map {
-        case (p, Some(id)) =>  p.setUUID(id); p.getActorRef ? GameStarted(id, mapShape)
-        case (_, None) => throw new IllegalStateException("Not enough player cells for all the clients.")
-      }
+      //gather extra player cells
+      val remainingPlayerCells = availablePlayerCells.tail
+      val extraCellPlayers = remainingPlayerCells.slice(otherPlayers.size, remainingPlayerCells.size).map(_.get)
+      //update level entities by removing the extra player cells
+      level.entities = for (
+        e <- level.entities
+        if !(extraCellPlayers contains e.getUUID)
+      ) yield e
+
+      otherPlayers.map(Some(_)).zipAll(availablePlayerCells.tail, None, None).map {
+        case (Some(p), Some(id)) => p.setUUID(id); Some(p.getActorRef ? GameStarted(id, mapShape))
+        case (None, _) => None
+        case _ => throw new IllegalStateException("Not enough player cells for all the clients.")
+      }.filter(_.nonEmpty).map(_.get)
     }
 
     private def getPlayerFromLobby(username: String): Option[ReferablePlayer] = {

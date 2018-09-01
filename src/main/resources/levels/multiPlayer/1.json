@@ -89,7 +89,7 @@
       },
       "cellType": "playerCell",
       "dimension": {
-        "radius": 30
+        "radius": 50
       },
       "speed": {
         "speedX": 0,
@@ -104,13 +104,12 @@
   },
   "levelMap": {
     "mapShape": {
-      "mapShape": "RECTANGLE",
+      "mapShape": "Rectangle",
       "height": 700,
       "base": 1300,
       "centerX": 650,
       "centerY": 350
     },
-    "collisionRule": "Bouncing",
-    "isSimulation": false
+    "collisionRule": "Bouncing"
   }
 }
