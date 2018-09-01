@@ -52,10 +52,10 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   /** Pane containing the field to configure the rectangular level */
   private val rectangularLevelBuilder: RectangleLevelCreator = new RectangleLevelCreator {
     visible = false
-    levelWidth.value = 800.0
-    levelHeight.value = 600.0
-    xCenter.value = ViewConstants.Window.defaultWindowWidth / 2 - levelWidth.value / 2
-    yCenter.value = ViewConstants.Window.defaultWindowHeight / 2 - levelHeight.value / 2
+    levelWidth.value = ViewConstants.Window.defaultWindowWidth / 2
+    levelHeight.value = ViewConstants.Window.defaultWindowHeight / 2
+    xCenter.value = ViewConstants.Window.defaultWindowWidth / 2
+    yCenter.value = ViewConstants.Window.defaultWindowHeight / 2
   }
 
   /**
@@ -234,10 +234,10 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     * The placeholder which models the rectangular level
     */
   val rectangularLevelPlaceholder: Rectangle = new Rectangle() {
-    x <== rectangularLevelBuilder.xCenter
-    y <== rectangularLevelBuilder.yCenter
     width <== rectangularLevelBuilder.levelWidth
     height <== rectangularLevelBuilder.levelHeight
+    x <== rectangularLevelBuilder.xCenter - rectangularLevelBuilder.levelWidth /2
+    y <== rectangularLevelBuilder.yCenter - rectangularLevelBuilder.levelHeight /2
     stroke = Color.White
     strokeWidth = 2.0
     fill = Color.Transparent
