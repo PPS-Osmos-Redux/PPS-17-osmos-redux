@@ -63,6 +63,38 @@
         "speedX": 0,
         "speedY": 0
       }
+    },
+    {
+      "acceleration": {
+        "accelerationX": 0,
+        "accelerationY": 0
+      },
+      "visible": {
+        "visible": true
+      },
+      "collidable": {
+        "collidable": true
+      },
+      "spawner": {
+        "canSpawn": true
+      },
+      "typeEntity": {
+        "componentType": "Controlled"
+      },
+      "position": {
+        "point": {
+          "x": 900,
+          "y": 700
+        }
+      },
+      "cellType": "playerCell",
+      "dimension": {
+        "radius": 30
+      },
+      "speed": {
+        "speedX": 0,
+        "speedY": 0
+      }
     }
   ],
   "levelId": "1",
@@ -73,10 +105,10 @@
   "levelMap": {
     "mapShape": {
       "mapShape": "RECTANGLE",
-      "height": 600,
-      "base": 1000,
-      "centerX": 500,
-      "centerY": 300
+      "height": 700,
+      "base": 1300,
+      "centerX": 650,
+      "centerY": 350
     },
     "collisionRule": "Bouncing",
     "isSimulation": false

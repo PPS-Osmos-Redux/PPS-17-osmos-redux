@@ -51,7 +51,7 @@ case class MultiPlayerEndGameSystem(server: Server, levelContext: GameStateHolde
       }
 
       //notify all dead players and remove them
-      if (isGameRunning) deadPlayers.foreach(p => server.removePlayerFromGame(p.getUsername))
+      if (isGameRunning) deadPlayers.foreach(p => server.removePlayerFromGame(p.getUsername, notify = true))
     }
   }
 

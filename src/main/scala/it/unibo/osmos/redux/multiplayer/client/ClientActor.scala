@@ -34,7 +34,7 @@ class ClientActor(private val client: Client) extends Actor {
 
     case GameEnded(victory) => context.unwatch(sender); client.stopGame(victory)
 
-    case Terminated =>
+    case Terminated(_) =>
       Logger.log(s"Received Terminated message from server.")
       client.closeLobby()
       client.kill()
