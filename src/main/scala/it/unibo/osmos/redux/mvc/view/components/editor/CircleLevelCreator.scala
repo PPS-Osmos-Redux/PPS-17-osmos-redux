@@ -9,7 +9,7 @@ import scalafx.scene.layout.{HBox, VBox}
 /**
   * A panel showing input nodes which is also capable of providing the requested circular level
   */
-class CircleLevelBuilder extends BaseComponentBuilder[MapShape.Circle] {
+class CircleLevelCreator extends BaseEditorCreator[MapShape.Circle] {
 
   /* Center */
   val xCenter: DoubleProperty = DoubleProperty(0.0)
@@ -19,7 +19,6 @@ class CircleLevelBuilder extends BaseComponentBuilder[MapShape.Circle] {
     new TitledDoubleField("y: ", yCenter).innerNode
   )
 
-
   /* Radius node*/
   val radius: DoubleProperty = DoubleProperty(0.0)
   private val radiusNode = new VBox(2.0, new Label("Radius"),
@@ -28,5 +27,5 @@ class CircleLevelBuilder extends BaseComponentBuilder[MapShape.Circle] {
 
   children = Seq(centerNode, radiusNode)
 
-  override def build(): MapShape.Circle = MapShape.Circle((xCenter.value, yCenter.value), radius.value)
+  override def create(): MapShape.Circle = MapShape.Circle((xCenter.value, yCenter.value), radius.value)
 }

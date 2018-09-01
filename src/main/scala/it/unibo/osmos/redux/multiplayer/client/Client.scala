@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.multiplayer.client
 import akka.actor.{ActorRef, PoisonPill}
 import akka.pattern.ask
 import akka.util.Timeout
-import it.unibo.osmos.redux.multiplayer.client.ClientActor.{LeaveGame, LeaveLobby, PlayerInput}
+import it.unibo.osmos.redux.multiplayer.client.ClientActor.{LeaveGame, LeaveLobby, PlayerInput, StartWatching}
 import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.multiplayer.lobby.GameLobby
 import it.unibo.osmos.redux.multiplayer.players.BasePlayer
@@ -12,7 +12,7 @@ import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, MultiPlayerLevelContext}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity
-import it.unibo.osmos.redux.mvc.view.events.{GameLost, GameWon, MouseEventWrapper}
+import it.unibo.osmos.redux.mvc.view.events.{GameLost, GamePending, GameWon, MouseEventWrapper}
 import it.unibo.osmos.redux.utils.{Constants, Logger}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -22,7 +22,8 @@ import scala.util.{Failure, Success}
 
 trait Client {
 
-  implicit val timeout: Timeout = Timeout(5.minutes) //TODO: change to 5 sec
+  implicit val who: String = "Client"
+  implicit val timeout: Timeout = Timeout(5.seconds)
 
   /**
     * Binds this instance with the input ActorRef.
@@ -106,9 +107,9 @@ trait Client {
 
   /**
     * Closes the lobby.
-    * @param fromServer If the close request comes from the server or not.
+    * @param byUser If the lobby have been closed by the user or not.
     */
-  def closeLobby(fromServer: Boolean = false): Unit
+  def closeLobby(byUser: Boolean = true): Unit
 
   /**
     * Forwards player into to the server.
@@ -127,8 +128,6 @@ object Client {
   def apply(): Client = ClientImpl()
 
   final case class ClientImpl() extends Client {
-
-    implicit val who: String = "Client"
 
     //temp id useful for handshaking
     private var tempID: String = _
@@ -216,6 +215,9 @@ object Client {
       this.uuid = uuid
       //update level context uuid
       levelContext.get.setPlayerUUID(uuid)
+
+      if (uuid.equals(Constants.defaultClientUUID)) throw new IllegalArgumentException("Invalid player UUID, the client is not be able to send correct inputs to the server")
+
       //notify lobby that the game is started (prepares the view)
       lobby.get.notifyGameStarted(levelContext.get)
       //actually starts the game
@@ -233,8 +235,9 @@ object Client {
       Logger.log("leaveGame")
 
       if (username.isEmpty) throw new IllegalStateException("The player entered no lobby, unable to leave.")
-      server.get ! ClientActor.LeaveGame(username)
-      kill()
+
+      //send leave game only if it's the user will (a.k.a. the game state is still in pending)
+      if (levelContext.nonEmpty && levelContext.get.gameCurrentState == GamePending) server.get.tell(ClientActor.LeaveGame(username), ref.get)
     }
 
     //INPUT MANAGEMENT
@@ -263,6 +266,8 @@ object Client {
           lobby.get.addPlayers(players: _*)
           //because the interface is not ready yet, set users list into lobby context
           lobbyContext.users = players.map(p => new User(p, false))
+          //add watch to server remote actor
+          ref.get ! StartWatching(server.get)
           //fulfill promise
           promise success true
         case Success(Disconnected) | Success(UsernameAlreadyTaken) | Success(LobbyFull) => kill(); promise success false
@@ -278,17 +283,17 @@ object Client {
 
       if (username.isEmpty) throw new IllegalStateException("The player entered no lobby, unable to leave.")
 
-      server.get ! LeaveLobby(username)
+      server.get.tell(LeaveLobby(username), ref.get)
       closeLobby()
     }
 
-    override def closeLobby(byServer: Boolean = false): Unit = {
-      Logger.log("clearLobby")
+    override def closeLobby(byUser: Boolean = true): Unit = {
+      Logger.log("closeLobby")
 
-      if (lobby.nonEmpty) {
-        lobby.get.notifyLobbyClosed(byServer)
-        lobby = None
-      }
+      if (lobby.isEmpty) throw new IllegalStateException("The player entered no lobby, unable to leave.")
+
+      lobby.get.notifyLobbyClosed(byUser)
+      lobby = None
     }
 
     override def getLobbyPlayers: Seq[BasePlayer] = {

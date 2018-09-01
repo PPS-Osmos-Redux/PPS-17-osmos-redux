@@ -1,6 +1,7 @@
 package it.unibo.osmos.redux.multiplayer.lobby
 
 import it.unibo.osmos.redux.multiplayer.players.Player
+import it.unibo.osmos.redux.utils.Constants
 
 import scala.collection.mutable
 
@@ -14,7 +15,7 @@ trait Lobby[T <: Player] {
   /**
     * The maximum number of players in the lobby.
     */
-  protected val maximumNumberOfPlayers = 2
+  protected val maximumNumberOfPlayers = Constants.defaultMaximumLobbyPlayers
 
   /**
     * Adds a new player.
