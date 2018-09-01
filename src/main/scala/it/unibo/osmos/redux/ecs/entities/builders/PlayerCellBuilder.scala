@@ -13,7 +13,6 @@ class PlayerCellBuilder extends CellBuilder {
   }
 
   override def build: PlayerCellEntity = {
-    checkMultipleBuild()
     PlayerCellEntity(this, spawner)
   }
 }
