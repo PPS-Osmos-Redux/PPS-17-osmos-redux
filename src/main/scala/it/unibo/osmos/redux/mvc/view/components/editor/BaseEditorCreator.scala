@@ -4,10 +4,10 @@ import scalafx.geometry.Insets
 import scalafx.scene.layout.VBox
 
 /**
-  * Abstract basic EditorComponentBuilder which provide styling and utility methods
+  * Abstract basic EditorCreator which provide styling and utility methods
   * @tparam A the type of the element provided
   */
-abstract class BaseComponentBuilder[A] extends VBox(10.0) with EditorComponentBuilder[A] {
+abstract class BaseEditorCreator[A] extends VBox(10.0) with EditorCreator[A] {
 
   /* Style */
   padding = Insets(10.0)

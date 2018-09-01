@@ -81,7 +81,7 @@ case class LevelMap(mapShape:MapShape, collisionRule:CollisionRules.Value)
   * @param victoryRule victory rule
   * @param isSimulation if it's a simulation
   */
-case class Level(levelId:String,
+case class Level(var levelId:String,
                  levelMap:LevelMap,
                  var entities:List[CellEntity],
                  victoryRule:VictoryRules.Value, var isSimulation:Boolean = false) {

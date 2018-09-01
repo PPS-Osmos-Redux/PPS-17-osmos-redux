@@ -7,11 +7,11 @@ import scala.collection.mutable
 object SinglePlayerLevels {
   private var userStat:UserStat = UserStat()
   private val levels:mutable.ArraySeq[LevelInfo] = mutable.ArraySeq(
-    LevelInfo("1", isAvailable = true, VictoryRules.becomeTheBiggest),
-    LevelInfo("2", isAvailable = false, VictoryRules.becomeTheBiggest),
-    LevelInfo("3", isAvailable = false, VictoryRules.becomeTheBiggest),
-    LevelInfo("4", isAvailable = false, VictoryRules.becomeTheBiggest),
-    LevelInfo("5", isAvailable = false, VictoryRules.becomeTheBiggest))
+    LevelInfo("1", VictoryRules.becomeTheBiggest),
+    LevelInfo("2", VictoryRules.becomeTheBiggest, isAvailable = false),
+    LevelInfo("3", VictoryRules.becomeTheBiggest, isAvailable = false),
+    LevelInfo("4", VictoryRules.becomeTheBiggest, isAvailable = false),
+    LevelInfo("5", VictoryRules.becomeTheBiggest, isAvailable = false))
 
   /**
     * get the campaign levels
@@ -36,9 +36,9 @@ object SinglePlayerLevels {
   def toDoLevel:String = {
     @throws(classOf[MatchError])
     def searchLastAvailableLevel(levelsList:mutable.ArraySeq[LevelInfo]):Option[String] = levelsList match {
-      case LevelInfo(lv:String,av:Boolean, _)+:LevelInfo(_:String,av2:Boolean, _)+:_ if av && !av2 =>
+      case LevelInfo(lv:String, _, av:Boolean)+:LevelInfo(_:String, _, av2:Boolean)+:_ if av && !av2 =>
         Some(lv)
-      case LevelInfo(lv:String,av:Boolean,_)+:mutable.ArraySeq(LevelInfo(lv2:String,av2:Boolean, _)) =>
+      case LevelInfo(lv:String, _, av:Boolean)+:mutable.ArraySeq(LevelInfo(lv2:String, _, av2:Boolean)) =>
         if(av && !av2) Some(lv) else Some (lv2)
       case _+:t => searchLastAvailableLevel(t)
     }
@@ -51,7 +51,7 @@ object SinglePlayerLevels {
   private def unlockNextLevel():Unit = levels.filter(lv => !lv.isAvailable)
                                      .foreach(level => {
                                        levels.update(levels.indexOf(level),
-                                         LevelInfo(level.name, isAvailable = true, level.victoryRule))
+                                         LevelInfo(level.name, level.victoryRule))
                                        return
                                      })
 
@@ -91,7 +91,7 @@ object SinglePlayerLevels {
     * @param isAvailable is the level is available
     * @param victoryRule level victory rule
     */
-  case class LevelInfo(name:String, var isAvailable:Boolean = false, victoryRule:VictoryRules.Value)
+  case class LevelInfo(name:String, victoryRule:VictoryRules.Value,  var isAvailable:Boolean = true)
 
   /**
     * Statistics of a level
