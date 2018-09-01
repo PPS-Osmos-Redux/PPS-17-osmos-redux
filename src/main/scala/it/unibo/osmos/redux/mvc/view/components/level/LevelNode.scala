@@ -95,8 +95,9 @@ trait LevelNodeListener {
     * This method gets called when an available level buttons get clicked
     * @param level the level name
     * @param simulation true if the level must be started as a simulation, false otherwise
+    * @param custom true if the level is a custom one, false otherwise
     */
-  def onLevelPlayClick(level: String, simulation: Boolean)
+  def onLevelPlayClick(level: String, simulation: Boolean, custom: Boolean = false)
 }
 
 

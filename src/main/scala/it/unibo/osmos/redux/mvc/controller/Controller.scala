@@ -28,8 +28,9 @@ trait Controller {
     * Initializes the level and the game engine.
     * @param levelContext The level context.
     * @param chosenLevel The name of the chosen level.
+    * @param isCustom True if the level is a custom one, false otherwise
     */
-  def initLevel(levelContext: LevelContext, chosenLevel: String): Unit
+  def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): Unit
 
   /**
     * Initializes the multi-player lobby and the server or client.
@@ -122,7 +123,7 @@ case class ControllerImpl() extends Controller with GameStateHolder {
   private var server: Option[Server] = None
   private var client: Option[Client] = None
 
-  override def initLevel(levelContext: LevelContext, chosenLevel: String): Unit = {
+  override def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): Unit = {
     Logger.log("initLevel")
 
     var loadedLevel:Option[Level] = None
