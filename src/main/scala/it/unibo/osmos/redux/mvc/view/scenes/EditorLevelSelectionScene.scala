@@ -19,9 +19,11 @@ class EditorLevelSelectionScene(override val parentStage: Stage, override val li
 
   container.children.add(newLevelButton)
 
+  override def onLevelPlayClick(levelInfo: LevelInfo, simulation: Boolean, custom: Boolean = false): Unit = super.onLevelPlayClick(levelInfo, simulation, custom = true)
+
   /** Custom levels are always available */
   override def levels: List[LevelInfo] = listener.getCustomLevels
-  override def loadLevels(): Unit = levels foreach(level => levelsContainer.children.add(new EditorLevelNode(this, level.name)))
+  override def loadLevels(): Unit = levels foreach(level => levelsContainer.children.add(new EditorLevelNode(this, level)))
 
   override def onLevelDeleteClick(level: String): Unit = listener.onDeleteLevel(level, (_) => parentStage.scene = new EditorLevelSelectionScene(parentStage, listener))
 

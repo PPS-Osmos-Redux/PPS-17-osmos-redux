@@ -1,6 +1,5 @@
 package it.unibo.osmos.redux.mvc.controller
 
-import akka.actor.Status
 import it.unibo.osmos.redux.ecs.engine.GameEngine
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, PlayerCellEntity}
 import it.unibo.osmos.redux.multiplayer.client.Client
@@ -11,7 +10,8 @@ import it.unibo.osmos.redux.mvc.model.{VictoryRules, _}
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context._
 import it.unibo.osmos.redux.mvc.view.events.{AbortLobby, _}
-import it.unibo.osmos.redux.utils.{Constants, Logger}
+import it.unibo.osmos.redux.utils
+import it.unibo.osmos.redux.utils.{Constants, GenericResponse, Logger}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Promise
@@ -28,8 +28,10 @@ trait Controller {
     * Initializes the level and the game engine.
     * @param levelContext The level context.
     * @param chosenLevel The name of the chosen level.
+    * @param isCustom True if the level is a custom one, false otherwise
+    * @return None if level loaded with success, Some(String) if exception occurs
     */
-  def initLevel(levelContext: LevelContext, chosenLevel: String): Unit
+  def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): GenericResponse[Boolean]
 
   /**
     * Initializes the multi-player lobby and the server or client.
@@ -122,36 +124,36 @@ case class ControllerImpl() extends Controller with GameStateHolder {
   private var server: Option[Server] = None
   private var client: Option[Client] = None
 
-  override def initLevel(levelContext: LevelContext, chosenLevel: String): Unit = {
+  override def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): GenericResponse[Boolean] = {
     Logger.log("initLevel")
 
     var loadedLevel:Option[Level] = None
-    //TODO custom level logic
-    //if (isCustomLevel) {
-    // loadedLevel = FileManager.loadCustomLevel(chosenLevel)
-    // lastLoadedLevel = None
-    //}
-    //else {
-    loadedLevel = FileManager.loadResource(chosenLevel)
-    lastLoadedLevel = Some(chosenLevel)
-    //}
+
+    if (isCustom) {
+      loadedLevel = FileManager.loadCustomLevel(chosenLevel)
+      /*Because user stats are not influenced by custom level end game results*/
+      lastLoadedLevel = None
+    } else {
+      loadedLevel = FileManager.loadResource(chosenLevel)
+      lastLoadedLevel = Some(chosenLevel)
+    }
 
     if(loadedLevel.isDefined) {
-
       loadedLevel.get.isSimulation = levelContext.levelContextType == LevelContextType.simulation
 
       val player = loadedLevel.get.entities.find(_.isInstanceOf[PlayerCellEntity])
-      if (player.isEmpty && !loadedLevel.get.isSimulation) throw new IllegalStateException("Cannot start a normal level if the player is not present")
+      if (player.isEmpty && !loadedLevel.get.isSimulation) return utils.GenericResponse(false, "Cannot start a normal level if the player is not present")//throw new IllegalStateException("Cannot start a normal level if the player is not present")
       //assign current player uuid to the
-      levelContext.setPlayerUUID(player.get.getUUID)
+      if(player.isDefined) levelContext.setPlayerUUID(player.get.getUUID)
 
       //create and initialize the game engine
       if(engine.isEmpty) engine = Some(GameEngine())
       //TODO: engine must need a GameStateHolder for the EndGameSystem
       engine.get.init(loadedLevel.get, levelContext/*, this*/)
       levelContext.setupLevel(loadedLevel.get.levelMap.mapShape)
+      GenericResponse(true, "")
     } else {
-      println("Level ", chosenLevel, " not found! is a custom level? "/*, isCustomLevel*/)
+      utils.GenericResponse(false, "Error: level " + chosenLevel + " not found! The level " + (if(isCustom) "is" else "isn't") + "custom level")
     }
   }
 
@@ -311,7 +313,7 @@ case class ControllerImpl() extends Controller with GameStateHolder {
     case SoundsType.menu => Some(FileManager.loadMenuMusic())
     case SoundsType.level => Some(FileManager.loadLevelMusic())
     case SoundsType.button => Some(FileManager.loadButtonsSound())
-    case _ => println("Sound type not managed!! [Controller getSoundPath]")
+    case _ => Logger.log("Sound type not managed!! [getSoundPath]")
               None
   }
 
@@ -320,11 +322,10 @@ case class ControllerImpl() extends Controller with GameStateHolder {
     *
     * @param event the event
     */
-  override def notify(event: GameStateEventWrapper): Unit = {
-    if(lastLoadedLevel.isDefined) {
-      SinglePlayerLevels.newEndGameEvent(event, lastLoadedLevel.get)
+  override def notify(event: GameStateEventWrapper): Unit = lastLoadedLevel match {
+    case Some(lastLevel:String) => SinglePlayerLevels.newEndGameEvent(event, lastLevel)
       FileManager.saveUserProgress(SinglePlayerLevels.userStatistics())
-    }
+    case _ =>
   }
 
   /**
@@ -333,14 +334,18 @@ case class ControllerImpl() extends Controller with GameStateHolder {
     * @return The list of custom levels filename.
     */
   override def getCustomLevels: List[LevelInfo] = FileManager.customLevelsFilesName match {
-    case Success(customLevels) => customLevels
-    case Failure(exception) => Logger.log(exception.getMessage)
+    case Success(customLevels) => println(customLevels);customLevels
+    case Failure(_) => Logger.log("[Info] User doesn't have any saved custom level or custom level directory doesn't exists")
                                List()
   }
 
 
-  override def saveLevel(name: String, map: MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value, entities: Seq[CellEntity]): Boolean =
-    FileManager.saveLevel(Level(name, LevelMap(map, collisionRules), entities.toList, victoryRules)).isDefined
+  override def saveLevel(name: String, map: MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value, entities: Seq[CellEntity]): Boolean = {
+    val lv: Level = Level(name, LevelMap(map, collisionRules), entities.toList, victoryRules)
+    lv.checkCellPosition()
+    FileManager.saveLevel(lv).isDefined
+  }
+
 
   /**
     * Delete from file a custom level

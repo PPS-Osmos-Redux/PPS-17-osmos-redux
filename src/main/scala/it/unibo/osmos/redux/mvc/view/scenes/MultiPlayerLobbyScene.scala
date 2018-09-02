@@ -140,12 +140,11 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
 
   override def onMultiPlayerGameStarted(multiPlayerLevelContext: MultiPlayerLevelContext): Unit = {
     /* Creating a multiplayer level*/
-    val multiPlayerLevelScene = new MultiPlayerLevelScene(parentStage, listener, () => parentStage.scene = this)
+    val multiPlayerLevelScene = new MultiPlayerLevelScene(parentStage, null, listener, () => parentStage.scene = this)
 
     multiPlayerLevelContext.setListener(multiPlayerLevelScene)
     multiPlayerLevelScene.levelContext = multiPlayerLevelContext
 
-    //TODO: requires main thread execution
     Platform.runLater({
       parentStage.scene = multiPlayerLevelScene
     })
