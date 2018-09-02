@@ -38,7 +38,7 @@ class EditorLevelNode(override val listener: EditorLevelNodeListener, override v
   override lazy val text: Text = new Text() {
     margin = Insets(0, 0, 20, 0)
     style = "-fx-font-size: 12pt"
-    text = s"Level $levelInfo.name"
+    text = "Level " + levelInfo.name
   }
 
   /* The level image */
