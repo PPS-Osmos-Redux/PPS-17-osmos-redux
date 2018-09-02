@@ -113,8 +113,8 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
     val unitVector = MathUtils.unitVector(position1.point, position2.point)
     position1.point_(position1.point add (unitVector multiply quantityToMove))
     position2.point_(position2.point add (unitVector multiply (-quantityToMove)))
-    bounceRule.checkCollision(entity1)
-    bounceRule.checkCollision(entity2)
+    bounceRule.repositionIfOutsideMap(entity1)
+    bounceRule.repositionIfOutsideMap(entity2)
   }
 
 

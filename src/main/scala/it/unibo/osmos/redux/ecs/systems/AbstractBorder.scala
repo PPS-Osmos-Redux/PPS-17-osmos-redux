@@ -21,6 +21,8 @@ abstract class AbstractBorder(levelCenter: Point, collisionRule: CollisionRules.
     * @param entity
     */
   def checkCollision(entity: CollidableProperty): Unit
+
+  def repositionIfOutsideMap(entity: CollidableProperty): Unit
 }
 
 /** Implementation of a playing field with rectangular shape */
@@ -76,6 +78,7 @@ case class RectangularBorder(levelCenter: Point, collisionRule: CollisionRules.V
     }
   }
 
+  override def repositionIfOutsideMap(entity: CollidableProperty): Unit = ???
 }
 
 /** Implementation of a playing field with circular shape */
@@ -164,5 +167,20 @@ case class CircularBorder(levelCenter: Point, collisionRule: CollisionRules.Valu
     val vAfter = w.subtract(u)
     val reflection = vAfter.subtract(v).multiply(restitution)
     v.add(reflection)
+  }
+
+  override def repositionIfOutsideMap(entity: CollidableProperty): Unit = {
+    val positionComponent = entity.getPositionComponent
+    val currentPosition = positionComponent.point
+    val dimensionComponent = entity.getDimensionComponent
+    val entityRadius = dimensionComponent.radius
+    val maxReachableDistance = levelRadius - entityRadius
+    val currentDistanceFromCenter = MathUtils.euclideanDistance(levelCenter, currentPosition)
+
+    if (currentDistanceFromCenter > maxReachableDistance) {
+      val vector = MathUtils.unitVector(levelCenter, currentPosition)
+      val back = currentDistanceFromCenter - levelRadius + entityRadius
+      positionComponent.point_(currentPosition.add(vector.multiply(back)))
+    }
   }
 }
