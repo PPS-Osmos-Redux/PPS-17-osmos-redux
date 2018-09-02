@@ -1,5 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
+import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.custom.StyledButton
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.{User, UserWithProperties}
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, LobbyContextListener, MultiPlayerLevelContext}
@@ -28,9 +29,7 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     * The lobby context, created with the MultiPlayerLobbyScene. It still needs to be properly setup
     */
   private var _lobbyContext: Option[LobbyContext] = Option.empty
-
   def lobbyContext: Option[LobbyContext] = _lobbyContext
-
   def lobbyContext_=(lobbyContext: LobbyContext): Unit = {
     _lobbyContext = Option(lobbyContext)
     /* subscribe to lobby context events */
@@ -38,6 +37,12 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     /* fill table with existing users */
     userList ++= lobbyContext.users.map(_.getUserWithProperty)
   }
+
+  /**
+    * The level info, which may be empty if the user is a client
+    */
+  private var _levelInfo: Option[LevelInfo] = Option.empty
+  def levelInfo_=(levelInfo: Option[LevelInfo]): Unit = _levelInfo = levelInfo
 
   /**
     * ObservableBuffer holding the current users
@@ -104,7 +109,11 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     styleClass.add("default-button-style")
     if (user.isServer) {
       disable <== isStartGameDisabled
-      onAction = _ => listener.onStartMultiplayerGameClick()
+      onAction = _ => {
+        if (_levelInfo.isDefined) {
+          listener.onStartMultiplayerGameClick(_levelInfo.get)
+        } else throw new IllegalArgumentException("LevelInfo was empty in MultiPlayerLobbyScene, so the server cannot start the game")
+      }
     } else {
       visible = false
     }
@@ -138,9 +147,9 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     }
   }
 
-  override def onMultiPlayerGameStarted(multiPlayerLevelContext: MultiPlayerLevelContext): Unit = {
+  override def onMultiPlayerGameStarted(multiPlayerLevelContext: MultiPlayerLevelContext, levelInfo: LevelInfo): Unit = {
     /* Creating a multiplayer level*/
-    val multiPlayerLevelScene = new MultiPlayerLevelScene(parentStage, null, listener, () => parentStage.scene = this)
+    val multiPlayerLevelScene = new MultiPlayerLevelScene(parentStage, levelInfo, listener, () => parentStage.scene = this)
 
     multiPlayerLevelContext.setListener(multiPlayerLevelScene)
     multiPlayerLevelScene.levelContext = multiPlayerLevelContext
@@ -173,7 +182,8 @@ trait MultiPlayerLobbySceneListener extends LevelSceneListener {
 
   /**
     * Called once per lobby. This will eventually lead to the server init. The server will eventually respond using the previously passed lobby context
+    * @param levelInfo the level info requested by the controller
     */
-  def onStartMultiplayerGameClick()
+  def onStartMultiplayerGameClick(levelInfo: LevelInfo)
 
 }

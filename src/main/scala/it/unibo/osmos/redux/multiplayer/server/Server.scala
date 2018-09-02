@@ -9,6 +9,7 @@ import it.unibo.osmos.redux.multiplayer.lobby.GameLobby
 import it.unibo.osmos.redux.multiplayer.players.{BasePlayer, ReferablePlayer}
 import it.unibo.osmos.redux.multiplayer.server.ServerActor._
 import it.unibo.osmos.redux.mvc.model.Level
+import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, MultiPlayerLevelContext}
 import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
@@ -64,8 +65,9 @@ trait Server {
   /**
     * Starts the game by notifying the interface and passing the level context to use.
     * @param levelContext The level context.
+    * @param levelInfo The level info.
     */
-  def startGame(levelContext: MultiPlayerLevelContext): Unit
+  def startGame(levelContext: MultiPlayerLevelContext, levelInfo: LevelInfo): Unit
 
   /**
     * Signals all clients that the game have been stopped.
@@ -219,7 +221,7 @@ object Server {
       promise
     }
 
-    override def startGame(levelContext: MultiPlayerLevelContext): Unit = {
+    override def startGame(levelContext: MultiPlayerLevelContext, levelInfo: LevelInfo): Unit = {
       Logger.log("startGame")
 
       if (status != ServerState.Lobby) throw new UnsupportedOperationException(s"Cannot start game because the server is in the state: $status")

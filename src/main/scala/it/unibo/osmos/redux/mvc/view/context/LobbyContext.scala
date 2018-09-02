@@ -1,5 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.context
 
+import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.events._
 import it.unibo.osmos.redux.utils.Logger
@@ -56,7 +57,7 @@ object LobbyContext {
           /* A user exited from the lobby */
           case LobbyEventWrapper(UserRemoved, Some(user)) => if (users.contains(user)) users = users filterNot(u => u.username == user.username); l.updateUsers(users)
           /* The game has started, we can create a new MultiPlayerLevelScene */
-          case LobbyEventWrapper(StartGame(multiPlayerLevelContext), _) => l.onMultiPlayerGameStarted(multiPlayerLevelContext)
+          case LobbyEventWrapper(StartGame(multiPlayerLevelContext, levelInfo), _) => l.onMultiPlayerGameStarted(multiPlayerLevelContext, levelInfo)
           /* The lobby has been aborted, we have to go back */
           case LobbyEventWrapper(AbortLobby, _) => l.onLobbyAborted()
           case _ => Logger.log(s"Unknown lobby event received: $event")("LobbyContext")
@@ -74,7 +75,7 @@ object LobbyContext {
 
     override def notifyLobbyEvent(event: LobbyEventWrapper): Unit = lobbyContextObserver match {
       case Some(lco) => lco.notify(event)
-      case _ => Logger.log("Cannot notify observer with the new lobby event becase is not set")("LobbyContext")
+      case _ => Logger.log("Cannot notify observer with the new lobby event because it is not set")("LobbyContext")
     }
   }
 
@@ -94,8 +95,9 @@ trait LobbyContextListener {
   /**
     * Called once per lobby. A new MultiPLayerLevelScene will be created the scene
     * @param multiPlayerLevelContext the level context
+    * @param levelInfo the level info
     */
-  def onMultiPlayerGameStarted(multiPlayerLevelContext: MultiPlayerLevelContext)
+  def onMultiPlayerGameStarted(multiPlayerLevelContext: MultiPlayerLevelContext, levelInfo: LevelInfo)
 
   /**
     * Called once per lobby if the lobby is deleted

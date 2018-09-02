@@ -6,6 +6,11 @@ import it.unibo.osmos.redux.mvc.view.components.editor.{EditorLevelNode, EditorL
 import scalafx.geometry.{Insets, Pos}
 import scalafx.stage.Stage
 
+/**
+  * Scene in which the user can see the created custom levels
+  * @param parentStage the parent stage
+  * @param listener the listener
+  */
 class EditorLevelSelectionScene(override val parentStage: Stage, override val listener: EditorLevelSelectionSceneListener) extends LevelSelectionScene(parentStage, listener)
   with EditorLevelNodeListener {
 

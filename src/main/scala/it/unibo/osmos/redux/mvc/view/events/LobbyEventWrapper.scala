@@ -1,5 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.events
 
+import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContext
 
@@ -9,7 +10,7 @@ import it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContext
 sealed trait LobbyEvent extends EventWrapper
 case object UserAdded extends LobbyEvent
 case object UserRemoved extends LobbyEvent
-case class StartGame(multiPlayerLevelContext: MultiPlayerLevelContext) extends LobbyEvent
+case class StartGame(multiPlayerLevelContext: MultiPlayerLevelContext, levelInfo: LevelInfo) extends LobbyEvent
 case object AbortLobby extends LobbyEvent
 
 /**

@@ -72,6 +72,11 @@ object View {
       case _ => List()
     }
 
+    override def getMultiPlayerLevels: List[LevelInfo] = controller match {
+      case Some(c) => c.getSinglePlayerLevels //TODO: use real multiplayer levels
+      case _ => List()
+    }
+
     override def onSaveLevel(name: String,
                              map: MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value,
                              entities: Seq[CellEntity],
@@ -117,13 +122,13 @@ object View {
       * @param lobbyContext the lobby context, which may be used by the server to configure existing lobby users
       * @param callback     the callback
       */
-    override def onLobbyClick(user: User, lobbyContext: LobbyContext, callback: (User, LobbyContext, Boolean) => Unit): Unit =
+    override def onLobbyRequest(user: User, levelInfo: Option[LevelInfo], lobbyContext: LobbyContext, callback: (User, Option[LevelInfo], LobbyContext, Boolean) => Unit): Unit =
       checkController(() => controller.get.initLobby(user, lobbyContext).future.onComplete {
-        case Success(value) => callback(user, lobbyContext, value)
+        case Success(value) => callback(user, levelInfo, lobbyContext, value)
         case Failure(e) => onDisplayError(e)
       })
 
-    override def onStartMultiplayerGameClick(): Unit = checkController(() => controller.get.initMultiPlayerLevel().future.onComplete {
+    override def onStartMultiplayerGameClick(levelInfo: LevelInfo): Unit = checkController(() => controller.get.initMultiPlayerLevel(levelInfo).future.onComplete {
       case Failure(e) => onDisplayError(e)
       case Success(_) => //do nothing
     })

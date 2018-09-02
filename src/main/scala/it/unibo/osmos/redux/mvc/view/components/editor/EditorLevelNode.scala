@@ -33,7 +33,6 @@ class EditorLevelNode(override val listener: EditorLevelNodeListener, override v
     color = Color.ForestGreen
   }
 
-
   /* The upper text */
   override lazy val text: Text = new Text() {
     margin = Insets(0, 0, 20, 0)
@@ -60,6 +59,5 @@ class EditorLevelNode(override val listener: EditorLevelNodeListener, override v
   }
 
   children.add(deleteButton)
-
-
+  
 }
