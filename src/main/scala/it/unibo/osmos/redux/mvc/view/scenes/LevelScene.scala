@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.ecs.entities.EntityType
-import it.unibo.osmos.redux.mvc.model.MapShape
+import it.unibo.osmos.redux.mvc.model.{MapShape, MediaPlayer, SoundsType}
 import it.unibo.osmos.redux.mvc.view.ViewConstants
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Colors._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
@@ -29,6 +29,8 @@ import scalafx.util.Duration
 class LevelScene(override val parentStage: Stage, val listener: LevelSceneListener,
                  val upperSceneListener: UpperLevelSceneListener, private val showPause: Boolean = true)
   extends BaseScene(parentStage) with LevelContextListener with LevelStateBoxListener {
+
+  MediaPlayer.play(SoundsType.level)
 
   /**
     * The current game pending state: true if the game is paused
@@ -143,6 +145,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   }
 
   override def onExit(): Unit = {
+    MediaPlayer.play(SoundsType.menu)
     upperSceneListener.onStopLevel()
     listener.onStopLevel()
   }

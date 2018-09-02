@@ -40,5 +40,5 @@ class RectangleLevelCreator extends BaseEditorCreator[MapShape.Rectangle] {
 
   children = Seq(centerNode, widthNode, heightNode)
 
-  override def create(): MapShape.Rectangle = MapShape.Rectangle((xCenter.value, yCenter.value), levelWidth.value, levelHeight.value)
+  override def create(): MapShape.Rectangle = MapShape.Rectangle((xCenter.value, yCenter.value), levelHeight.value, levelWidth.value)
 }
