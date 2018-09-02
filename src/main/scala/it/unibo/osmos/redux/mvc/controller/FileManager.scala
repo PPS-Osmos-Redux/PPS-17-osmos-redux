@@ -3,11 +3,11 @@ package it.unibo.osmos.redux.mvc.controller
 import java.io.{File, PrintWriter}
 import java.nio.file._
 
-import akka.event.jul.Logger
 import it.unibo.osmos.redux.mvc.controller.UserHomePaths.userProgressDirectory
 import it.unibo.osmos.redux.mvc.model.JsonProtocols._
 import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.{LevelInfo, UserStat}
 import it.unibo.osmos.redux.mvc.model._
+import it.unibo.osmos.redux.utils.Logger
 import spray.json._
 
 import scala.io.{BufferedSource, Source}
@@ -50,7 +50,7 @@ object FileManager {
     val fileContent = Source.fromInputStream(fileStream).mkString
     textToLevel(fileContent) match {
       case Success(result) => Some(result)
-      case Failure(e: Throwable) => e.printStackTrace(); None
+      case Failure(e: Throwable) => Logger.log(e.printStackTrace().toString); None
     }
   }
 
@@ -123,7 +123,7 @@ object FileManager {
       writer.write(text)
       return true
     } catch {
-      case e: Throwable => println("Exception occurred writing on file: ", file.getName,
+      case e: Throwable => Logger.log("Exception occurred writing on file: " + file.getName + " StackTrace: " +
         e.printStackTrace())
     } finally writer.close()
     false
@@ -134,7 +134,7 @@ object FileManager {
     if (source.isSuccess) {
       try return Some(source.get.mkString)
       catch {
-        case e:Throwable => println("Error reading file: ", filePath,e.printStackTrace())
+        case e:Throwable => Logger.log("Error reading file: " + filePath + " stack trace: " + e.printStackTrace().toString)
       }
       finally source.get.close()
     }
@@ -148,7 +148,7 @@ object FileManager {
     */
   def createDirectoriesTree(file:File):Boolean = Try(file.getParentFile.mkdirs()) match {
    case Success(_) =>  true
-   case Failure(exception) =>Logger("Error: SecurityException directories are protected [createDirectoriesTree]"
+   case Failure(exception) =>Logger.log("Error: SecurityException directories are protected [createDirectoriesTree]"
                                     + exception.getMessage)
                              false
   }
@@ -184,7 +184,7 @@ object FileManager {
       url.toString
     } catch {
       case _: NullPointerException =>
-        println("Error: style.css file not found")
+        Logger.log("Error: style.css file not found")
         throw new NullPointerException("style.css file not found");
     }
   }
