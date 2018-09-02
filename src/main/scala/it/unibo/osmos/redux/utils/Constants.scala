@@ -9,5 +9,4 @@ object Constants {
   final val defaultClientUUID: String = "<unavailable>"
   final val defaultMaximumLobbyPlayers: Int = 3
   final val maxSpeed: Double = 4.0
-
 }

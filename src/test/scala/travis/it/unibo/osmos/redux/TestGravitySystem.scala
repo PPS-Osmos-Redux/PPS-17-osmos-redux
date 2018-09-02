@@ -1,11 +1,11 @@
-package it.unibo.osmos.redux
+package travis.it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager, EntityType, GravityCellEntity}
 import it.unibo.osmos.redux.ecs.systems.GravitySystem
 import it.unibo.osmos.redux.utils.Point
-import org.scalatest.{BeforeAndAfter, FunSuite}
 import org.scalactic.Tolerance._
+import org.scalatest.{BeforeAndAfter, FunSuite}
 
 class TestGravitySystem extends FunSuite with BeforeAndAfter{
 

@@ -17,6 +17,7 @@ import javafx.scene.input.{KeyCode, MouseEvent}
 import scalafx.animation.FadeTransition
 import scalafx.application.Platform
 import scalafx.beans.property.BooleanProperty
+import scalafx.geometry.Pos
 import scalafx.scene.canvas.Canvas
 import scalafx.scene.image.Image
 import scalafx.scene.paint.Color
@@ -66,7 +67,6 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     */
   private val pauseScreen = LevelScreen.Builder(this)
     .withText("Game paused", 30, Color.White)
-    // TODO: the buttons are not working correctly
     .withButton("Resume", _ => onResume())
     .withButton("Return to Level Selection", _ => onExit())
     .build()
@@ -78,6 +78,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   private val splashScreen = LevelScreen.Builder(this)
     .withText(if (levelInfo != null) levelInfo.victoryRule.toString else "", 50, Color.White) //TODO: levelInfo won't be null
     .build()
+  splashScreen.opacity = 0.0
 
   /**
     * The upper state box
@@ -100,8 +101,10 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
         onFinished = _ => new FadeTransition(Duration.apply(3000), canvas) {
           fromValue = 0.0
           toValue = 1.0
-          /* Removing the splash screen to reduce the load. Then the level is started */
-          onFinished = _ => content.remove(splashScreen);
+          onFinished = _ => {
+            /* Removing the splash screen to reduce the load. Then the level is started */
+            content.remove(splashScreen)
+          }
           listener.onStartLevel()
         }.play()
       }.play()
@@ -137,15 +140,15 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   def levelContext_=(levelContext: LevelContext): Unit = _levelContext = Option(levelContext)
 
   override def onPause(): Unit = {
-    //paused.value = true
-    canvas.opacity = 0.5
-    //content.add(pauseScreen)
+    canvas.opacity = 0.3
+    paused.value = true
+
     listener.onPauseLevel()
   }
 
   override def onResume(): Unit = {
-    paused.value = false
     canvas.opacity = 1
+    paused.value = false
 
     listener.onResumeLevel()
   }
@@ -159,7 +162,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   /**
     * OnMouseClicked handler, reacting only if the game is not paused
     */
-  onMouseClicked = mouseEvent => {
+  onMouseClicked = mouseEvent => if (!paused.value) {
     /* Creating a circle representing the player click */
     val clickCircle = Circle(mouseEvent.getX, mouseEvent.getY, 2.0, defaultPlayerColor)
     content.add(clickCircle)
