@@ -7,6 +7,11 @@ import scalafx.scene.control.TextFormatter.Change
 import scalafx.scene.control.{TextField, TextFormatter}
 import scalafx.util.converter.{DoubleStringConverter, NumberStringConverter}
 
+/**
+  * TextField with a Title which controls the user inputs, checking that the text inserted is a Double
+  * @param title the text shown
+  * @param value the observable double property
+  */
 class TitledDoubleField(override val title: StringProperty, private val value: DoubleProperty) extends TitledNode[TextField](title, vertical = false) {
 
   def this(title: String,value: DoubleProperty) {

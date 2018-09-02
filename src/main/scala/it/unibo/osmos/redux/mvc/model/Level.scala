@@ -2,7 +2,7 @@ package it.unibo.osmos.redux.mvc.model
 
 import it.unibo.osmos.redux.ecs.entities.CellEntity
 import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
-import it.unibo.osmos.redux.utils.{MathUtils, Point}
+import it.unibo.osmos.redux.utils.{Logger, MathUtils, Point}
 
 /**
   * List of cell types
@@ -89,6 +89,7 @@ case class Level(var levelId:String,
   def checkCellPosition():Unit = levelMap.mapShape match {
     case rectangle:Rectangle => rectangularMapCheck(rectangle)
     case circle:Circle => circularMapCheck(circle)
+    case _ => Logger.log("Map shape not managed [checkCellPosition]")("Level")
   }
 
   /**

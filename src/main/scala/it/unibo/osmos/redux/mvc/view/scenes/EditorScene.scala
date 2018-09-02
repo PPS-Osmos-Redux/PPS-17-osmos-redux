@@ -52,10 +52,10 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   /** Pane containing the field to configure the rectangular level */
   private val rectangularLevelBuilder: RectangleLevelCreator = new RectangleLevelCreator {
     visible = false
-    levelWidth.value = 800.0
-    levelHeight.value = 600.0
-    xCenter.value = ViewConstants.Window.defaultWindowWidth / 2 - levelWidth.value / 2
-    yCenter.value = ViewConstants.Window.defaultWindowHeight / 2 - levelHeight.value / 2
+    levelWidth.value = ViewConstants.Window.defaultWindowWidth / 2
+    levelHeight.value = ViewConstants.Window.defaultWindowHeight / 2
+    xCenter.value = ViewConstants.Window.defaultWindowWidth / 2
+    yCenter.value = ViewConstants.Window.defaultWindowHeight / 2
   }
 
   /**
@@ -85,12 +85,16 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     visible = false
   }
   /* Pane containing the field to configure the sentient entities*/
-  private val sentientCellEntityCreator: SentientCellEntityCreator = new SentientCellEntityCreator {
+  private val sentientCellEntityCreator: CellEntityCreator = new SentientCellEntityCreator {
+    visible = false
+  }
+  /* Pane containing the field to configure the player entities*/
+  private val playerCellEntityCreator: CellEntityCreator = new PlayerCellEntityCreator {
     visible = false
   }
 
   /** The entity builders */
-  private val entityBuilders = Seq(cellEntityCreator, gravityCellEntityCreator, sentientCellEntityCreator)
+  private val entityBuilders = Seq(cellEntityCreator, gravityCellEntityCreator, sentientCellEntityCreator, playerCellEntityCreator)
 
   /**
     * Returns the currently visible cell entity creator
@@ -116,7 +120,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
           case EntityType.Attractive => gravityCellEntityCreator.visible = true; gravityCellEntityCreator.isAttractive = true
           case EntityType.Repulsive => gravityCellEntityCreator.visible = true; gravityCellEntityCreator.isAttractive = false
           case EntityType.Sentient => sentientCellEntityCreator.visible = true;
-          case EntityType.Controlled => cellEntityCreator.visible = true; cellEntityCreator.entityType_=(EntityType.Controlled)
+          case EntityType.Controlled => playerCellEntityCreator.visible = true; playerCellEntityCreator.entityType_=(EntityType.Controlled)
           case _ => cellEntityCreator.visible = true; cellEntityCreator.entityType_=(EntityType.Matter)
         }
       })
@@ -234,10 +238,10 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     * The placeholder which models the rectangular level
     */
   val rectangularLevelPlaceholder: Rectangle = new Rectangle() {
-    x <== rectangularLevelBuilder.xCenter
-    y <== rectangularLevelBuilder.yCenter
     width <== rectangularLevelBuilder.levelWidth
     height <== rectangularLevelBuilder.levelHeight
+    x <== rectangularLevelBuilder.xCenter - rectangularLevelBuilder.levelWidth /2
+    y <== rectangularLevelBuilder.yCenter - rectangularLevelBuilder.levelHeight /2
     stroke = Color.White
     strokeWidth = 2.0
     fill = Color.Transparent
@@ -305,7 +309,9 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     content = editorElements
 
     /** Insert an entity to the built entities list */
-    builtEntities += getVisibleCellBuilder create()
+    val n = getVisibleCellBuilder create()
+    println(n)
+    builtEntities += n
   }
 
   /** The main editor elements */

@@ -1,5 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.components.level
 
+import it.unibo.osmos.redux.mvc.controller.LevelInfo
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import scalafx.Includes._
 import scalafx.animation.{FadeTransition, Transition}
@@ -15,10 +16,9 @@ import scalafx.util.Duration
 /**
   * Basic abstract level node, consisting of a text, an image, a play button and a simulation button
   * @param listener the LevelNodeListener
-  * @param level the level name
-  * @param playable true if the level is actually playable
+  * @param levelInfo the level info
   */
-abstract class AbstractLevelNode(val listener: LevelNodeListener, val level: String, val playable: Boolean) extends VBox {
+abstract class AbstractLevelNode(val listener: LevelNodeListener, val levelInfo: LevelInfo) extends VBox {
 
   alignment = Pos.Center
   padding = Insets(0, 30, 30, 30)
@@ -31,7 +31,7 @@ abstract class AbstractLevelNode(val listener: LevelNodeListener, val level: Str
   lazy val playButton: Button = new Button()
   lazy val simulationButton: Button = new Button()
 
-  if (playable) {
+  if (levelInfo.isAvailable) {
     effect = new DropShadow {
       color = Color.Blue
     }
@@ -39,8 +39,8 @@ abstract class AbstractLevelNode(val listener: LevelNodeListener, val level: Str
     /**
       * Button handlers, calling the listener
       */
-    playButton.onAction = _ => listener.onLevelPlayClick(level, simulation = false)
-    simulationButton.onAction = _ => listener.onLevelPlayClick(level, simulation = true)
+    playButton.onAction = _ => listener.onLevelPlayClick(levelInfo, simulation = false)
+    simulationButton.onAction = _ => listener.onLevelPlayClick(levelInfo, simulation = true)
 
     children = Seq(text, simulationButton, imageView, playButton)
   } else {
@@ -53,10 +53,9 @@ abstract class AbstractLevelNode(val listener: LevelNodeListener, val level: Str
 /**
   * Animated version of the base AbstractLevelNode, adding scaling and fading effects
   * @param listener the LevelNodeListener
-  * @param level the level name
-  * @param playable true if the level is actually playable
+  * @param levelInfo the level info
   */
-abstract class AnimatedAbstractLevelNode(override val listener: LevelNodeListener, override val level: String, override val playable: Boolean) extends AbstractLevelNode(listener, level, playable) {
+abstract class AnimatedAbstractLevelNode(override val listener: LevelNodeListener, override val levelInfo: LevelInfo) extends AbstractLevelNode(listener, levelInfo) {
 
   /* Hover event handlers */
   scaleX <== when(hover) choose 1.2 otherwise 1
@@ -93,27 +92,27 @@ trait LevelNodeListener {
 
   /**
     * This method gets called when an available level buttons get clicked
-    * @param level the level name
+    * @param levelInfo the levelInfo name
     * @param simulation true if the level must be started as a simulation, false otherwise
+    * @param custom true if the level is a custom one, false otherwise
     */
-  def onLevelPlayClick(level: String, simulation: Boolean)
+  def onLevelPlayClick(levelInfo: LevelInfo, simulation: Boolean, custom: Boolean = false)
 }
 
 
 /**
   * This node represents a single selectable level from the menu
   * @param listener the LevelNodeListener
-  * @param level the level name
+  * @param levelInfo the level info
   * @param index the level index in the selection screen
-  * @param playable true if the level is currently playable, false otherwise
   */
-class LevelNode(override val listener: LevelNodeListener, override val level: String, val index: Int, override val playable: Boolean) extends AnimatedAbstractLevelNode(listener, level, playable) {
+class LevelNode(override val listener: LevelNodeListener, override val levelInfo: LevelInfo, val index: Int) extends AnimatedAbstractLevelNode(listener, levelInfo) {
 
   /* The upper text */
   override lazy val text: Text = new Text() {
     margin = Insets(0, 0, 20, 0)
     style = "-fx-font-size: 12pt"
-    text = if (playable) s"Level $level" else "Unlock previous level"
+    text = if (levelInfo.isAvailable) "Level " + levelInfo.name else "Unlock previous level"
   }
 
   /* The level image */

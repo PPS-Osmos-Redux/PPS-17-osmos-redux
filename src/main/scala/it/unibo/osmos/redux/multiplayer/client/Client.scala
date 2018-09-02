@@ -8,6 +8,7 @@ import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.multiplayer.lobby.GameLobby
 import it.unibo.osmos.redux.multiplayer.players.BasePlayer
 import it.unibo.osmos.redux.multiplayer.server.ServerActor._
+import it.unibo.osmos.redux.mvc.controller.LevelInfo
 import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, MultiPlayerLevelContext}
@@ -58,10 +59,11 @@ trait Client {
 
   /**
     * Starts the game.
-    * @param uuid The entity uuid assigned to this client by the server
-    * @param mapShape The shape of the level
+    * @param uuid The entity uuid assigned to this client by the server.
+    * @param levelInfo The level info.
+    * @param mapShape The shape of the level.
     */
-  def startGame(uuid: String, mapShape: MapShape): Unit
+  def startGame(uuid: String, levelInfo: LevelInfo, mapShape: MapShape): Unit
 
   /**
     * Stops the game.
@@ -210,7 +212,7 @@ object Client {
       this.levelContext = Some(levelContext)
     }
 
-    override def startGame(uuid: String, mapShape: MapShape): Unit = {
+    override def startGame(uuid: String, levelInfo: LevelInfo, mapShape: MapShape): Unit = {
       //save entity uuid
       this.uuid = uuid
       //update level context uuid
@@ -219,7 +221,7 @@ object Client {
       if (uuid.equals(Constants.MultiPlayer.defaultClientUUID)) throw new IllegalArgumentException("Invalid player UUID, the client is not be able to send correct inputs to the server")
 
       //notify lobby that the game is started (prepares the view)
-      lobby.get.notifyGameStarted(levelContext.get)
+      lobby.get.notifyGameStarted(levelContext.get, levelInfo)
       //actually starts the game
       levelContext.get.setupLevel(mapShape)
     }

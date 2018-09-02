@@ -1,11 +1,16 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
-import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.LevelInfo
+import it.unibo.osmos.redux.mvc.controller.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.custom.StyledButton
 import it.unibo.osmos.redux.mvc.view.components.editor.{EditorLevelNode, EditorLevelNodeListener}
 import scalafx.geometry.{Insets, Pos}
 import scalafx.stage.Stage
 
+/**
+  * Scene in which the user can see the created custom levels
+  * @param parentStage the parent stage
+  * @param listener the listener
+  */
 class EditorLevelSelectionScene(override val parentStage: Stage, override val listener: EditorLevelSelectionSceneListener) extends LevelSelectionScene(parentStage, listener)
   with EditorLevelNodeListener {
 
@@ -19,9 +24,11 @@ class EditorLevelSelectionScene(override val parentStage: Stage, override val li
 
   container.children.add(newLevelButton)
 
+  override def onLevelPlayClick(levelInfo: LevelInfo, simulation: Boolean, custom: Boolean = false): Unit = super.onLevelPlayClick(levelInfo, simulation, custom = true)
+
   /** Custom levels are always available */
   override def levels: List[LevelInfo] = listener.getCustomLevels
-  override def loadLevels(): Unit = levels foreach(level => levelsContainer.children.add(new EditorLevelNode(this, level.name)))
+  override def loadLevels(): Unit = levels foreach(level => levelsContainer.children.add(new EditorLevelNode(this, level)))
 
   override def onLevelDeleteClick(level: String): Unit = listener.onDeleteLevel(level, (_) => parentStage.scene = new EditorLevelSelectionScene(parentStage, listener))
 
