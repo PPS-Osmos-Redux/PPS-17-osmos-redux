@@ -1,6 +1,5 @@
 package it.unibo.osmos.redux.mvc.controller
 
-import akka.actor.Status
 import it.unibo.osmos.redux.ecs.engine.GameEngine
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, PlayerCellEntity}
 import it.unibo.osmos.redux.multiplayer.client.Client
@@ -11,7 +10,8 @@ import it.unibo.osmos.redux.mvc.model.{VictoryRules, _}
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context._
 import it.unibo.osmos.redux.mvc.view.events.{AbortLobby, _}
-import it.unibo.osmos.redux.utils.{Constants, Logger}
+import it.unibo.osmos.redux.utils
+import it.unibo.osmos.redux.utils.{Constants, GenericResponse, Logger}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Promise
@@ -31,7 +31,7 @@ trait Controller {
     * @param isCustom True if the level is a custom one, false otherwise
     * @return None if level loaded with success, Some(String) if exception occurs
     */
-  def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): Option[String]
+  def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): GenericResponse[Boolean]
 
   /**
     * Initializes the multi-player lobby and the server or client.
@@ -124,7 +124,7 @@ case class ControllerImpl() extends Controller with GameStateHolder {
   private var server: Option[Server] = None
   private var client: Option[Client] = None
 
-  override def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): Option[String] = {
+  override def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): GenericResponse[Boolean] = {
     Logger.log("initLevel")
 
     var loadedLevel:Option[Level] = None
@@ -142,7 +142,7 @@ case class ControllerImpl() extends Controller with GameStateHolder {
       loadedLevel.get.isSimulation = levelContext.levelContextType == LevelContextType.simulation
 
       val player = loadedLevel.get.entities.find(_.isInstanceOf[PlayerCellEntity])
-      if (player.isEmpty && !loadedLevel.get.isSimulation) return Some("Cannot start a normal level if the player is not present")//throw new IllegalStateException("Cannot start a normal level if the player is not present")
+      if (player.isEmpty && !loadedLevel.get.isSimulation) return utils.GenericResponse(false, "Cannot start a normal level if the player is not present")//throw new IllegalStateException("Cannot start a normal level if the player is not present")
       //assign current player uuid to the
       if(player.isDefined) levelContext.setPlayerUUID(player.get.getUUID)
 
@@ -151,9 +151,9 @@ case class ControllerImpl() extends Controller with GameStateHolder {
       //TODO: engine must need a GameStateHolder for the EndGameSystem
       engine.get.init(loadedLevel.get, levelContext/*, this*/)
       levelContext.setupLevel(loadedLevel.get.levelMap.mapShape)
-      None
+      GenericResponse(true, "")
     } else {
-      Some("Error: level " + chosenLevel + " not found! The level " + (if(isCustom) "is" else "isn't") + "custom level")
+      utils.GenericResponse(false, "Error: level " + chosenLevel + " not found! The level " + (if(isCustom) "is" else "isn't") + "custom level")
     }
   }
 
