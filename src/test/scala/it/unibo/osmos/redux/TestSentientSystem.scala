@@ -3,7 +3,7 @@ package it.unibo.osmos.redux
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.builders.{CellBuilder, SentientCellBuilder}
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager, EntityType, SentientCellEntity}
-import it.unibo.osmos.redux.ecs.systems.SentientSystem
+import it.unibo.osmos.redux.ecs.systems.sentient.SentientSystem
 import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.mvc.model.MapShape.Rectangle
 import it.unibo.osmos.redux.utils.Point
