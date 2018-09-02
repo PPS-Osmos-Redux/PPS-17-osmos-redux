@@ -151,7 +151,7 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     })
   }
 
-  override def onLobbyAborted(): Unit = upperSceneListener.onLobbyExited()
+  override def onLobbyAborted(): Unit = Platform.runLater({upperSceneListener.onLobbyExited()})
 
 }
 

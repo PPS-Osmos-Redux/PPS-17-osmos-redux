@@ -1,9 +1,9 @@
-package it.unibo.osmos.redux
+package travis.it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities._
-import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
+import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.FunSuite
 
@@ -17,7 +17,10 @@ class TestMapBoundariesCheck extends FunSuite{
   val etg = TypeComponent(EntityType.Attractive)
   val sp = SpawnerComponent(true)
   val sw = SpecificWeightComponent(1)
+  val spawner = SpawnerComponent(false)
+
   val levelId:String = 1.toString
+
   test("Rectangular map boundaries") {
     val p = PositionComponent(Point(-3, -3))
     val p1 = PositionComponent(Point(3, -3))
@@ -28,7 +31,7 @@ class TestMapBoundariesCheck extends FunSuite{
     val ce = CellEntity(a, c, d, p, s, v, et)
     val pce = PlayerCellEntity(a, c, d, p1, s, v, et, sp)
     val gc = GravityCellEntity(a, c, d, p2, s, v, etg, sw)
-    val sc = SentientCellEntity(a, c, d, p3, s, v)
+    val sc = SentientCellEntity(a, c, d, p3, s, v, spawner)
     val listCells = List(ce, pce, gc, sc)
     //LevelMap
     val rectangle:MapShape = Rectangle((0,0),10,10)
@@ -60,7 +63,7 @@ class TestMapBoundariesCheck extends FunSuite{
     val ce = CellEntity(a, c, d, p, s, v, et)
     val pce = PlayerCellEntity(a, c, d, p1, s, v, et, sp)
     val gc = GravityCellEntity(a, c, d, p2, s, v, etg, sw)
-    val sc = SentientCellEntity(a, c, d, p3, s, v)
+    val sc = SentientCellEntity(a, c, d, p3, s, v, spawner)
     val listCells = List(ce, pce, gc, sc)
     //LevelMap
     val circle:MapShape = Circle((0,0), 5)

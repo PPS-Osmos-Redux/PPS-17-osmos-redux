@@ -9,7 +9,7 @@ import scalafx.scene.layout.{HBox, VBox}
 /**
   * A panel showing input nodes which is also capable of providing the requested rectangular level
   */
-class RectangleLevelBuilder extends BaseComponentBuilder[MapShape.Rectangle] {
+class RectangleLevelCreator extends BaseEditorCreator[MapShape.Rectangle] {
 
   /* Center */
   val xCenter: DoubleProperty = DoubleProperty(0.0)
@@ -40,5 +40,5 @@ class RectangleLevelBuilder extends BaseComponentBuilder[MapShape.Rectangle] {
 
   children = Seq(centerNode, widthNode, heightNode)
 
-  override def build(): MapShape.Rectangle = MapShape.Rectangle((xCenter.value, yCenter.value), levelWidth.value, levelHeight.value)
+  override def create(): MapShape.Rectangle = MapShape.Rectangle((xCenter.value, yCenter.value), levelWidth.value, levelHeight.value)
 }

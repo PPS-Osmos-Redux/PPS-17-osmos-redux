@@ -1,12 +1,13 @@
 package it.unibo.osmos.redux.mvc.controller
 
+import akka.actor.Status
 import it.unibo.osmos.redux.ecs.engine.GameEngine
-import it.unibo.osmos.redux.ecs.entities.PlayerCellEntity
+import it.unibo.osmos.redux.ecs.entities.{CellEntity, PlayerCellEntity}
 import it.unibo.osmos.redux.multiplayer.client.Client
 import it.unibo.osmos.redux.multiplayer.common.{ActorSystemHolder, MultiPlayerMode}
 import it.unibo.osmos.redux.multiplayer.server.Server
 import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.LevelInfo
-import it.unibo.osmos.redux.mvc.model.{Level, MultiPlayerLevels, SinglePlayerLevels, SoundsType}
+import it.unibo.osmos.redux.mvc.model.{VictoryRules, _}
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context._
 import it.unibo.osmos.redux.mvc.view.events.{AbortLobby, _}
@@ -65,11 +66,22 @@ trait Controller {
   def resumeLevel(): Unit
 
   /**
-    * Saves a new custom level.
-    * @param customLevel The custom level.
+    * Saves a level.
+    * @param name level name
+    * @param map level map shape MapShape
+    * @param victoryRules level victory rule VictoryRule.Value
+    * @param collisionRules level collision rule CollisionRule.Value
+    * @param entities Seq of CellEntity
     * @return True, if the operation is successful; otherwise false.
+    **/
+  def saveLevel(name: String, map:MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value, entities: Seq[CellEntity]):Boolean
+
+  /**
+    * Delete from file a custom level
+    * @param name custom level name
+    * @return true, if remove file is completed with success
     */
-  def saveNewCustomLevel(customLevel:Level): Boolean
+  def removeCustomLevel(name:String):Boolean
 
   /**
     * Gets all the levels in the campaign.
@@ -129,7 +141,7 @@ case class ControllerImpl() extends Controller with GameStateHolder {
       loadedLevel.get.isSimulation = levelContext.levelContextType == LevelContextType.simulation
 
       val player = loadedLevel.get.entities.find(_.isInstanceOf[PlayerCellEntity])
-      if (player.isEmpty && !loadedLevel.get.isSimulation) throw new IllegalStateException("")
+      if (player.isEmpty && !loadedLevel.get.isSimulation) throw new IllegalStateException("Cannot start a normal level if the player is not present")
       //assign current player uuid to the
       levelContext.setPlayerUUID(player.get.getUUID)
 
@@ -152,19 +164,23 @@ case class ControllerImpl() extends Controller with GameStateHolder {
     lobbyContext.subscribe {
       //if user is defined that the event is from the user and not from the server
       case LobbyEventWrapper(AbortLobby, Some(_)) =>
+        Logger.log("Received AbortLobby event from LobbyContext.")
         multiPlayerMode match {
           case Some(MultiPlayerMode.Server) =>
             if (server.nonEmpty) {
               server.get.closeLobby()
               server.get.kill()
+              multiPlayerMode = None
+              server = None
             }
             client = None
           case Some(MultiPlayerMode.Client) =>
             if (client.nonEmpty) {
               client.get.leaveLobby()
               client.get.kill()
+              multiPlayerMode = None
+              client = None
             }
-            server = None
           case _ => //do not
         }
       case _ => //do not
@@ -284,9 +300,6 @@ case class ControllerImpl() extends Controller with GameStateHolder {
     }
   }
 
-  override def saveNewCustomLevel(customLevel: Level): Boolean =
-    FileManager.saveLevel(customLevel, customLevel.levelId).isDefined
-
    /**
     * A generic definition of the game state
     *
@@ -323,5 +336,20 @@ case class ControllerImpl() extends Controller with GameStateHolder {
     case Success(customLevels) => customLevels
     case Failure(exception) => Logger.log(exception.getMessage)
                                List()
+  }
+
+
+  override def saveLevel(name: String, map: MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value, entities: Seq[CellEntity]): Boolean =
+    FileManager.saveLevel(Level(name, LevelMap(map, collisionRules), entities.toList, victoryRules)).isDefined
+
+  /**
+    * Delete from file a custom level
+    *
+    * @param name custom level name
+    */
+  override def removeCustomLevel(name: String): Boolean = FileManager.deleteLevel(name) match {
+    case Success(_) => true
+    case Failure(exception) => Logger.log("Error occurred removing custom level file" + exception.getMessage)
+                               false
   }
 }

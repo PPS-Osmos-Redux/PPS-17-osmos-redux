@@ -113,6 +113,9 @@
     "speed": {
       "speedX": 4.0,
       "speedY": 0.0
+    },
+    "spawner": {
+      "canSpawn": true
     }
   }],
   "levelId": "SinglePlayerLevel",
