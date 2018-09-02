@@ -1,6 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.ecs.entities.EntityType
+import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.LevelInfo
 import it.unibo.osmos.redux.mvc.model.{MapShape, MediaPlayer, SoundsType}
 import it.unibo.osmos.redux.mvc.view.ViewConstants
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Colors._
@@ -25,8 +26,13 @@ import scalafx.util.Duration
 
 /**
   * This scene holds and manages a single level
+  * @param parentStage the parent stage
+  * @param levelInfo the level info
+  * @param listener the listener
+  * @param upperSceneListener the upper scene listener to manage the previously scene events
+  * @param showPause true if the pause box must be shown, false otherwise
   */
-class LevelScene(override val parentStage: Stage, val listener: LevelSceneListener,
+class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val listener: LevelSceneListener,
                  val upperSceneListener: UpperLevelSceneListener, private val showPause: Boolean = true)
   extends BaseScene(parentStage) with LevelContextListener with LevelStateBoxListener {
 
@@ -70,7 +76,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     * The splash screen showed when the game is paused
     */
   private val splashScreen = LevelScreen.Builder(this)
-    .withText("Become huge", 50, Color.White)
+    .withText(levelInfo.victoryRule.toString, 50, Color.White)
     .build()
 
   /**

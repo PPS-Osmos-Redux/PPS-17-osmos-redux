@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.containers
 
-import it.unibo.osmos.redux.mvc.view.components.level.{LevelNode, LevelNodeListener}
-import it.unibo.osmos.redux.mvc.view.context.LevelContext
+import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.LevelInfo
+import it.unibo.osmos.redux.mvc.view.components.level.LevelNodeListener
 import scalafx.geometry.Pos
 import scalafx.scene.layout.{TilePane, VBox}
 import scalafx.stage.Stage
@@ -41,7 +41,7 @@ class LevelSelectionContainer(parentStage: Stage) extends LevelNodeListener {
     */
   def loadLevels(): Unit = ??? //for (i <- 1 to numLevels) levelsContainer.children.add(new LevelNode(LevelSelectionContainer.this, levels, i == 1))
 
-  def onLevelPlayClick(level: String, simulation: Boolean, custom: Boolean = false): Unit = {
+  def onLevelPlayClick(level: LevelInfo, simulation: Boolean, custom: Boolean = false): Unit = {
     /* Creating a listener on the run*/
     /*val upperLevelSceneListener: UpperLevelSceneListener = () => parentStage.scene = parentStage
     /* Creating a new level scene */

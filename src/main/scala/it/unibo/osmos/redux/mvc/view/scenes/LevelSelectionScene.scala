@@ -49,7 +49,7 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
   /**
     * This method loads the level into the level container, thus letting the player choose them
     */
-  def loadLevels(): Unit = levels foreach((level) => levelsContainer.children.add(new LevelNode(LevelSelectionScene.this, level.name, levels.indexOf(level), level.isAvailable)))
+  def loadLevels(): Unit = levels foreach((level) => levelsContainer.children.add(new LevelNode(LevelSelectionScene.this, level, levels.indexOf(level))))
 
   override def onFullScreenSettingClick(): Unit = {
     parentStage.fullScreen = !parentStage.fullScreen.get()
@@ -57,15 +57,15 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
 
   /**
     * Called when the user want to play a level
-    * @param level the level name
+    * @param levelInfo the level info
     * @param simulation true if the level must be started as a simulation, false otherwise
     * @param custom true if the level is a custom one, false otherwise
     */
-  def onLevelPlayClick(level: String, simulation: Boolean, custom: Boolean = false): Unit = {
+  def onLevelPlayClick(levelInfo: LevelInfo, simulation: Boolean, custom: Boolean = false): Unit = {
     /* Creating a listener on the run*/
     val upperLevelSceneListener: UpperLevelSceneListener = () => parentStage.scene = this
     /* Creating a new level scene */
-    val levelScene = new LevelScene(parentStage, listener, upperLevelSceneListener)
+    val levelScene = new LevelScene(parentStage, levelInfo, listener, upperLevelSceneListener)
     /* Creating the level context */
     val levelContext = LevelContext(simulation)
     levelContext.setListener(levelScene)
@@ -73,7 +73,7 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
     /* Changing scene scene */
     parentStage.scene = levelScene
     /* Notify the view the new context */
-    listener.onLevelContextCreated(levelContext, level, custom)
+    listener.onLevelContextCreated(levelContext, levelInfo.name, custom)
   }
 
 }
