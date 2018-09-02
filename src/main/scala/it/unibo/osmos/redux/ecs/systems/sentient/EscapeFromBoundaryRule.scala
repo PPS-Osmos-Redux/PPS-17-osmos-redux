@@ -28,7 +28,7 @@ case class EscapeFromBoundaryRule(levelInfo: Level) extends SentientRule {
         .withPosition(sentient.getPositionComponent)
         .withDimension(sentient.getDimensionComponent.radius + getDesiredSeparation)
         .withSpeed(actualSpeed.x, actualSpeed.y).build
-      bounceRule.checkCollision(sentientCopy)
+      bounceRule.checkAndSolveCollision(sentientCopy)
       if(sentientCopy.getSpeedComponent.vector == actualSpeed) {
         Vector.zero()
       } else {
