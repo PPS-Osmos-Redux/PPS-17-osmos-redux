@@ -309,7 +309,9 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     content = editorElements
 
     /** Insert an entity to the built entities list */
-    builtEntities += getVisibleCellBuilder create()
+    val n = getVisibleCellBuilder create()
+    println(n)
+    builtEntities += n
   }
 
   /** The main editor elements */
