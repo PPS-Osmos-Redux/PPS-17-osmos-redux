@@ -5,7 +5,8 @@ import it.unibo.osmos.redux.ecs.entities.{CellEntity, PlayerCellEntity}
 import it.unibo.osmos.redux.multiplayer.client.Client
 import it.unibo.osmos.redux.multiplayer.common.{ActorSystemHolder, MultiPlayerMode}
 import it.unibo.osmos.redux.multiplayer.server.Server
-import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.LevelInfo
+import it.unibo.osmos.redux.mvc.controller.LevelInfo
+import it.unibo.osmos.redux.mvc.controller.LevelInfo.LevelInfo
 import it.unibo.osmos.redux.mvc.model.{VictoryRules, _}
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context._
@@ -43,9 +44,10 @@ trait Controller {
 
   /**
     * Initializes the multi-player level and the game engine.
+    * @param levelInfo The level info
     * @return Promise that completes with true if the level is initialized successfully; otherwise false.
     */
-  def initMultiPlayerLevel(): Promise[Boolean]
+  def initMultiPlayerLevel(levelInfo: LevelInfo): Promise[Boolean]
 
   /**
     * Starts the level.
@@ -95,7 +97,7 @@ trait Controller {
     * Gets all multi-player levels.
     * @return The list of multi-player levels.
     */
-  def getMultiPlayerLevels: List[String] = MultiPlayerLevels.getLevels
+  def getMultiPlayerLevels: List[LevelInfo] = MultiPlayerLevels.getLevels
 
   /**
     * Gets all custom levels filename.
@@ -229,7 +231,7 @@ case class ControllerImpl() extends Controller with GameStateHolder {
     promise
   }
 
-  override def initMultiPlayerLevel(): Promise[Boolean] = {
+  override def initMultiPlayerLevel(levelInfo: LevelInfo): Promise[Boolean] = {
     Logger.log("initMultiPlayerLevel")
 
     val promise = Promise[Boolean]()
@@ -249,7 +251,7 @@ case class ControllerImpl() extends Controller with GameStateHolder {
             val levelContext = engine.get.init(loadedLevel, server.get)
 
             //signal server that the game is ready to be started
-            server.get.startGame(levelContext)
+            server.get.startGame(levelContext, levelInfo)
             //tell view to actually start the game
             levelContext.setupLevel(loadedLevel.levelMap.mapShape)
 
@@ -324,7 +326,7 @@ case class ControllerImpl() extends Controller with GameStateHolder {
     */
   override def notify(event: GameStateEventWrapper): Unit = lastLoadedLevel match {
     case Some(lastLevel:String) => SinglePlayerLevels.newEndGameEvent(event, lastLevel)
-      FileManager.saveUserProgress(SinglePlayerLevels.userStatistics())
+      FileManager.saveUserProgress(SinglePlayerLevels.userStatistics)
     case _ =>
   }
 

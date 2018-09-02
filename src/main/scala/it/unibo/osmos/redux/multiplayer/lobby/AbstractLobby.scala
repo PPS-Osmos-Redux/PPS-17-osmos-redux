@@ -11,8 +11,9 @@ abstract class AbstractLobby[T <: Player](private val lobbyContext: LobbyContext
     * Notify to lobby context that the game is started passing the context of the level to play.
     * @param levelContext The level context
     */
+  //TODO: get the levelinfo form the initMultiplayer
   def notifyGameStarted(levelContext: MultiPlayerLevelContext): Unit = {
-    lobbyContext.notify(LobbyEventWrapper(StartGame(levelContext), None))
+    lobbyContext.notify(LobbyEventWrapper(StartGame(levelContext, null), None))
   }
 
   /**

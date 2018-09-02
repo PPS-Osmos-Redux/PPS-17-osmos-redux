@@ -71,7 +71,9 @@ object OsmosReduxPrimaryStage {
 /**
   * Listener that manages all the events managed by the primary scene
   */
-trait PrimaryStageListener extends LevelSelectionSceneListener with MultiPlayerSceneListener with MultiPlayerLobbySceneListener with EditorLevelSelectionSceneListener with DisplayErrorListener {
+trait PrimaryStageListener extends LevelSelectionSceneListener with EditorLevelSelectionSceneListener
+  with MultiPlayerSceneListener with MultiPlayerLobbySceneListener with MultiPlayerLevelSelectionSceneListener
+  with DisplayErrorListener {
 
 }
 

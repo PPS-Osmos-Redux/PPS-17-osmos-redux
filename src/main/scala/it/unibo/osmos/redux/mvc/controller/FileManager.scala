@@ -3,9 +3,9 @@ package it.unibo.osmos.redux.mvc.controller
 import java.io.{File, PrintWriter}
 import java.nio.file._
 
+import it.unibo.osmos.redux.mvc.controller.LevelInfo.LevelInfo
 import it.unibo.osmos.redux.mvc.controller.UserHomePaths.userProgressDirectory
 import it.unibo.osmos.redux.mvc.model.JsonProtocols._
-import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.{LevelInfo, UserStat}
 import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.utils.Logger
 import spray.json._
@@ -101,7 +101,7 @@ object FileManager {
   def loadUserProgress(): UserStat =
     loadFile(userProgressDirectory + UserHomePaths.userProgressFileName + jsonExtension) match {
       case Some(text) => text.parseJson.convertTo[UserStat]
-      case _ => saveUserProgress(SinglePlayerLevels.userStatistics())
+      case _ => saveUserProgress(SinglePlayerLevels.userStatistics)
                 loadUserProgress()
   }
 

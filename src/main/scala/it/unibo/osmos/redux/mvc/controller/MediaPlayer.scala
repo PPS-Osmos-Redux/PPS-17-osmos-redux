@@ -1,6 +1,5 @@
-package it.unibo.osmos.redux.mvc.model
+package it.unibo.osmos.redux.mvc.controller
 
-import it.unibo.osmos.redux.mvc.controller.{Controller, FileManager}
 import javafx.scene.media.MediaPlayer.Status
 import javafx.util
 import scalafx.scene.media.AudioClip
