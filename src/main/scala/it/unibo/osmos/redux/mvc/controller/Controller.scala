@@ -334,7 +334,7 @@ case class ControllerImpl() extends Controller with GameStateHolder {
     * @return The list of custom levels filename.
     */
   override def getCustomLevels: List[LevelInfo] = FileManager.customLevelsFilesName match {
-    case Success(customLevels) => customLevels
+    case Success(customLevels) => println(customLevels);customLevels
     case Failure(_) => Logger.log("[Info] User doesn't have any saved custom level or custom level directory doesn't exists")
                                List()
   }

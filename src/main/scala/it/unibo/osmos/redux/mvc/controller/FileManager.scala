@@ -116,6 +116,17 @@ object FileManager {
       case _ => None
   }
 
+  /**
+    * Load level from file saved into user home directory
+    * @param fileName the name of file
+    * @return an option with the required levelInfo if it doesn't fail
+    */
+  def loadLevelInfo(implicit fileName: String): Option[LevelInfo] =
+    loadFile(UserHomePaths.levelsDirectory + fileName + jsonExtension) match {
+      case Some(text) => textToLevelInfo(text).toOption
+      case _ => None
+    }
+
 
   def saveToFile(file:File, text: String): Boolean = {
     val writer = new PrintWriter(file)
@@ -161,6 +172,13 @@ object FileManager {
   def textToLevel(text: String): Try[Level] = Try(text.parseJson.convertTo[Level])
 
   /**
+    * Convert a json string into a LevelInfo
+    * @param text json string
+    * @return Try with Level if it doesn't fail
+    */
+  def textToLevelInfo(text:String): Try[LevelInfo] = Try(text.parseJson.convertTo[LevelInfo])
+
+  /**
     * Return file name without json extension
     * @param file file object
     * @return file name
@@ -175,9 +193,8 @@ object FileManager {
     /*Create directory tree for avoid NullPointer exception later*/
     createDirectoriesTree(new File(UserHomePaths.levelsDirectory + "rnd.txt"))
     Try(new File(UserHomePaths.levelsDirectory).listFiles((_, name) => name.endsWith(jsonExtension))
-      .map(f => loadCustomLevel(f))
-      .filter(optLvl => optLvl.isDefined)
-      .map(lvl => LevelInfo(lvl.get.levelId, lvl.get.victoryRule)).toList)
+      .map(f => loadLevelInfo(f))
+      .filter(optLvl => optLvl.isDefined).map(opt => opt.get).toList)
   }
 
   def getStyle: String = {
