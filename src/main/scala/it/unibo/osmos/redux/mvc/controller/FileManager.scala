@@ -171,11 +171,14 @@ object FileManager {
     * Read from file the custom levels and if exists return their info
     * @return if exists a list of LevelInfo
     */
-  def customLevelsFilesName:Try[List[LevelInfo]] =
+  def customLevelsFilesName:Try[List[LevelInfo]] = {
+    /*Create directory tree for avoid NullPointer exception later*/
+    createDirectoriesTree(new File(UserHomePaths.levelsDirectory + "rnd.txt"))
     Try(new File(UserHomePaths.levelsDirectory).listFiles((_, name) => name.endsWith(jsonExtension))
-                                 .map(f => loadCustomLevel(f))
-                                 .filter(optLvl => optLvl.isDefined)
-                                 .map(lvl => LevelInfo(lvl.get.levelId, lvl.get.victoryRule)).toList)
+      .map(f => loadCustomLevel(f))
+      .filter(optLvl => optLvl.isDefined)
+      .map(lvl => LevelInfo(lvl.get.levelId, lvl.get.victoryRule)).toList)
+  }
 
   def getStyle: String = {
     try {
