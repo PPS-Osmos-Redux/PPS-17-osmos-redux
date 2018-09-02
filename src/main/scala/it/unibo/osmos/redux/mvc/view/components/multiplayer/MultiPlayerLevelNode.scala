@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.components.multiplayer
 
-import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.LevelInfo
+import it.unibo.osmos.redux.mvc.controller.LevelInfo.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.level.{AnimatedAbstractLevelNode, LevelNodeListener}
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import scalafx.geometry.Insets

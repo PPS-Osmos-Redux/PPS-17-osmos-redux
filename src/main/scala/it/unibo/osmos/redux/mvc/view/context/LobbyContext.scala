@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.context
 
-import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.LevelInfo
+import it.unibo.osmos.redux.mvc.controller.LevelInfo.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.events._
 import it.unibo.osmos.redux.utils.Logger

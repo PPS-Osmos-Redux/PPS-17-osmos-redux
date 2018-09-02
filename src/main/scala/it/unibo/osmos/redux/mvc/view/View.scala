@@ -73,7 +73,7 @@ object View {
     }
 
     override def getMultiPlayerLevels: List[LevelInfo] = controller match {
-      case Some(c) => c.getSinglePlayerLevels //TODO: use real multiplayer levels
+      case Some(c) => c.getMultiPlayerLevels
       case _ => List()
     }
 
