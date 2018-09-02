@@ -34,27 +34,27 @@ class TestLevelsProgression extends FunSuite with BeforeAndAfter {
     assert(SinglePlayerLevels.toDoLevel.equals(SinglePlayerLevels.getLevels.head.name))
 
     SinglePlayerLevels.newEndGameEvent(GameWon, SinglePlayerLevels.getLevels.head.name)
-    assert(SinglePlayerLevels.userStatistics().stats.head.victories == 1)
-    assert(SinglePlayerLevels.userStatistics().stats.head.defeats == 0)
+    assert(SinglePlayerLevels.userStatistics.stats.head.victories == 1)
+    assert(SinglePlayerLevels.userStatistics.stats.head.defeats == 0)
 
     SinglePlayerLevels.newEndGameEvent(GameWon, SinglePlayerLevels.getLevels(1).name)
-    assert(SinglePlayerLevels.userStatistics().stats(1).victories == 1)
-    assert(SinglePlayerLevels.userStatistics().stats(1).defeats == 0)
+    assert(SinglePlayerLevels.userStatistics.stats(1).victories == 1)
+    assert(SinglePlayerLevels.userStatistics.stats(1).defeats == 0)
 
     SinglePlayerLevels.newEndGameEvent(GameLost, SinglePlayerLevels.getLevels(2).name)
-    assert(SinglePlayerLevels.userStatistics().stats(2).victories == 0)
-    assert(SinglePlayerLevels.userStatistics().stats(2).defeats == 1)
+    assert(SinglePlayerLevels.userStatistics.stats(2).victories == 0)
+    assert(SinglePlayerLevels.userStatistics.stats(2).defeats == 1)
 
     SinglePlayerLevels.newEndGameEvent(GameWon, SinglePlayerLevels.getLevels(2).name)
-    assert(SinglePlayerLevels.userStatistics().stats(2).victories == 1)
-    assert(SinglePlayerLevels.userStatistics().stats(2).defeats == 1)
+    assert(SinglePlayerLevels.userStatistics.stats(2).victories == 1)
+    assert(SinglePlayerLevels.userStatistics.stats(2).defeats == 1)
 
     SinglePlayerLevels.newEndGameEvent(GameWon, SinglePlayerLevels.getLevels(3).name)
-    assert(SinglePlayerLevels.userStatistics().stats(3).victories == 1)
-    assert(SinglePlayerLevels.userStatistics().stats(3).defeats == 0)
+    assert(SinglePlayerLevels.userStatistics.stats(3).victories == 1)
+    assert(SinglePlayerLevels.userStatistics.stats(3).defeats == 0)
 
     SinglePlayerLevels.newEndGameEvent(GameWon, SinglePlayerLevels.getLevels(4).name)
-    assert(SinglePlayerLevels.userStatistics().stats(4).victories == 1)
-    assert(SinglePlayerLevels.userStatistics().stats(4).defeats == 0)
+    assert(SinglePlayerLevels.userStatistics.stats(4).victories == 1)
+    assert(SinglePlayerLevels.userStatistics.stats(4).defeats == 0)
   }
 }
