@@ -85,12 +85,16 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     visible = false
   }
   /* Pane containing the field to configure the sentient entities*/
-  private val sentientCellEntityCreator: SentientCellEntityCreator = new SentientCellEntityCreator {
+  private val sentientCellEntityCreator: CellEntityCreator = new SentientCellEntityCreator {
+    visible = false
+  }
+  /* Pane containing the field to configure the player entities*/
+  private val playerCellEntityCreator: CellEntityCreator = new PlayerCellEntityCreator {
     visible = false
   }
 
   /** The entity builders */
-  private val entityBuilders = Seq(cellEntityCreator, gravityCellEntityCreator, sentientCellEntityCreator)
+  private val entityBuilders = Seq(cellEntityCreator, gravityCellEntityCreator, sentientCellEntityCreator, playerCellEntityCreator)
 
   /**
     * Returns the currently visible cell entity creator
@@ -116,7 +120,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
           case EntityType.Attractive => gravityCellEntityCreator.visible = true; gravityCellEntityCreator.isAttractive = true
           case EntityType.Repulsive => gravityCellEntityCreator.visible = true; gravityCellEntityCreator.isAttractive = false
           case EntityType.Sentient => sentientCellEntityCreator.visible = true;
-          case EntityType.Controlled => cellEntityCreator.visible = true; cellEntityCreator.entityType_=(EntityType.Controlled)
+          case EntityType.Controlled => playerCellEntityCreator.visible = true; playerCellEntityCreator.entityType_=(EntityType.Controlled)
           case _ => cellEntityCreator.visible = true; cellEntityCreator.entityType_=(EntityType.Matter)
         }
       })
