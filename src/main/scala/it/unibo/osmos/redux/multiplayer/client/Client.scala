@@ -216,7 +216,7 @@ object Client {
       //update level context uuid
       levelContext.get.setPlayerUUID(uuid)
 
-      if (uuid.equals(Constants.defaultClientUUID)) throw new IllegalArgumentException("Invalid player UUID, the client is not be able to send correct inputs to the server")
+      if (uuid.equals(Constants.MultiPlayer.defaultClientUUID)) throw new IllegalArgumentException("Invalid player UUID, the client is not be able to send correct inputs to the server")
 
       //notify lobby that the game is started (prepares the view)
       lobby.get.notifyGameStarted(levelContext.get)
@@ -327,7 +327,7 @@ object Client {
     //HELPERS
 
     private def generateRemoteActorPath(address: String, port: Int): String = {
-      s"""akka.tcp://${Constants.defaultSystemName}@$address:$port/user/${Constants.defaultServerActorName}"""
+      s"""akka.tcp://${Constants.MultiPlayer.defaultSystemName}@$address:$port/user/${Constants.MultiPlayer.defaultServerActorName}"""
     }
 
     private def resolveRemotePath(remotePath: String): Future[ActorRef] = {

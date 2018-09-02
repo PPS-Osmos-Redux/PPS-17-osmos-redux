@@ -10,7 +10,7 @@ object ActorSystemHolder {
   /**
     * Actor System variable, lazily initialized
     */
-  private lazy val system: ActorSystem = ActorSystem(Constants.defaultSystemName, ActorSystemConfigFactory.load())
+  private lazy val system: ActorSystem = ActorSystem(Constants.MultiPlayer.defaultSystemName, ActorSystemConfigFactory.load())
 
   /**
     * Gets the actor system.
@@ -29,14 +29,14 @@ object ActorSystemHolder {
     * @param client The input client object that the new actor will refer to.
     * @return The ActorRef
     */
-  def createActor(client: Client): ActorRef = system.actorOf(ClientActor.props(client), Constants.defaultClientActorName)
+  def createActor(client: Client): ActorRef = system.actorOf(ClientActor.props(client), Constants.MultiPlayer.defaultClientActorName)
 
   /**
     * Creates a new ServerActor that refers to the input server object
     * @param server The input server object that the new actor will refer to.
     * @return The ActorRef
     */
-  def createActor(server: Server): ActorRef = system.actorOf(ServerActor.props(server), Constants.defaultServerActorName)
+  def createActor(server: Server): ActorRef = system.actorOf(ServerActor.props(server), Constants.MultiPlayer.defaultServerActorName)
 
   /**
     * Stops an actor.

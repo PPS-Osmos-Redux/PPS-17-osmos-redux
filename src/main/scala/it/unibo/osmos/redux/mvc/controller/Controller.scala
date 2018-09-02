@@ -189,7 +189,6 @@ case class ControllerImpl() extends Controller with GameStateHolder {
     multiPlayerMode = Some(if (user.isServer) MultiPlayerMode.Server else MultiPlayerMode.Client)
     multiPlayerMode match {
       case Some(MultiPlayerMode.Server) =>
-
         //initialize the server and creates the lobby
         val server = Server(user.username)
         server.bind(ActorSystemHolder.createActor(server))
@@ -200,7 +199,6 @@ case class ControllerImpl() extends Controller with GameStateHolder {
         promise.success(true)
 
       case Some(MultiPlayerMode.Client) =>
-
         //initialize the client, connects to the server and enters the lobby
         val client = Client()
         client.bind(ActorSystemHolder.createActor(client))
@@ -210,7 +208,7 @@ case class ControllerImpl() extends Controller with GameStateHolder {
               this.client = Some(client)
               //creates the level context
               //TODO: think about a better way, technically getUUID method of the client won't be called until the game is started (the GameStarted message will carry along this value).
-              val levelContext = LevelContext(Constants.defaultClientUUID)
+              val levelContext = LevelContext(Constants.MultiPlayer.defaultClientUUID)
               //initializes the game
               client.initGame(levelContext)
               //fulfill promise
