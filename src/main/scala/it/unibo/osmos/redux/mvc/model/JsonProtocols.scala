@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.mvc.model
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, GravityCellEntity, PlayerCellEntity, SentientCellEntity, _}
-import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.{LevelStat, UserStat}
+import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.{LevelInfo, LevelStat, UserStat}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
 import it.unibo.osmos.redux.utils.Point
 import org.apache.commons.lang3.SerializationException
@@ -332,6 +332,22 @@ object JsonProtocols {
       value.asJsObject.getFields("victoryRule") match {
         case Seq(JsString(victoryRule)) => VictoryRules.withName(victoryRule)
         case _ => throw DeserializationException("Victory rule expected expected")
+      }
+    }
+  }
+
+  /**
+    * Take from levels only name and victoryRule
+    */
+  implicit object LevelInfoFormatter extends RootJsonFormat[LevelInfo] {
+    def write(levelInfo: LevelInfo) = JsObject(
+      "levelId" -> JsString(levelInfo.name),
+      "victoryRule" -> levelInfo.victoryRule.toJson)
+    def read(value: JsValue): LevelInfo = {
+      value.asJsObject.getFields("levelId","victoryRule") match {
+        case Seq(JsString(name), victoryRule) =>
+          LevelInfo(name, victoryRule.convertTo[VictoryRules.Value])
+        case _ => throw DeserializationException("Level info expected")
       }
     }
   }

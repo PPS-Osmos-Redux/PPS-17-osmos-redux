@@ -13,19 +13,23 @@ import scalafx.stage.Stage
 
 /**
   * Scene in which the user can create or join a lobby as a server or as a client
-  * @param parentStage the parent stage
-  * @param listener the MultiPlayerSceneListener
+  *
+  * @param parentStage        the parent stage
+  * @param listener           the MultiPlayerSceneListener
   * @param upperSceneListener the UpperMultiPlayerSceneListener
   */
 class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlayerSceneListener, val upperSceneListener: BackClickListener) extends DefaultBackScene(parentStage, upperSceneListener) {
 
+  /* username */
   private val username: StringProperty = StringProperty("")
   private val usernameTextField = new TitledTextField("Username: ", username)
 
+  /* server address */
   private val addressTitle: StringProperty = StringProperty("Server address: ")
   private val addressValue: StringProperty = StringProperty("")
   private val addressTextField = new TitledTextField(addressTitle, addressValue)
 
+  /* server port */
   private val portTitle: StringProperty = StringProperty("Server port: ")
   private val portValue: IntegerProperty = IntegerProperty(0)
   private val portTextField = new TitledIntegerField(portTitle, portValue) {
@@ -35,6 +39,7 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
 
   private val startButtonText: StringProperty = StringProperty("Go to lobby")
 
+  /* Mode selection */
   private val mode: BooleanProperty = BooleanProperty(false) //default client
   private val modeComboBox = new TitledComboBox[String]("Mode: ", Seq("Client", "Server"), {
     case "Client" =>
@@ -55,6 +60,7 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
 
   /**
     * Result parsing function.
+    *
     * @return a function which will send the user to the MultiPlayerLobbyScene if the result is true, showing an error otherwise
     */
   private def onLobbyEnterResult: (User, LobbyContext, Boolean) => Unit = (user, lobbyContext, result) => {
@@ -98,8 +104,12 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
     maxHeight <== parentStage.height / 4
 
     alignment = Pos.Center
+
+    val elements = Seq(usernameTextField.root, modeComboBox.root, addressTextField.root, portTextField.root)
+    elements.foreach(e => e.children.get(0).getStyleClass.add("multi-player-scene-label-style"))
     children = Seq(usernameTextField.root, modeComboBox.root, addressTextField.root, portTextField.root)
 
+    styleClass.addAll("default-font-size", "multi-player-scene-VBox-style")
   }
 
   /* Requesting a structured layout */
@@ -132,13 +142,14 @@ trait UpperMultiPlayerSceneListener {
 /**
   * Trait used by MultiPlayerScene to notify events which need to be managed by the View
   */
-trait MultiPlayerSceneListener extends MultiPlayerLobbySceneListener{
+trait MultiPlayerSceneListener extends MultiPlayerLobbySceneListener {
 
   /**
     * Called when the user wants to go to the lobby as a server
-    * @param user the user requesting to enter the lobby
+    *
+    * @param user         the user requesting to enter the lobby
     * @param lobbyContext the lobby context, which may be used by the server to configure existing lobby users
-    * @param callback the callback
+    * @param callback     the callback
     */
   def onLobbyClick(user: User, lobbyContext: LobbyContext, callback: (User, LobbyContext, Boolean) => Unit)
 

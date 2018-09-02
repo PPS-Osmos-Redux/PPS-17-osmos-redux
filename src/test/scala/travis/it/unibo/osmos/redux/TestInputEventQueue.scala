@@ -1,4 +1,4 @@
-package it.unibo.osmos.redux
+package travis.it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
 import it.unibo.osmos.redux.utils.{InputEventQueue, Point}

@@ -1,6 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
+import it.unibo.osmos.redux.mvc.model.{MediaPlayer, SoundsType}
 import it.unibo.osmos.redux.mvc.view.components.menu.{MainMenuBar, MainMenuBarListener, MainMenuCenterBox, MainMenuCenterBoxListener}
 import it.unibo.osmos.redux.mvc.view.containers.SettingsContainer
 import scalafx.scene.Parent
@@ -12,6 +13,8 @@ import scalafx.stage.Stage
   */
 class MainScene(override val parentStage: Stage, val listener: MainSceneListener) extends BaseScene(parentStage)
   with MainMenuCenterBoxListener with MainMenuBarListener with UpperMultiPlayerSceneListener with BackClickListener {
+
+  MediaPlayer.play(SoundsType.menu)
 
   /* Requesting a structured layout */
   private val rootLayout: BorderPane = new BorderPane {

@@ -62,6 +62,7 @@ class CellEntityCreator extends BaseEditorCreator[CellEntity] with EditorCellBui
       .visible(true)
       .collidable(true)
       .withPosition(x.value, y.value)
+      .withDimension(radius.value)
       .withSpeed(xSpeed.value, ySpeed.value)
       .withAcceleration(xAcceleration.value, yAcceleration.value)
       if (withEntityType) builder.withEntityType(_entityType)

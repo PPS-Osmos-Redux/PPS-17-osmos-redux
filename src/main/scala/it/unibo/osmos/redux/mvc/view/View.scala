@@ -60,7 +60,7 @@ object View {
       case _ =>
     }
 
-    override def onLevelContextCreated(levelContext: LevelContext, level: String): Unit = checkController(() => controller.get.initLevel(levelContext, level))
+    override def onLevelContextCreated(levelContext: LevelContext, level: String, isCustom: Boolean = false): Unit = checkController(() => controller.get.initLevel(levelContext, level, isCustom))
 
     override def getSingleLevels: List[LevelInfo] = controller match {
       case Some(c) => c.getSinglePlayerLevels
