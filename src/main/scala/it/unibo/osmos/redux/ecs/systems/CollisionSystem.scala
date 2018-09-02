@@ -27,7 +27,7 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
 
   override def update(): Unit = {
     //check collision with boundary
-    entities foreach(e => bounceRule.checkCollision(e))
+    entities foreach(e => bounceRule.checkAndSolveCollision(e))
     //check collision other entities
     for {
       (e1, xIndex) <- entities.zipWithIndex
