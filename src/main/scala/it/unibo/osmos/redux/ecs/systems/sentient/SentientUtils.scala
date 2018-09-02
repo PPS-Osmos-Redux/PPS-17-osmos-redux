@@ -11,5 +11,5 @@ object SentientUtils {
   def computeUnlimitedSteer(actualVelocity: Vector, desiredVelocity: Vector): Vector =
     desiredVelocity multiply MAX_SPEED subtract actualVelocity
 
-  def getDesiredSeparation : Double = COEFFICIENT_DESIRED_SEPARATION
+  def getDesiredSeparation(actualVelocity: Vector) : Double = COEFFICIENT_DESIRED_SEPARATION + actualVelocity.getLength / MAX_ACCELERATION
 }
