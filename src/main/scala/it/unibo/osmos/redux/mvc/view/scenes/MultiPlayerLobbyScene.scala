@@ -9,7 +9,7 @@ import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.TableColumn._
-import scalafx.scene.control.{TableColumn, TableView}
+import scalafx.scene.control.{Button, TableColumn, TableView}
 import scalafx.scene.layout.{BorderPane, HBox, VBox}
 import scalafx.stage.Stage
 
@@ -46,12 +46,13 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
   /**
     * BooleanProperty representing the visibility of the start button
     */
-  private val isStartGameVisible = BooleanProperty(false)
+  private val isStartGameDisabled = BooleanProperty(true)
 
   /**
     * TableView linked with the user list
     */
   val usersTable: TableView[UserWithProperties] = new TableView[UserWithProperties](userList) {
+    styleClass.add("multi-player-lobby-table")
     columnResizePolicy = TableView.ConstrainedResizePolicy
     columns ++= List(
       new TableColumn[UserWithProperties, String]() {
@@ -75,8 +76,8 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
 
   private val container: VBox = new VBox(5.0) {
 
-    maxWidth <== parentStage.width / 4
-    maxHeight <== parentStage.height / 4
+    maxWidth <== parentStage.width / 2
+    //maxHeight <== parentStage.height / 4
 
     alignment = Pos.Center
     children = Seq(usersTable)
@@ -98,14 +99,15 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
   /**
     * Start game button
     */
-  private val startGame = new StyledButton("Start Game") {
+  private val startGame = new Button("Start Game") {
     /* Only visible if the user is a server and there are at least two players*/
+    styleClass.add("default-button-style")
     if (user.isServer) {
-      visible <== isStartGameVisible
+      disable <== isStartGameDisabled
+      onAction = _ => listener.onStartMultiplayerGameClick()
     } else {
       visible = false
     }
-    onAction = _ => listener.onStartMultiplayerGameClick()
   }
 
   /* Requesting a structured layout */
@@ -114,9 +116,11 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     alignmentInParent = Pos.Center
     /* Setting the upper MenuBar */
     center = container
-    bottom = new HBox(30.0, exitLobby, startGame) {
+    private val bottomContainer = new HBox(30.0, exitLobby) {
       alignment = Pos.Center
     }
+    if (user.isServer) bottomContainer.children.add(startGame)
+    bottom = bottomContainer
   }
 
   /* Enabling the layout */
@@ -126,7 +130,12 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     userList clear()
     userList ++= users.map(_.getUserWithProperty)
     /* Updating the observable property */
-    isStartGameVisible.value_=(userList.size >= 2)
+    isStartGameDisabled.value_=(userList.size < 2)
+    if (isStartGameDisabled.value) {
+      startGame.styleClass.remove("enabled-button-style")
+    } else {
+      startGame.styleClass.add("enabled-button-style")
+    }
   }
 
   override def onMultiPlayerGameStarted(multiPlayerLevelContext: MultiPlayerLevelContext): Unit = {
