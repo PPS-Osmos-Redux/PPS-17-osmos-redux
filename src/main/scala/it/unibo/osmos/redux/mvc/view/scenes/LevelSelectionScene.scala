@@ -10,6 +10,8 @@ import scalafx.stage.Stage
 
 /**
   * This scene lets the players choose which level they want to play
+  * @param parentStage the parent stage
+  * @param listener the listener
   */
 class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSelectionSceneListener) extends BaseScene(parentStage)
   with MainMenuBarListener with LevelNodeListener {
