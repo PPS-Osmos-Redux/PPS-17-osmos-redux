@@ -1,8 +1,9 @@
-package it.unibo.osmos.redux.ecs.systems
+package it.unibo.osmos.redux.ecs.systems.sentient
 
 import it.unibo.osmos.redux.ecs.components.{DimensionComponent, PositionComponent, SpawnAction, SpeedComponent}
-import it.unibo.osmos.redux.ecs.entities.{SentientEnemyProperty, _}
 import it.unibo.osmos.redux.ecs.entities.builders.SentientCellBuilder
+import it.unibo.osmos.redux.ecs.entities.{SentientEnemyProperty, _}
+import it.unibo.osmos.redux.ecs.systems.{AbstractSystemWithTwoTypeOfEntity, CircularBorder, RectangularBorder}
 import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.mvc.model.{CollisionRules, Level}
 import it.unibo.osmos.redux.utils.{MathUtils, Point, Vector}
