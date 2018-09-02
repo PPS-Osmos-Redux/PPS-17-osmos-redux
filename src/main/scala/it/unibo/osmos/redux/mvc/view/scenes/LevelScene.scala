@@ -1,8 +1,9 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.ecs.entities.EntityType
-import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.LevelInfo
-import it.unibo.osmos.redux.mvc.model.{MapShape, MediaPlayer, SoundsType}
+import it.unibo.osmos.redux.mvc.controller.LevelInfo.LevelInfo
+import it.unibo.osmos.redux.mvc.controller.{MediaPlayer, SoundsType}
+import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.ViewConstants
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Colors._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
@@ -17,7 +18,6 @@ import javafx.scene.input.{KeyCode, MouseEvent}
 import scalafx.animation.FadeTransition
 import scalafx.application.Platform
 import scalafx.beans.property.BooleanProperty
-import scalafx.geometry.Pos
 import scalafx.scene.canvas.Canvas
 import scalafx.scene.image.Image
 import scalafx.scene.paint.Color

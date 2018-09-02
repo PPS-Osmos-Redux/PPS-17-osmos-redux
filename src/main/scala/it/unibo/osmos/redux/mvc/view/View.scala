@@ -2,8 +2,8 @@ package it.unibo.osmos.redux.mvc.view
 
 import it.unibo.osmos.redux.ecs.entities.CellEntity
 import it.unibo.osmos.redux.mvc.controller.Controller
+import it.unibo.osmos.redux.mvc.controller.LevelInfo.LevelInfo
 import it.unibo.osmos.redux.mvc.model.{CollisionRules, MapShape, VictoryRules}
-import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LobbyContext}
 import it.unibo.osmos.redux.mvc.view.stages.{OsmosReduxPrimaryStage, PrimaryStageListener}

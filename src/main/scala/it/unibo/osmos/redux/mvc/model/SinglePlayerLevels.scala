@@ -1,10 +1,13 @@
 package it.unibo.osmos.redux.mvc.model
 
+import it.unibo.osmos.redux.mvc.controller.LevelInfo.LevelInfo
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GameStateEventWrapper, GameWon}
+import it.unibo.osmos.redux.utils.Logger
 
 import scala.collection.mutable
 
 object SinglePlayerLevels {
+  implicit val who:String = "SinglePlayerLevels"
   private var userStat:UserStat = UserStat()
   private val levels:mutable.ArraySeq[LevelInfo] = mutable.ArraySeq(
     LevelInfo("1", VictoryRules.becomeTheBiggest),
@@ -29,18 +32,17 @@ object SinglePlayerLevels {
 
   /**
     * Return the last unlocked level.
-    * Throws exception if the levels list is empty
     * @return the last unlocked level
     */
-  @throws(classOf[MatchError])
   def toDoLevel:String = {
-    @throws(classOf[MatchError])
     def searchLastAvailableLevel(levelsList:mutable.ArraySeq[LevelInfo]):Option[String] = levelsList match {
       case LevelInfo(lv:String, _, av:Boolean)+:LevelInfo(_:String, _, av2:Boolean)+:_ if av && !av2 =>
         Some(lv)
       case LevelInfo(lv:String, _, av:Boolean)+:mutable.ArraySeq(LevelInfo(lv2:String, _, av2:Boolean)) =>
         if(av && !av2) Some(lv) else Some (lv2)
       case _+:t => searchLastAvailableLevel(t)
+      case _ => Logger.log("Error: single player levels list is empty")
+                None
     }
     searchLastAvailableLevel(levels).get
   }
@@ -79,37 +81,5 @@ object SinglePlayerLevels {
     }
   }
 
-  /**
-    * Return current user stat
-    * @return UserStat
-    */
-  def userStatistics():UserStat = UserStat(userStat.toDoLevel, userStat.stats)
-
-  /**
-    * Level information
-    * @param name level name
-    * @param isAvailable is the level is available
-    * @param victoryRule level victory rule
-    */
-  case class LevelInfo(name:String, victoryRule:VictoryRules.Value,  var isAvailable:Boolean = true)
-
-  /**
-    * Statistics of a level
-    * @param levelName level name
-    * @param defeats number of defeats
-    * @param victories number of victories
-    */
-
-  case class LevelStat(levelName:String, var defeats:Int, var victories: Int)
-
-  /**
-    * Modelling user progression and stat
-    * @param toDoLevel last unlocked level
-    * @param stats list of levels statistics
-    */
-  case class UserStat(toDoLevel:String = "1", stats:List[LevelStat] = List(LevelStat("1", 0, 0),
-                                                                            LevelStat("2", 0, 0),
-                                                                            LevelStat("3", 0, 0),
-                                                                            LevelStat("4", 0, 0),
-                                                                            LevelStat("5", 0, 0)))
+  def userStatistics:UserStat = userStat
 }

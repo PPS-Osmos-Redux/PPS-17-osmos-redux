@@ -5,7 +5,7 @@ import it.unibo.osmos.redux.ecs.entities.{CellEntity, PlayerCellEntity}
 import it.unibo.osmos.redux.multiplayer.client.Client
 import it.unibo.osmos.redux.multiplayer.common.{ActorSystemHolder, MultiPlayerMode}
 import it.unibo.osmos.redux.multiplayer.server.Server
-import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.LevelInfo
+import it.unibo.osmos.redux.mvc.controller.LevelInfo.LevelInfo
 import it.unibo.osmos.redux.mvc.model.{VictoryRules, _}
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context._
@@ -95,7 +95,7 @@ trait Controller {
     * Gets all multi-player levels.
     * @return The list of multi-player levels.
     */
-  def getMultiPlayerLevels: List[String] = MultiPlayerLevels.getLevels
+  def getMultiPlayerLevels: List[LevelInfo] = MultiPlayerLevels.getLevels
 
   /**
     * Gets all custom levels filename.
@@ -324,7 +324,7 @@ case class ControllerImpl() extends Controller with GameStateHolder {
     */
   override def notify(event: GameStateEventWrapper): Unit = lastLoadedLevel match {
     case Some(lastLevel:String) => SinglePlayerLevels.newEndGameEvent(event, lastLevel)
-      FileManager.saveUserProgress(SinglePlayerLevels.userStatistics())
+      FileManager.saveUserProgress(SinglePlayerLevels.userStatistics)
     case _ =>
   }
 

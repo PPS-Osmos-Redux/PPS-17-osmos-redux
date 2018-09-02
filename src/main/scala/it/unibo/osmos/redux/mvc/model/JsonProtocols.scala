@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.mvc.model
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, GravityCellEntity, PlayerCellEntity, SentientCellEntity, _}
-import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.{LevelInfo, LevelStat, UserStat}
+import it.unibo.osmos.redux.mvc.controller.LevelInfo.LevelInfo
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
 import it.unibo.osmos.redux.utils.Point
 import org.apache.commons.lang3.SerializationException
