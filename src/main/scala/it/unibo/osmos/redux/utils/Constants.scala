@@ -2,6 +2,10 @@ package it.unibo.osmos.redux.utils
 
 object Constants {
 
+  object General {
+    final val CELL_MAX_SPEED: Double = 4
+  }
+
   object MultiPlayer {
     final val defaultSystemConfig: String = "akka-config/kryo.conf"
     final val defaultSystemName: String = "Osmos-Redux-MultiPlayer-System"

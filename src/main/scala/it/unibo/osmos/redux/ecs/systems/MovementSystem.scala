@@ -19,7 +19,7 @@ case class MovementSystem() extends AbstractSystem[MovableProperty] {
     val accelerationVector = accelerationComponent.vector
     val speedComponent = entity.getSpeedComponent
     val speedVector = speedComponent.vector
-    speedComponent.vector_(speedVector.add(accelerationVector).limit(Constants.Sentient.MAX_SPEED))
+    speedComponent.vector_(speedVector.add(accelerationVector).limit(Constants.General.CELL_MAX_SPEED))
     accelerationComponent.reset()
   }
 

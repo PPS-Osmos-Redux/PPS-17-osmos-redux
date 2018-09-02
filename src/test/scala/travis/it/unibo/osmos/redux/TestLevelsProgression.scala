@@ -1,4 +1,4 @@
-package travis.it.unibo.osmos.redux
+package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GameWon}
