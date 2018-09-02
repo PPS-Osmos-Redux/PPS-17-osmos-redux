@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.main
 
-import it.unibo.osmos.redux.mvc.controller.{Controller, ControllerImpl, FileManager}
-import it.unibo.osmos.redux.mvc.model.{MediaPlayer, Model, SinglePlayerLevels}
+import it.unibo.osmos.redux.mvc.controller.{Controller, ControllerImpl, FileManager, MediaPlayer}
+import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels
 import it.unibo.osmos.redux.mvc.view.View
 import scalafx.application.JFXApp
 

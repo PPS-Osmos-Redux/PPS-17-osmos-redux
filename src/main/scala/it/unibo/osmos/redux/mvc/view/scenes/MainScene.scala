@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
-import it.unibo.osmos.redux.mvc.model.{MediaPlayer, SoundsType}
+import it.unibo.osmos.redux.mvc.controller.{MediaPlayer, SoundsType}
 import it.unibo.osmos.redux.mvc.view.components.menu.{MainMenuBar, MainMenuBarListener, MainMenuCenterBox, MainMenuCenterBoxListener}
 import it.unibo.osmos.redux.mvc.view.containers.SettingsContainer
 import scalafx.scene.Parent

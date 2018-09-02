@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
-import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.LevelInfo
+import it.unibo.osmos.redux.mvc.controller.LevelInfo.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.custom.StyledButton
 import it.unibo.osmos.redux.mvc.view.components.editor.{EditorLevelNode, EditorLevelNodeListener}
 import scalafx.geometry.{Insets, Pos}

@@ -1,5 +1,5 @@
 package it.unibo.osmos.redux.mvc.view.scenes
-import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.LevelInfo
+import it.unibo.osmos.redux.mvc.controller.LevelInfo.LevelInfo
 import it.unibo.osmos.redux.mvc.view.context.{LevelContext, MultiPlayerLevelContext}
 import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
 import it.unibo.osmos.redux.utils.Point
