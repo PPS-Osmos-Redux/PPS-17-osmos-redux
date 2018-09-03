@@ -52,20 +52,18 @@
         "speedY": 0
       }
     }],
-  "levelId": "4",
-  "isSimulation": false,
+  "name": "4",
   "victoryRule": {
     "victoryRule": "Become_the_biggest"
   },
   "levelMap": {
     "mapShape": {
-      "mapShape": "RECTANGLE",
+      "mapShape": "Rectangle",
       "height": 900,
       "base": 1000,
       "centerX": 600.0,
       "centerY": 500.0
     },
-    "collisionRule": "Bouncing",
-    "isSimulation":false
+    "collisionRule": "Bouncing"
   }
 }

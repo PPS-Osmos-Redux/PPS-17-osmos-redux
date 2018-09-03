@@ -71,6 +71,14 @@ object OsmosReduxPrimaryStage {
 /**
   * Listener that manages all the events managed by the primary scene
   */
-trait PrimaryStageListener extends LevelSelectionSceneListener with MultiPlayerSceneListener with MultiPlayerLobbySceneListener {
+trait PrimaryStageListener extends LevelSelectionSceneListener with EditorLevelSelectionSceneListener
+  with MultiPlayerSceneListener with MultiPlayerLobbySceneListener with MultiPlayerLevelSelectionSceneListener
+  with DisplayErrorListener {
 
+}
+
+// TODO: check if it necessary elsewhere, otherwise can become a method of PrimaryStageListener
+trait DisplayErrorListener {
+
+  def onDisplayError(exception: Throwable): Unit
 }

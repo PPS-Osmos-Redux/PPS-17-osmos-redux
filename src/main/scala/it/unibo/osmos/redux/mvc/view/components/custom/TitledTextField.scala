@@ -14,7 +14,7 @@ class TitledTextField(override val title: StringProperty, stringProperty: String
     *
     * @return a node of type N <: Node
     */
-  override def node: TextField = new TextField(){
+  override def innerNode: TextField = new TextField(){
     editable = true
     prefWidth <== maxWidth
     if (stringProperty != null) stringProperty <==> text

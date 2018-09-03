@@ -22,8 +22,6 @@ object ActorSystemConfigFactory {
          netty.tcp {
            port = 0
          }
-         log-sent-messages = on
-         log-received-messages = on
        }
      }
       """
@@ -54,11 +52,11 @@ object ActorSystemConfigFactory {
   }
 
   /**
-    * Loads and returns the config declared in the application.conf file in the resources.
+    * Loads and returns the config declared in the default.conf file in the resources.
     * @return
     */
   def load(): Config = {
-    val configFile = getClass.getClassLoader.getResource(Constants.defaultSystemConfig).getFile
+    val configFile = getClass.getClassLoader.getResource(Constants.MultiPlayer.defaultSystemConfig).getFile
     ConfigFactory.parseFile(new File(configFile))
   }
 }

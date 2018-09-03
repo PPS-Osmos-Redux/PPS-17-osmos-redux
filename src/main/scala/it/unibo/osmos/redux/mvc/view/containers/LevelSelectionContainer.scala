@@ -1,14 +1,12 @@
 package it.unibo.osmos.redux.mvc.view.containers
 
-import it.unibo.osmos.redux.mvc.view.components.level.{LevelNode, LevelNodeListener}
-import it.unibo.osmos.redux.mvc.view.components.menu.MainMenuBar
-import it.unibo.osmos.redux.mvc.view.context.LevelContext
-import it.unibo.osmos.redux.mvc.view.scenes.{LevelScene, LevelSelectionSceneListener, MainSceneListener, UpperLevelSceneListener}
+import it.unibo.osmos.redux.mvc.controller.LevelInfo
+import it.unibo.osmos.redux.mvc.view.components.level.LevelNodeListener
 import scalafx.geometry.Pos
 import scalafx.scene.layout.{TilePane, VBox}
 import scalafx.stage.Stage
 
-class LevelSelectionContainer(parentStage: Stage) extends LevelSelectionSceneListener with LevelNodeListener {
+class LevelSelectionContainer(parentStage: Stage) extends LevelNodeListener {
 
   /**
     * The central level container
@@ -41,9 +39,9 @@ class LevelSelectionContainer(parentStage: Stage) extends LevelSelectionSceneLis
   /**
     * This method loads the level into the level container, thus letting the player choose them
     */
-  def loadLevels(): Unit = for (i <- 1 to numLevels) levelsContainer.children.add(new LevelNode(LevelSelectionContainer.this, i, i == 1))
+  def loadLevels(): Unit = ??? //for (i <- 1 to numLevels) levelsContainer.children.add(new LevelNode(LevelSelectionContainer.this, levels, i == 1))
 
-  def onLevelPlayClick(level: Int, simulation: Boolean): Unit = {
+  def onLevelPlayClick(level: LevelInfo, simulation: Boolean, custom: Boolean = false): Unit = {
     /* Creating a listener on the run*/
     /*val upperLevelSceneListener: UpperLevelSceneListener = () => parentStage.scene = parentStage
     /* Creating a new level scene */
@@ -59,7 +57,7 @@ class LevelSelectionContainer(parentStage: Stage) extends LevelSelectionSceneLis
     ???
   }
 
-  override def onLevelContextCreated(levelContext: LevelContext, level: Int): Unit = ???
+  /*override def onLevelContextCreated(levelContext: LevelContext, level: Int): Unit = ???
 
   override def onStartLevel(): Unit = ???
 
@@ -67,5 +65,5 @@ class LevelSelectionContainer(parentStage: Stage) extends LevelSelectionSceneLis
 
   override def onResumeLevel(): Unit = ???
 
-  override def onStopLevel(): Unit = ???
+  override def onStopLevel(): Unit = ???*/
 }

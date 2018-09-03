@@ -5,20 +5,18 @@ import scalafx.scene.control.Button
 import scalafx.scene.layout.VBox
 
 /**
-  * Simple box to manage pause, resume and exit events
+  * Simple box to manage resume and exit events
   */
-class LevelStateBox(val listener: LevelStateBoxListener, val vSpacing: Double, val showPauseButton: Boolean = true) extends VBox(vSpacing){
+class LevelStateBox(val listener: LevelStateBoxListener, val vSpacing: Double) extends VBox(vSpacing){
   padding = Insets(4.0)
+  visible = true
+  margin = Insets(30.0)
 
   /**
-    * Pause button
+    * Resume button
     */
-  private val pauseBtton = new Button("Pause") {
-    var isPaused: Boolean = false
-    onAction = _ => {
-      isPaused = !isPaused
-      if (isPaused) {text = "Resume"; listener.onPause()} else {text = "Pause"; listener.onResume()}
-    }
+  private val resumeButton = new Button("Resume") {
+    onAction = _ => listener.onResume()
   }
 
   /**
@@ -28,19 +26,13 @@ class LevelStateBox(val listener: LevelStateBoxListener, val vSpacing: Double, v
     onAction = _ => listener.onExit()
   }
 
-  if (showPauseButton) children = Seq(pauseBtton, exitButton) else children = Seq(exitButton)
-
+  Seq(resumeButton, exitButton)
 }
 
 /**
   * Trait which gets notified when a LevelStateBox event occurs
   */
 trait LevelStateBoxListener {
-
-  /**
-    * Called when the pause button is clicked
-    */
-  def onPause()
 
   /**
     * Called when the resume button is clicked

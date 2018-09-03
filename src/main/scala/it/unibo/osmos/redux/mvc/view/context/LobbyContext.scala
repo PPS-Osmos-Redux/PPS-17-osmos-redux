@@ -1,7 +1,9 @@
 package it.unibo.osmos.redux.mvc.view.context
 
+import it.unibo.osmos.redux.mvc.controller.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.events._
+import it.unibo.osmos.redux.utils.Logger
 
 /**
   * Basic LobbyContext trait, seen as a LobbyEvent wrapper and a User container
@@ -49,18 +51,18 @@ object LobbyContext {
 
     override def notify(event: LobbyEventWrapper): Unit = listener match {
       case Some(l) =>
-        event.lobbyEvent match {
+        event match {
           /* A user entered the lobby */
-          case UserAdded => if (!users.contains(event.user)) users = users :+ event.user; l.updateUsers(users)
+          case LobbyEventWrapper(UserAdded, Some(user)) => if (!users.contains(user)) users = users :+ user; l.updateUsers(users)
           /* A user exited from the lobby */
-          case UserRemoved => if (users.contains(event.user)) users = users filterNot(u => u.username == event.user.username); l.updateUsers(users)
+          case LobbyEventWrapper(UserRemoved, Some(user)) => if (users.contains(user)) users = users filterNot(u => u.username == user.username); l.updateUsers(users)
           /* The game has started, we can create a new MultiPlayerLevelScene */
-          case StartGame(multiPlayerLevelContext) => l.onMultiPlayerGameStarted(multiPlayerLevelContext)
+          case LobbyEventWrapper(StartGame(multiPlayerLevelContext, levelInfo), _) => l.onMultiPlayerGameStarted(multiPlayerLevelContext, levelInfo)
           /* The lobby has been aborted, we have to go back */
-          case AbortLobby => l.onLobbyAborted()
-          case _ =>
+          case LobbyEventWrapper(AbortLobby, _) => l.onLobbyAborted()
+          case _ => Logger.log(s"Unknown lobby event received: $event")("LobbyContext")
         }
-      case _ =>
+      case _ => Logger.log("Cannot notify listener about the new lobby event because is not set")("LobbyContext")
 
     }
 
@@ -73,7 +75,7 @@ object LobbyContext {
 
     override def notifyLobbyEvent(event: LobbyEventWrapper): Unit = lobbyContextObserver match {
       case Some(lco) => lco.notify(event)
-      case _ =>
+      case _ => Logger.log("Cannot notify observer with the new lobby event because it is not set")("LobbyContext")
     }
   }
 
@@ -93,8 +95,9 @@ trait LobbyContextListener {
   /**
     * Called once per lobby. A new MultiPLayerLevelScene will be created the scene
     * @param multiPlayerLevelContext the level context
+    * @param levelInfo the level info
     */
-  def onMultiPlayerGameStarted(multiPlayerLevelContext: MultiPlayerLevelContext)
+  def onMultiPlayerGameStarted(multiPlayerLevelContext: MultiPlayerLevelContext, levelInfo: LevelInfo)
 
   /**
     * Called once per lobby if the lobby is deleted

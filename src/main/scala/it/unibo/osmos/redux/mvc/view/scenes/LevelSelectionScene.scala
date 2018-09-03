@@ -1,5 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
+import it.unibo.osmos.redux.mvc.controller.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.level.{LevelNode, LevelNodeListener}
 import it.unibo.osmos.redux.mvc.view.components.menu.{MainMenuBar, MainMenuBarListener}
 import it.unibo.osmos.redux.mvc.view.context.LevelContext
@@ -9,6 +10,8 @@ import scalafx.stage.Stage
 
 /**
   * This scene lets the players choose which level they want to play
+  * @param parentStage the parent stage
+  * @param listener the listener
   */
 class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSelectionSceneListener) extends BaseScene(parentStage)
   with MainMenuBarListener with LevelNodeListener {
@@ -24,7 +27,7 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
   protected val levelsContainer: TilePane = new TilePane() {
     alignmentInParent = Pos.Center
     alignment = Pos.Center
-    prefColumns = numLevels
+    prefColumns = levels.size
     prefRows = 1
     prefHeight <== parentStage.height
   }
@@ -39,28 +42,32 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
   /* Setting the root container*/
   root = container
 
-  //TODO: get the proper number of levels
   /**
-    * The number of levels
-    * @return the number of levels
+    * The levels shown
+    * @return the list of levels as LevelInfo
     */
-  def numLevels: Int = 5
+  def levels: List[LevelInfo] = listener.getSingleLevels
 
-  //TODO: parse actual available values
   /**
     * This method loads the level into the level container, thus letting the player choose them
     */
-  def loadLevels(): Unit = for (i <- 1 to numLevels) levelsContainer.children.add(new LevelNode(LevelSelectionScene.this, i, i == 1))
+  def loadLevels(): Unit = levels foreach((level) => levelsContainer.children.add(new LevelNode(LevelSelectionScene.this, level, levels.indexOf(level))))
 
   override def onFullScreenSettingClick(): Unit = {
     parentStage.fullScreen = !parentStage.fullScreen.get()
   }
 
-  def onLevelPlayClick(level: Int, simulation: Boolean): Unit = {
+  /**
+    * Called when the user want to play a level
+    * @param levelInfo the level info
+    * @param simulation true if the level must be started as a simulation, false otherwise
+    * @param custom true if the level is a custom one, false otherwise
+    */
+  def onLevelPlayClick(levelInfo: LevelInfo, simulation: Boolean, custom: Boolean = false): Unit = {
     /* Creating a listener on the run*/
     val upperLevelSceneListener: UpperLevelSceneListener = () => parentStage.scene = this
     /* Creating a new level scene */
-    val levelScene = new LevelScene(parentStage, listener, upperLevelSceneListener)
+    val levelScene = new LevelScene(parentStage, levelInfo, listener, upperLevelSceneListener)
     /* Creating the level context */
     val levelContext = LevelContext(simulation)
     levelContext.setListener(levelScene)
@@ -68,7 +75,7 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
     /* Changing scene scene */
     parentStage.scene = levelScene
     /* Notify the view the new context */
-    listener.onLevelContextCreated(levelContext, level)
+    listener.onLevelContextCreated(levelContext, levelInfo.name, custom)
   }
 
 }
@@ -81,7 +88,14 @@ trait LevelSelectionSceneListener extends LevelSceneListener {
   /**
     * This method called when the level context has been created
     * @param levelContext the new level context
-    * @param level the new level index
+    * @param level the new level name
+    * @param isCustom true if the level is custom, false otherwise
     */
-  def onLevelContextCreated(levelContext: LevelContext, level: Int)
+  def onLevelContextCreated(levelContext: LevelContext, level: String, isCustom: Boolean = false)
+
+  /**
+    * This method retrieves the levels that must be shown as node
+    * @return a list of LevelInfo
+    */
+  def getSingleLevels: List[LevelInfo]
 }

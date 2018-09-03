@@ -20,7 +20,7 @@ branches:
   - develop
   - release
   - /feature-*/
+  - refactor
 
 script:
 - './gradlew clean build'
-#- './gradlew clean test' # clean build automatically runs test

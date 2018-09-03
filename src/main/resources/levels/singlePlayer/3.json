@@ -42,7 +42,7 @@
       "canSpawn": true
     },
     "typeEntity": {
-      "componentType": "Matter"
+      "componentType": "Controlled"
     },
     "position": {
       "point": {
@@ -90,8 +90,7 @@
       "speedY": 0.0
     }
   }],
-  "levelId": "3",
-  "isSimulation": false,
+  "name": "3",
   "victoryRule": {
     "victoryRule": "Become_the_biggest"
   },
@@ -99,7 +98,7 @@
     "mapShape": {
       "centerX": 50.1,
       "centerY": 50.2,
-      "mapShape": "CIRCLE",
+      "mapShape": "Circle",
       "radius": 250
     },
     "collisionRule": "Bouncing"

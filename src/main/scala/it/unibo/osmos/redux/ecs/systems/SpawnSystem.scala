@@ -1,10 +1,10 @@
 package it.unibo.osmos.redux.ecs.systems
 
 import it.unibo.osmos.redux.ecs.entities._
+import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
+import it.unibo.osmos.redux.ecs.entities.properties.basic.Spawner
 
 case class SpawnSystem() extends AbstractSystem[Spawner] {
-
-  override def getGroupProperty: Class[Spawner] = classOf[Spawner]
 
   /**
     * Performs an action on all the entities of the system
@@ -13,7 +13,7 @@ case class SpawnSystem() extends AbstractSystem[Spawner] {
     entities foreach(e => {
       e.getSpawnerComponent.dequeueActions() foreach (a => {
         EntityManager.add(
-          CellBuilder()
+          new CellBuilder()
             .collidable(true)
             .visible(true)
             .withSpeed(a.speed)
