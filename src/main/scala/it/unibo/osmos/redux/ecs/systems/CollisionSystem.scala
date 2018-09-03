@@ -1,6 +1,8 @@
 package it.unibo.osmos.redux.ecs.systems
 
-import it.unibo.osmos.redux.ecs.entities.{CollidableProperty, EntityType}
+import it.unibo.osmos.redux.ecs.entities.EntityType
+import it.unibo.osmos.redux.ecs.entities.properties.composed.CollidableProperty
+import it.unibo.osmos.redux.ecs.systems.borderconditions.{CircularBorder, RectangularBorder}
 import it.unibo.osmos.redux.mvc.model.Level
 import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.utils.{MathUtils, Point, Vector}
@@ -22,8 +24,6 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
     case shape: Circle => CircularBorder(Point(shape.center._1, shape.center._2), collisionRule, shape.radius)
     case _ => throw new IllegalArgumentException
   }
-
-  override def getGroupProperty: Class[CollidableProperty] = classOf[CollidableProperty]
 
   override def update(): Unit = {
     //check collision with boundary
