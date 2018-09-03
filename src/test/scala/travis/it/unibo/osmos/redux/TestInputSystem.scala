@@ -73,9 +73,8 @@ class TestInputSystem extends FunSuite {
 
     var newAccel = AccelerationComponent(accel.vector.x, accel.vector.y)
     events foreach (ev => {
-      val p = MathUtils.normalizePoint(Point(pos.point.x - ev.point.x, pos.point.y - ev.point.y))
-      newAccel = AccelerationComponent(newAccel.vector.x + p.x * system.accelCoefficient,
-        newAccel.vector.y + p.y * system.accelCoefficient)
+      val p = MathUtils.unitVector(pos.point, ev.point)
+      newAccel = AccelerationComponent(newAccel.vector add (p multiply system.accelCoefficient))
     })
     newAccel
   }

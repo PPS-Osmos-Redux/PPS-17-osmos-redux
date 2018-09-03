@@ -38,20 +38,17 @@ case class InputSystem() extends AbstractSystem[InputProperty] {
 
         //TODO: probably at some point there will be different events and it will be necessary to filter them before applying deceleration (es. mouse pressed)
 
-        val newPoint = MathUtils.normalizePoint(Point(pos.point.x - ev.point.x, pos.point.y - ev.point.y))
+        val directionAcceleration = MathUtils.unitVector(pos.point, ev.point)
 
         //apply acceleration
-        //TODO: accel.vector_(accel.vector.add(newPoint.multiply(accelCoefficient)))
-        val v = Vector(newPoint.x * accelCoefficient, newPoint.y * accelCoefficient)
-        accel.vector_(accel.vector.add(v))
-        //accel.vector.x_(accel.vector.x + newPoint.x * accelCoefficient)
-        //accel.vector.y_(accel.vector.y + newPoint.y * accelCoefficient)
+        accel.vector_(accel.vector add(directionAcceleration multiply accelCoefficient))
 
         //create a new spawn action
         val loseMassAmount = dim.radius * lostMassPercentage
-        val directionVector = MathUtils.normalizePoint(Point(ev.point.x - pos.point.x, ev.point.y - pos.point.y))
-        val spawnPoint = Point(pos.point.x + directionVector.x * (dim.radius + lostMassSpawnOffset + loseMassAmount),
-          pos.point.y + directionVector.y * (dim.radius + lostMassSpawnOffset + loseMassAmount))
+        val directionVector = MathUtils.unitVector(ev.point, pos.point)
+        val spawnPoint = pos.point add (directionVector multiply(dim.radius + lostMassSpawnOffset + loseMassAmount))
+          //Point(pos.point.x + directionVector.x * (dim.radius + lostMassSpawnOffset + loseMassAmount),
+          //pos.point.y + directionVector.y * (dim.radius + lostMassSpawnOffset + loseMassAmount))
 
         spawner.enqueueActions(SpawnAction(
           PositionComponent(Point(spawnPoint.x, spawnPoint.y)),
