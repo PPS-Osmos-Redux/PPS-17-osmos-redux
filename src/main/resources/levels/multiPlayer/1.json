@@ -97,8 +97,7 @@
       }
     }
   ],
-  "levelId": "1",
-  "isSimulation": false,
+  "name": "1",
   "victoryRule": {
     "victoryRule": "Absorb_all_other_players"
   },

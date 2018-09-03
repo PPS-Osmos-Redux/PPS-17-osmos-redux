@@ -149,8 +149,7 @@
       "canSpawn": true
     }
   }],
-  "levelId": "ShouldWorks",
-  "isSimulation": false,
+  "name": "ShouldWorks",
   "victoryRule": {
     "victoryRule": "Become_the_biggest"
   },

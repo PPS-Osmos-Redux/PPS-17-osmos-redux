@@ -29,14 +29,15 @@ case class EscapeFromEnemiesRule(enemies: ListBuffer[SentientEnemyProperty]) ext
     * @param enemies list of enemies
     */
   private def escapeFromEnemies(sentient: SentientProperty, enemies: List[SentientEnemyProperty], previousAcceleration: Vector): Vector = {
-    val desiredSeparation = getDesiredSeparation
+    val actualSpeed = sentient.getSpeedComponent.vector add previousAcceleration
+    val desiredSeparation = getDesiredSeparation(actualSpeed)
     val filteredEnemies = enemies map(e => (e, computeDistance(sentient, e))) filter(p => p._2 < desiredSeparation)
     shiftDistance(filteredEnemies)
       .map(m => MathUtils.unitVector(sentient.getPositionComponent.point, m._1.getPositionComponent.point) divide m._2)
       .foldLeft((Vector.zero(), 1)) ((acc, i) => (acc._1 add ((i subtract acc._1) divide acc._2), acc._2 + 1))._1 normalized() match {
       case unitVectorDesiredVelocity if unitVectorDesiredVelocity == Vector(0,0) => Vector.zero()
       case unitVectorDesiredVelocity =>
-        computeSteer(sentient.getSpeedComponent.vector add previousAcceleration, unitVectorDesiredVelocity) multiply WEIGHT_OF_ESCAPE_ACCELERATION_FROM_ENEMIES
+        computeSteer(actualSpeed, unitVectorDesiredVelocity) multiply WEIGHT_OF_ESCAPE_ACCELERATION_FROM_ENEMIES
     }
   }
 

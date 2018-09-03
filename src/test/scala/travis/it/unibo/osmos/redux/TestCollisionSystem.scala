@@ -3,6 +3,7 @@ package it.unibo.osmos.redux
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager, EntityType}
 import it.unibo.osmos.redux.ecs.systems.CollisionSystem
+import it.unibo.osmos.redux.mvc.controller.LevelInfo
 import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.utils.Point
@@ -28,10 +29,9 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
   }
 
   private def setupLevelInfo(mapShape: MapShape, collisionRules: CollisionRules.Value) {
-    levelInfo = Level(1.toString,
+    levelInfo = Level(LevelInfo(1.toString, VictoryRules.becomeTheBiggest),
       LevelMap(mapShape, collisionRules),
-      null,
-      VictoryRules.becomeTheBiggest)
+      List())
   }
 
   test("CollisionSystem should not collide the entity with herself") {

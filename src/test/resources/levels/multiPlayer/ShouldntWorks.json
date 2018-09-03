@@ -118,8 +118,7 @@
       "speedY": 0.0
     }
   }],
-  "levelId": "ShouldntWorks",
-  "isSimulation": false,
+  "name": "ShouldntWorks",
   "victoryRule": {
     "victoryRule": "Become_the_biggest"
   },

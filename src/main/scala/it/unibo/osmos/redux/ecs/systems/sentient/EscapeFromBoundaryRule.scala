@@ -26,7 +26,7 @@ case class EscapeFromBoundaryRule(levelInfo: Level) extends SentientRule {
       val actualSpeed = sentient.getSpeedComponent.vector add previousAcceleration
       val sentientCopy = SentientCellBuilder()
         .withPosition(sentient.getPositionComponent)
-        .withDimension(sentient.getDimensionComponent.radius + getDesiredSeparation)
+        .withDimension(sentient.getDimensionComponent.radius + getDesiredSeparation(actualSpeed))
         .withSpeed(actualSpeed.x, actualSpeed.y).build
       bounceRule.checkAndSolveCollision(sentientCopy)
       if (sentientCopy.getSpeedComponent.vector == actualSpeed) {

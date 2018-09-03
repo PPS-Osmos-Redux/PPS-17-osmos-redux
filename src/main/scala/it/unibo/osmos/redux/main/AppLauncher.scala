@@ -9,7 +9,6 @@ import scalafx.application.JFXApp
   * Application entry point.
   */
 object AppLauncher extends JFXApp {
-
   SinglePlayerLevels.updateUserStat(FileManager.loadUserProgress())
   val controller: Controller = new ControllerImpl
   MediaPlayer.setController(controller)
