@@ -345,7 +345,7 @@ object JsonProtocols {
       "name" -> JsString(levelInfo.name),
       "victoryRule" -> levelInfo.victoryRule.toJson)
     def read(value: JsValue): LevelInfo = {
-      value.asJsObject.getFields("levelId","victoryRule") match {
+      value.asJsObject.getFields("name","victoryRule") match {
         case Seq(JsString(name), victoryRule) =>
           LevelInfo(name, victoryRule.convertTo[VictoryRules.Value])
         case _ => throw DeserializationException("Level info expected")
@@ -355,15 +355,15 @@ object JsonProtocols {
 
   implicit object levelFormatter extends RootJsonFormat[Level] {
     def write(level: Level): JsObject = JsObject(
-      "levelId" -> JsString(level.levelInfo.name),
+      "name" -> JsString(level.levelInfo.name),
       "victoryRule" -> level.levelInfo.victoryRule.toJson,
       "levelMap" -> level.levelMap.toJson,
       "entities" -> level.entities.toJson)
     def read(value: JsValue): Level = {
-      value.asJsObject.getFields("levelId", "victoryRule", "levelMap", "entities") match {
+      value.asJsObject.getFields("name", "victoryRule", "levelMap", "entities") match {
         case Seq(JsString(levelId), victoryRule, levelMap, entities) =>
           Level(LevelInfo(levelId, victoryRule.convertTo[VictoryRules.Value]), levelMap.convertTo[LevelMap], entities.convertTo[List[CellEntity]])
-        case _ => throw DeserializationException("Level info expected")
+        case _ => throw DeserializationException("Level expected")
       }
     }
   }
