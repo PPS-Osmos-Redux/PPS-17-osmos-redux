@@ -1,0 +1,107 @@
+{
+  "entities": [{
+    "acceleration": {
+      "accelerationX": 1.0,
+      "accelerationY": 1.0
+    },
+    "visible": {
+      "visible": true
+    },
+    "collidable": {
+      "collidable": true
+    },
+    "typeEntity": {
+      "entity_type": "Matter"
+    },
+    "position": {
+      "point": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    },
+    "cellType": "basicCell",
+    "dimension": {
+      "radius": 5.0
+    },
+    "speed": {
+      "speedX": 4.0,
+      "speedY": 0.0
+    }
+  }, {
+    "acceleration": {
+      "accelerationX": 1.0,
+      "accelerationY": 1.0
+    },
+    "visible": {
+      "visible": true
+    },
+    "collidable": {
+      "collidable": true
+    },
+    "spawner": {
+      "canSpawn": true
+    },
+    "typeEntity": {
+      "componentType": "Matter"
+    },
+    "position": {
+      "point": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    },
+    "cellType": "playerCell",
+    "dimension": {
+      "radius": 5.0
+    },
+    "speed": {
+      "speedX": 4.0,
+      "speedY": 0.0
+    }
+  }, {
+    "acceleration": {
+      "accelerationX": 1.0,
+      "accelerationY": 1.0
+    },
+    "specificWeight": {
+      "specificWeight": 1.0
+    },
+    "visible": {
+      "visible": true
+    },
+    "collidable": {
+      "collidable": true
+    },
+    "typeEntity": {
+      "entity_type": "Attractive"
+    },
+    "position": {
+      "point": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    },
+    "cellType": "gravityCell",
+    "dimension": {
+      "radius": 5.0
+    },
+    "speed": {
+      "speedX": 4.0,
+      "speedY": 0.0
+    }
+  }],
+  "levelId": "3",
+  "isSimulation": false,
+  "victoryRule": {
+    "victoryRule": "Become_the_biggest"
+  },
+  "levelMap": {
+    "mapShape": {
+      "centerX": 50.1,
+      "centerY": 50.2,
+      "mapShape": "Circle",
+      "radius": 250
+    },
+    "collisionRule": "Bouncing"
+  }
+}

@@ -1,6 +1,10 @@
 package it.unibo.osmos.redux.utils
 
-/** 2D vector */
+/** Mixin representing a 2D vector.
+  *
+  * The methods of this mixin won't alter
+  * the values of the classes that extends it.
+  */
 trait Vector {
 
   /** Getter for the vector x component

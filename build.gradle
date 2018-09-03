@@ -5,10 +5,6 @@ apply plugin: 'application'
 
 version '1.1.0'
 
-configurations {
-    fatJar
-}
-
 mainClassName = 'it.unibo.osmos.redux.main.AppLauncher'
 sourceCompatibility = 1.8
 scaladoc.destinationDir = file("$docsDir/$scaladocFolder")
@@ -28,7 +24,7 @@ sourceSets {
             srcDirs = ["src/test/resources"]
         }
         scala {
-            srcDirs = ["src/test/scala"]
+            srcDirs = ["src/test/scala/travis"]
         }
     }
 }
@@ -38,18 +34,25 @@ repositories {
 }
 
 dependencies {
-    compile 'org.scala-lang:scala-library:2.12.2'
+    compile group: 'org.scala-lang', name: 'scala-library', version: '2.12.2'
     compile group: 'org.scala-lang', name: 'scala-compiler', version: '2.12.6'
-    compile 'org.apache.commons:commons-lang3:3.6'
+
     compile group: 'org.scalafx', name: 'scalafx_2.12', version: '8.0.144-R12'
+
     compile group: 'io.spray', name: 'spray-json_2.12', version: '1.3.4'
     compile group: 'it.unibo.alice.tuprolog', name: 'tuprolog', version: '3.2.1'
 
-    fatJar 'org.scala-lang:scala-library:2.11.7'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
+
+    compile group: 'com.typesafe.akka', name: 'akka-actor_2.12', version: '2.5.14'
+    compile group: 'com.typesafe.akka', name: 'akka-remote_2.12', version: '2.5.14'
+
+    compile group: 'com.github.romix.akka', name: 'akka-kryo-serialization_2.12', version: '0.5.2'
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile group: 'org.scalatest', name: 'scalatest_2.12', version: '3.0.5'
     testCompile group: 'org.scalamock', name: 'scalamock-scalatest-support_2.12', version: '3.6.0'
+    testCompile group: 'com.typesafe.akka', name: 'akka-testkit_2.12', version: '2.5.14'
 }
 
 // running <<gradle test>> runs also scalaTests
@@ -65,7 +68,6 @@ task scalaTests(dependsOn: ['testClasses'], type: JavaExec) {
 
 // jar will be saved to build/libs
 task fatJar(type: Jar, dependsOn: subprojects.compileJava) {
-    println("creating fatJar")
     manifest {
         attributes 'Implementation-Title': 'Osmos-Redux',
             'Implementation-Version': rootProject.version,
@@ -85,4 +87,9 @@ task fatJar(type: Jar, dependsOn: subprojects.compileJava) {
         exclude 'gradlew.bat'
     }
     with jar
+    doLast {
+        println("fatJar created")
+    }
 }
+
+defaultTasks 'clean', 'build'

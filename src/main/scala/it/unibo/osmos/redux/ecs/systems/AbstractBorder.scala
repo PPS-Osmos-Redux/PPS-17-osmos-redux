@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.ecs.systems
 
-import it.unibo.osmos.redux.ecs.components.DimensionComponent
+import it.unibo.osmos.redux.ecs.components.{DimensionComponent, PositionComponent}
 import it.unibo.osmos.redux.ecs.entities.CollidableProperty
 import it.unibo.osmos.redux.mvc.model.CollisionRules
 import it.unibo.osmos.redux.utils.{MathUtils, Point, Vector}
@@ -16,17 +16,24 @@ abstract class AbstractBorder(levelCenter: Point, collisionRule: CollisionRules.
   protected val restitution: Double = cellElasticity * borderElasticity
 
   /** Checks if an entity has collided with the border.
-    * If so, computes it's new position and speed
+    * If so, computes it's new position and speed.
     *
-    * @param entity
+    * @param entity the entity to check
     */
-  def checkCollision(entity: CollidableProperty): Unit
+  def checkAndSolveCollision(entity: CollidableProperty): Unit
+
+  /** Checks if an entity is outside of the playable field.
+    * If so, repositions it inside the playable field.
+    *
+    * @param entity the entity to check
+    */
+  def repositionIfOutsideMap(entity: CollidableProperty): Unit
 }
 
 /** Implementation of a playing field with rectangular shape */
 case class RectangularBorder(levelCenter: Point, collisionRule: CollisionRules.Value, base: Double, height: Double) extends AbstractBorder(levelCenter, collisionRule) {
 
-  override def checkCollision(entity: CollidableProperty): Unit = {
+  override def checkAndSolveCollision(entity: CollidableProperty): Unit = {
     val dimensionComponent = entity.getDimensionComponent
     val entityRadius = dimensionComponent.radius
     val speedComponent = entity.getSpeedComponent
@@ -76,20 +83,32 @@ case class RectangularBorder(levelCenter: Point, collisionRule: CollisionRules.V
     }
   }
 
+  override def repositionIfOutsideMap(entity: CollidableProperty): Unit = {}
+
 }
 
 /** Implementation of a playing field with circular shape */
 case class CircularBorder(levelCenter: Point, collisionRule: CollisionRules.Value, levelRadius: Double) extends AbstractBorder(levelCenter, collisionRule) {
 
-  override def checkCollision(entity: CollidableProperty): Unit = {
-    val positionComponent = entity.getPositionComponent
-    val currentPosition = positionComponent.point
-    val dimensionComponent = entity.getDimensionComponent
-    val entityRadius = dimensionComponent.radius
-    val maxReachableDistance = levelRadius - entityRadius
-    val currentDistanceFromCenter = MathUtils.euclideanDistance(levelCenter, currentPosition)
+  var positionComponent: PositionComponent = _
+  var currentPosition: Point = _
+  var dimensionComponent: DimensionComponent = _
+  var entityRadius: Double = _
+  var maxReachableDistance: Double = _
+  var currentDistanceFromCenter: Double = _
 
-    if (currentDistanceFromCenter > maxReachableDistance) {
+  private def checkCollision(entity: CollidableProperty): Boolean = {
+    positionComponent = entity.getPositionComponent
+    currentPosition = positionComponent.point
+    dimensionComponent = entity.getDimensionComponent
+    entityRadius = dimensionComponent.radius
+    maxReachableDistance = levelRadius - entityRadius
+    currentDistanceFromCenter = MathUtils.euclideanDistance(levelCenter, currentPosition)
+    currentDistanceFromCenter > maxReachableDistance
+  }
+
+  override def checkAndSolveCollision(entity: CollidableProperty): Unit = {
+    if (checkCollision(entity)) {
       collisionRule match {
         case CollisionRules.bouncing =>
           val newPosition = computeNewPosition(levelRadius, entity)
@@ -164,5 +183,17 @@ case class CircularBorder(levelCenter: Point, collisionRule: CollisionRules.Valu
     val vAfter = w.subtract(u)
     val reflection = vAfter.subtract(v).multiply(restitution)
     v.add(reflection)
+  }
+
+  override def repositionIfOutsideMap(entity: CollidableProperty): Unit = {
+    if (checkCollision(entity)) {
+      collisionRule match {
+        case CollisionRules.bouncing =>
+          val vector = MathUtils.unitVector(levelCenter, currentPosition)
+          val back = currentDistanceFromCenter - levelRadius + entityRadius
+          positionComponent.point_(currentPosition.add(vector.multiply(back)))
+        case _ =>
+      }
+    }
   }
 }
