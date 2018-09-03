@@ -4,6 +4,7 @@ import it.unibo.osmos.redux.ecs.entities.CellEntity
 import it.unibo.osmos.redux.mvc.controller.Controller
 import it.unibo.osmos.redux.mvc.model.{CollisionRules, MapShape, VictoryRules}
 import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.LevelInfo
+import it.unibo.osmos.redux.mvc.view.components.custom.AlertFactory
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LobbyContext}
 import it.unibo.osmos.redux.mvc.view.stages.{OsmosReduxPrimaryStage, PrimaryStageListener}
@@ -88,24 +89,8 @@ object View {
     override def onStopLevel(): Unit = checkController(() => controller.get.stopLevel())
 
     override def onDisplayError(exception: Throwable): Unit = {
-      // TODO change for a better output
       Platform.runLater {
-        val dialogPaneContent = new VBox()
-
-        val label = new Label("Stack Trace:")
-
-        val textArea = new TextArea()
-        textArea.setText(exception.getMessage)
-
-        dialogPaneContent.getChildren.addAll(label, textArea)
-
-        val alert = new Alert(AlertType.Error) {
-          title = "Error Dialog"
-          headerText = None
-          graphic = null
-        }
-        // Set content for Dialog Pane
-        alert.getDialogPane.setContent(dialogPaneContent)
+        val alert = AlertFactory.createErrorAlert("Error Dialog", "Couldn't connect to server")
         alert.showAndWait()
       }
     }
