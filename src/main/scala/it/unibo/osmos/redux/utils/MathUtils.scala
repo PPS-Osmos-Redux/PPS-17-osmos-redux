@@ -40,6 +40,16 @@ object MathUtils {
     Math.sqrt(Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2))
 
   /**
+    * Returns the square of Euclidean distance in 2D space
+    *
+    * @param point1 first point
+    * @param point2 second point
+    * @return square of Euclidean distance
+    */
+  def euclideanDistanceSq(point1: Point, point2: Point): Double =
+    Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2)
+
+  /**
     * Returns the Euclidean distance in 2D space
     *
     * @param position1 first position

@@ -43,6 +43,7 @@ class TestGravitySystem extends FunSuite with BeforeAndAfter {
     val originalAcceleration = AccelerationComponent(cellEntity.getAccelerationComponent.vector.x, cellEntity.getAccelerationComponent.vector.y)
     gravitySystem.update()
     assert(cellEntity.getAccelerationComponent.vector.x === originalAcceleration.vector.x)
+    assert(cellEntity.getAccelerationComponent.vector.y === originalAcceleration.vector.y)
   }
 
   test("Attractive GravityCellEntity should change acceleration of CellEntity to attract") {

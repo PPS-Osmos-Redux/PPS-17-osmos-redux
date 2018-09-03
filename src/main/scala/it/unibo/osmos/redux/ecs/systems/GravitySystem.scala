@@ -17,7 +17,7 @@ case class GravitySystem() extends AbstractSystem2[MovableProperty, GravityPrope
   private def updateAcceleration(gravityProperty: GravityProperty, movableProperty: MovableProperty): Unit = {
     val gravityCenter = gravityProperty.getPositionComponent.point
     val entityCenter = movableProperty.getPositionComponent.point
-    val distance = Math.pow(MathUtils.euclideanDistance(gravityCenter, entityCenter), 2)
+    val distance = MathUtils.euclideanDistanceSq(gravityCenter, entityCenter)
     val typeOfForce = getTypeOfForce(gravityProperty.getTypeComponent.typeEntity)
     val gravityAcceleration = (gravityProperty.getMassComponent.mass / distance) * typeOfForce
     val unitVector = MathUtils.unitVector(gravityCenter, entityCenter)
