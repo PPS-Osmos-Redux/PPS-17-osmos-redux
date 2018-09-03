@@ -115,9 +115,9 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
     entity1.getCollidableComponent.setCollidable(true)
 
     val originalDim1 = DimensionComponent(entity1.getDimensionComponent.radius)
-    val originalAccel1 = AccelerationComponent(entity1.getAccelerationComponent.vector.x, entity1.getAccelerationComponent.vector.y)
+    val originalAccel1 = AccelerationComponent(entity1.getAccelerationComponent.vector)
     val originalDim2 = DimensionComponent(antiMatterEntity.getDimensionComponent.radius)
-    val originalAccel2 = AccelerationComponent(antiMatterEntity.getAccelerationComponent.vector.x, antiMatterEntity.getAccelerationComponent.vector.y)
+    val originalAccel2 = AccelerationComponent(antiMatterEntity.getAccelerationComponent.vector)
 
     EntityManager.add(entity1)
     EntityManager.add(antiMatterEntity)

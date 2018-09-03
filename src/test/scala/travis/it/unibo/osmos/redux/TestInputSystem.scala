@@ -53,7 +53,7 @@ class TestInputSystem extends FunSuite {
     EntityManager.add(ce)
 
     //save original acceleration value
-    val originalAccel = AccelerationComponent(acceleration(1).vector.x, acceleration(1).vector.y)
+    val originalAccel =acceleration(1).copy()
 
     //pre-compute expected values
     val expectedAccel = computeExpectedAcceleration(system, pce, MouseEventWrapper(Point(157, 104), pce.getUUID))
@@ -71,7 +71,7 @@ class TestInputSystem extends FunSuite {
     val pos = entity.getPositionComponent
     val accel = entity.getAccelerationComponent
 
-    var newAccel = AccelerationComponent(accel.vector.x, accel.vector.y)
+    var newAccel = accel.copy()
     events foreach (ev => {
       val p = MathUtils.unitVector(pos.point, ev.point)
       newAccel = AccelerationComponent(newAccel.vector add (p multiply system.accelCoefficient))

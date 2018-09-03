@@ -53,7 +53,7 @@ case class InputSystem() extends AbstractSystem[InputProperty] {
         spawner.enqueueActions(SpawnAction(
           PositionComponent(Point(spawnPoint.x, spawnPoint.y)),
           DimensionComponent(loseMassAmount),
-          SpeedComponent(directionVector.x * lostMassInitialVelocity, directionVector.y * lostMassInitialVelocity)))
+          SpeedComponent(directionVector multiply lostMassInitialVelocity)))
 
         //make entity lose mass
         dim.radius_(dim.radius - loseMassAmount / 2)
