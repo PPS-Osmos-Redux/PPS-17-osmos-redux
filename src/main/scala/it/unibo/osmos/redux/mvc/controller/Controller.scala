@@ -88,7 +88,7 @@ trait Controller {
     * Gets all the levels in the campaign.
     * @return The list of LevelInfo.
     */
-  def getSinglePlayerLevels:List[LevelInfo] = SinglePlayerLevels.getLevels
+  def getSinglePlayerLevels:List[LevelInfo] = SinglePlayerLevels.getLevelsInfo
 
   /**
     * Gets all multi-player levels.
@@ -310,7 +310,7 @@ case class ControllerImpl() extends Controller with GameStateHolder {
 
   override def notify(event: GameStateEventWrapper): Unit = lastLoadedLevel match {
     case Some(lastLevel:String) => SinglePlayerLevels.newEndGameEvent(event, lastLevel)
-      FileManager.saveUserProgress(SinglePlayerLevels.userStatistics)
+      FileManager.saveUserProgress(SinglePlayerLevels.getCampaignLevels)
     case _ =>
   }
 

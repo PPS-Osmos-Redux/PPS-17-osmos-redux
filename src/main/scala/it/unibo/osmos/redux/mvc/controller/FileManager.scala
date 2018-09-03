@@ -86,7 +86,7 @@ object FileManager {
     * @param userProgress current user progress
     * @return Option with file path of user progress file
     */
-  def saveUserProgress(userProgress: UserStat): Boolean = {
+  def saveUserProgress(userProgress: List[CampaignLevel]): Boolean = {
     import UserHomePaths._
     val upFile = new File(defaultFS.getPath(userProgressDirectory + userProgressFileName + jsonExtension).toUri)
     createDirectoriesTree(upFile)
@@ -97,10 +97,10 @@ object FileManager {
     * Loads user progress from file
     * @return UserStat
     */
-  def loadUserProgress(): UserStat =
+  def loadUserProgress(): List[CampaignLevel] =
     loadFile(userProgressDirectory + UserHomePaths.userProgressFileName + jsonExtension) match {
-      case Some(text) => text.parseJson.convertTo[UserStat]
-      case _ => saveUserProgress(SinglePlayerLevels.userStatistics)
+      case Some(text) => text.parseJson.convertTo[List[CampaignLevel]]
+      case _ => saveUserProgress(SinglePlayerLevels.getCampaignLevels)
                 loadUserProgress()
   }
 

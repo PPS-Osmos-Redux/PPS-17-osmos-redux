@@ -370,7 +370,11 @@ object JsonProtocols {
 
   implicit val drawableWrapperFormatter:RootJsonFormat[DrawableWrapper] = jsonFormat4(DrawableWrapper)
 
-  implicit  val levelStatFormatter:RootJsonFormat[LevelStat] = jsonFormat3(LevelStat)
+  implicit  val levelStatFormatter:RootJsonFormat[LevelStat] = jsonFormat2(LevelStat)
 
-  implicit val userProgressFormatter:RootJsonFormat[UserStat] = jsonFormat2(UserStat)
+  implicit  val campaignLevelsFormatter:RootJsonFormat[CampaignLevel] = jsonFormat2(CampaignLevel)
+
+  implicit  val listCampaignLevelsFormatter:RootJsonFormat[List[CampaignLevel]] = jsonFormat1(List[CampaignLevel])
+
+  //implicit val userProgressFormatter:RootJsonFormat[UserStat] = jsonFormat2(UserStat)
 }
