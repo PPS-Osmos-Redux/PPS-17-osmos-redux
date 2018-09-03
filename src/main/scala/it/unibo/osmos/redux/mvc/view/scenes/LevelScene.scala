@@ -4,6 +4,7 @@ import it.unibo.osmos.redux.ecs.entities.EntityType
 import it.unibo.osmos.redux.mvc.controller.{LevelInfo, MediaPlayer, SoundsType}
 import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.ViewConstants
+import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Colors._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.components.level.{LevelScreen, LevelStateBoxListener}
@@ -18,6 +19,8 @@ import scalafx.animation.FadeTransition
 import scalafx.application.Platform
 import scalafx.beans.property.BooleanProperty
 import scalafx.scene.canvas.Canvas
+import scalafx.scene.effect.Light.Spot
+import scalafx.scene.effect.Lighting
 import scalafx.scene.image.Image
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.{Circle, Rectangle, Shape}
@@ -58,6 +61,23 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     height <== parentStage.height
     cache = true
     opacity = 0.0
+
+    val light: Spot = new Spot()
+    light.color = Color.White
+    light.x <== width / 2
+    light.y <== height / 2
+    light.z = 100
+    light.pointsAtX <== width / 2
+    light.pointsAtY <== height / 2
+    light.pointsAtZ = -10
+    light.specularExponent = 2.0
+
+    val l: Lighting = new Lighting()
+    l.setLight(light)
+    l.setSurfaceScale(1.0)
+    l.setDiffuseConstant(2.0)
+
+    //effect = l
   }
 
   /**
@@ -183,14 +203,14 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     * @param mouseEvent the mouse event
     */
   protected def sendMouseEvent(mouseEvent: MouseEvent): Unit = levelContext match {
-    case Some(lc) => if (!paused.value) lc notifyMouseEvent MouseEventWrapper(Point(mouseEvent.getX, mouseEvent.getY), lc.getPlayerUUID)
+    case Some(lc) => if (!paused.value) lc notifyMouseEvent MouseEventWrapper(Point(mouseEvent.getX - halfWindowWidth, mouseEvent.getY - halfWindowHeight), lc.getPlayerUUID)
     case _ =>
   }
 
   override def onLevelSetup(mapShape: MapShape): Unit = mapBorder match {
     case Some(_) => throw new IllegalStateException("Map has already been set")
     case _ =>
-      val center = Point(mapShape.center._1, mapShape.center._2)
+      val center = Point(mapShape.center._1 + halfWindowWidth, mapShape.center._2 + halfWindowHeight)
       mapShape match {
         case c: MapShape.Circle => mapBorder = Option(new Circle {
           centerX = center.x
