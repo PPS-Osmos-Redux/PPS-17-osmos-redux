@@ -1,4 +1,12 @@
+/* overrides the default background, so it is not necessary
+ * for each scene to set attribute .default-background */
 .root {
+  -fx-background-image: url("../textures/background.png");
+  -fx-background-position: center center;
+  -fx-background-size: cover;
+}
+
+.default-background {
   -fx-background-image: url("../textures/background.png");
   -fx-background-position: center center;
   -fx-background-size: cover;
@@ -26,10 +34,6 @@
   -fx-font-weight: bold;
 }
 
-.disabled-button-style {
-  -fx-background: #dddddd;
-}
-
 .multi-player-lobby-table {
   -fx-font-size: 22px;
 }
@@ -45,4 +49,10 @@
 
 .multi-player-scene-VBox-style {
   -fx-background-color: white;
+}
+
+.dialog-style {
+  /* set background to null so that the .root background style is override */
+  -fx-background-image: null;
+  -fx-font: 20 arial;
 }

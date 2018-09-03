@@ -1,5 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.components.custom
 
+import it.unibo.osmos.redux.mvc.controller.FileManager
 import scalafx.scene.control.Alert
 import scalafx.scene.control.Alert.AlertType
 
@@ -45,7 +46,9 @@ class AlertBuilder {
       }
       contentText = alertContentText
     }
-    alert.getDialogPane.setStyle("-fx-font: 20 arial;")
+    alert.getDialogPane.getStylesheets.addAll(FileManager.getStyle)
+    alert.getDialogPane.getStyleClass.add("dialog-style")
+    //alert.getDialogPane.setStyle("-fx-font: 20 arial;")
     alert
   }
 

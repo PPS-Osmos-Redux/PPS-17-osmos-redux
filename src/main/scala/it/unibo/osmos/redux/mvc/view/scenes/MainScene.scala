@@ -18,8 +18,9 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
     /* Setting the upper MenuBar */
     top = new MainMenuBar(MainScene.this)
     center = new MainMenuCenterBox(MainScene.this)
+    styleClass.add("default-background")
   }
-  //rootLayout.getStyleClass.add("root")
+
   /* Enabling the layout */
   root = rootLayout
 
