@@ -3,7 +3,6 @@ package it.unibo.osmos.redux.ecs.systems
 import it.unibo.osmos.redux.ecs.entities.{DeathProperty, EntityManager}
 
 case class CellsEliminationSystem() extends AbstractSystem[DeathProperty] {
-  override def getGroupProperty: Class[DeathProperty] = classOf[DeathProperty]
 
   val radiusThreshold: Double = 1
 

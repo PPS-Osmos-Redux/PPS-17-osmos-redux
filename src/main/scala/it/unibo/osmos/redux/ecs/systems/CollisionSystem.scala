@@ -24,8 +24,6 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
     case _ => throw new IllegalArgumentException
   }
 
-  override def getGroupProperty: Class[CollidableProperty] = classOf[CollidableProperty]
-
   override def update(): Unit = {
     //check collision with boundary
     entities foreach(e => bounceRule.checkAndSolveCollision(e))

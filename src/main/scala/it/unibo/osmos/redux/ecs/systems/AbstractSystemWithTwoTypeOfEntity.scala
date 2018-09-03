@@ -10,13 +10,12 @@ import scala.reflect.ClassTag
   * Abstract system with two type of generic entity.
   * The lists of entity are not exclusive
   */
-abstract class AbstractSystemWithTwoTypeOfEntity[T <:Property, R <:Property: ClassTag]
+abstract class AbstractSystemWithTwoTypeOfEntity[T <:Property: ClassTag, R <:Property: ClassTag]
           extends AbstractSystem[T] with Observer with System {
 
   protected var entitiesSecondType: ListBuffer[R] = ListBuffer()
 
-  EntityManager.subscribe(this, getGroupPropertySecondType)
-  protected def getGroupPropertySecondType: Class[R]
+  EntityManager.subscribe(this, implicitly[ClassTag[R]].runtimeClass.asInstanceOf[Class[R]])
 
   override def notify(event: EMEvents.EntityManagerEvent): Unit = {
     event.entity match {

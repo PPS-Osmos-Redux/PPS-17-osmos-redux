@@ -4,14 +4,12 @@ import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities._
 import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 import it.unibo.osmos.redux.ecs.systems.AbstractSystem
-import it.unibo.osmos.redux.utils.Point
 import org.scalatest.FunSuite
 
 /**
   * Spy class to capture entities number
   */
 case class SystemSpy() extends AbstractSystem[DeathProperty] {
-  override def getGroupProperty: Class[DeathProperty] = classOf[DeathProperty]
   override def update(): Unit = ???
   def entitiesNumber: Int = entities.size
 }

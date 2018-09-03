@@ -9,10 +9,6 @@ case class SentientPrologSystem() extends AbstractSystemWithTwoTypeOfEntity[Sent
 
   private val prologEngine: Term => Stream[SolveInfo] = mkPrologEngine(PrologRules.rules)
 
-  override protected def getGroupProperty: Class[SentientProperty] = classOf[SentientProperty]
-
-  override protected def getGroupPropertySecondType: Class[SentientEnemyProperty] = classOf[SentientEnemyProperty]
-
   override def update(): Unit = {
     var i = 0
     var result = ""

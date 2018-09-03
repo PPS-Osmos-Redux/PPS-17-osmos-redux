@@ -7,8 +7,6 @@ import it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity
 
 case class MultiPlayerUpdateSystem(server: Server) extends AbstractSystem[DrawableProperty] {
 
-  override protected def getGroupProperty: Class[DrawableProperty] = classOf[DrawableProperty]
-
   override def update(): Unit = server.broadcastMessage(UpdateGame(getEntities))
 
   private def getEntities: Seq[DrawableEntity] =

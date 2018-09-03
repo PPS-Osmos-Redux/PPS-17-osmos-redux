@@ -5,8 +5,6 @@ import it.unibo.osmos.redux.utils.Constants
 
 case class MovementSystem() extends AbstractSystem[MovableProperty] {
 
-  override def getGroupProperty: Class[MovableProperty] = classOf[MovableProperty]
-
   override def update(): Unit = {
     entities foreach (entity => {
       updateEntitySpeed(entity)

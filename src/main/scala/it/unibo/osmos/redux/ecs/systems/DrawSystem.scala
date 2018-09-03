@@ -9,10 +9,6 @@ import it.unibo.osmos.redux.mvc.view.drawables.{DrawableWrapper, EntitiesDrawer}
   */
 case class DrawSystem(entitiesDrawer: EntitiesDrawer) extends AbstractSystemWithTwoTypeOfEntity[DrawableProperty, PlayerCellEntity] {
 
-  override def getGroupProperty: Class[DrawableProperty] = classOf[DrawableProperty]
-
-  override protected def getGroupPropertySecondType: Class[PlayerCellEntity] = classOf[PlayerCellEntity]
-
   override def update(): Unit = entitiesDrawer.drawEntities(getPlayerEntity, getEntities)
 
   private def getPlayerEntity: Option[DrawableWrapper] =

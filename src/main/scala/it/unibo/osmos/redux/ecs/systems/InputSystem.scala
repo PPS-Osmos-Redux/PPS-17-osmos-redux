@@ -23,8 +23,6 @@ case class InputSystem() extends AbstractSystem[InputProperty] {
     */
   val lostMassInitialVelocity: Double = 4.0
 
-  override def getGroupProperty: Class[InputProperty] = classOf[InputProperty]
-
   override def update(): Unit = {
 
     //retrieve all input events

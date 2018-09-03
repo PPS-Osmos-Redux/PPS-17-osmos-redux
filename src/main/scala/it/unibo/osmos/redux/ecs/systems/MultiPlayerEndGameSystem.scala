@@ -24,10 +24,6 @@ case class MultiPlayerEndGameSystem(server: Server, levelContext: GameStateHolde
     case _ => throw new NotImplementedError()
   }
 
-  override protected def getGroupProperty: Class[PlayerCellEntity] = classOf[PlayerCellEntity]
-
-  override protected def getGroupPropertySecondType: Class[DeathProperty] = classOf[DeathProperty]
-
   override def update(): Unit = {
     if (isGameRunning) {
       val (deadPlayers, alivePlayers) = server.getLobbyPlayers partition (p => entities.map(_.getUUID) contains p.getUsername)

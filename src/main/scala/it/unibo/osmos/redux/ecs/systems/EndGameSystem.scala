@@ -21,10 +21,6 @@ case class EndGameSystem(levelContext: GameStateHolder, victoryRules: VictoryRul
     case _ => throw new NotImplementedError()
   }
 
-  override protected def getGroupProperty: Class[PlayerCellEntity] = classOf[PlayerCellEntity]
-
-  override protected def getGroupPropertySecondType: Class[DeathProperty] = classOf[DeathProperty]
-
   override def update(): Unit = {
     if (levelContext.gameCurrentState == GamePending) {
       if (entities.isEmpty) {

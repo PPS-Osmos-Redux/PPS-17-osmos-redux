@@ -22,10 +22,6 @@ case class SentientSystem(levelInfo: Level) extends AbstractSystemWithTwoTypeOfE
 
   private var radiusAmount = 0.0
 
-  override protected def getGroupPropertySecondType: Class[SentientEnemyProperty] = classOf[SentientEnemyProperty]
-
-  override protected def getGroupProperty: Class[SentientProperty] = classOf[SentientProperty]
-
   private val rules: List[SentientRule] = initRules()
 
   private def initRules(): List[SentientRule] = {

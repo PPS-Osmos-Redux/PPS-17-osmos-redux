@@ -11,10 +11,6 @@ import scala.collection.mutable.ListBuffer
 case class FakeSystemWithTwoTypeOfEntity()
   extends AbstractSystemWithTwoTypeOfEntity[MovableProperty, InputProperty] {
 
-  override protected def getGroupProperty: Class[MovableProperty] = classOf[MovableProperty]
-
-  override protected def getGroupPropertySecondType: Class[InputProperty] = classOf[InputProperty]
-
   override def update(): Unit = ???
 
   def getEntitiesOfFirstType: ListBuffer[MovableProperty] = entities
