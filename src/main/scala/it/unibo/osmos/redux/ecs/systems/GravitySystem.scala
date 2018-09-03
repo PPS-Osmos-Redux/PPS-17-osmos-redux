@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.ecs.systems
 import it.unibo.osmos.redux.ecs.entities.{EntityType, _}
 import it.unibo.osmos.redux.utils.{MathUtils, Point, Vector}
 
-case class GravitySystem() extends AbstractSystemWithTwoTypeOfEntity[MovableProperty, GravityProperty]() {
+case class GravitySystem() extends AbstractSystem2[MovableProperty, GravityProperty]() {
 
   override def update(): Unit = for (
     gravityEntity <- entitiesSecondType; //for each gravity entity

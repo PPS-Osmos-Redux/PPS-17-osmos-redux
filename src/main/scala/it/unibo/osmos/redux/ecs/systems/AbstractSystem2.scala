@@ -10,7 +10,7 @@ import scala.reflect.ClassTag
   * Abstract system with two type of generic entity.
   * The lists of entity are not exclusive
   */
-abstract class AbstractSystemWithTwoTypeOfEntity[T <:Property: ClassTag, R <:Property: ClassTag]
+abstract class AbstractSystem2[T <:Property: ClassTag, R <:Property: ClassTag]
           extends AbstractSystem[T] with Observer with System {
 
   protected var entitiesSecondType: ListBuffer[R] = ListBuffer()

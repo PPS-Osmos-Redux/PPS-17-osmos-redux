@@ -6,7 +6,7 @@ import it.unibo.osmos.redux.ecs.systems.sentientRule._
 import it.unibo.osmos.redux.mvc.model.Level
 import it.unibo.osmos.redux.utils.{Point, Vector}
 
-case class SentientSystem(levelInfo: Level) extends AbstractSystemWithTwoTypeOfEntity[SentientProperty, SentientEnemyProperty] {
+case class SentientSystem(levelInfo: Level) extends AbstractSystem2[SentientProperty, SentientEnemyProperty] {
 
   private val MAX_ACCELERATION = 0.1
   private val PERCENTAGE_OF_LOST_RADIUS_FOR_MAGNITUDE_ACCELERATION = 0.02

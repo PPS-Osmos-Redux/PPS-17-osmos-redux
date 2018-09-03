@@ -11,7 +11,7 @@ import it.unibo.osmos.redux.mvc.view.events.{GameLost, GamePending, GameWon}
   * @param levelContext object to notify the view of the end game result
   * @param victoryRules enumeration representing the level's victory rules
   */
-case class EndGameSystem(levelContext: GameStateHolder, victoryRules: VictoryRules.Value) extends AbstractSystemWithTwoTypeOfEntity[PlayerCellEntity, DeathProperty] {
+case class EndGameSystem(levelContext: GameStateHolder, victoryRules: VictoryRules.Value) extends AbstractSystem2[PlayerCellEntity, DeathProperty] {
 
   private val victoryCondition = victoryRules match {
     case VictoryRules.becomeTheBiggest => BecomeTheBiggestVictoryCondition()

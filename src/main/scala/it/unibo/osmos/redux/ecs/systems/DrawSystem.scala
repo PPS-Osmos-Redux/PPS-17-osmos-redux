@@ -7,7 +7,7 @@ import it.unibo.osmos.redux.mvc.view.drawables.{DrawableWrapper, EntitiesDrawer}
   * System to draw all the entity
   * @param entitiesDrawer entitiesDrawer for communicate the entities to the view
   */
-case class DrawSystem(entitiesDrawer: EntitiesDrawer) extends AbstractSystemWithTwoTypeOfEntity[DrawableProperty, PlayerCellEntity] {
+case class DrawSystem(entitiesDrawer: EntitiesDrawer) extends AbstractSystem2[DrawableProperty, PlayerCellEntity] {
 
   override def update(): Unit = entitiesDrawer.drawEntities(getPlayerEntity, getEntities)
 
