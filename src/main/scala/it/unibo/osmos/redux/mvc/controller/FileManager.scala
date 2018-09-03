@@ -3,11 +3,10 @@ package it.unibo.osmos.redux.mvc.controller
 import java.io.{File, PrintWriter}
 import java.nio.file._
 
-import akka.event.jul.Logger
 import it.unibo.osmos.redux.mvc.controller.UserHomePaths.userProgressDirectory
 import it.unibo.osmos.redux.mvc.model.JsonProtocols._
-import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.{LevelInfo, UserStat}
 import it.unibo.osmos.redux.mvc.model._
+import it.unibo.osmos.redux.utils.Logger
 import spray.json._
 
 import scala.io.{BufferedSource, Source}
@@ -50,7 +49,7 @@ object FileManager {
     val fileContent = Source.fromInputStream(fileStream).mkString
     textToLevel(fileContent) match {
       case Success(result) => Some(result)
-      case Failure(e: Throwable) => e.printStackTrace(); None
+      case Failure(e: Throwable) => Logger.log(e.printStackTrace().toString); None
     }
   }
 
@@ -69,7 +68,7 @@ object FileManager {
         path
       }
     }
-    val path = checkFileExist(level.levelId)
+    val path = checkFileExist(level.levelInfo.name)
     val levelFile = new File(path.toUri)
     createDirectoriesTree(levelFile)
     if (saveToFile(levelFile, level.toJson.prettyPrint)) Some(path) else None
@@ -101,7 +100,7 @@ object FileManager {
   def loadUserProgress(): UserStat =
     loadFile(userProgressDirectory + UserHomePaths.userProgressFileName + jsonExtension) match {
       case Some(text) => text.parseJson.convertTo[UserStat]
-      case _ => saveUserProgress(SinglePlayerLevels.userStatistics())
+      case _ => saveUserProgress(SinglePlayerLevels.userStatistics)
                 loadUserProgress()
   }
 
@@ -116,6 +115,17 @@ object FileManager {
       case _ => None
   }
 
+  /**
+    * Load level from file saved into user home directory
+    * @param fileName the name of file
+    * @return an option with the required levelInfo if it doesn't fail
+    */
+  def loadLevelInfo(implicit fileName: String): Option[LevelInfo] =
+    loadFile(UserHomePaths.levelsDirectory + fileName + jsonExtension) match {
+      case Some(text) => textToLevelInfo(text).toOption
+      case _ => None
+    }
+
 
   def saveToFile(file:File, text: String): Boolean = {
     val writer = new PrintWriter(file)
@@ -123,7 +133,7 @@ object FileManager {
       writer.write(text)
       return true
     } catch {
-      case e: Throwable => println("Exception occurred writing on file: ", file.getName,
+      case e: Throwable => Logger.log("Exception occurred writing on file: " + file.getName + " StackTrace: " +
         e.printStackTrace())
     } finally writer.close()
     false
@@ -134,7 +144,7 @@ object FileManager {
     if (source.isSuccess) {
       try return Some(source.get.mkString)
       catch {
-        case e:Throwable => println("Error reading file: ", filePath,e.printStackTrace())
+        case e:Throwable => Logger.log("Error reading file: " + filePath + " stack trace: " + e.printStackTrace().toString)
       }
       finally source.get.close()
     }
@@ -148,7 +158,7 @@ object FileManager {
     */
   def createDirectoriesTree(file:File):Boolean = Try(file.getParentFile.mkdirs()) match {
    case Success(_) =>  true
-   case Failure(exception) =>Logger("Error: SecurityException directories are protected [createDirectoriesTree]"
+   case Failure(exception) =>Logger.log("Error: SecurityException directories are protected [createDirectoriesTree]"
                                     + exception.getMessage)
                              false
   }
@@ -161,6 +171,13 @@ object FileManager {
   def textToLevel(text: String): Try[Level] = Try(text.parseJson.convertTo[Level])
 
   /**
+    * Convert a json string into a LevelInfo
+    * @param text json string
+    * @return Try with Level if it doesn't fail
+    */
+  def textToLevelInfo(text:String): Try[LevelInfo] = Try(text.parseJson.convertTo[LevelInfo])
+
+  /**
     * Return file name without json extension
     * @param file file object
     * @return file name
@@ -171,11 +188,13 @@ object FileManager {
     * Read from file the custom levels and if exists return their info
     * @return if exists a list of LevelInfo
     */
-  def customLevelsFilesName:Try[List[LevelInfo]] =
+  def customLevelsFilesName:Try[List[LevelInfo]] = {
+    /*Create directory tree for avoid NullPointer exception later*/
+    createDirectoriesTree(new File(UserHomePaths.levelsDirectory + "rnd.txt"))
     Try(new File(UserHomePaths.levelsDirectory).listFiles((_, name) => name.endsWith(jsonExtension))
-                                 .map(f => loadCustomLevel(f))
-                                 .filter(optLvl => optLvl.isDefined)
-                                 .map(lvl => LevelInfo(lvl.get.levelId, lvl.get.victoryRule)).toList)
+      .map(f => loadLevelInfo(f))
+      .filter(optLvl => optLvl.isDefined).map(opt => opt.get).toList)
+  }
 
   def getStyle: String = {
     try {
@@ -184,7 +203,7 @@ object FileManager {
       url.toString
     } catch {
       case _: NullPointerException =>
-        println("Error: style.css file not found")
+        Logger.log("Error: style.css file not found")
         throw new NullPointerException("style.css file not found");
     }
   }

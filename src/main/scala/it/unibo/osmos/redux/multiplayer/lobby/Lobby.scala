@@ -15,7 +15,7 @@ trait Lobby[T <: Player] {
   /**
     * The maximum number of players in the lobby.
     */
-  protected val maximumNumberOfPlayers = Constants.defaultMaximumLobbyPlayers
+  protected val maximumNumberOfPlayers: Int = Constants.MultiPlayer.defaultMaximumLobbyPlayers
 
   /**
     * Adds a new player.

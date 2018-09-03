@@ -1,7 +1,8 @@
-package travis.it.unibo.osmos.redux
+package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities._
+import it.unibo.osmos.redux.mvc.controller.LevelInfo
 import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.utils.Point
@@ -37,10 +38,9 @@ class TestMapBoundariesCheck extends FunSuite{
     val rectangle:MapShape = Rectangle((0,0),10,10)
     val levelMap:LevelMap = LevelMap(rectangle, CollisionRules.bouncing)
     //Level
-    var level:Level = Level(levelId,
+    var level:Level = Level(LevelInfo(levelId, VictoryRules.becomeTheBiggest),
                             levelMap,
-                            listCells,
-                            VictoryRules.becomeTheBiggest)
+                            listCells)
     level.checkCellPosition()
     assert(listCells.size.equals(level.entities.size))
 
@@ -48,7 +48,7 @@ class TestMapBoundariesCheck extends FunSuite{
     pce.getPositionComponent.point_(Point(5, -5))
     gc.getPositionComponent.point_(Point(0,12))
     sc.getPositionComponent.point_(Point(12, 0))
-    level = Level(levelId, levelMap, List(ce,pce,gc,sc), VictoryRules.becomeTheBiggest)
+    level = Level(LevelInfo(levelId, VictoryRules.becomeTheBiggest), levelMap, List(ce,pce,gc,sc))
     level.checkCellPosition()
     assert(level.entities.isEmpty)
   }
@@ -69,10 +69,9 @@ class TestMapBoundariesCheck extends FunSuite{
     val circle:MapShape = Circle((0,0), 5)
     val levelMap:LevelMap = LevelMap(circle, CollisionRules.bouncing)
     //Level
-    var level:Level = Level(levelId,
+    var level:Level = Level(LevelInfo(levelId, VictoryRules.becomeTheBiggest),
                             levelMap,
-                            listCells,
-                            VictoryRules.becomeTheBiggest)
+                            listCells)
     level.checkCellPosition()
     assert(level.entities.isEmpty)
 
@@ -80,7 +79,7 @@ class TestMapBoundariesCheck extends FunSuite{
     pce.getPositionComponent.point_(Point(2, 2))
     gc.getPositionComponent.point_(Point(2,-2))
     sc.getPositionComponent.point_(Point(-2, -2))
-    level = Level(levelId, levelMap, List(ce,pce,gc,sc), VictoryRules.becomeTheBiggest)
+    level = Level(LevelInfo(levelId, VictoryRules.becomeTheBiggest), levelMap, List(ce,pce,gc,sc))
     level.checkCellPosition()
     assert(level.entities.size.equals(listCells.size))
   }

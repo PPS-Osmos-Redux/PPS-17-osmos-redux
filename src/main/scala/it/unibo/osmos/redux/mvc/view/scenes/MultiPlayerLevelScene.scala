@@ -1,12 +1,13 @@
 package it.unibo.osmos.redux.mvc.view.scenes
+import it.unibo.osmos.redux.mvc.controller.LevelInfo
 import it.unibo.osmos.redux.mvc.view.context.{LevelContext, MultiPlayerLevelContext}
 import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
 import it.unibo.osmos.redux.utils.Point
 import javafx.scene.input.MouseEvent
 import scalafx.stage.Stage
 
-class MultiPlayerLevelScene(override val parentStage: Stage, override val listener: LevelSceneListener, override val upperSceneListener: UpperLevelSceneListener)
-  extends LevelScene(parentStage, listener, upperSceneListener, true) {
+class MultiPlayerLevelScene(override val parentStage: Stage, override val levelInfo: LevelInfo, override val listener: LevelSceneListener, override val upperSceneListener: UpperLevelSceneListener)
+  extends LevelScene(parentStage, levelInfo, listener, upperSceneListener) {
 
   /**
     * The level context, created with the MultiPlayerLevelScene. It must be a MultiPlayerLevelContext

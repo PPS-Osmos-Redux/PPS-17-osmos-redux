@@ -1,17 +1,15 @@
 package it.unibo.osmos.redux.mvc.controller
 
-import akka.actor.Status
 import it.unibo.osmos.redux.ecs.engine.GameEngine
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, PlayerCellEntity}
 import it.unibo.osmos.redux.multiplayer.client.Client
 import it.unibo.osmos.redux.multiplayer.common.{ActorSystemHolder, MultiPlayerMode}
 import it.unibo.osmos.redux.multiplayer.server.Server
-import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.LevelInfo
 import it.unibo.osmos.redux.mvc.model.{VictoryRules, _}
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context._
 import it.unibo.osmos.redux.mvc.view.events.{AbortLobby, _}
-import it.unibo.osmos.redux.utils.{Constants, Logger}
+import it.unibo.osmos.redux.utils.{Constants, GenericResponse, Logger}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Promise
@@ -28,8 +26,10 @@ trait Controller {
     * Initializes the level and the game engine.
     * @param levelContext The level context.
     * @param chosenLevel The name of the chosen level.
+    * @param isCustom True if the level is a custom one, false otherwise
+    * @return None if level loaded with success, Some(String) if exception occurs
     */
-  def initLevel(levelContext: LevelContext, chosenLevel: String): Unit
+  def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): GenericResponse[Boolean]
 
   /**
     * Initializes the multi-player lobby and the server or client.
@@ -37,13 +37,14 @@ trait Controller {
     * @param lobbyContext The lobby context
     * @return Promise that completes with true if the lobby is initialized successfully; otherwise false.
     */
-  def initLobby(user: User, lobbyContext: LobbyContext): Promise[Boolean]
+  def initLobby(user: User, lobbyContext: LobbyContext): Promise[GenericResponse[Boolean]]
 
   /**
     * Initializes the multi-player level and the game engine.
+    * @param levelInfo The level info
     * @return Promise that completes with true if the level is initialized successfully; otherwise false.
     */
-  def initMultiPlayerLevel(): Promise[Boolean]
+  def initMultiPlayerLevel(levelInfo: LevelInfo): Promise[GenericResponse[Boolean]]
 
   /**
     * Starts the level.
@@ -74,14 +75,14 @@ trait Controller {
     * @param entities Seq of CellEntity
     * @return True, if the operation is successful; otherwise false.
     **/
-  def saveLevel(name: String, map:MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value, entities: Seq[CellEntity]):Boolean
+  def saveLevel(name: String, map:MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value, entities: Seq[CellEntity]): Boolean
 
   /**
     * Delete from file a custom level
     * @param name custom level name
     * @return true, if remove file is completed with success
     */
-  def removeCustomLevel(name:String):Boolean
+  def removeLevel(name:String): Boolean
 
   /**
     * Gets all the levels in the campaign.
@@ -93,7 +94,7 @@ trait Controller {
     * Gets all multi-player levels.
     * @return The list of multi-player levels.
     */
-  def getMultiPlayerLevels: List[String] = MultiPlayerLevels.getLevels
+  def getMultiPlayerLevels: List[LevelInfo] = MultiPlayerLevels.getLevels
 
   /**
     * Gets all custom levels filename.
@@ -122,49 +123,48 @@ case class ControllerImpl() extends Controller with GameStateHolder {
   private var server: Option[Server] = None
   private var client: Option[Client] = None
 
-  override def initLevel(levelContext: LevelContext, chosenLevel: String): Unit = {
+  override def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): GenericResponse[Boolean] = {
     Logger.log("initLevel")
 
     var loadedLevel:Option[Level] = None
-    //TODO custom level logic
-    //if (isCustomLevel) {
-    // loadedLevel = FileManager.loadCustomLevel(chosenLevel)
-    // lastLoadedLevel = None
-    //}
-    //else {
-    loadedLevel = FileManager.loadResource(chosenLevel)
-    lastLoadedLevel = Some(chosenLevel)
-    //}
 
-    if(loadedLevel.isDefined) {
+    if (isCustom) {
+      loadedLevel = FileManager.loadCustomLevel(chosenLevel)
+      /*Because user stats are not influenced by custom level end game results*/
+      lastLoadedLevel = None
+    } else {
+      loadedLevel = FileManager.loadResource(chosenLevel)
+      lastLoadedLevel = Some(chosenLevel)
+    }
 
+    if (loadedLevel.isDefined) {
       loadedLevel.get.isSimulation = levelContext.levelContextType == LevelContextType.simulation
 
       val player = loadedLevel.get.entities.find(_.isInstanceOf[PlayerCellEntity])
-      if (player.isEmpty && !loadedLevel.get.isSimulation) throw new IllegalStateException("Cannot start a normal level if the player is not present")
+      if (player.isEmpty && !loadedLevel.get.isSimulation) return GenericResponse(false, "Cannot start a normal level if the player is not present")
       //assign current player uuid to the
-      levelContext.setPlayerUUID(player.get.getUUID)
+      if(player.isDefined) levelContext.setPlayerUUID(player.get.getUUID)
 
       //create and initialize the game engine
       if(engine.isEmpty) engine = Some(GameEngine())
       //TODO: engine must need a GameStateHolder for the EndGameSystem
-      engine.get.init(loadedLevel.get, levelContext/*, this*/)
+      engine.get.init(loadedLevel.get, levelContext)
       levelContext.setupLevel(loadedLevel.get.levelMap.mapShape)
+      GenericResponse(true)
     } else {
-      println("Level ", chosenLevel, " not found! is a custom level? "/*, isCustomLevel*/)
+      GenericResponse(false, "Error: level " + chosenLevel + " not found! The level " + (if(isCustom) "is" else "isn't") + "custom level")
     }
   }
 
-  override def initLobby(user: User, lobbyContext: LobbyContext): Promise[Boolean] = {
+  override def initLobby(user: User, lobbyContext: LobbyContext): Promise[GenericResponse[Boolean]] = {
     Logger.log("initLobby")
 
-    val promise = Promise[Boolean]()
+    val promise = Promise[GenericResponse[Boolean]]()
 
     //subscribe to lobby context to intercept exit from lobby click
     lobbyContext.subscribe {
       //if user is defined that the event is from the user and not from the server
       case LobbyEventWrapper(AbortLobby, Some(_)) =>
-        Logger.log("Received AbortLobby event from LobbyContext.")
         multiPlayerMode match {
           case Some(MultiPlayerMode.Server) =>
             if (server.nonEmpty) {
@@ -181,15 +181,14 @@ case class ControllerImpl() extends Controller with GameStateHolder {
               multiPlayerMode = None
               client = None
             }
-          case _ => //do not
+          case _ => //do nothing
         }
-      case _ => //do not
+      case _ => //do nothing
     }
 
     multiPlayerMode = Some(if (user.isServer) MultiPlayerMode.Server else MultiPlayerMode.Client)
     multiPlayerMode match {
       case Some(MultiPlayerMode.Server) =>
-
         //initialize the server and creates the lobby
         val server = Server(user.username)
         server.bind(ActorSystemHolder.createActor(server))
@@ -197,10 +196,9 @@ case class ControllerImpl() extends Controller with GameStateHolder {
         server.createLobby(lobbyContext)
         //save server reference
         this.server = Some(server)
-        promise.success(true)
+        promise success GenericResponse(true)
 
       case Some(MultiPlayerMode.Client) =>
-
         //initialize the client, connects to the server and enters the lobby
         val client = Client()
         client.bind(ActorSystemHolder.createActor(client))
@@ -210,36 +208,35 @@ case class ControllerImpl() extends Controller with GameStateHolder {
               this.client = Some(client)
               //creates the level context
               //TODO: think about a better way, technically getUUID method of the client won't be called until the game is started (the GameStarted message will carry along this value).
-              val levelContext = LevelContext(Constants.defaultClientUUID)
+              val levelContext = LevelContext(Constants.MultiPlayer.defaultClientUUID)
               //initializes the game
               client.initGame(levelContext)
               //fulfill promise
-              promise success true
-            case Success(false) => promise success false
-            case Failure(t) => promise failure t
+              promise success GenericResponse(true)
+            case Success(false) => promise success GenericResponse(false, "Unable to enter the lobby, unknown error occurred")
+            case Failure(t) => promise success GenericResponse(false, s"Unable to enter the lobby: ${t.getMessage}")
           }
-          case Success(false) => promise success false
-          case Failure(t) => promise failure t
+          case Success(false) => promise success GenericResponse(false, "Unable to connect to the server, unknown error")
+          case Failure(t) => promise success GenericResponse(false, s"Unable to connect to the server: ${t.getMessage}")
         }
       case _ =>
-        promise failure new IllegalArgumentException("Cannot initialize the lobby if the multi-player mode is not defined")
+        promise success GenericResponse(false, "Cannot initialize the lobby if the multi-player mode is not defined")
     }
     promise
   }
 
-  override def initMultiPlayerLevel(): Promise[Boolean] = {
+  override def initMultiPlayerLevel(levelInfo: LevelInfo): Promise[GenericResponse[Boolean]] = {
     Logger.log("initMultiPlayerLevel")
 
-    val promise = Promise[Boolean]()
+    val promise = Promise[GenericResponse[Boolean]]()
 
     //load level definition
-    //TODO: for not there is only one multi-player level (lobbyContext has the chosenLevel property)
-    val loadedLevel = FileManager.loadResource("1", isMultiPlayer = true).get
+    val loadedLevel = FileManager.loadResource(levelInfo.name, isMultiPlayer = true).get
 
     multiPlayerMode.get match {
       case MultiPlayerMode.Server =>
         //assign clients to players and wait confirmation
-        server.get.initGame(loadedLevel).future onComplete {
+        server.get.initGame(loadedLevel, levelInfo).future onComplete {
           case Success(_) =>
             //create the engine
             if (engine.isEmpty) engine = Some(GameEngine())
@@ -247,16 +244,16 @@ case class ControllerImpl() extends Controller with GameStateHolder {
             val levelContext = engine.get.init(loadedLevel, server.get)
 
             //signal server that the game is ready to be started
-            server.get.startGame(levelContext)
+            server.get.startGame(levelContext, levelInfo)
             //tell view to actually start the game
             levelContext.setupLevel(loadedLevel.levelMap.mapShape)
 
             //fulfill the promise
-            promise success true
-          case Failure(t) => promise failure t
+            promise success GenericResponse(true)
+          case Failure(t) => promise success GenericResponse(false, s"Unable to initialize the game: ${t.getMessage}")
         }
       case _ =>
-        promise failure new IllegalStateException("Unable to initialize multi-player level if no lobby have been created.")
+        promise success GenericResponse(false, "Unable to initialize multi-player level if no lobby have been created.")
     }
     promise
   }
@@ -300,54 +297,36 @@ case class ControllerImpl() extends Controller with GameStateHolder {
     }
   }
 
-   /**
-    * A generic definition of the game state
-    *
-    * @return a GameStateEventWrapper
-    *///TODO useless for controller
+  //TODO useless for controller
   override def gameCurrentState: GameStateEventWrapper = ???
 
   override def getSoundPath(soundType: SoundsType.Value): Option[String] = soundType match {
     case SoundsType.menu => Some(FileManager.loadMenuMusic())
     case SoundsType.level => Some(FileManager.loadLevelMusic())
     case SoundsType.button => Some(FileManager.loadButtonsSound())
-    case _ => println("Sound type not managed!! [Controller getSoundPath]")
+    case _ => Logger.log("Sound type not managed!! [getSoundPath]")
               None
   }
 
-  /**
-    * Called on a event T type
-    *
-    * @param event the event
-    */
-  override def notify(event: GameStateEventWrapper): Unit = {
-    if(lastLoadedLevel.isDefined) {
-      SinglePlayerLevels.newEndGameEvent(event, lastLoadedLevel.get)
-      FileManager.saveUserProgress(SinglePlayerLevels.userStatistics())
-    }
+  override def notify(event: GameStateEventWrapper): Unit = lastLoadedLevel match {
+    case Some(lastLevel:String) => SinglePlayerLevels.newEndGameEvent(event, lastLevel)
+      FileManager.saveUserProgress(SinglePlayerLevels.userStatistics)
+    case _ =>
   }
 
-  /**
-    * Gets all custom levels filename.
-    *
-    * @return The list of custom levels filename.
-    */
   override def getCustomLevels: List[LevelInfo] = FileManager.customLevelsFilesName match {
     case Success(customLevels) => customLevels
-    case Failure(exception) => Logger.log(exception.getMessage)
+    case Failure(_) => Logger.log("[Info] User doesn't have any saved custom level or custom level directory doesn't exists")
                                List()
   }
 
+  override def saveLevel(name: String, map: MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value, entities: Seq[CellEntity]): Boolean = {
+    val lv: Level = Level(LevelInfo(name, victoryRules) , LevelMap(map, collisionRules), entities.toList)
+    lv.checkCellPosition()
+    FileManager.saveLevel(lv).isDefined
+  }
 
-  override def saveLevel(name: String, map: MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value, entities: Seq[CellEntity]): Boolean =
-    FileManager.saveLevel(Level(name, LevelMap(map, collisionRules), entities.toList, victoryRules)).isDefined
-
-  /**
-    * Delete from file a custom level
-    *
-    * @param name custom level name
-    */
-  override def removeCustomLevel(name: String): Boolean = FileManager.deleteLevel(name) match {
+  override def removeLevel(name: String): Boolean = FileManager.deleteLevel(name) match {
     case Success(_) => true
     case Failure(exception) => Logger.log("Error occurred removing custom level file" + exception.getMessage)
                                false

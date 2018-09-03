@@ -3,6 +3,7 @@ package it.unibo.osmos.redux.mvc.view.components.custom
 import it.unibo.osmos.redux.mvc.controller.FileManager
 import scalafx.scene.control.Alert
 import scalafx.scene.control.Alert.AlertType
+import scalafx.scene.layout.Region
 
 class AlertBuilder {
 
@@ -40,15 +41,15 @@ class AlertBuilder {
   def build(): Alert = {
     val alert = new Alert(alertType) {
       title = alertTitle
-      headerText = alertHeaderText
+      headerText = None
       if (!alertGraphic) {
         graphic = null
       }
       contentText = alertContentText
     }
+    alert.getDialogPane.setMinHeight(Region.USE_PREF_SIZE)
     alert.getDialogPane.getStylesheets.addAll(FileManager.getStyle)
     alert.getDialogPane.getStyleClass.add("dialog-style")
-    //alert.getDialogPane.setStyle("-fx-font: 20 arial;")
     alert
   }
 

@@ -1,5 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.components.editor
 
+import it.unibo.osmos.redux.mvc.controller.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.level.{AnimatedAbstractLevelNode, LevelNodeListener}
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import scalafx.geometry.Insets
@@ -24,20 +25,19 @@ trait EditorLevelNodeListener extends LevelNodeListener {
 /**
   * Level node representing a custom level created by the user
   * @param listener the EditorLevelNodeListener
-  * @param level the level index
+  * @param levelInfo the level info
   */
-class EditorLevelNode(override val listener: EditorLevelNodeListener, override val level: String) extends AnimatedAbstractLevelNode(listener, level, playable = true) {
+class EditorLevelNode(override val listener: EditorLevelNodeListener, override val levelInfo: LevelInfo) extends AnimatedAbstractLevelNode(listener, levelInfo) {
 
   effect = new DropShadow {
     color = Color.ForestGreen
   }
 
-
   /* The upper text */
   override lazy val text: Text = new Text() {
     margin = Insets(0, 0, 20, 0)
-    style = "-fx-font-size: 12pt"
-    text = s"Level $level"
+    style = "-fx-font-size: 20pt"
+    text = "Level " + levelInfo.name
   }
 
   /* The level image */
@@ -54,11 +54,10 @@ class EditorLevelNode(override val listener: EditorLevelNodeListener, override v
   /* The button used to delete the custom level */
   val deleteButton: Button = new Button("Delete") {
     margin = Insets(20, 0, 0, 0)
-    onAction = _ => listener.onLevelDeleteClick(level)
+    onAction = _ => listener.onLevelDeleteClick(levelInfo.name)
     visible <== EditorLevelNode.this.hover
   }
 
   children.add(deleteButton)
-
 
 }
