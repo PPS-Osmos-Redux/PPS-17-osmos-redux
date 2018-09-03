@@ -1,13 +1,13 @@
 package it.unibo.osmos.redux.ecs.systems.sentient
-import it.unibo.osmos.redux.ecs.entities.builders.SentientCellBuilder
+
 import it.unibo.osmos.redux.ecs.entities.SentientProperty
-import it.unibo.osmos.redux.ecs.systems.{CircularBorder, RectangularBorder}
-import it.unibo.osmos.redux.mvc.model.{CollisionRules, Level}
-import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
-import it.unibo.osmos.redux.utils.Vector
-import it.unibo.osmos.redux.utils.Point
-import it.unibo.osmos.redux.utils.Constants.Sentient._
+import it.unibo.osmos.redux.ecs.entities.builders.SentientCellBuilder
+import it.unibo.osmos.redux.ecs.systems.borderconditions.{CircularBorder, RectangularBorder}
 import it.unibo.osmos.redux.ecs.systems.sentient.SentientUtils._
+import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
+import it.unibo.osmos.redux.mvc.model.{CollisionRules, Level}
+import it.unibo.osmos.redux.utils.Constants.Sentient._
+import it.unibo.osmos.redux.utils.{Point, Vector}
 
 case class EscapeFromBoundaryRule(levelInfo: Level) extends SentientRule {
 
@@ -29,7 +29,7 @@ case class EscapeFromBoundaryRule(levelInfo: Level) extends SentientRule {
         .withDimension(sentient.getDimensionComponent.radius + getDesiredSeparation)
         .withSpeed(actualSpeed.x, actualSpeed.y).build
       bounceRule.checkAndSolveCollision(sentientCopy)
-      if(sentientCopy.getSpeedComponent.vector == actualSpeed) {
+      if (sentientCopy.getSpeedComponent.vector == actualSpeed) {
         Vector.zero()
       } else {
         val steer = computeSteer(actualSpeed, sentientCopy.getSpeedComponent.vector normalized())

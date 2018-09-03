@@ -29,7 +29,7 @@ case class MultiPlayerEndGameSystem(server: Server, levelContext: GameStateHolde
 
   override def update(): Unit = {
     if (isGameRunning) {
-      val (deadPlayers, alivePlayers) = server.getLobbyPlayers partition(p => entities.map(_.getUUID) contains p.getUsername)
+      val (deadPlayers, alivePlayers) = server.getLobbyPlayers partition (p => entities.map(_.getUUID) contains p.getUsername)
       val aliveCells = entitiesSecondType.filterNot(c => deadPlayers.map(_.getUUID) contains c.getUUID)
 
       //check
