@@ -2,7 +2,7 @@ package it.unibo.osmos.redux.ecs.systems
 
 import it.unibo.osmos.redux.ecs.entities.EntityType
 import it.unibo.osmos.redux.ecs.entities.properties.composed.{GravityProperty, MovableProperty}
-import it.unibo.osmos.redux.utils.{MathUtils, Point, Vector}
+import it.unibo.osmos.redux.utils.MathUtils
 
 case class GravitySystem() extends AbstractSystem2[MovableProperty, GravityProperty]() {
 
