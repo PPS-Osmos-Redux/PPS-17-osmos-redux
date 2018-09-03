@@ -1,6 +1,8 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.ecs.entities.EntityType
+import it.unibo.osmos.redux.mvc.controller.LevelInfo
+import it.unibo.osmos.redux.mvc.controller.{MediaPlayer, SoundsType}
 import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.ViewConstants
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Colors._
@@ -25,10 +27,17 @@ import scalafx.util.Duration
 
 /**
   * This scene holds and manages a single level
+  * @param parentStage the parent stage
+  * @param levelInfo the level info
+  * @param listener the listener
+  * @param upperSceneListener the upper scene listener to manage the previously scene events
+  * @param showPause true if the pause box must be shown, false otherwise
   */
-class LevelScene(override val parentStage: Stage, val listener: LevelSceneListener,
+class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val listener: LevelSceneListener,
                  val upperSceneListener: UpperLevelSceneListener, private val showPause: Boolean = true)
   extends BaseScene(parentStage) with LevelContextListener with LevelStateBoxListener {
+
+  MediaPlayer.play(SoundsType.level)
 
   /**
     * The current game pending state: true if the game is paused
@@ -58,7 +67,6 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     */
   private val pauseScreen = LevelScreen.Builder(this)
     .withText("Game paused", 30, Color.White)
-    // TODO: the buttons are not working correctly
     .withButton("Resume", _ => onResume())
     .withButton("Return to Level Selection", _ => onExit())
     .build()
@@ -68,8 +76,9 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
     * The splash screen showed when the game is paused
     */
   private val splashScreen = LevelScreen.Builder(this)
-    .withText("Become huge", 50, Color.White)
+    .withText(if (levelInfo != null) levelInfo.victoryRule.toString else "", 50, Color.White)
     .build()
+  splashScreen.opacity = 0.0
 
   /**
     * The upper state box
@@ -92,8 +101,10 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
         onFinished = _ => new FadeTransition(Duration.apply(3000), canvas) {
           fromValue = 0.0
           toValue = 1.0
-          /* Removing the splash screen to reduce the load. Then the level is starte */
-          onFinished = _ => content.remove(splashScreen);
+          onFinished = _ => {
+            /* Removing the splash screen to reduce the load. Then the level is started */
+            content.remove(splashScreen)
+          }
           listener.onStartLevel()
         }.play()
       }.play()
@@ -129,20 +140,21 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   def levelContext_=(levelContext: LevelContext): Unit = _levelContext = Option(levelContext)
 
   override def onPause(): Unit = {
-    //paused.value = true
-    canvas.opacity = 0.5
-    //content.add(pauseScreen)
+    canvas.opacity = 0.3
+    paused.value = true
+
     listener.onPauseLevel()
   }
 
   override def onResume(): Unit = {
-    paused.value = false
     canvas.opacity = 1
+    paused.value = false
 
     listener.onResumeLevel()
   }
 
   override def onExit(): Unit = {
+    MediaPlayer.play(SoundsType.menu)
     upperSceneListener.onStopLevel()
     listener.onStopLevel()
   }
@@ -150,7 +162,7 @@ class LevelScene(override val parentStage: Stage, val listener: LevelSceneListen
   /**
     * OnMouseClicked handler, reacting only if the game is not paused
     */
-  onMouseClicked = mouseEvent => {
+  onMouseClicked = mouseEvent => if (!paused.value) {
     /* Creating a circle representing the player click */
     val clickCircle = Circle(mouseEvent.getX, mouseEvent.getY, 2.0, defaultPlayerColor)
     content.add(clickCircle)

@@ -4,7 +4,8 @@ import akka.actor.{Actor, ActorIdentity, ActorRef, Identify, Props}
 import it.unibo.osmos.redux.multiplayer.client.ClientActor._
 import it.unibo.osmos.redux.multiplayer.common.ClientsManager
 import it.unibo.osmos.redux.multiplayer.players.BasePlayer
-import it.unibo.osmos.redux.multiplayer.server.ServerActor._
+import it.unibo.osmos.redux.multiplayer.server.ServerActor.{Disconnected, _}
+import it.unibo.osmos.redux.mvc.controller.LevelInfo
 import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity
 import it.unibo.osmos.redux.utils.Logger
@@ -18,7 +19,11 @@ class ServerActor(private val server: Server) extends Actor {
   implicit val who: String = "ServerActor"
 
   //manager for clients handshaking
-  private val clientsManager = ClientsManager(System.currentTimeMillis())
+  private lazy val clientsManager = ClientsManager(System.currentTimeMillis())
+
+  override def preStart(): Unit = {
+    Logger.log("Actor starting...")
+  }
 
   override def receive: Receive = {
     case Connect(actorRef: ActorRef) => //handshaking (async with ask pattern)
@@ -59,18 +64,35 @@ class ServerActor(private val server: Server) extends Actor {
       clientsManager.getClient(tempID) match {
         case Some(ref) =>
           val (address, port) = (ref.path.address.host.getOrElse("0.0.0.0"), ref.path.address.port.getOrElse(0))
-          if (server.addPlayerToLobby(ref, BasePlayer(username, address, port))) sender ! LobbyInfo(server.getLobbyPlayers.map(_.toBasicPlayer))
-          else sender ! LobbyFull
+          if (server.addPlayerToLobby(ref, BasePlayer(username, address, port))) {
+            sender ! LobbyInfo(server.getLobbyPlayers.map(_.toBasicPlayer))
+            context.watchWith(ref, Disconnect(username)) //add watch to this actor
+          } else sender ! LobbyFull
         case None =>
           sender ! Disconnected //handshaking failed
           throw new IllegalArgumentException(s"Unable to found actor ref for client with tempID: $tempID")
       }
 
-    case LeaveLobby(username) => server.removePlayerFromLobby(username)
+    case LeaveLobby(username) =>
+      Logger.log(s"Received LeaveLobby message from $username ($sender)")
+
+      context.unwatch(sender); server.removePlayerFromLobby(username)
 
     case PlayerInput(event) => server.notifyClientInputEvent(event)
 
-    case LeaveGame(username) => server.removePlayerFromGame(username)
+    case LeaveGame(username) =>
+      Logger.log(s"Received LeaveGame message from $username")
+
+      context.unwatch(sender); server.removePlayerFromGame(username)
+
+    case Disconnect(username) =>
+      Logger.log(s"Received Disconnect message from $username ($sender)")
+
+      server.getState match {
+        case ServerState.Lobby => server.removePlayerFromLobby(username)
+        case ServerState.Game => server.removePlayerFromGame(username)
+        case _ => //do nothing
+      }
 
     case unknownMessage => Logger.log("Received unknown message: " + unknownMessage)("ServerActor")
   }
@@ -101,7 +123,7 @@ object ServerActor {
 
   final case class UpdateGame(entities: Seq[DrawableEntity]) //server send all entities to draw
 
-  final case class GameStarted(id: String, mapShape: MapShape) //Server wants to start the game, reply with Ready if all is ok (tell you who are you)
+  final case class GameStarted(id: String, levelInfo: LevelInfo, mapShape: MapShape) //Server wants to start the game, reply with Ready if all is ok (tell you who are you)
   final case class GameEnded(victory: Boolean) //Server have stopped the game (and tells you if you won or lose)
 }
 

@@ -1,16 +1,16 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityType}
-import it.unibo.osmos.redux.mvc.model.{MapShape, MapShapeType, VictoryRules}
+import it.unibo.osmos.redux.mvc.model.{CollisionRules, MapShape, MapShapeType, VictoryRules}
 import it.unibo.osmos.redux.mvc.view.ViewConstants
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.components.custom.{StyledButton, TitledComboBox}
-import it.unibo.osmos.redux.mvc.view.components.editor.{CellEntityBuilder, CircleLevelBuilder, GravityCellEntityBuilder, RectangleLevelBuilder}
+import it.unibo.osmos.redux.mvc.view.components.editor._
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import javafx.scene.paint.ImagePattern
 import scalafx.beans.property.ObjectProperty
 import scalafx.geometry.{Insets, Pos}
-import scalafx.scene.control.{Alert, Button, TextInputDialog}
+import scalafx.scene.control.{Alert, TextInputDialog}
 import scalafx.scene.image.ImageView
 import scalafx.scene.layout._
 import scalafx.scene.paint.Color
@@ -24,7 +24,7 @@ import scala.collection.mutable.ListBuffer
   * @param parentStage the parent stage
   * @param listener the EditorSceneListener
   */
-class EditorScene (override val parentStage: Stage, val listener: EditorSceneListener, val upperListener: UpperLevelSceneListener) extends BaseScene(parentStage) {
+class EditorScene (override val parentStage: Stage, val listener: EditorSceneListener, val upperListener: UpperEditorSceneListener) extends BaseScene(parentStage) {
 
   /* Entities currently built */
   var builtEntities: ListBuffer[CellEntity] = ListBuffer()
@@ -40,47 +40,67 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   /**
     * Level Type
     */
-  private var levelType: ObjectProperty[MapShapeType.Value] = ObjectProperty(MapShapeType.Circle)
+  private val levelType: ObjectProperty[MapShapeType.Value] = ObjectProperty(MapShapeType.Circle)
   private val levelTypeBox = new TitledComboBox[MapShapeType.Value]("Level Type:", MapShapeType.values.toSeq, mapType => levelType.value = mapType)
 
   /** Pane containing the field to configure the circular level */
-  private val circularLevelBuilder: CircleLevelBuilder = new CircleLevelBuilder {
+  private val circularLevelBuilder: CircleLevelCreator = new CircleLevelCreator {
     xCenter.value = ViewConstants.Window.defaultWindowWidth / 2
     yCenter.value = ViewConstants.Window.defaultWindowHeight / 2
     radius.value = 400.0
   }
   /** Pane containing the field to configure the rectangular level */
-  private val rectangularLevelBuilder: RectangleLevelBuilder = new RectangleLevelBuilder {
+  private val rectangularLevelBuilder: RectangleLevelCreator = new RectangleLevelCreator {
     visible = false
-    levelWidth.value = 800.0
-    levelHeight.value = 600.0
-    xCenter.value = ViewConstants.Window.defaultWindowWidth / 2 - levelWidth.value / 2
-    yCenter.value = ViewConstants.Window.defaultWindowHeight / 2 - levelHeight.value / 2
+    levelWidth.value = ViewConstants.Window.defaultWindowWidth / 2
+    levelHeight.value = ViewConstants.Window.defaultWindowHeight / 2
+    xCenter.value = ViewConstants.Window.defaultWindowWidth / 2
+    yCenter.value = ViewConstants.Window.defaultWindowHeight / 2
   }
 
   /**
     * Level Type
     */
-  private var victoryRule: ObjectProperty[VictoryRules.Value] = ObjectProperty(VictoryRules.becomeTheBiggest)
+  private val victoryRule: ObjectProperty[VictoryRules.Value] = ObjectProperty(VictoryRules.becomeTheBiggest)
   private val victoryRuleBox = new TitledComboBox[VictoryRules.Value]("Victory Rule:", VictoryRules.values.toSeq, vr => victoryRule.value = vr)
+
+  /**
+    * Level Type
+    */
+  private val collisionRule: ObjectProperty[CollisionRules.Value] = ObjectProperty(CollisionRules.bouncing)
+  private val collisionRuleBox = new TitledComboBox[CollisionRules.Value]("Collision Rule:", CollisionRules.values.toSeq, cr => collisionRule.value = cr)
 
   /**
     * Entity Type
     */
-  private var entityType: ObjectProperty[EntityType.Value] = ObjectProperty(EntityType.Matter)
+  private val entityType: ObjectProperty[EntityType.Value] = ObjectProperty(EntityType.Matter)
   private val entityComboBox = new TitledComboBox[EntityType.Value]("Entity Type:", EntityType.values.toSeq, et => {
     entityType.value = et
   })
 
   /* Pane containing the field to configure the entities*/
-  private val cellEntityBuilder: CellEntityBuilder = new CellEntityBuilder
+  private val cellEntityCreator: CellEntityCreator = new CellEntityCreator
   /* Pane containing the field to configure the gravity entities*/
-  private val gravityCellEntityBuilder: GravityCellEntityBuilder = new GravityCellEntityBuilder(isAttractive = true) {
+  private val gravityCellEntityCreator: GravityCellEntityCreator = new GravityCellEntityCreator(isAttractive = true) {
+    visible = false
+  }
+  /* Pane containing the field to configure the sentient entities*/
+  private val sentientCellEntityCreator: CellEntityCreator = new SentientCellEntityCreator {
+    visible = false
+  }
+  /* Pane containing the field to configure the player entities*/
+  private val playerCellEntityCreator: CellEntityCreator = new PlayerCellEntityCreator {
     visible = false
   }
 
   /** The entity builders */
-  private val entityBuilders = Seq(cellEntityBuilder, gravityCellEntityBuilder)
+  private val entityBuilders = Seq(cellEntityCreator, gravityCellEntityCreator, sentientCellEntityCreator, playerCellEntityCreator)
+
+  /**
+    * Returns the currently visible cell entity creator
+    * @return the currently visible cell entity creator
+    */
+  private def getVisibleCellBuilder: CellEntityCreator = entityBuilders.filter((b) => b.visible.value).head
 
   /* The entity container*/
   private val entityContainer: VBox = new VBox(1.0) {
@@ -95,13 +115,13 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
       entityType.onChange({
         builderSeq.foreach(cellBuilder => cellBuilder.visible = false)
         entityType.value match {
-          case EntityType.Matter => cellEntityBuilder.visible = true; cellEntityBuilder.entityType_=(EntityType.Matter)
-          case EntityType.AntiMatter => cellEntityBuilder.visible = true; cellEntityBuilder.entityType_=(EntityType.AntiMatter)
-          case EntityType.Attractive => gravityCellEntityBuilder.visible = true; gravityCellEntityBuilder.isAttractive = true
-          case EntityType.Repulsive => gravityCellEntityBuilder.visible = true; gravityCellEntityBuilder.isAttractive = false
-          case EntityType.Sentient => cellEntityBuilder.visible = true; cellEntityBuilder.entityType_=(EntityType.Sentient)
-          case EntityType.Controlled => cellEntityBuilder.visible = true; cellEntityBuilder.entityType_=(EntityType.Controlled)
-          case _ => cellEntityBuilder.visible = true; cellEntityBuilder.entityType_=(EntityType.Matter)
+          case EntityType.Matter => cellEntityCreator.visible = true; cellEntityCreator.entityType_=(EntityType.Matter)
+          case EntityType.AntiMatter => cellEntityCreator.visible = true; cellEntityCreator.entityType_=(EntityType.AntiMatter)
+          case EntityType.Attractive => gravityCellEntityCreator.visible = true; gravityCellEntityCreator.isAttractive = true
+          case EntityType.Repulsive => gravityCellEntityCreator.visible = true; gravityCellEntityCreator.isAttractive = false
+          case EntityType.Sentient => sentientCellEntityCreator.visible = true;
+          case EntityType.Controlled => playerCellEntityCreator.visible = true; playerCellEntityCreator.entityType_=(EntityType.Controlled)
+          case _ => cellEntityCreator.visible = true; cellEntityCreator.entityType_=(EntityType.Matter)
         }
       })
     }
@@ -138,7 +158,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     prefWidth <== parentStage.width
     prefHeight <== parentStage.height
     left = entityContainer
-    right = new VBox(5.0, victoryRuleBox.root, levelTypeContainer) {
+    right = new VBox(5.0, victoryRuleBox.root, collisionRuleBox.root, levelTypeContainer) {
       margin = Insets(10.0)
       padding = Insets(0.0, 10.0, 0.0, 0.0)
     }
@@ -147,7 +167,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
       onAction = _ => saveLevel()
     }, new StyledButton("Exit Level") {
       /* We go back */
-      onAction = _ => upperListener.onStopLevel()
+      onAction = _ => upperListener.onExitEditor()
     }) {
       margin = Insets(10.0)
       alignment = Pos.Center
@@ -165,24 +185,36 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
       case Some(name) =>
         /** Check if the name is empty */
         if (name isEmpty) {
-          val alert = new Alert(Alert.AlertType.Error) {
+          new Alert(Alert.AlertType.Error) {
             title = "Error"
             contentText.value = "The level name cannot be empty"
-          }
-          alert.showAndWait()
+          }.showAndWait()
         } else {
           /** The name is valid, we have to retrieve the elements */
           /** Level */
-          val level = levelType.value match {
-            case MapShapeType.Circle => circularLevelBuilder.build()
-            case MapShapeType.Rectangle => rectangularLevelBuilder.build()
-            case _ =>
+          val level: MapShape = levelType.value match {
+            case MapShapeType.Circle => circularLevelBuilder.create()
+            case MapShapeType.Rectangle => rectangularLevelBuilder.create()
           }
           /** Victory rules */
           val victoryRules = victoryRule.value
+          /** Collision rules */
+          val collisionRules = collisionRule.value
 
           /* Save the level */
-          //TODO: saveLevel(name: String, level.MapShape.Value, victoryRules: VictoryRules.Value, entities: Seq[CellEntities])
+          listener.onSaveLevel(name, level, victoryRules, collisionRules, builtEntities, {
+            /* The level has been created*/
+            case true => new Alert(Alert.AlertType.Confirmation) {
+              title = "Success"
+              contentText.value = "The custom level has been successfully saved"
+            }.showAndWait()
+            /* We show an alert */
+            case false =>
+              new Alert(Alert.AlertType.Error) {
+                title = "Error"
+                contentText.value = "The custom level could not be made"
+              }.showAndWait()
+          })
         }
 
       case _ =>
@@ -206,10 +238,10 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     * The placeholder which models the rectangular level
     */
   val rectangularLevelPlaceholder: Rectangle = new Rectangle() {
-    x <== rectangularLevelBuilder.xCenter
-    y <== rectangularLevelBuilder.yCenter
     width <== rectangularLevelBuilder.levelWidth
     height <== rectangularLevelBuilder.levelHeight
+    x <== rectangularLevelBuilder.xCenter - rectangularLevelBuilder.levelWidth /2
+    y <== rectangularLevelBuilder.yCenter - rectangularLevelBuilder.levelHeight /2
     stroke = Color.White
     strokeWidth = 2.0
     fill = Color.Transparent
@@ -226,12 +258,12 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     */
   val entityPlaceholder: Circle = new Circle() {
     fill.value = new ImagePattern(ImageLoader.getImage(cellTexture))
-    radius = 100
+    radius = getVisibleCellBuilder.radius.value
 
     /* We set a min and max for the size */
     onScroll = scroll => {
       radius = radius.value + (scroll.getDeltaY/10) min 150 max 10
-      cellEntityBuilder.radius.value = radius.value
+      getVisibleCellBuilder.radius.value = radius.value
     }
 
     entityType.onChange(entityType.value match {
@@ -257,14 +289,15 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   onMouseMoved = e => {
     entityPlaceholder.centerX.value = e.getX
     entityPlaceholder.centerY.value = e.getY
-    cellEntityBuilder.x.value = e.getX
-    cellEntityBuilder.y.value = e.getY
+    val visibleBuilder = getVisibleCellBuilder
+    visibleBuilder.x.value = e.getX
+    visibleBuilder.y.value = e.getY
   }
 
   /**
     * On mouse clicked, we parse the placeholder values and created a new element
     */
-  onMouseClicked = e => if (entityPlaceholder.visible.value) {
+  onMouseClicked = _ => if (entityPlaceholder.visible.value) {
     /** Insert an element to be shown */
     editorElements += new Circle {
       fill.value_=(entityPlaceholder.fill.value)
@@ -276,12 +309,9 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     content = editorElements
 
     /** Insert an entity to the built entities list */
-    entityBuilders.filter((b) => b.visible.value).head match {
-      case gc: GravityCellEntityBuilder => builtEntities += gc.build()
-      case c: CellEntityBuilder => builtEntities += c.build()
-      case _ =>
-    }
-
+    val n = getVisibleCellBuilder create()
+    println(n)
+    builtEntities += n
   }
 
   /** The main editor elements */
@@ -306,5 +336,15 @@ trait UpperEditorSceneListener {
   */
 trait EditorSceneListener {
 
+  /**
+    * Called when the user wants to save the level after the name has been chosen
+    * @param name the chosen level name
+    * @param map the chosen level map
+    * @param victoryRules the chosen victory rules
+    * @param collisionRules the chosen collision rules
+    * @param entities the inserted entities
+    * @param callback the callback
+    */
+  def onSaveLevel(name: String, map: MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value, entities: Seq[CellEntity], callback: Boolean => Unit)
 
 }

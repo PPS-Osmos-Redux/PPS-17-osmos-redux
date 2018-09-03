@@ -3,6 +3,7 @@ package it.unibo.osmos.redux.mvc.view.components.custom
 import scalafx.beans.property.StringProperty
 import scalafx.geometry.Insets
 import scalafx.scene.Node
+import scalafx.scene.control.Label
 import scalafx.scene.layout.{HBox, Pane, VBox}
 import scalafx.scene.paint.Color
 import scalafx.scene.text.Text
@@ -20,11 +21,10 @@ abstract class TitledNode[N <: Node](val title: StringProperty, vertical: Boolea
   root.padding = Insets(10.0)
   root.style = "-fx-background-color : #ffffff;"
 
-  private val text = new Text {
+  private val text = new Label {
     if (title != null) {
       text <==> title
     }
-    fill = Color.Black
   }
 
   /**

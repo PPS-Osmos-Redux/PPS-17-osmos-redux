@@ -75,6 +75,7 @@ object LevelScreen {
     prefWidth <== parentScene.width
     prefHeight <== parentScene.height
     alignment = Pos.Center
+    alignmentInParent = Pos.Center
     parentScene fill = Color.Black
 
     children = components

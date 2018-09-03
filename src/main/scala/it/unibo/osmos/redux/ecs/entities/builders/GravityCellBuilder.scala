@@ -12,7 +12,6 @@ case class GravityCellBuilder() extends CellBuilder {
   }
 
   override def build: GravityCellEntity = {
-    checkMultipleBuild()
     val baseCell: CellEntity = super.build
     GravityCellEntity(baseCell, specificWeight)
   }

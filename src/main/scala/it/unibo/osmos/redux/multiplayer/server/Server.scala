@@ -8,6 +8,7 @@ import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.multiplayer.lobby.GameLobby
 import it.unibo.osmos.redux.multiplayer.players.{BasePlayer, ReferablePlayer}
 import it.unibo.osmos.redux.multiplayer.server.ServerActor._
+import it.unibo.osmos.redux.mvc.controller.LevelInfo
 import it.unibo.osmos.redux.mvc.model.Level
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, MultiPlayerLevelContext}
@@ -22,7 +23,9 @@ import scala.util.{Failure, Success}
 trait Server {
 
   type ServerState = ServerState.Value
-  implicit val timeout: Timeout = Timeout(5.seconds) //TODO: change to 5 sec
+
+  implicit val who: String = "Server"
+  implicit val timeout: Timeout = Timeout(5.seconds)
 
   /**
     * Binds this instance with the input ActorRef.
@@ -38,9 +41,15 @@ trait Server {
 
   /**
     * Gets the username of the player representing the server.
-    * @return The username
+    * @return The username.
     */
   def getUsername: String
+
+  /**
+    * Gets the state of the server.
+    * @return The server state.
+    */
+  def getState: ServerState
 
   /**
     * Kills this instance.
@@ -49,39 +58,43 @@ trait Server {
 
   /**
     * Signals all clients that the game needs to be started and checks that they all reply.
+    * @param level The level.
+    * @param levelInfo The level info.
     * @return Promise that completes with true if all clients replied before the timeout; otherwise false.
     */
-  def initGame(level: Level): Promise[Boolean]
+  def initGame(level: Level, levelInfo: LevelInfo): Promise[Boolean]
 
   /**
     * Starts the game by notifying the interface and passing the level context to use.
     * @param levelContext The level context.
+    * @param levelInfo The level info.
     */
-  def startGame(levelContext: MultiPlayerLevelContext): Unit
+  def startGame(levelContext: MultiPlayerLevelContext, levelInfo: LevelInfo): Unit
 
   /**
     * Signals all clients that the game have been stopped.
+    * @param winner The username of the player who won, if not declared the winner is assumed to be the server.
     */
-  def stopGame(): Unit
+  def stopGame(winner: String = ""): Unit
 
   /**
-    * Delivers a message to a specified client
-    * @param username The player username
-    * @param message The message
+    * Delivers a message to a specified client.
+    * @param username The player username.
+    * @param message The message.
     */
   def deliverMessage(username: String, message: Any): Unit
 
   /**
     * Broadcasts a message to all connected clients.
     * @param message The message to send.
-    * @param clientsToExclude Specify clients to which the delivery must not be performed
+    * @param clientsToExclude Specify clients to which the delivery must not be performed.
     */
   def broadcastMessage(message: Any, clientsToExclude: String*): Unit
 
   /**
     * Removes the player from the game.
     * @param username The player username.
-    * @param notify If the player client needs to be notified
+    * @param notify If the player client needs to be notified.
     */
   def removePlayerFromGame(username: String, notify: Boolean = false)
 
@@ -134,13 +147,10 @@ object Server {
 
   final case class ServerImpl(private var username: String) extends Server {
 
-    implicit val who: String = "Server"
-
-    //current state of the server
-    private var status: ServerState = ServerState.Idle
     //the uuid of the cell entity that represents this client
     private var uuid: String = _
-
+    //current state of the server
+    private var status: ServerState = ServerState.Idle
     //the current lobby
     private var lobby: Option[GameLobby[ReferablePlayer]] = None
     //the actor ref used to send and receive
@@ -157,6 +167,8 @@ object Server {
     override def getUUID: String = uuid
 
     override def getUsername: String = username
+
+    override def getState: ServerState = status
 
     override def kill(): Unit = {
       Logger.log("kill")
@@ -180,8 +192,6 @@ object Server {
     //COMMUNICATION
 
     override def deliverMessage(username: String, message: Any): Unit = {
-      Logger.log("deliverMessage")
-
       lobby.get.getPlayers.find(_.getUsername == username) match  {
         case Some(player) => player.getActorRef ! message
         case None => throw new IllegalArgumentException("Cannot deliver message to specific client if the username does not match any player.")
@@ -189,8 +199,6 @@ object Server {
     }
 
     override def broadcastMessage(message: Any, clientsToExclude: String*): Unit = {
-      Logger.log("broadcastMessage")
-
       if (ref.isEmpty) throw new IllegalStateException("Unable to broadcast the message, server is not bind to an actor.")
       val usernameToExclude = clientsToExclude :+ this.username
       val actors = lobby.get.getPlayers.filterNot(p => usernameToExclude contains p.getUsername).map(_.getActorRef)
@@ -199,13 +207,15 @@ object Server {
 
     //GAME MANAGEMENT
 
-    override def initGame(level: Level): Promise[Boolean] = {
+    override def initGame(level: Level, levelInfo: LevelInfo): Promise[Boolean] = {
       Logger.log("initGame")
+
+      if (status != ServerState.Lobby) throw new UnsupportedOperationException(s"Cannot init the game because the server is in the state: $status")
 
       val promise = Promise[Boolean]()
 
       //assign player cells to lobby players
-      val futures = setupClients(level)
+      val futures = setupClients(level, levelInfo)
       Future.sequence(futures) onComplete {
         case Success(_) => promise success true
         case Failure(t) => promise failure t
@@ -213,28 +223,43 @@ object Server {
       promise
     }
 
-    override def startGame(levelContext: MultiPlayerLevelContext): Unit = {
+    override def startGame(levelContext: MultiPlayerLevelContext, levelInfo: LevelInfo): Unit = {
       Logger.log("startGame")
 
-      lobby.get.notifyGameStarted(levelContext)
+      if (status != ServerState.Lobby) throw new UnsupportedOperationException(s"Cannot start game because the server is in the state: $status")
+
+      lobby.get.notifyGameStarted(levelContext, levelInfo)
       status = ServerState.Game
     }
 
-    override def stopGame(): Unit = {
+    override def stopGame(winner: String = username): Unit = {
       Logger.log("stopGame")
 
-      broadcastMessage(ServerActor.GameEnded(false))
-      kill()
+      if (status != ServerState.Lobby && status != ServerState.Game) throw new UnsupportedOperationException(s"Cannot stop game because the server is in the state: $status")
+
+      //if the server won, everyone else lost
+      if (winner.equals(username)) {
+        broadcastMessage(ServerActor.GameEnded(false))
+      } else {
+        deliverMessage(winner, GameEnded(true))
+        broadcastMessage(GameEnded(false), winner)
+      }
+
+      status = ServerState.Lobby
     }
 
     override def notifyClientInputEvent(event: MouseEventWrapper): Unit = {
       Logger.log("notifyClientInputEvent")
+
+      if (status != ServerState.Game) throw new UnsupportedOperationException(s"Cannot manage client input event because the server is in the state: $status")
 
       InputEventQueue enqueue event
     }
 
     override def removePlayerFromGame(username: String, notify: Boolean = false): Unit = {
       Logger.log("removePlayerFromGame")
+
+      if (status != ServerState.Game) throw new UnsupportedOperationException(s"Cannot remove player from game because it's in the state: $status")
 
       //remove entity cell relative to the player that has left
       val player = getPlayerFromLobby(username)
@@ -255,8 +280,7 @@ object Server {
     override def createLobby(lobbyContext: LobbyContext): Unit = {
       Logger.log("createLobby")
 
-      if (lobby.nonEmpty) throw new IllegalStateException("Server does not have an active lobby, unable to close it.")
-      if (status != ServerState.Idle) throw new IllegalStateException(s"Server cannot close lobby because it's in the state: $status")
+      if (status != ServerState.Idle) throw new UnsupportedOperationException(s"Server cannot close lobby because it's in the state: $status")
 
       lobby = Some(GameLobby(lobbyContext))
       val address = ActorSystemHolder.systemAddress
@@ -273,18 +297,19 @@ object Server {
     override def closeLobby(): Unit = {
       Logger.log("closeLobby")
 
-      if (lobby.isEmpty) throw new IllegalStateException("Server does not have an active lobby, unable to close it.")
-      if (status != ServerState.Lobby) throw new IllegalStateException(s"Server cannot close lobby because it's in the state: $status")
+      if (status != ServerState.Lobby) throw new UnsupportedOperationException(s"Server cannot close lobby because it's in the state: $status")
 
       broadcastMessage(LobbyClosed)
-      lobby.get.notifyLobbyClosed() //signal interface to change scene
+      lobby.get.notifyLobbyClosed()
       lobby = None
 
       status = ServerState.Idle
     }
 
     override def getLobbyPlayers: Seq[ReferablePlayer] = {
-      Logger.log("getLobbyPlayers")
+
+      if (status != ServerState.Lobby && status != ServerState.Game)
+        throw new UnsupportedOperationException(s"Cannot because it's in the state: $status")
 
       lobby.get.getPlayers
     }
@@ -319,24 +344,39 @@ object Server {
 
     //HELPER METHODS
 
-    private def setupClients(level: Level): Seq[Future[Any]] = {
+    private def setupClients(level: Level, levelInfo: LevelInfo): Seq[Future[Any]] = {
       Logger.log("assignCellsToPlayers")
 
       val availablePlayerCells = level.entities.filter(_.isInstanceOf[PlayerCellEntity]).map(p => Some(p.getUUID))
       val otherPlayers = lobby.get.getPlayers.filterNot(_.getUsername == this.username)
 
-      if (availablePlayerCells.size <= 0) throw new IllegalStateException()
+      if (availablePlayerCells.size <= 0) throw new IllegalStateException("Cannot setup clients if the level has no player cells.")
 
       //assign first available player cell to the server
       this.uuid = availablePlayerCells.head.get
 
+      //update uuid of the server players
+      val serverPlayer = getPlayerFromLobby(this.username)
+      if (serverPlayer.isEmpty) throw new IllegalStateException("Cannot update server player uuid because the player was not found.")
+      serverPlayer.get.setUUID(this.uuid)
+
       //get map shape and send to the clients along with the assigned uuid
       val mapShape = level.levelMap.mapShape
 
-      otherPlayers.zipAll(availablePlayerCells.tail, null, None).map {
-        case (p, Some(id)) =>  p.setUUID(id); p.getActorRef ? GameStarted(id, mapShape)
-        case (_, None) => throw new IllegalStateException("Not enough player cells for all the clients")
-      }
+      //gather extra player cells
+      val remainingPlayerCells = availablePlayerCells.tail
+      val extraCellPlayers = remainingPlayerCells.slice(otherPlayers.size, remainingPlayerCells.size).map(_.get)
+      //update level entities by removing the extra player cells
+      level.entities = for (
+        e <- level.entities
+        if !(extraCellPlayers contains e.getUUID)
+      ) yield e
+
+      otherPlayers.map(Some(_)).zipAll(availablePlayerCells.tail, None, None).map {
+        case (Some(p), Some(id)) => p.setUUID(id); Some(p.getActorRef ? GameStarted(id, levelInfo, mapShape))
+        case (None, _) => None
+        case _ => throw new IllegalStateException("Not enough player cells for all the clients.")
+      }.filter(_.nonEmpty).map(_.get)
     }
 
     private def getPlayerFromLobby(username: String): Option[ReferablePlayer] = {

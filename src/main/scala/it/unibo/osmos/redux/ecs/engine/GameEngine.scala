@@ -2,6 +2,7 @@ package it.unibo.osmos.redux.ecs.engine
 
 import it.unibo.osmos.redux.ecs.entities.{EntityManager, PlayerCellEntity}
 import it.unibo.osmos.redux.ecs.systems._
+import it.unibo.osmos.redux.ecs.systems.sentient.SentientSystem
 import it.unibo.osmos.redux.multiplayer.server.Server
 import it.unibo.osmos.redux.mvc.model.Level
 import it.unibo.osmos.redux.mvc.view.context.{LevelContext, MultiPlayerLevelContext}
@@ -99,6 +100,7 @@ object GameEngine {
       systems ++= initMainSystems(level, levelContext)
       if (!level.isSimulation) systems += EndGameSystem(levelContext, level.victoryRule)
 
+
       //add all entities in the entity manager (systems are subscribed to EntityManager event when created)
       level.entities foreach(EntityManager add _)
 
@@ -123,7 +125,7 @@ object GameEngine {
 
       //create systems, add to list, the order in this collection is the final system order in the game loop
       val systems = ListBuffer[System](InputSystem())
-      systems ++= initMainSystems(level, levelContext) :+ MultiPlayerUpdateSystem(server) :+ MultiPlayerEndGameSystem(server, levelContext, level.victoryRule)
+      systems ++= initMainSystems(level, levelContext) :+ MultiPlayerEndGameSystem(server, levelContext, level.victoryRule) :+ MultiPlayerUpdateSystem(server)
 
       //add all entities in the entity manager (systems are subscribed to EntityManager event when created)
       level.entities foreach(EntityManager add _)
@@ -196,7 +198,7 @@ object GameEngine {
       * @return The list of all main systems
       */
     private def initMainSystems(level: Level, levelContext: LevelContext): List[System] = {
-      List(SpawnSystem(), GravitySystem(), MovementSystem(), CollisionSystem(level), CellsEliminationSystem(), DrawSystem(levelContext))
+      List(SpawnSystem(), GravitySystem(), MovementSystem(), CollisionSystem(level), CellsEliminationSystem(), SentientSystem(level), DrawSystem(levelContext))
     }
   }
 }
