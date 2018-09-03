@@ -147,9 +147,16 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   }
 
   override def onExit(): Unit = {
+    goToPreviousScene()
+    listener.onStopLevel()
+  }
+
+  /**
+    * Called when the user has to go to the LevelSelectionScene
+    */
+  private def goToPreviousScene(): Unit = {
     MediaPlayer.play(SoundsType.menu)
     upperSceneListener.onStopLevel()
-    listener.onStopLevel()
   }
 
   /**
@@ -265,7 +272,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     /* Creating an end screen with a button */
     val endScreen = LevelScreen.Builder(this)
       .withText(if (levelResult) "You won!" else "You lost.", 50, Color.White)
-      .withButton("Return to Level Selection", _ => onExit())
+      .withButton("Return to Level Selection", _ => goToPreviousScene())
       .build()
     endScreen.opacity = 0.0
 
