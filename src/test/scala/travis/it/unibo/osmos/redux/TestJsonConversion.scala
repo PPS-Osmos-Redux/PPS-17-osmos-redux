@@ -2,7 +2,7 @@ package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities._
-import it.unibo.osmos.redux.mvc.controller.FileManager
+import it.unibo.osmos.redux.mvc.controller.{FileManager, LevelInfo}
 import it.unibo.osmos.redux.mvc.model.MapShape._
 import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.utils.Point
@@ -33,10 +33,9 @@ class TestJsonConversion extends FunSuite{
   val listShape:List[MapShape] = List(rectangle, circle)
   val levelMap:LevelMap = LevelMap(rectangle, CollisionRules.bouncing)
   //Level
-  val level:Level = Level("SinglePlayerLevel",
+  val level:Level = Level(LevelInfo("SinglePlayerLevel", VictoryRules.becomeTheBiggest),
     levelMap,
-    listCell,
-    VictoryRules.becomeTheBiggest)
+    listCell)
 
   import spray.json._
   import DefaultJsonProtocol._
@@ -111,9 +110,9 @@ class TestJsonConversion extends FunSuite{
   test("Level conversion") {
     val jsLevel = level.toJson
     val convertedLevel = jsLevel.convertTo[Level]
-    assert(convertedLevel.levelId.equals(level.levelId))
+    assert(convertedLevel.levelInfo.name.equals(level.levelInfo.name))
     assert(convertedLevel.levelMap.equals(level.levelMap))
-    assert(convertedLevel.victoryRule.equals(level.victoryRule))
+    assert(convertedLevel.levelInfo.victoryRule.equals(level.levelInfo.victoryRule))
     assert(convertedLevel.entities.size.equals(level.entities.size))
   }
 
@@ -124,9 +123,9 @@ class TestJsonConversion extends FunSuite{
       case None => null
     }
     assert(spConvertedLevel != null)
-    assert(spConvertedLevel.levelId.equals(level.levelId))
+    assert(spConvertedLevel.levelInfo.name.equals(level.levelInfo.name))
     assert(spConvertedLevel.levelMap.equals(level.levelMap))
-    assert(spConvertedLevel.victoryRule.equals(level.victoryRule))
+    assert(spConvertedLevel.levelInfo.victoryRule.equals(level.levelInfo.victoryRule))
     assert(spConvertedLevel.entities.size.equals(level.entities.size))
 
     val mpWrongLevel = FileManager.loadResource("ShouldntWorks",isMultiPlayer = true)  match {
@@ -147,20 +146,20 @@ class TestJsonConversion extends FunSuite{
   test("Writing and reading custom level") {
     val optFilePath = FileManager.saveLevel(level)
     assert(optFilePath.isDefined)
-    val readLevel = FileManager.loadCustomLevel(level.levelId)
+    val readLevel = FileManager.loadCustomLevel(level.levelInfo.name)
     assert(readLevel.isDefined)
-    assert(readLevel.get.levelId.equals(level.levelId))
+    assert(readLevel.get.levelInfo.name.equals(level.levelInfo.name))
     assert(readLevel.get.levelMap.equals(level.levelMap))
-    assert(readLevel.get.victoryRule.equals(level.victoryRule))
+    assert(readLevel.get.levelInfo.victoryRule.equals(level.levelInfo.victoryRule))
     assert(readLevel.get.entities.size.equals(level.entities.size))
 
     FileManager.saveLevel(level)
-    val secondFileName = level.levelId+1
-    val readLevel2 = FileManager.loadCustomLevel(level.levelId)
+    val secondFileName = level.levelInfo.name+1
+    val readLevel2 = FileManager.loadCustomLevel(level.levelInfo.name)
     assert(readLevel2.isDefined)
-    assert(readLevel2.get.levelId.equals(level.levelId))
-    FileManager.deleteLevel(level.levelId)
-    assert(FileManager.loadCustomLevel(level.levelId).isEmpty)
+    assert(readLevel2.get.levelInfo.name.equals(level.levelInfo.name))
+    FileManager.deleteLevel(level.levelInfo.name)
+    assert(FileManager.loadCustomLevel(level.levelInfo.name).isEmpty)
     FileManager.deleteLevel(secondFileName)
     assert(FileManager.loadCustomLevel(secondFileName).isEmpty)
   }

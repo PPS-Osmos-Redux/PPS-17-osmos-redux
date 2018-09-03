@@ -2,6 +2,7 @@ package it.unibo.osmos.redux.mvc.model
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, GravityCellEntity, PlayerCellEntity, SentientCellEntity, _}
 import it.unibo.osmos.redux.mvc.controller.LevelInfo
+import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
 import it.unibo.osmos.redux.utils.Point
 import org.apache.commons.lang3.SerializationException
@@ -341,7 +342,7 @@ object JsonProtocols {
     */
   implicit object LevelInfoFormatter extends RootJsonFormat[LevelInfo] {
     def write(levelInfo: LevelInfo) = JsObject(
-      "levelId" -> JsString(levelInfo.name),
+      "name" -> JsString(levelInfo.name),
       "victoryRule" -> levelInfo.victoryRule.toJson)
     def read(value: JsValue): LevelInfo = {
       value.asJsObject.getFields("levelId","victoryRule") match {
@@ -352,7 +353,20 @@ object JsonProtocols {
     }
   }
 
-  implicit val levelFormatter:RootJsonFormat[Level] = jsonFormat5(Level)
+  implicit object levelFormatter extends RootJsonFormat[Level] {
+    def write(level: Level): JsObject = JsObject(
+      "levelId" -> JsString(level.levelInfo.name),
+      "victoryRule" -> level.levelInfo.victoryRule.toJson,
+      "levelMap" -> level.levelMap.toJson,
+      "entities" -> level.entities.toJson)
+    def read(value: JsValue): Level = {
+      value.asJsObject.getFields("levelId", "victoryRule", "levelMap", "entities") match {
+        case Seq(JsString(levelId), victoryRule, levelMap, entities) =>
+          Level(LevelInfo(levelId, victoryRule.convertTo[VictoryRules.Value]), levelMap.convertTo[LevelMap], entities.convertTo[List[CellEntity]])
+        case _ => throw DeserializationException("Level info expected")
+      }
+    }
+  }
 
   implicit val drawableWrapperFormatter:RootJsonFormat[DrawableWrapper] = jsonFormat4(DrawableWrapper)
 

@@ -315,13 +315,13 @@ case class ControllerImpl() extends Controller with GameStateHolder {
   }
 
   override def getCustomLevels: List[LevelInfo] = FileManager.customLevelsFilesName match {
-    case Success(customLevels) => println(customLevels);customLevels
+    case Success(customLevels) => customLevels
     case Failure(_) => Logger.log("[Info] User doesn't have any saved custom level or custom level directory doesn't exists")
                                List()
   }
 
   override def saveLevel(name: String, map: MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value, entities: Seq[CellEntity]): Boolean = {
-    val lv: Level = Level(name, LevelMap(map, collisionRules), entities.toList, victoryRules)
+    val lv: Level = Level(LevelInfo(name, victoryRules) , LevelMap(map, collisionRules), entities.toList)
     lv.checkCellPosition()
     FileManager.saveLevel(lv).isDefined
   }

@@ -4,6 +4,7 @@ import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.builders.{CellBuilder, SentientCellBuilder}
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager, EntityType, SentientCellEntity}
 import it.unibo.osmos.redux.ecs.systems.sentient.SentientSystem
+import it.unibo.osmos.redux.mvc.controller.LevelInfo
 import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.mvc.model.MapShape.Rectangle
 import it.unibo.osmos.redux.utils.Point
@@ -41,10 +42,9 @@ class TestSentientSystem extends FunSuite with BeforeAndAfter{
   }
 
   private def setupLevelInfo(mapShape: MapShape, collisionRules: CollisionRules.Value) {
-    levelInfo = Level(1.toString,
+    levelInfo = Level(LevelInfo("1", VictoryRules.becomeTheBiggest),
       LevelMap(mapShape, collisionRules),
-      null,
-      VictoryRules.becomeTheBiggest)
+      null)
   }
 
 
