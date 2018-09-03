@@ -6,4 +6,4 @@ package it.unibo.osmos.redux.utils
   * @param message the message
   * @tparam A the result type
   */
-case class GenericResponse[A](result: A, message: String) {}
+case class GenericResponse[A](result: A, message: String = "") {}

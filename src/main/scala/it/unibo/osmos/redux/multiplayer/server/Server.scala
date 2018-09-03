@@ -8,6 +8,7 @@ import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.multiplayer.lobby.GameLobby
 import it.unibo.osmos.redux.multiplayer.players.{BasePlayer, ReferablePlayer}
 import it.unibo.osmos.redux.multiplayer.server.ServerActor._
+import it.unibo.osmos.redux.mvc.controller.LevelInfo
 import it.unibo.osmos.redux.mvc.model.Level
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, MultiPlayerLevelContext}
@@ -57,15 +58,18 @@ trait Server {
 
   /**
     * Signals all clients that the game needs to be started and checks that they all reply.
+    * @param level The level.
+    * @param levelInfo The level info.
     * @return Promise that completes with true if all clients replied before the timeout; otherwise false.
     */
-  def initGame(level: Level): Promise[Boolean]
+  def initGame(level: Level, levelInfo: LevelInfo): Promise[Boolean]
 
   /**
     * Starts the game by notifying the interface and passing the level context to use.
     * @param levelContext The level context.
+    * @param levelInfo The level info.
     */
-  def startGame(levelContext: MultiPlayerLevelContext): Unit
+  def startGame(levelContext: MultiPlayerLevelContext, levelInfo: LevelInfo): Unit
 
   /**
     * Signals all clients that the game have been stopped.
@@ -203,7 +207,7 @@ object Server {
 
     //GAME MANAGEMENT
 
-    override def initGame(level: Level): Promise[Boolean] = {
+    override def initGame(level: Level, levelInfo: LevelInfo): Promise[Boolean] = {
       Logger.log("initGame")
 
       if (status != ServerState.Lobby) throw new UnsupportedOperationException(s"Cannot init the game because the server is in the state: $status")
@@ -211,7 +215,7 @@ object Server {
       val promise = Promise[Boolean]()
 
       //assign player cells to lobby players
-      val futures = setupClients(level)
+      val futures = setupClients(level, levelInfo)
       Future.sequence(futures) onComplete {
         case Success(_) => promise success true
         case Failure(t) => promise failure t
@@ -219,12 +223,12 @@ object Server {
       promise
     }
 
-    override def startGame(levelContext: MultiPlayerLevelContext): Unit = {
+    override def startGame(levelContext: MultiPlayerLevelContext, levelInfo: LevelInfo): Unit = {
       Logger.log("startGame")
 
       if (status != ServerState.Lobby) throw new UnsupportedOperationException(s"Cannot start game because the server is in the state: $status")
 
-      lobby.get.notifyGameStarted(levelContext)
+      lobby.get.notifyGameStarted(levelContext, levelInfo)
       status = ServerState.Game
     }
 
@@ -340,7 +344,7 @@ object Server {
 
     //HELPER METHODS
 
-    private def setupClients(level: Level): Seq[Future[Any]] = {
+    private def setupClients(level: Level, levelInfo: LevelInfo): Seq[Future[Any]] = {
       Logger.log("assignCellsToPlayers")
 
       val availablePlayerCells = level.entities.filter(_.isInstanceOf[PlayerCellEntity]).map(p => Some(p.getUUID))
@@ -369,7 +373,7 @@ object Server {
       ) yield e
 
       otherPlayers.map(Some(_)).zipAll(availablePlayerCells.tail, None, None).map {
-        case (Some(p), Some(id)) => p.setUUID(id); Some(p.getActorRef ? GameStarted(id, mapShape))
+        case (Some(p), Some(id)) => p.setUUID(id); Some(p.getActorRef ? GameStarted(id, levelInfo, mapShape))
         case (None, _) => None
         case _ => throw new IllegalStateException("Not enough player cells for all the clients.")
       }.filter(_.nonEmpty).map(_.get)

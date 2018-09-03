@@ -1,4 +1,4 @@
-package travis.it.unibo.osmos.redux
+package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.builders.{CellBuilder, SentientCellBuilder}
