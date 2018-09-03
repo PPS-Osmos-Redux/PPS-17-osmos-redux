@@ -135,7 +135,6 @@ object LevelContext {
 
     override def getPlayerUUID: String = playerUUID
 
-    //TODO: player uuid is always available once the controller parses the level definition from the disk. So this setter is mandatory. Another way would be to let the interface to load level definition to have the player uuid available before the creation of the level context.
     override def setPlayerUUID(playerUUID: String): Unit = this.playerUUID = playerUUID
 
     /**
@@ -151,8 +150,8 @@ object LevelContext {
   /**
     * Implementation of the MultiPlayerLevelContext trait, override LevelContextImpl
     */
-  private class MultiPlayerLevelContextImpl(private val playerUUID: String) extends LevelContextImpl(playerUUID, LevelContextType.multiplayer) with MultiPlayerLevelContext {
-  }
+  private class MultiPlayerLevelContextImpl(private val playerUUID: String) extends LevelContextImpl(playerUUID, LevelContextType.multiplayer) with MultiPlayerLevelContext {}
+
 }
 
 /**

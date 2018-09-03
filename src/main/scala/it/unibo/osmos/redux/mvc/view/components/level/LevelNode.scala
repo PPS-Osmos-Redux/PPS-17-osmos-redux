@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.components.level
 
-import it.unibo.osmos.redux.mvc.controller.LevelInfo.LevelInfo
+import it.unibo.osmos.redux.mvc.controller.LevelInfo
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import scalafx.Includes._
 import scalafx.animation.{FadeTransition, Transition}
@@ -61,12 +61,12 @@ abstract class AnimatedAbstractLevelNode(override val listener: LevelNodeListene
   scaleX <== when(hover) choose 1.2 otherwise 1
   scaleY <== when(hover) choose 1.2 otherwise 1
 
-  val fadeInTransition: Transition = new FadeTransition(Duration.apply(2000), text) {
+  val fadeInTransition: Transition = new FadeTransition(Duration.apply(1500), text) {
     fromValue = 0.0
     toValue = 1.0
   }
 
-  val fadeOutTransition: Transition = new FadeTransition(Duration.apply(1000), text) {
+  val fadeOutTransition: Transition = new FadeTransition(Duration.apply(700), text) {
     fromValue = 1.0
     toValue = 0.0
     onFinished = _ => text.visible = false
@@ -75,7 +75,7 @@ abstract class AnimatedAbstractLevelNode(override val listener: LevelNodeListene
   text.visible = false
 
   /**
-    * Playing the faind animation whene the image is hovered
+    * Playing the fade animation when the image is hovered
     */
   imageView.onMouseEntered = _ => {text.visible = true; fadeInTransition.play()}
   imageView.onMouseExited = _ => {fadeOutTransition.play()}
@@ -111,8 +111,15 @@ class LevelNode(override val listener: LevelNodeListener, override val levelInfo
   /* The upper text */
   override lazy val text: Text = new Text() {
     margin = Insets(0, 0, 20, 0)
-    style = "-fx-font-size: 12pt"
-    text = if (levelInfo.isAvailable) "Level " + levelInfo.name else "Unlock previous level"
+    style = "-fx-font-size: 20pt"
+    if (levelInfo.isAvailable) {
+      text = "Level " + levelInfo.name
+    } else {
+      text = "Unlock previous level"
+      effect = new DropShadow {
+        color = Color.White
+      }
+    }
   }
 
   /* The level image */

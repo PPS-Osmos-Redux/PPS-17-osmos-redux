@@ -253,8 +253,7 @@
       "speedY": 0.0
     }
   }],
-  "levelId": "5",
-  "isSimulation": false,
+  "name": "5",
   "victoryRule": {
     "victoryRule": "Become_the_biggest"
   },
@@ -266,7 +265,6 @@
       "centerX": 600.0,
       "centerY": 500.0
     },
-    "collisionRule": "Bouncing",
-    "isSimulation":false
+    "collisionRule": "Bouncing"
   }
 }

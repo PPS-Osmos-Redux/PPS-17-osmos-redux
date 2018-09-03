@@ -2,11 +2,12 @@ package it.unibo.osmos.redux.mvc.view
 
 import it.unibo.osmos.redux.ecs.entities.CellEntity
 import it.unibo.osmos.redux.mvc.controller.Controller
-import it.unibo.osmos.redux.mvc.controller.LevelInfo.LevelInfo
+import it.unibo.osmos.redux.mvc.controller.LevelInfo
 import it.unibo.osmos.redux.mvc.model.{CollisionRules, MapShape, VictoryRules}
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LobbyContext}
 import it.unibo.osmos.redux.mvc.view.stages.{OsmosReduxPrimaryStage, PrimaryStageListener}
+import it.unibo.osmos.redux.utils.GenericResponse
 import scalafx.application.{JFXApp, Platform}
 import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control.{Alert, Label, TextArea}
@@ -72,12 +73,17 @@ object View {
       case _ => List()
     }
 
+    override def getMultiPlayerLevels: List[LevelInfo] = controller match {
+      case Some(c) => c.getMultiPlayerLevels
+      case _ => List()
+    }
+
     override def onSaveLevel(name: String,
                              map: MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value,
                              entities: Seq[CellEntity],
                              callback: Boolean => Unit): Unit = checkController(() => callback(controller.get.saveLevel(name, map, victoryRules, collisionRules, entities)))
 
-    override def onDeleteLevel(level: String, callback: Boolean => Unit): Unit = checkController(() => callback(controller.get.removeCustomLevel(level)))
+    override def onDeleteLevel(level: String, callback: Boolean => Unit): Unit = checkController(() => callback(controller.get.removeLevel(level)))
 
     override def onStartLevel(): Unit = checkController(() => controller.get.startLevel())
 
@@ -117,13 +123,13 @@ object View {
       * @param lobbyContext the lobby context, which may be used by the server to configure existing lobby users
       * @param callback     the callback
       */
-    override def onLobbyClick(user: User, lobbyContext: LobbyContext, callback: (User, LobbyContext, Boolean) => Unit): Unit =
+    override def onLobbyRequest(user: User, levelInfo: Option[LevelInfo], lobbyContext: LobbyContext, callback: (User, Option[LevelInfo], LobbyContext, GenericResponse[Boolean]) => Unit): Unit =
       checkController(() => controller.get.initLobby(user, lobbyContext).future.onComplete {
-        case Success(value) => callback(user, lobbyContext, value)
+        case Success(value) => callback(user, levelInfo, lobbyContext, value)
         case Failure(e) => onDisplayError(e)
       })
 
-    override def onStartMultiplayerGameClick(): Unit = checkController(() => controller.get.initMultiPlayerLevel().future.onComplete {
+    override def onStartMultiplayerGameClick(levelInfo: LevelInfo): Unit = checkController(() => controller.get.initMultiPlayerLevel(levelInfo).future.onComplete {
       case Failure(e) => onDisplayError(e)
       case Success(_) => //do nothing
     })

@@ -1,13 +1,12 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.ecs.entities.EntityType
-import it.unibo.osmos.redux.mvc.controller.LevelInfo.LevelInfo
-import it.unibo.osmos.redux.mvc.controller.{MediaPlayer, SoundsType}
+import it.unibo.osmos.redux.mvc.controller.{LevelInfo, MediaPlayer, SoundsType}
 import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.ViewConstants
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Colors._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
-import it.unibo.osmos.redux.mvc.view.components.level.{LevelScreen, LevelStateBox, LevelStateBoxListener}
+import it.unibo.osmos.redux.mvc.view.components.level.{LevelScreen, LevelStateBoxListener}
 import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextListener}
 import it.unibo.osmos.redux.mvc.view.drawables._
 import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
@@ -31,10 +30,9 @@ import scalafx.util.Duration
   * @param levelInfo the level info
   * @param listener the listener
   * @param upperSceneListener the upper scene listener to manage the previously scene events
-  * @param showPause true if the pause box must be shown, false otherwise
   */
 class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val listener: LevelSceneListener,
-                 val upperSceneListener: UpperLevelSceneListener, private val showPause: Boolean = true)
+                 val upperSceneListener: UpperLevelSceneListener)
   extends BaseScene(parentStage) with LevelContextListener with LevelStateBoxListener {
 
   MediaPlayer.play(SoundsType.level)
@@ -76,14 +74,9 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     * The splash screen showed when the game is paused
     */
   private val splashScreen = LevelScreen.Builder(this)
-    .withText(if (levelInfo != null) levelInfo.victoryRule.toString else "", 50, Color.White) //TODO: levelInfo won't be null
+    .withText(if (levelInfo != null) levelInfo.victoryRule.toString else "", 50, Color.White)
     .build()
   splashScreen.opacity = 0.0
-
-  /**
-    * The upper state box
-    */
-  protected val levelStateBox = new LevelStateBox(this, 4.0, showPause)
 
   /* We start the level */
   private def startLevel(): Unit = {
@@ -128,7 +121,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   /**
     * The content of the whole scene
     */
-  content = Seq(canvas, pauseScreen, levelStateBox, splashScreen)
+  content = Seq(canvas, pauseScreen, splashScreen)
 
   /**
     * The level context, created with the LevelScene. It still needs to be properly setup
@@ -139,7 +132,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
   def levelContext_=(levelContext: LevelContext): Unit = _levelContext = Option(levelContext)
 
-  override def onPause(): Unit = {
+  def onPause(): Unit = {
     canvas.opacity = 0.3
     paused.value = true
 
@@ -211,7 +204,6 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
       mapBorder.get.strokeWidth = 2.0
       mapBorder.get.opacity <== canvas.opacity
 
-      //TODO: when called by multi-player context we're not in the main thread
       Platform.runLater({
         /* Adding the mapBorder */
         content.add(mapBorder.get)
@@ -267,6 +259,9 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   }
 
   override def onLevelEnd(levelResult: Boolean): Unit = {
+    /* Calling stop level */
+    listener.onStopLevel()
+
     /* Creating an end screen with a button */
     val endScreen = LevelScreen.Builder(this)
       .withText(if (levelResult) "You won!" else "You lost.", 50, Color.White)

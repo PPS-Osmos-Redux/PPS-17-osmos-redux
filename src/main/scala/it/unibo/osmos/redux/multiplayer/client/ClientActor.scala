@@ -30,7 +30,7 @@ class ClientActor(private val client: Client) extends Actor {
 
     case UpdateGame(entities) => client.notifyRedraw(entities)
 
-    case GameStarted(uuid, mapShape) => client.startGame(uuid, mapShape); sender ! Ready
+    case GameStarted(uuid, levelInfo, mapShape) => client.startGame(uuid, levelInfo, mapShape); sender ! Ready
 
     case GameEnded(victory) => context.unwatch(sender); client.stopGame(victory)
 

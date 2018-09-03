@@ -1,6 +1,7 @@
 package it.unibo.osmos.redux.mvc.model
 
 import it.unibo.osmos.redux.ecs.entities.CellEntity
+import it.unibo.osmos.redux.mvc.controller.LevelInfo
 import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.utils.{Logger, MathUtils, Point}
 
@@ -75,16 +76,15 @@ case class LevelMap(mapShape:MapShape, collisionRule:CollisionRules.Value)
 
 /**
   * Level configuratoin
-  * @param levelId level identifier
+  * @param levelInfo LevelInfo
   * @param levelMap level map
   * @param entities list of level entities
-  * @param victoryRule victory rule
   * @param isSimulation if it's a simulation
   */
-case class Level(var levelId:String,
+case class Level(var levelInfo:LevelInfo,
                  levelMap:LevelMap,
                  var entities:List[CellEntity],
-                 victoryRule:VictoryRules.Value, var isSimulation:Boolean = false) {
+                 var isSimulation:Boolean = false) {
 
   def checkCellPosition():Unit = levelMap.mapShape match {
     case rectangle:Rectangle => rectangularMapCheck(rectangle)

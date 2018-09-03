@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.containers
 
-import it.unibo.osmos.redux.mvc.controller.LevelInfo.LevelInfo
+import it.unibo.osmos.redux.mvc.controller.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.level.LevelNodeListener
 import scalafx.geometry.Pos
 import scalafx.scene.layout.{TilePane, VBox}

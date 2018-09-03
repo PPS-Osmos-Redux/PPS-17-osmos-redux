@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.model
 
-import it.unibo.osmos.redux.mvc.controller.LevelInfo.LevelInfo
+import it.unibo.osmos.redux.mvc.controller.LevelInfo
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GameStateEventWrapper, GameWon}
 import it.unibo.osmos.redux.utils.Logger
 

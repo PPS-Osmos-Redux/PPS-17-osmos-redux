@@ -3,7 +3,6 @@ package it.unibo.osmos.redux.mvc.controller
 import java.io.{File, PrintWriter}
 import java.nio.file._
 
-import it.unibo.osmos.redux.mvc.controller.LevelInfo.LevelInfo
 import it.unibo.osmos.redux.mvc.controller.UserHomePaths.userProgressDirectory
 import it.unibo.osmos.redux.mvc.model.JsonProtocols._
 import it.unibo.osmos.redux.mvc.model._
@@ -69,7 +68,7 @@ object FileManager {
         path
       }
     }
-    val path = checkFileExist(level.levelId)
+    val path = checkFileExist(level.levelInfo.name)
     val levelFile = new File(path.toUri)
     createDirectoriesTree(levelFile)
     if (saveToFile(levelFile, level.toJson.prettyPrint)) Some(path) else None
