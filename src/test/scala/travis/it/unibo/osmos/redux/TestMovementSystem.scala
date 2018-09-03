@@ -42,7 +42,7 @@ class TestMovementSystem extends FunSuite with BeforeAndAfter {
     val pcv = VisibleComponent(true)
     val pct = TypeComponent(EntityType.Matter)
     val spw = SpawnerComponent(false)
-    val playerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv, pct, spw)
+    val playerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv, spw, pct)
 
     EntityManager.add(cellEntity)
     EntityManager.add(playerCellEntity)

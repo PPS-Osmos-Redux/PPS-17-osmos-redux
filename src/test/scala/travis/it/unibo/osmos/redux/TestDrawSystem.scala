@@ -2,11 +2,12 @@ package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities._
+import it.unibo.osmos.redux.ecs.entities.properties.composed.DrawableProperty
 import it.unibo.osmos.redux.ecs.systems.DrawSystem
 import it.unibo.osmos.redux.mvc.model.MapShape
+import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextListener, LevelContextType}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
 import it.unibo.osmos.redux.mvc.view.events.{EventWrapperObserver, GameStateEventWrapper, MouseEventWrapper}
-import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextListener, LevelContextType}
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
@@ -15,11 +16,11 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
   */
 case class DrawSystemSpy() extends LevelContext {
 
+  override val levelContextType: LevelContextType.Value = LevelContextType.normal
+  protected var _listener: Option[LevelContextListener] = Option.empty
   private var _player: Option[DrawableWrapper] = None
   private var _playerUUID: String = _
   private var _entities: Seq[DrawableWrapper] = Seq()
-  protected var _listener: Option[LevelContextListener] = Option.empty
-
 
   def player: Option[DrawableWrapper] = _player
 
@@ -42,8 +43,6 @@ case class DrawSystemSpy() extends LevelContext {
 
   override def notifyMouseEvent(event: MouseEventWrapper): Unit = ???
 
-  override val levelContextType: LevelContextType.Value = LevelContextType.normal
-
   override def setListener(levelContextListener: LevelContextListener): Unit = _listener = Option(levelContextListener)
 
   override def getPlayerUUID: String = _playerUUID
@@ -65,6 +64,7 @@ class TestDrawSystem extends FunSuite with BeforeAndAfter {
   val visible = VisibleComponent(true)
   val notVisible = VisibleComponent(false)
   val typeEntity = TypeComponent(EntityType.Matter)
+  val playerTypeEntity = TypeComponent(EntityType.Controlled)
   val dimension1 = DimensionComponent(3)
   val position1 = PositionComponent(Point(3, 4))
   val spawner = SpawnerComponent(false)
@@ -88,7 +88,7 @@ class TestDrawSystem extends FunSuite with BeforeAndAfter {
   test("PlayerCellEntity is present, but not visible") {
     val spy = DrawSystemSpy()
     val system = DrawSystem(spy)
-    val pce = PlayerCellEntity(acceleration, collidable, dimension, position, speed, notVisible, typeEntity, spawner)
+    val pce = PlayerCellEntity(acceleration, collidable, dimension, position, speed, notVisible, spawner, playerTypeEntity)
     EntityManager.add(pce)
     spy.setPlayerUUID(pce.getUUID)
     system.update()
@@ -98,7 +98,7 @@ class TestDrawSystem extends FunSuite with BeforeAndAfter {
   test("PlayerCellEntity is present and visible") {
     val spy = DrawSystemSpy()
     val system = DrawSystem(spy)
-    val pce = PlayerCellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity, spawner)
+    val pce = PlayerCellEntity(acceleration, collidable, dimension, position, speed, visible, spawner, playerTypeEntity)
     EntityManager.add(pce)
     spy.setPlayerUUID(pce.getUUID)
     system.update()
@@ -108,7 +108,7 @@ class TestDrawSystem extends FunSuite with BeforeAndAfter {
   test("PlayerCellEntity correctly wrapped") {
     val spy = DrawSystemSpy()
     val system = DrawSystem(spy)
-    val pce = PlayerCellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity, spawner)
+    val pce = PlayerCellEntity(acceleration, collidable, dimension, position, speed, visible, spawner, playerTypeEntity)
     EntityManager.add(pce)
     spy.setPlayerUUID(pce.getUUID)
     system.update()

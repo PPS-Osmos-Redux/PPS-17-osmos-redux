@@ -8,7 +8,7 @@ class TestLevelsProgression extends FunSuite with BeforeAndAfter {
 
   after(SinglePlayerLevels.reset())
 
-  test("Test complete levels"){
+  test("Test complete levels") {
     assert(SinglePlayerLevels.toDoLevel.equals(SinglePlayerLevels.getLevels.head.name))
 
     SinglePlayerLevels.newEndGameEvent(GameWon, SinglePlayerLevels.getLevels.head.name)

@@ -2,6 +2,8 @@ package it.unibo.osmos.redux.ecs.entities
 
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
+import it.unibo.osmos.redux.ecs.entities.properties.basic.SpecificWeight
+import it.unibo.osmos.redux.ecs.entities.properties.composed.GravityProperty
 
 /** Trait representing a CellEntity with gravity force */
 trait GravityCellEntity extends CellEntity with GravityProperty with SpecificWeight {}

@@ -2,7 +2,6 @@ package it.unibo.osmos.redux.ecs.engine
 
 import it.unibo.osmos.redux.ecs.entities.{EntityManager, PlayerCellEntity}
 import it.unibo.osmos.redux.ecs.systems._
-import it.unibo.osmos.redux.ecs.systems.sentient.SentientSystem
 import it.unibo.osmos.redux.multiplayer.server.Server
 import it.unibo.osmos.redux.mvc.model.Level
 import it.unibo.osmos.redux.mvc.view.context.{LevelContext, MultiPlayerLevelContext}

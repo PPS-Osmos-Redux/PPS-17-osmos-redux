@@ -30,7 +30,7 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
         //let game progress by updating all systems
         systems foreach (_.update())
       } finally {
-        lock.unlock()
+        tryUnlock()
       }
 
       //game loop iteration must last exactly tickTime, so sleep if the tickTime hasn't been reached yet
@@ -53,7 +53,7 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
             throw ExceededTickTimeException("[Game loop] overrun tick time of " + tickTime +
               "ms (" + engine.getFps + " fps) by " + math.abs(tickTime - execTime) + "ms.")
           } catch {
-            case t: Throwable => println(t getMessage)
+            case t: Throwable => println(t.getMessage)
           }
         }
       }
@@ -66,6 +66,9 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
     * Pauses the execution.
     */
   def pause(): Unit = {
+
+    if (status != GameStatus.Running) throw new IllegalStateException("Cannot pause the game if it's not running.")
+
     lock.lock()
     status = GameStatus.Paused
   }
@@ -74,7 +77,10 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
     * Resumes the execution.
     */
   def unpause(): Unit = {
-    lock.unlock()
+
+    if (status != GameStatus.Paused) throw new IllegalStateException("Cannot unpause the game if it's not paused.")
+
+    tryUnlock()
     status = GameStatus.Running
   }
 
@@ -82,11 +88,8 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
     * Kills the execution.
     */
   def kill(): Unit = {
-    try {
-      if (lock.isLocked) lock.unlock()
-    } finally {
-      stopFlag = true
-    }
+    tryUnlock()
+    stopFlag = true
   }
 
   /**
@@ -94,6 +97,17 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
     * @return The current game status
     */
   def getStatus: GameStatus = status
+
+  /**
+    * Tries to unlock the lock, if it fails it does not halt the
+    */
+  private def tryUnlock(): Unit = {
+    try {
+      if (lock.isLocked) lock.unlock()
+    } catch {
+      case _: Throwable => //do nothing
+    }
+  }
 }
 
 /**
