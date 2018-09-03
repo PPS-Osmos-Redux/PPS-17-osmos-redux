@@ -1,20 +1,25 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
+import scalafx.Includes._
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityType}
 import it.unibo.osmos.redux.mvc.model.{CollisionRules, MapShape, MapShapeType, VictoryRules}
 import it.unibo.osmos.redux.mvc.view.ViewConstants
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.components.custom.{StyledButton, TitledComboBox}
 import it.unibo.osmos.redux.mvc.view.components.editor._
+import it.unibo.osmos.redux.mvc.view.components.level.LevelScreen
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import javafx.scene.paint.ImagePattern
-import scalafx.beans.property.ObjectProperty
+import scalafx.beans.property.{BooleanProperty, DoubleProperty, ObjectProperty}
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.{Alert, TextInputDialog}
+import scalafx.scene.effect.DropShadow
 import scalafx.scene.image.ImageView
+import javafx.scene.input.KeyCode
 import scalafx.scene.layout._
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.{Circle, Rectangle, Shape}
+import scalafx.scene.text.Text
 import scalafx.stage.Stage
 
 import scala.collection.mutable.ListBuffer
@@ -35,6 +40,28 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   val background: ImageView = new ImageView(ImageLoader.getImage(backgroundTexture)) {
     fitWidth <== parentStage.width
     fitHeight <== parentStage.height
+  }
+
+  /**
+    * Boolean binding with the istructionScreen
+    */
+  private val instructionScreenVisible: BooleanProperty = BooleanProperty(false)
+  /**
+    * The instruction screen
+    */
+  private val instructionScreen = LevelScreen.Builder(this)
+    .withText("Instructions", 50, Color.White)
+    .withText("Press [Ctrl] to toggle the placeholder visibility", 30, Color.White)
+    .withText("Configure the desired entities on the left panel", 30, Color.White)
+    .withText("Configure the desired level, vistory rule and collision rule on the right panel", 30, Color.White)
+    .withText("When the placeholder is visible, click to insert a new entity on the level", 30, Color.White)
+    .withText("Press [i] to show/hide the instructions screen", 20, Color.White)
+    .build()
+  instructionScreen.visible <== instructionScreenVisible
+
+  private def changeInstructionScreenState(): Unit = {
+    instructionScreenVisible.value = !instructionScreenVisible.value
+    background.opacity = if (instructionScreenVisible.value) 0.3 else 1.0
   }
 
   /**
@@ -81,7 +108,8 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   /* Pane containing the field to configure the entities*/
   private val cellEntityCreator: CellEntityCreator = new CellEntityCreator
   /* Pane containing the field to configure the gravity entities*/
-  private val gravityCellEntityCreator: GravityCellEntityCreator = new GravityCellEntityCreator(isAttractive = true) {
+  private val gravityCellEntityCreator: GravityCellEntityCreator = new GravityCellEntityCreator {
+    weight.value = 1.0
     visible = false
   }
   /* Pane containing the field to configure the sentient entities*/
@@ -117,8 +145,8 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
         entityType.value match {
           case EntityType.Matter => cellEntityCreator.visible = true; cellEntityCreator.entityType_=(EntityType.Matter)
           case EntityType.AntiMatter => cellEntityCreator.visible = true; cellEntityCreator.entityType_=(EntityType.AntiMatter)
-          case EntityType.Attractive => gravityCellEntityCreator.visible = true; gravityCellEntityCreator.isAttractive = true
-          case EntityType.Repulsive => gravityCellEntityCreator.visible = true; gravityCellEntityCreator.isAttractive = false
+          case EntityType.Attractive => gravityCellEntityCreator.visible = true; gravityCellEntityCreator.entityType_=(EntityType.Attractive)
+          case EntityType.Repulsive => gravityCellEntityCreator.visible = true; gravityCellEntityCreator.entityType_=(EntityType.Repulsive)
           case EntityType.Sentient => sentientCellEntityCreator.visible = true; sentientCellEntityCreator.entityType_=(EntityType.Sentient)
           case EntityType.Controlled => playerCellEntityCreator.visible = true; playerCellEntityCreator.entityType_=(EntityType.Controlled)
           case _ => cellEntityCreator.visible = true; cellEntityCreator.entityType_=(EntityType.Matter)
@@ -157,6 +185,8 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   private val mainContainer: BorderPane = new BorderPane() {
     prefWidth <== parentStage.width
     prefHeight <== parentStage.height
+    /* We don't show the container if the instructions are visible*/
+    visible <== !instructionScreenVisible
     left = entityContainer
     right = new VBox(5.0, victoryRuleBox.root, collisionRuleBox.root, levelTypeContainer) {
       margin = Insets(10.0)
@@ -168,8 +198,19 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     }, new StyledButton("Exit Level") {
       /* We go back */
       onAction = _ => upperListener.onExitEditor()
-    }) {
+    }){
       margin = Insets(10.0)
+      alignment = Pos.Center
+    }
+    center = null
+    bottom = new HBox(0.0, new Text("Press [i] to show/hide the the instructions") {
+      style = "-fx-font-size: 20pt"
+      fill = Color.White
+      effect = new DropShadow {
+        color = Color.Blue
+      }
+    }) {
+      margin = Insets(50.0)
       alignment = Pos.Center
     }
   }
@@ -232,6 +273,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     strokeWidth = 2.0
     fill = Color.Transparent
     mouseTransparent = true
+    visible <== !instructionScreenVisible
   }
 
   /**
@@ -246,6 +288,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     strokeWidth = 2.0
     fill = Color.Transparent
     mouseTransparent = true
+    visible <== !instructionScreenVisible
   }
 
   /**
@@ -279,8 +322,10 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   }
 
   /* On control key pressed we hide the placeholder to let the user insert values in the panes */
-  onKeyPressed = key => {
-    entityPlaceholder.visible = key.isControlDown
+  onKeyPressed = key => key.getCode match {
+    case KeyCode.I => changeInstructionScreenState(); entityPlaceholder.visible = false
+    case KeyCode.CONTROL => if (!instructionScreenVisible.value) entityPlaceholder.visible = !entityPlaceholder.visible.value
+    case _ =>
   }
 
   /**
@@ -315,7 +360,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   }
 
   /** The main editor elements */
-  val editorElements = ListBuffer(background, mainContainer, entityPlaceholder, currentLevelPlaceholder)
+  val editorElements = ListBuffer(background, mainContainer, entityPlaceholder, currentLevelPlaceholder, instructionScreen)
   content = editorElements
 
 }
