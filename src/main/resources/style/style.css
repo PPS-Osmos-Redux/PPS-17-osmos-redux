@@ -46,3 +46,12 @@
 .multi-player-scene-VBox-style {
   -fx-background-color: white;
 }
+
+.slider .axis {
+  -fx-tick-label-fill: white;
+}
+
+.settings-vbox {
+  -fx-font-size: 20px;
+  -fx-background-color: white;
+}
