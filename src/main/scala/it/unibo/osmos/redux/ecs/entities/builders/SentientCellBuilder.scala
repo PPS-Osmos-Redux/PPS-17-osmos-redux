@@ -16,11 +16,8 @@ case class SentientCellBuilder() extends CellBuilder {
     this
   }
 
-  override def withEntityType(entityType: EntityType.Value): CellBuilder =
-    throw new UnsupportedOperationException("Is not possible set entity type for SentientCellEntity")
-
   override def build: SentientCellEntity = {
-    checkMultipleBuild()
-    SentientCellEntity(acceleration, collidable, dimension, position, speed, visible, spawner)
+    withEntityType(EntityType.Sentient)
+    SentientCellEntity(super.build, spawner)
   }
 }
