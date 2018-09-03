@@ -8,7 +8,7 @@ import scala.collection.mutable.ListBuffer
   *
   * @tparam A
   */
-abstract class AbstractVictoryCondition[A <: Property] {
+abstract class AbstractVictoryCondition[DeathProperty] {
 
   /** Checks if the victory condition is fulfilled
     *
@@ -16,7 +16,7 @@ abstract class AbstractVictoryCondition[A <: Property] {
     * @param entityList       entities present in this game instant
     * @return the evaluation result
     */
-  def check(playerCellEntity: A, entityList: ListBuffer[A]): Boolean
+  def check(playerCellEntity: DeathProperty, entityList: ListBuffer[DeathProperty]): Boolean
 }
 
 /** class implementing become the biggest victory condition */

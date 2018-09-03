@@ -97,15 +97,9 @@ case class CircularBorder(levelCenter: Point, collisionRule: CollisionRules.Valu
   var maxReachableDistance: Double = _
   var currentDistanceFromCenter: Double = _
 
-  private def checkCollision(entity: CollidableProperty): Boolean = {
-    positionComponent = entity.getPositionComponent
-    currentPosition = positionComponent.point
-    dimensionComponent = entity.getDimensionComponent
-    entityRadius = dimensionComponent.radius
-    maxReachableDistance = levelRadius - entityRadius
-    currentDistanceFromCenter = MathUtils.euclideanDistance(levelCenter, currentPosition)
-    currentDistanceFromCenter > maxReachableDistance
-  }
+  /*implicit def pointToVector(point: Point): Vector = {
+    Vector(point.x, point.y)
+  }*/
 
   override def checkAndSolveCollision(entity: CollidableProperty): Unit = {
     if (checkCollision(entity)) {
@@ -123,6 +117,16 @@ case class CircularBorder(levelCenter: Point, collisionRule: CollisionRules.Valu
         case _ => throw new IllegalArgumentException
       }
     }
+  }
+
+  private def checkCollision(entity: CollidableProperty): Boolean = {
+    positionComponent = entity.getPositionComponent
+    currentPosition = positionComponent.point
+    dimensionComponent = entity.getDimensionComponent
+    entityRadius = dimensionComponent.radius
+    maxReachableDistance = levelRadius - entityRadius
+    currentDistanceFromCenter = MathUtils.euclideanDistance(levelCenter, currentPosition)
+    currentDistanceFromCenter > maxReachableDistance
   }
 
   /** For better understanding see: http://gamedev.stackexchange.com/a/29658
@@ -143,8 +147,8 @@ case class CircularBorder(levelCenter: Point, collisionRule: CollisionRules.Valu
 
     val AB = A.subtract(B)
     val BC = B.subtract(C)
-    val lengthOfAB = AB.getLength
-    val lengthOfBC = BC.getLength
+    val lengthOfAB = AB.getMagnitude
+    val lengthOfBC = BC.getMagnitude
 
     if (lengthOfBC == 0) {
       C
@@ -159,7 +163,7 @@ case class CircularBorder(levelCenter: Point, collisionRule: CollisionRules.Valu
       }
 
       val BD = C.subtract(B)
-      val lengthOfBD = BD.getNewLength(lengthOfBC * k)
+      val lengthOfBD = BD.getNewMagnitude(lengthOfBC * k)
 
       // D
       // B.add(BD)

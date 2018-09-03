@@ -2,7 +2,7 @@ package it.unibo.osmos.redux.ecs.systems
 
 import it.unibo.osmos.redux.ecs.components.{DimensionComponent, PositionComponent, SpawnAction, SpeedComponent}
 import it.unibo.osmos.redux.ecs.entities.InputProperty
-import it.unibo.osmos.redux.utils.{InputEventQueue, MathUtils, Point}
+import it.unibo.osmos.redux.utils.{InputEventQueue, MathUtils, Point, Vector}
 
 case class InputSystem() extends AbstractSystem[InputProperty] {
 
@@ -43,7 +43,9 @@ case class InputSystem() extends AbstractSystem[InputProperty] {
         val newPoint = MathUtils.normalizePoint(Point(pos.point.x - ev.point.x, pos.point.y - ev.point.y))
 
         //apply acceleration
-        accel.vector_(accel.vector.add(newPoint.multiply(accelCoefficient)))
+        //TODO: accel.vector_(accel.vector.add(newPoint.multiply(accelCoefficient)))
+        val v = Vector(newPoint.x * accelCoefficient, newPoint.y * accelCoefficient)
+        accel.vector_(accel.vector.add(v))
         //accel.vector.x_(accel.vector.x + newPoint.x * accelCoefficient)
         //accel.vector.y_(accel.vector.y + newPoint.y * accelCoefficient)
 
