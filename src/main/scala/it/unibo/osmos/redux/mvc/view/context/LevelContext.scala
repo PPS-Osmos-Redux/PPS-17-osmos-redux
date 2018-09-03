@@ -150,8 +150,8 @@ object LevelContext {
   /**
     * Implementation of the MultiPlayerLevelContext trait, override LevelContextImpl
     */
-  private class MultiPlayerLevelContextImpl(private val playerUUID: String) extends LevelContextImpl(playerUUID, LevelContextType.multiplayer) with MultiPlayerLevelContext {
-  }
+  private class MultiPlayerLevelContextImpl(private val playerUUID: String) extends LevelContextImpl(playerUUID, LevelContextType.multiplayer) with MultiPlayerLevelContext {}
+
 }
 
 /**
