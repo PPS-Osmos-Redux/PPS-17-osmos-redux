@@ -7,7 +7,7 @@ import javafx.scene.input.MouseEvent
 import scalafx.stage.Stage
 
 class MultiPlayerLevelScene(override val parentStage: Stage, override val levelInfo: LevelInfo, override val listener: LevelSceneListener, override val upperSceneListener: UpperLevelSceneListener)
-  extends LevelScene(parentStage, levelInfo, listener, upperSceneListener, true) {
+  extends LevelScene(parentStage, levelInfo, listener, upperSceneListener) {
 
   /**
     * The level context, created with the MultiPlayerLevelScene. It must be a MultiPlayerLevelContext

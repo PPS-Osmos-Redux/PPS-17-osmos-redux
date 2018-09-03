@@ -75,7 +75,7 @@ abstract class AnimatedAbstractLevelNode(override val listener: LevelNodeListene
   text.visible = false
 
   /**
-    * Playing the faind animation whene the image is hovered
+    * Playing the fade animation when the image is hovered
     */
   imageView.onMouseEntered = _ => {text.visible = true; fadeInTransition.play()}
   imageView.onMouseExited = _ => {fadeOutTransition.play()}
@@ -111,7 +111,7 @@ class LevelNode(override val listener: LevelNodeListener, override val levelInfo
   /* The upper text */
   override lazy val text: Text = new Text() {
     margin = Insets(0, 0, 20, 0)
-    style = "-fx-font-size: 12pt"
+    style = "-fx-font-size: 20pt"
     text = if (levelInfo.isAvailable) "Level " + levelInfo.name else "Unlock previous level"
   }
 

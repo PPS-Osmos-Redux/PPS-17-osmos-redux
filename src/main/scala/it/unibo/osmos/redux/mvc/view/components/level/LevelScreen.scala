@@ -58,6 +58,16 @@ object LevelScreen {
     }
 
     /**
+      * Add a node to the screen
+      * @param node the node
+      * @return the builder itself
+      */
+    def withNode(node: Node): Builder = {
+      components += node
+      this
+    }
+
+    /**
       * Creates a LevelScreenImpl with the provided components
       *
       * @return a LevelScreenImpl
