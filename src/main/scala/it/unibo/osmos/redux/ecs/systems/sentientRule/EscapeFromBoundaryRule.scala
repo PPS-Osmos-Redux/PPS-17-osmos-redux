@@ -1,9 +1,9 @@
-package it.unibo.osmos.redux.ecs.systems.sentient
+package it.unibo.osmos.redux.ecs.systems.sentientRule
 
 import it.unibo.osmos.redux.ecs.entities.SentientProperty
 import it.unibo.osmos.redux.ecs.entities.builders.SentientCellBuilder
 import it.unibo.osmos.redux.ecs.systems.borderconditions.{CircularBorder, RectangularBorder}
-import it.unibo.osmos.redux.ecs.systems.sentient.SentientUtils._
+import it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils._
 import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.mvc.model.{CollisionRules, Level}
 import it.unibo.osmos.redux.utils.Constants.Sentient._

@@ -1,8 +1,8 @@
-package it.unibo.osmos.redux.ecs.systems.sentient
+package it.unibo.osmos.redux.ecs.systems.sentientRule
 import it.unibo.osmos.redux.ecs.entities.{EntityType, SentientEnemyProperty, SentientProperty}
 import it.unibo.osmos.redux.utils.{MathUtils, Vector}
 import it.unibo.osmos.redux.utils.Constants.Sentient._
-import it.unibo.osmos.redux.ecs.systems.sentient.SentientUtils._
+import it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils._
 
 import scala.collection.mutable.ListBuffer
 

@@ -1,4 +1,4 @@
-package it.unibo.osmos.redux.ecs.systems.sentient
+package it.unibo.osmos.redux.ecs.systems.sentientRule
 
 import it.unibo.osmos.redux.ecs.entities.SentientEnemyProperty
 
