@@ -1,8 +1,6 @@
 package it.unibo.osmos.redux.ecs.systems
 
 import it.unibo.osmos.redux.ecs.components.{DimensionComponent, PositionComponent, SpawnAction, SpeedComponent}
-import it.unibo.osmos.redux.ecs.entities._
-import it.unibo.osmos.redux.ecs.entities.composed.SentientProperty
 import it.unibo.osmos.redux.ecs.entities.properties.composed.{SentientEnemyProperty, SentientProperty}
 import it.unibo.osmos.redux.ecs.systems.sentientRule._
 import it.unibo.osmos.redux.mvc.model.Level
@@ -30,11 +28,11 @@ case class SentientSystem(levelInfo: Level) extends AbstractSystem2[SentientProp
     EscapeFromBoundaryRule(levelInfo) :: EscapeFromEnemiesRule(entitiesSecondType) :: FollowTargetRule(entitiesSecondType) :: Nil
   }
 
-  override def update(): Unit =  entities.filter(e => e.getCollidableComponent.isCollidable)
+  override def update(): Unit = entities.filter(e => e.getCollidableComponent.isCollidable)
     .foreach(sentient => {
       var totalAcceleration = rules.head.computeRule(sentient, sentient.getAccelerationComponent.vector)
       rules.tail.foreach(r => {
-        totalAcceleration = totalAcceleration add r.computeRule(sentient,totalAcceleration)
+        totalAcceleration = totalAcceleration add r.computeRule(sentient, totalAcceleration)
       })
       applyAcceleration(sentient, totalAcceleration)
     })

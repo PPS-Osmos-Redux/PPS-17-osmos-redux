@@ -12,13 +12,14 @@ import org.scalatest.FunSuite
   */
 case class SystemSpy() extends AbstractSystem[DeathProperty] {
   override def update(): Unit = ???
+
   def entitiesNumber: Int = entities.size
 }
 
-class TestEntityManager extends FunSuite{
+class TestEntityManager extends FunSuite {
   val spawner = SpawnerComponent(false)
   val ce: CellEntity = new CellBuilder().build
-  val pce = PlayerCellEntity(new CellBuilder().build,spawner)
+  val pce = PlayerCellEntity(new CellBuilder().build, spawner)
   test("Add and remove entity") {
     val systemSpy = SystemSpy()
     EntityManager.add(pce)

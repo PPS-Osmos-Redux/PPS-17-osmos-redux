@@ -1,10 +1,10 @@
 package it.unibo.osmos.redux.ecs.systems.sentientRule
-import it.unibo.osmos.redux.ecs.entities.composed.SentientProperty
+
 import it.unibo.osmos.redux.ecs.entities.EntityType
 import it.unibo.osmos.redux.ecs.entities.properties.composed.{SentientEnemyProperty, SentientProperty}
-import it.unibo.osmos.redux.utils.{MathUtils, Vector}
-import it.unibo.osmos.redux.utils.Constants.Sentient._
 import it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils._
+import it.unibo.osmos.redux.utils.Constants.Sentient._
+import it.unibo.osmos.redux.utils.{MathUtils, Vector}
 
 import scala.collection.mutable.ListBuffer
 
@@ -20,8 +20,9 @@ case class FollowTargetRule(enemies: ListBuffer[SentientEnemyProperty]) extends 
 
   /**
     * apply a acceleration to the sentient to follow the target
+    *
     * @param sentient sentient entity
-    * @param target target entity
+    * @param target   target entity
     */
   private def followTarget(sentient: SentientProperty, target: SentientEnemyProperty, actualVelocity: Vector): Vector = {
     val nextPositionTarget = target.getPositionComponent.point.add(target.getSpeedComponent.vector)
@@ -32,7 +33,7 @@ case class FollowTargetRule(enemies: ListBuffer[SentientEnemyProperty]) extends 
   /**
     *
     * @param sentient sentient entity
-    * @param enemies list of entity
+    * @param enemies  list of entity
     * @return the sentient's enemy with greater target coefficient is present, else None
     */
   private def findTarget(sentient: SentientProperty, enemies: ListBuffer[SentientEnemyProperty], escapeVelocity: Vector): Option[SentientEnemyProperty] = {
@@ -55,7 +56,7 @@ case class FollowTargetRule(enemies: ListBuffer[SentientEnemyProperty]) extends 
   /**
     *
     * @param sentient sentient entity
-    * @param enemy sentient enemy entity
+    * @param enemy    sentient enemy entity
     * @return the coefficient representing the radius that can be gained form an enemy
     */
   private def targetCoefficientWithLostRadius(sentient: SentientProperty, enemy: SentientEnemyProperty, escapeVelocity: Vector): Double = {
@@ -69,7 +70,7 @@ case class FollowTargetRule(enemies: ListBuffer[SentientEnemyProperty]) extends 
   /**
     *
     * @param sentient sentient entity
-    * @param enemy sentient enemy entity
+    * @param enemy    sentient enemy entity
     * @return a coefficient directly proportional to the enemy's radius and
     *         inversely proportional to the distance between the entities
     */

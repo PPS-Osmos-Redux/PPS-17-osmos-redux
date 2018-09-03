@@ -2,9 +2,8 @@ package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities._
-import it.unibo.osmos.redux.ecs.entities.composed.MovableProperty
 import it.unibo.osmos.redux.ecs.entities.properties.composed.{InputProperty, MovableProperty}
-import it.unibo.osmos.redux.ecs.systems.{AbstractSystem2, DrawSystem}
+import it.unibo.osmos.redux.ecs.systems.AbstractSystem2
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
@@ -33,13 +32,13 @@ class TestSystemWithTwoTypeOfEntity extends FunSuite with BeforeAndAfter {
 
   after(EntityManager.clear())
 
-  test("A system initially has no entity"){
+  test("A system initially has no entity") {
     val fakeSystem = FakeSystem2()
     assert(fakeSystem.getEntitiesOfFirstType.isEmpty)
     assert(fakeSystem.getEntitiesOfSecondType.isEmpty)
   }
 
-  test("After add one entity of first type, the system have one entity of first type"){
+  test("After add one entity of first type, the system have one entity of first type") {
     val fakeSystem = FakeSystem2()
     val ce = CellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity)
     EntityManager.add(ce)
@@ -47,7 +46,7 @@ class TestSystemWithTwoTypeOfEntity extends FunSuite with BeforeAndAfter {
     assert(fakeSystem.getEntitiesOfSecondType.isEmpty)
   }
 
-  test("An entity of both types is found in both lists"){
+  test("An entity of both types is found in both lists") {
     val fakeSystem = FakeSystem2()
     EntityManager.add(PlayerCellEntity(acceleration, collidable, dimension, position, speed, visible, spawner, typeEntity))
     assert(fakeSystem.getEntitiesOfFirstType.size == 1)

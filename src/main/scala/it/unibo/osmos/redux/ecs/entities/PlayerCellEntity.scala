@@ -1,9 +1,9 @@
-package it.unibo.osmos.redux.ecs.entities.properties.composed
+package it.unibo.osmos.redux.ecs.entities
 
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 import it.unibo.osmos.redux.ecs.entities.properties.basic.Spawner
-import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityType}
+import it.unibo.osmos.redux.ecs.entities.properties.composed.InputProperty
 
 /** Trait representing a CellEntity controllable by the player */
 trait PlayerCellEntity extends CellEntity with InputProperty with Spawner {}

@@ -1,10 +1,10 @@
 package it.unibo.osmos.redux.ecs.systems.sentientRule
-import it.unibo.osmos.redux.ecs.entities.composed.SentientProperty
+
 import it.unibo.osmos.redux.ecs.entities.EntityType
 import it.unibo.osmos.redux.ecs.entities.properties.composed.{SentientEnemyProperty, SentientProperty}
-import it.unibo.osmos.redux.utils.{MathUtils, Vector}
-import it.unibo.osmos.redux.utils.Constants.Sentient._
 import it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils._
+import it.unibo.osmos.redux.utils.Constants.Sentient._
+import it.unibo.osmos.redux.utils.{MathUtils, Vector}
 
 import scala.collection.mutable.ListBuffer
 
@@ -16,8 +16,9 @@ case class EscapeFromEnemiesRule(enemies: ListBuffer[SentientEnemyProperty]) ext
 
   /**
     * search sentient enemies
+    *
     * @param sentient sentient entity
-    * @param enemies list of all entities
+    * @param enemies  list of all entities
     * @return list of sentient's enemies
     */
   private def findEnemies(sentient: SentientProperty, enemies: ListBuffer[SentientEnemyProperty]): List[SentientEnemyProperty] =
@@ -27,8 +28,9 @@ case class EscapeFromEnemiesRule(enemies: ListBuffer[SentientEnemyProperty]) ext
 
   /**
     * apply acceleration to run away from all enemies
+    *
     * @param sentient sentient entity
-    * @param enemies list of enemies
+    * @param enemies  list of enemies
     */
   private def escapeFromEnemies(sentient: SentientProperty, enemies: List[SentientEnemyProperty], previousAcceleration: Vector): Vector = {
     val actualSpeed = sentient.getSpeedComponent.vector add previousAcceleration
@@ -37,11 +39,11 @@ case class EscapeFromEnemiesRule(enemies: ListBuffer[SentientEnemyProperty]) ext
       .filter(p => p._2 < desiredSeparation)
       .shiftDistance(MIN_VALUE)
       .map(m => MathUtils.unitVector(sentient.getPositionComponent.point, m._1.getPositionComponent.point) divide m._2)
-      .foldLeft((Vector.zero(), 1)) ((acc, i) => (acc._1 add ((i subtract acc._1) divide acc._2), acc._2 + 1))._1 normalized() match {
-        case unitVectorDesiredVelocity if unitVectorDesiredVelocity == Vector(0,0) => Vector.zero()
-        case unitVectorDesiredVelocity =>
-          computeSteer(actualSpeed, unitVectorDesiredVelocity) multiply WEIGHT_OF_ESCAPE_ACCELERATION_FROM_ENEMIES
-      }
+      .foldLeft((Vector.zero(), 1))((acc, i) => (acc._1 add ((i subtract acc._1) divide acc._2), acc._2 + 1))._1 normalized() match {
+      case unitVectorDesiredVelocity if unitVectorDesiredVelocity == Vector(0, 0) => Vector.zero()
+      case unitVectorDesiredVelocity =>
+        computeSteer(actualSpeed, unitVectorDesiredVelocity) multiply WEIGHT_OF_ESCAPE_ACCELERATION_FROM_ENEMIES
+    }
   }
 
   private def computeDistance(sentient: SentientProperty, enemy: SentientEnemyProperty): Double = {

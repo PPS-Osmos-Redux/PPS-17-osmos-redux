@@ -1,7 +1,6 @@
 package it.unibo.osmos.redux.ecs.systems
 
 import alice.tuprolog._
-import it.unibo.osmos.redux.ecs.entities.composed.SentientProperty
 import it.unibo.osmos.redux.ecs.entities.properties.composed.{SentientEnemyProperty, SentientProperty}
 import it.unibo.osmos.redux.utils.Scala2P.{separate, _}
 import it.unibo.osmos.redux.utils.{PrologRules, Vector}

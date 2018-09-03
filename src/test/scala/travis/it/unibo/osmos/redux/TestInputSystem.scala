@@ -1,8 +1,7 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.properties.composed.PlayerCellEntity
-import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager, EntityType}
+import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager, EntityType, PlayerCellEntity}
 import it.unibo.osmos.redux.ecs.systems.InputSystem
 import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
 import it.unibo.osmos.redux.utils.{InputEventQueue, MathUtils, Point}
@@ -12,7 +11,7 @@ class TestInputSystem extends FunSuite {
 
   val acceleration = Seq(AccelerationComponent(1, 1), AccelerationComponent(2, 2), AccelerationComponent(3, 3))
   val collidable = Seq(CollidableComponent(true), CollidableComponent(true), CollidableComponent(false))
-  val speed = Seq(SpeedComponent(4, 0), SpeedComponent(2, 0),SpeedComponent(0, 4))
+  val speed = Seq(SpeedComponent(4, 0), SpeedComponent(2, 0), SpeedComponent(0, 4))
   val dimension = Seq(DimensionComponent(5), DimensionComponent(1), DimensionComponent(8))
   val position = Seq(PositionComponent(Point(0, 0)), PositionComponent(Point(1, 2)), PositionComponent(Point(0, 4)))
   val visibility = Seq(VisibleComponent(true), VisibleComponent(false), VisibleComponent(false))
@@ -28,7 +27,7 @@ class TestInputSystem extends FunSuite {
     EntityManager.add(pce)
 
     //prepare list of events to apply
-    val events = List(MouseEventWrapper(Point(157,104), pce.getUUID),  MouseEventWrapper(Point(200,194), pce.getUUID), MouseEventWrapper(Point(314,44), pce.getUUID))
+    val events = List(MouseEventWrapper(Point(157, 104), pce.getUUID), MouseEventWrapper(Point(200, 194), pce.getUUID), MouseEventWrapper(Point(314, 44), pce.getUUID))
 
     //add mouse events to Input event stack
     InputEventQueue.enqueue(events: _*)
@@ -57,10 +56,10 @@ class TestInputSystem extends FunSuite {
     val originalAccel = AccelerationComponent(acceleration(1).vector.x, acceleration(1).vector.y)
 
     //pre-compute expected values
-    val expectedAccel = computeExpectedAcceleration(system, pce, MouseEventWrapper(Point(157,104), pce.getUUID))
+    val expectedAccel = computeExpectedAcceleration(system, pce, MouseEventWrapper(Point(157, 104), pce.getUUID))
 
     //add mouse event to Input event stack
-    InputEventQueue.enqueue(MouseEventWrapper(Point(157,104), pce.getUUID))
+    InputEventQueue.enqueue(MouseEventWrapper(Point(157, 104), pce.getUUID))
 
     //call system update
     system.update()

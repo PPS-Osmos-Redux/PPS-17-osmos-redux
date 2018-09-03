@@ -1,7 +1,6 @@
 package it.unibo.osmos.redux.ecs.engine
 
-import it.unibo.osmos.redux.ecs.entities.EntityManager
-import it.unibo.osmos.redux.ecs.entities.properties.composed.PlayerCellEntity
+import it.unibo.osmos.redux.ecs.entities.{EntityManager, PlayerCellEntity}
 import it.unibo.osmos.redux.ecs.systems._
 import it.unibo.osmos.redux.multiplayer.server.Server
 import it.unibo.osmos.redux.mvc.model.Level
