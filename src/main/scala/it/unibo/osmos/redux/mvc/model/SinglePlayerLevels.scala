@@ -8,13 +8,13 @@ import scala.collection.mutable
 
 object SinglePlayerLevels {
   implicit val who:String = "SinglePlayerLevels"
-  private var userStat:UserStat = UserStat()
   private val levels:mutable.ArraySeq[LevelInfo] = mutable.ArraySeq(
     LevelInfo("1", VictoryRules.becomeTheBiggest),
     LevelInfo("2", VictoryRules.becomeTheBiggest, isAvailable = false),
     LevelInfo("3", VictoryRules.becomeTheBiggest, isAvailable = false),
     LevelInfo("4", VictoryRules.becomeTheBiggest, isAvailable = false),
     LevelInfo("5", VictoryRules.becomeTheBiggest, isAvailable = false))
+  private var userStat:UserStat = UserStat()
 
   /**
     * get the campaign levels
@@ -58,9 +58,9 @@ object SinglePlayerLevels {
                                      })
 
   def newEndGameEvent(endGame:GameStateEventWrapper, levelName:String): Unit = endGame match {
-    case GameWon => userStat.stats.find(lvl => lvl.levelName.equals(levelName)).get.victories+=1
+    case GameWon => userStat.campaignStats.find(lvl => lvl.levelName.equals(levelName)).get.victories+=1
                     unlockNextLevel()
-    case GameLost => userStat.stats.find(lvl => lvl.levelName.equals(levelName)).get.defeats+=1
+    case GameLost => userStat.campaignStats.find(lvl => lvl.levelName.equals(levelName)).get.defeats+=1
     case _ =>
   }
 

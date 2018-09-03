@@ -11,11 +11,7 @@ case class LevelStat(levelName:String, var defeats:Int, var victories: Int)
 
 /**
   * Modelling user progression and stat
-  * @param toDoLevel last unlocked level
-  * @param stats list of levels statistics
+  * @param toDoLevel last unlocked level in campaign mode
+  * @param campaignStats list of levels statistics in campaign mode
   */
-case class UserStat(toDoLevel:String = "1", stats:List[LevelStat] = List(LevelStat("1", 0, 0),
-  LevelStat("2", 0, 0),
-  LevelStat("3", 0, 0),
-  LevelStat("4", 0, 0),
-  LevelStat("5", 0, 0)))
+case class UserStat(toDoLevel:String = "1", campaignStats:List[LevelStat] = SinglePlayerLevels.getLevels.map(lv => LevelStat(lv.name, 0, 0)))
