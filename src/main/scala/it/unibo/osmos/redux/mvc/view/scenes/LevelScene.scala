@@ -20,7 +20,7 @@ import scalafx.application.Platform
 import scalafx.beans.property.BooleanProperty
 import scalafx.scene.canvas.Canvas
 import scalafx.scene.effect.Light.Spot
-import scalafx.scene.effect.Lighting
+import scalafx.scene.effect.{DropShadow, Lighting}
 import scalafx.scene.image.Image
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.{Circle, Rectangle, Shape}
@@ -66,18 +66,18 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     light.color = Color.White
     light.x <== width / 2
     light.y <== height / 2
-    light.z = 100
+    light.z = 210
     light.pointsAtX <== width / 2
     light.pointsAtY <== height / 2
     light.pointsAtZ = -10
     light.specularExponent = 2.0
 
-    val l: Lighting = new Lighting()
-    l.setLight(light)
-    l.setSurfaceScale(1.0)
-    l.setDiffuseConstant(2.0)
+    val lighting: Lighting = new Lighting()
+    lighting.light = light
+    lighting.surfaceScale = 1.0
+    lighting.diffuseConstant = 2.0
 
-    //effect = l
+    effect = lighting
   }
 
   /**
@@ -228,8 +228,12 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
       /* Configuring the mapBorder */
       mapBorder.get.fill = Color.Transparent
       mapBorder.get.stroke = Color.White
-      mapBorder.get.strokeWidth = 2.0
+      mapBorder.get.strokeWidth = 5.0
       mapBorder.get.opacity <== canvas.opacity
+      mapBorder.get.effect = new DropShadow {
+        color = Color.White
+        radius = 10.0
+      }
 
       Platform.runLater({
         /* Adding the mapBorder */
