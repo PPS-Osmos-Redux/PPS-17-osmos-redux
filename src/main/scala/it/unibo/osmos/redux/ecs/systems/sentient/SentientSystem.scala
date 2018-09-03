@@ -45,7 +45,7 @@ case class SentientSystem(levelInfo: Level) extends AbstractSystemWithTwoTypeOfE
     val totalAcceleration = acceleration limit MAX_ACCELERATION
     val accelerationSentient = sentient.getAccelerationComponent
     accelerationSentient.vector_(accelerationSentient.vector add totalAcceleration)
-    if (totalAcceleration.getLength > 0) {
+    if (SentientUtils.hasLostRadiusBehaviour(sentient) && totalAcceleration.getLength > 0) {
       val radiusSentient = sentient.getDimensionComponent
       val lostRadiusAmount = radiusSentient.radius * totalAcceleration.getLength * PERCENTAGE_OF_LOST_RADIUS_FOR_MAGNITUDE_ACCELERATION
 

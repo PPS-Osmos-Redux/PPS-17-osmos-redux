@@ -97,7 +97,7 @@ class TestSentientSystem extends FunSuite with BeforeAndAfter{
   }
 
   test("If collision rule with boundary is bouncing, SentientCellEntity should not change it's acceleration to avoid boundary") {
-    setupLevelInfo(Rectangle((50, 100), 200, 100), CollisionRules.bouncing)
+    setupLevelInfo(Rectangle((100, 150), 300, 200), CollisionRules.bouncing)
     val acceleration = AccelerationComponent(0,0)
     val sentientCellEntity = SentientCellBuilder().withPosition(24,14).withDimension(5).withSpeed(-2,3).withAcceleration(acceleration).build
     val system = SentientSystem(levelInfo)
@@ -117,18 +117,35 @@ class TestSentientSystem extends FunSuite with BeforeAndAfter{
     assert(sentientCellEntity.getAccelerationComponent.vector.y == Constants.Sentient.MAX_ACCELERATION)
   }
 
-  test("If a SentientCellEntity have a acceleration, the radius is decreased") {
+  test("If a SentientCellEntity have a acceleration and a radius is less than the min to lose radius, the radius is not decreased") {
     val cellEntity = CellEntity(acceleration,collidable,dimension2,position1,speed1,visible,baseTypeEntity)
     val cellEntity1 = CellEntity(acceleration,collidable,dimension2,position2,speed1,visible,baseTypeEntity)
-    val sentientCellEntity = SentientCellEntity(acceleration,collidable,dimension,position,speed,visible, spawner)
+    val sentientCellEntity = SentientCellEntity(acceleration,collidable,DimensionComponent(Constants.Sentient.MIN_RADIUS_FOR_LOST_RADIUS_BEHAVIOUR-1),position,speed,visible, spawner)
     val system = SentientSystem(levelInfo)
     EntityManager.add(cellEntity)
     EntityManager.add(cellEntity1)
     EntityManager.add(sentientCellEntity)
     val originalAcceleration = acceleration.copy()
-    val originalRadius = dimension.radius
+    val originalRadius = sentientCellEntity.getDimensionComponent.radius
     system.update()
     assert(!(sentientCellEntity.getAccelerationComponent.vector == originalAcceleration.vector))
+    assert(sentientCellEntity.getDimensionComponent.radius == originalRadius)
+  }
+
+  test("If a SentientCellEntity have a acceleration and a radius is greater than the min to lose radius, the radius is decreased") {
+    setupLevelInfo(Rectangle((100, 150), 300, 200), CollisionRules.bouncing)
+    val cellEntity = CellEntity(acceleration,collidable,dimension2,PositionComponent(17,100),SpeedComponent(0,0),visible,baseTypeEntity)
+    val cellEntity1 = CellEntity(acceleration,collidable,dimension2,PositionComponent(40,40),SpeedComponent(0,0),visible,baseTypeEntity)
+    val sentientCellEntity = SentientCellEntity(acceleration,collidable,DimensionComponent(Constants.Sentient.MIN_RADIUS_FOR_LOST_RADIUS_BEHAVIOUR+1),PositionComponent(17,21),SpeedComponent(0,1),visible, spawner)
+    val system = SentientSystem(levelInfo)
+    EntityManager.add(cellEntity)
+    EntityManager.add(cellEntity1)
+    EntityManager.add(sentientCellEntity)
+    val originalAcceleration = sentientCellEntity.getAccelerationComponent.copy()
+    val originalRadius = sentientCellEntity.getDimensionComponent.radius
+    system.update()
+    assert(sentientCellEntity.getAccelerationComponent.vector.x == originalAcceleration.vector.x)
+    assert(sentientCellEntity.getAccelerationComponent.vector.y == Constants.Sentient.MAX_ACCELERATION)
     assert(sentientCellEntity.getDimensionComponent.radius < originalRadius)
   }
 }
