@@ -118,8 +118,7 @@
       "canSpawn": true
     }
   }],
-  "levelId": "SinglePlayerLevel",
-  "isSimulation": false,
+  "name": "SinglePlayerLevel",
   "victoryRule": {
     "victoryRule": "Become_the_biggest"
   },

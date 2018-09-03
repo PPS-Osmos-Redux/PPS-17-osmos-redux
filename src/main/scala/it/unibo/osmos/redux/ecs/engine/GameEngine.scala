@@ -98,7 +98,7 @@ object GameEngine {
       val systems = ListBuffer[System]()
       if (!level.isSimulation) systems += InputSystem()
       systems ++= initMainSystems(level, levelContext)
-      if (!level.isSimulation) systems += EndGameSystem(levelContext, level.victoryRule)
+      if (!level.isSimulation) systems += EndGameSystem(levelContext, level.levelInfo.victoryRule)
 
 
       //add all entities in the entity manager (systems are subscribed to EntityManager event when created)
@@ -125,7 +125,7 @@ object GameEngine {
 
       //create systems, add to list, the order in this collection is the final system order in the game loop
       val systems = ListBuffer[System](InputSystem())
-      systems ++= initMainSystems(level, levelContext) :+ MultiPlayerEndGameSystem(server, levelContext, level.victoryRule) :+ MultiPlayerUpdateSystem(server)
+      systems ++= initMainSystems(level, levelContext) :+ MultiPlayerEndGameSystem(server, levelContext, level.levelInfo.victoryRule) :+ MultiPlayerUpdateSystem(server)
 
       //add all entities in the entity manager (systems are subscribed to EntityManager event when created)
       level.entities foreach(EntityManager add _)

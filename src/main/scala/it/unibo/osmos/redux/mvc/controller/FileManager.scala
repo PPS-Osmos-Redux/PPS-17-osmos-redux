@@ -68,7 +68,7 @@ object FileManager {
         path
       }
     }
-    val path = checkFileExist(level.levelId)
+    val path = checkFileExist(level.levelInfo.name)
     val levelFile = new File(path.toUri)
     createDirectoriesTree(levelFile)
     if (saveToFile(levelFile, level.toJson.prettyPrint)) Some(path) else None
