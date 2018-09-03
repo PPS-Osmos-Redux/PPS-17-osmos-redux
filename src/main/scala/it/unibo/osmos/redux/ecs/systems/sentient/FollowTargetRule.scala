@@ -37,7 +37,13 @@ case class FollowTargetRule(enemies: ListBuffer[SentientEnemyProperty]) extends 
     enemies.filter(e => e.getCollidableComponent.isCollidable &&
       !(e.getTypeComponent.typeEntity == EntityType.AntiMatter) &&
       sentient.getDimensionComponent.radius > e.getDimensionComponent.radius)
-      .map(e => (e, targetCoefficient(sentient, e, escapeVelocity)))
+      .map(e => {
+        if (hasLostRadiusBehaviour(sentient)) {
+          (e, targetCoefficientWithLostRadius(sentient, e, escapeVelocity))
+        } else {
+          (e, targetCoefficientWithoutLostRadius(sentient, e))
+        }
+      })
       .filter(e => e._2 > 0) match {
       case list if list.isEmpty => None
       case list => Some(list.max(Ordering.by((d: (SentientEnemyProperty, Double)) => d._2))._1)
@@ -48,14 +54,24 @@ case class FollowTargetRule(enemies: ListBuffer[SentientEnemyProperty]) extends 
     *
     * @param sentient sentient entity
     * @param enemy sentient enemy entity
-    * @return a coefficient directly proportional to the enemy's radius and
-    *         inversely proportional to the distance between the entities
+    * @return the coefficient representing the radius that can be gained form an enemy
     */
-  private def targetCoefficient(sentient: SentientProperty, enemy: SentientEnemyProperty, escapeVelocity: Vector): Double = {
+  private def targetCoefficientWithLostRadius(sentient: SentientProperty, enemy: SentientEnemyProperty, escapeVelocity: Vector): Double = {
     val nextPositionTarget = enemy.getPositionComponent.point.add(enemy.getSpeedComponent.vector)
     val unitVectorDesiredVelocity = MathUtils.unitVector(nextPositionTarget, sentient.getPositionComponent.point)
     val magnitudeOfRotation = computeUnlimitedSteer(escapeVelocity, unitVectorDesiredVelocity).getLength
     val lostRadiusPercentage = magnitudeOfRotation * PERCENTAGE_OF_LOST_RADIUS_FOR_MAGNITUDE_ACCELERATION
     enemy.getDimensionComponent.radius - (sentient.getDimensionComponent.radius * lostRadiusPercentage)
+  }
+
+  /**
+    *
+    * @param sentient sentient entity
+    * @param enemy sentient enemy entity
+    * @return a coefficient directly proportional to the enemy's radius and
+    *         inversely proportional to the distance between the entities
+    */
+  private def targetCoefficientWithoutLostRadius(sentient: SentientProperty, enemy: SentientEnemyProperty): Double = {
+    enemy.getDimensionComponent.radius / MathUtils.euclideanDistance(sentient.getPositionComponent, enemy.getPositionComponent)
   }
 }
