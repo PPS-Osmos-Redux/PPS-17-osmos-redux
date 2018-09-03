@@ -47,7 +47,7 @@ class TestSystemWithTwoTypeOfEntity extends FunSuite with BeforeAndAfter {
 
   test("An entity of both types is found in both lists"){
     val fakeSystem = FakeSystem2()
-    EntityManager.add(PlayerCellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity,spawner))
+    EntityManager.add(PlayerCellEntity(acceleration, collidable, dimension, position, speed, visible, spawner, typeEntity))
     assert(fakeSystem.getEntitiesOfFirstType.size == 1)
     assert(fakeSystem.getEntitiesOfSecondType.size == 1)
   }

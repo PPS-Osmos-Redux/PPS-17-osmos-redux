@@ -30,7 +30,7 @@ class TestMapBoundariesCheck extends FunSuite{
 
     //Entities
     val ce = CellEntity(a, c, d, p, s, v, et)
-    val pce = PlayerCellEntity(a, c, d, p1, s, v, et, sp)
+    val pce = PlayerCellEntity(a, c, d, p1, s, v, sp, et)
     val gc = GravityCellEntity(a, c, d, p2, s, v, etg, sw)
     val sc = SentientCellEntity(a, c, d, p3, s, v, spawner)
     val listCells = List(ce, pce, gc, sc)
@@ -61,7 +61,7 @@ class TestMapBoundariesCheck extends FunSuite{
 
     //Entities
     val ce = CellEntity(a, c, d, p, s, v, et)
-    val pce = PlayerCellEntity(a, c, d, p1, s, v, et, sp)
+    val pce = PlayerCellEntity(a, c, d, p1, s, v, sp, et)
     val gc = GravityCellEntity(a, c, d, p2, s, v, etg, sw)
     val sc = SentientCellEntity(a, c, d, p3, s, v, spawner)
     val listCells = List(ce, pce, gc, sc)

@@ -23,7 +23,7 @@ class TestJsonConversion extends FunSuite{
   val spawner = SpawnerComponent(false)
   //Entities
   val ce = CellEntity(a, c, d, p, s, v, et)
-  val pce = PlayerCellEntity(a, c, d, p, s, v, et, sp)
+  val pce = PlayerCellEntity(a, c, d, p, s, v, sp, et)
   val gc = GravityCellEntity(a, c, d, p, s, v, etg, sw)
   val sc = SentientCellEntity(a, c, d, p, s, v, spawner)
   val listCell:List[CellEntity] = List(ce, pce, gc, sc)

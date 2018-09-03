@@ -13,8 +13,8 @@ object PlayerCellEntity {
             position: PositionComponent,
             speed: SpeedComponent,
             visible: VisibleComponent,
-            typeEntity: TypeComponent,
-            spawner: SpawnerComponent): PlayerCellEntity =
+            spawner: SpawnerComponent,
+            typeEntity: TypeComponent = TypeComponent(EntityType.Controlled)): PlayerCellEntity =
     PlayerCellEntityImpl(CellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity), spawner)
 
   def apply(cell: CellEntity, spawner: SpawnerComponent): PlayerCellEntity = PlayerCellEntityImpl(cell, spawner)

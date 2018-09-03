@@ -23,7 +23,7 @@ class TestInputSystem extends FunSuite {
     val system = InputSystem()
 
     //add entities to the system using entity manager
-    val pce = PlayerCellEntity(acceleration(0), collidable(0), dimension(0), position(0), speed(0), visibility(0), typeEntity(0), SpawnerComponent(false))
+    val pce = PlayerCellEntity(acceleration(0), collidable(0), dimension(0), position(0), speed(0), visibility(0), SpawnerComponent(false), typeEntity(0))
     EntityManager.add(pce)
 
     //prepare list of events to apply
@@ -47,7 +47,7 @@ class TestInputSystem extends FunSuite {
     val system = InputSystem()
 
     //add entities to the system using entity manager
-    val pce = PlayerCellEntity(acceleration(0), collidable(0), dimension(0), position(0), speed(0), visibility(0), typeEntity(0), SpawnerComponent(false))
+    val pce = PlayerCellEntity(acceleration(0), collidable(0), dimension(0), position(0), speed(0), visibility(0), SpawnerComponent(false), typeEntity(0))
     val ce = CellEntity(acceleration(1), collidable(1), dimension(1), position(1), speed(1), visibility(1), typeEntity(1))
     EntityManager.add(pce)
     EntityManager.add(ce)
