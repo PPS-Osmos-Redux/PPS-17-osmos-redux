@@ -105,7 +105,7 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
     try {
       if (lock.isLocked) lock.unlock()
     } catch {
-      case Throwable => //do nothing
+      case _: Throwable => //do nothing
     }
   }
 }
