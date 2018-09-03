@@ -316,10 +316,10 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
 
     system.update()
     val map = levelInfo.levelMap.mapShape.asInstanceOf[Rectangle]
-    val boundaryLeft = map.center._1 - map.base/2
-    val boundaryRight = map.center._1 + map.base/2
-    val boundaryTop = map.center._2 + map.height/2
-    val boundaryBottom = map.center._2 - map.height/2
+    val boundaryLeft = map.center._1 - map.base / 2
+    val boundaryRight = map.center._1 + map.base / 2
+    val boundaryTop = map.center._2 + map.height / 2
+    val boundaryBottom = map.center._2 - map.height / 2
 
     assert(entity1.getPositionComponent.point.x >= boundaryLeft + entity1.getDimensionComponent.radius)
     assert(entity1.getPositionComponent.point.x <= boundaryRight - entity1.getDimensionComponent.radius)
@@ -328,5 +328,6 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
     assert(entity2.getPositionComponent.point.x >= boundaryLeft + entity2.getDimensionComponent.radius)
     assert(entity2.getPositionComponent.point.x <= boundaryRight - entity2.getDimensionComponent.radius)
     assert(entity2.getPositionComponent.point.y >= boundaryBottom + entity2.getDimensionComponent.radius)
-    assert(entity2.getPositionComponent.point.y <= boundaryTop - entity2.getDimensionComponent.radius)  }
+    assert(entity2.getPositionComponent.point.y <= boundaryTop - entity2.getDimensionComponent.radius)
+  }
 }

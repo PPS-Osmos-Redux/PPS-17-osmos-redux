@@ -119,7 +119,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
           case EntityType.AntiMatter => cellEntityCreator.visible = true; cellEntityCreator.entityType_=(EntityType.AntiMatter)
           case EntityType.Attractive => gravityCellEntityCreator.visible = true; gravityCellEntityCreator.isAttractive = true
           case EntityType.Repulsive => gravityCellEntityCreator.visible = true; gravityCellEntityCreator.isAttractive = false
-          case EntityType.Sentient => sentientCellEntityCreator.visible = true;
+          case EntityType.Sentient => sentientCellEntityCreator.visible = true; sentientCellEntityCreator.entityType_=(EntityType.Sentient)
           case EntityType.Controlled => playerCellEntityCreator.visible = true; playerCellEntityCreator.entityType_=(EntityType.Controlled)
           case _ => cellEntityCreator.visible = true; cellEntityCreator.entityType_=(EntityType.Matter)
         }

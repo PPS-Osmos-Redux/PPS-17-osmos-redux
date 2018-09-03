@@ -1,12 +1,12 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities._
+import it.unibo.osmos.redux.ecs.entities.{PlayerCellEntity, _}
 import it.unibo.osmos.redux.ecs.systems.EndGameSystem
 import it.unibo.osmos.redux.mvc.model.{MapShape, VictoryRules}
+import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextListener}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GamePending, GameWon}
-import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextListener}
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
@@ -51,7 +51,7 @@ class TestEndGameSystem extends FunSuite with BeforeAndAfter {
     val pcv = VisibleComponent(true)
     val pct = TypeComponent(EntityType.Matter)
     val spw = SpawnerComponent(false)
-    val playerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv, pct, spw)
+    val playerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv, spw, pct)
 
     EntityManager.add(smallerCellEntity)
     EntityManager.add(playerCellEntity)
@@ -92,7 +92,7 @@ class TestEndGameSystem extends FunSuite with BeforeAndAfter {
     val pcv = VisibleComponent(true)
     val pct = TypeComponent(EntityType.Matter)
     val spw = SpawnerComponent(false)
-    val playerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv, pct, spw)
+    val playerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv, spw, pct)
 
     EntityManager.add(smallerCellEntity)
     EntityManager.add(antimatterCellEntity)
@@ -127,7 +127,7 @@ class TestEndGameSystem extends FunSuite with BeforeAndAfter {
     val pcv = VisibleComponent(true)
     val pct = TypeComponent(EntityType.Matter)
     val spw = SpawnerComponent(false)
-    val playerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv, pct, spw)
+    val playerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv, spw, pct)
 
     entityList += cellEntity
     entityList += playerCellEntity
@@ -161,7 +161,7 @@ class TestEndGameSystem extends FunSuite with BeforeAndAfter {
     val pcv = VisibleComponent(true)
     val pct = TypeComponent(EntityType.Matter)
     val spw = SpawnerComponent(false)
-    val playerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv, pct, spw)
+    val playerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv, spw, pct)
 
     val spawner = SpawnerComponent(false)
     val sca1 = AccelerationComponent(0, 0)

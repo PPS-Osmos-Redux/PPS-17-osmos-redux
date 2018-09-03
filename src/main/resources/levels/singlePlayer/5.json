@@ -236,7 +236,7 @@
       "canSpawn": true
     },
     "typeEntity": {
-      "componentType": "Matter"
+      "componentType": "Controlled"
     },
     "position": {
       "point": {

@@ -11,7 +11,7 @@ class TestInputSystem extends FunSuite {
 
   val acceleration = Seq(AccelerationComponent(1, 1), AccelerationComponent(2, 2), AccelerationComponent(3, 3))
   val collidable = Seq(CollidableComponent(true), CollidableComponent(true), CollidableComponent(false))
-  val speed = Seq(SpeedComponent(4, 0), SpeedComponent(2, 0),SpeedComponent(0, 4))
+  val speed = Seq(SpeedComponent(4, 0), SpeedComponent(2, 0), SpeedComponent(0, 4))
   val dimension = Seq(DimensionComponent(5), DimensionComponent(1), DimensionComponent(8))
   val position = Seq(PositionComponent(Point(0, 0)), PositionComponent(Point(1, 2)), PositionComponent(Point(0, 4)))
   val visibility = Seq(VisibleComponent(true), VisibleComponent(false), VisibleComponent(false))
@@ -23,11 +23,11 @@ class TestInputSystem extends FunSuite {
     val system = InputSystem()
 
     //add entities to the system using entity manager
-    val pce = PlayerCellEntity(acceleration(0), collidable(0), dimension(0), position(0), speed(0), visibility(0), typeEntity(0), SpawnerComponent(false))
+    val pce = PlayerCellEntity(acceleration(0), collidable(0), dimension(0), position(0), speed(0), visibility(0), SpawnerComponent(false), typeEntity(0))
     EntityManager.add(pce)
 
     //prepare list of events to apply
-    val events = List(MouseEventWrapper(Point(157,104), pce.getUUID),  MouseEventWrapper(Point(200,194), pce.getUUID), MouseEventWrapper(Point(314,44), pce.getUUID))
+    val events = List(MouseEventWrapper(Point(157, 104), pce.getUUID), MouseEventWrapper(Point(200, 194), pce.getUUID), MouseEventWrapper(Point(314, 44), pce.getUUID))
 
     //add mouse events to Input event stack
     InputEventQueue.enqueue(events: _*)
@@ -47,7 +47,7 @@ class TestInputSystem extends FunSuite {
     val system = InputSystem()
 
     //add entities to the system using entity manager
-    val pce = PlayerCellEntity(acceleration(0), collidable(0), dimension(0), position(0), speed(0), visibility(0), typeEntity(0), SpawnerComponent(false))
+    val pce = PlayerCellEntity(acceleration(0), collidable(0), dimension(0), position(0), speed(0), visibility(0), SpawnerComponent(false), typeEntity(0))
     val ce = CellEntity(acceleration(1), collidable(1), dimension(1), position(1), speed(1), visibility(1), typeEntity(1))
     EntityManager.add(pce)
     EntityManager.add(ce)
@@ -56,10 +56,10 @@ class TestInputSystem extends FunSuite {
     val originalAccel = AccelerationComponent(acceleration(1).vector.x, acceleration(1).vector.y)
 
     //pre-compute expected values
-    val expectedAccel = computeExpectedAcceleration(system, pce, MouseEventWrapper(Point(157,104), pce.getUUID))
+    val expectedAccel = computeExpectedAcceleration(system, pce, MouseEventWrapper(Point(157, 104), pce.getUUID))
 
     //add mouse event to Input event stack
-    InputEventQueue.enqueue(MouseEventWrapper(Point(157,104), pce.getUUID))
+    InputEventQueue.enqueue(MouseEventWrapper(Point(157, 104), pce.getUUID))
 
     //call system update
     system.update()

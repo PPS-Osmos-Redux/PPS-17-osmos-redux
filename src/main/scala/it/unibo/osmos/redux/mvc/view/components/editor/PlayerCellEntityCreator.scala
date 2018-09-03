@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.components.editor
 
-import it.unibo.osmos.redux.ecs.entities.{CellEntity, PlayerCellEntity}
+import it.unibo.osmos.redux.ecs.entities.CellEntity
 import it.unibo.osmos.redux.ecs.entities.builders.{CellBuilder, PlayerCellBuilder}
 
 /**

@@ -1,14 +1,14 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities._
+import it.unibo.osmos.redux.ecs.entities.{PlayerCellEntity, _}
 import it.unibo.osmos.redux.mvc.controller.{FileManager, LevelInfo}
 import it.unibo.osmos.redux.mvc.model.MapShape._
 import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.FunSuite
 
-class TestJsonConversion extends FunSuite{
+class TestJsonConversion extends FunSuite {
   //Components
   val a = AccelerationComponent(1, 1)
   val c = CollidableComponent(true)
@@ -23,17 +23,17 @@ class TestJsonConversion extends FunSuite{
   val spawner = SpawnerComponent(false)
   //Entities
   val ce = CellEntity(a, c, d, p, s, v, et)
-  val pce = PlayerCellEntity(a, c, d, p, s, v, et, sp)
+  val pce = PlayerCellEntity(a, c, d, p, s, v, sp, et)
   val gc = GravityCellEntity(a, c, d, p, s, v, etg, sw)
   val sc = SentientCellEntity(a, c, d, p, s, v, spawner)
-  val listCell:List[CellEntity] = List(ce, pce, gc, sc)
+  val listCell: List[CellEntity] = List(ce, pce, gc, sc)
   //LevelMap
-  val rectangle:MapShape = Rectangle((50,50),10.1,5.6)
-  val circle:MapShape = Circle((50.1,50.2), 5.7)
-  val listShape:List[MapShape] = List(rectangle, circle)
-  val levelMap:LevelMap = LevelMap(rectangle, CollisionRules.bouncing)
+  val rectangle: MapShape = Rectangle((50, 50), 10.1, 5.6)
+  val circle: MapShape = Circle((50.1, 50.2), 5.7)
+  val listShape: List[MapShape] = List(rectangle, circle)
+  val levelMap: LevelMap = LevelMap(rectangle, CollisionRules.bouncing)
   //Level
-  val level:Level = Level(LevelInfo("SinglePlayerLevel", VictoryRules.becomeTheBiggest),
+  val level: Level = Level(LevelInfo("SinglePlayerLevel", VictoryRules.becomeTheBiggest),
     levelMap,
     listCell)
 
@@ -65,12 +65,12 @@ class TestJsonConversion extends FunSuite{
     assert(jsCellEntity.convertTo[CellEntity].equals(ce))
   }
 
-  test("Player Cell Entity conversion"){
+  test("Player Cell Entity conversion") {
     val jsPlayerCellEntity = pce.toJson
     assert(jsPlayerCellEntity.convertTo[PlayerCellEntity].equals(pce))
   }
 
-  test("Gravity Cell Entity conversion"){
+  test("Gravity Cell Entity conversion") {
     val jsGravityCell = gc.toJson
     assert(jsGravityCell.convertTo[GravityCellEntity].equals(gc))
   }
@@ -128,14 +128,14 @@ class TestJsonConversion extends FunSuite{
     assert(spConvertedLevel.levelInfo.victoryRule.equals(level.levelInfo.victoryRule))
     assert(spConvertedLevel.entities.size.equals(level.entities.size))
 
-    val mpWrongLevel = FileManager.loadResource("ShouldntWorks",isMultiPlayer = true)  match {
+    val mpWrongLevel = FileManager.loadResource("ShouldntWorks", isMultiPlayer = true) match {
       case Some(value) => value
       case None => null
     }
     assert(mpWrongLevel != null)
     assert(!(mpWrongLevel.entities.count(cell => cell.isInstanceOf[PlayerCellEntity]) >= 2))
 
-    val mpRightLevel = FileManager.loadResource("ShouldWorks",isMultiPlayer = true)  match {
+    val mpRightLevel = FileManager.loadResource("ShouldWorks", isMultiPlayer = true) match {
       case Some(value) => value
       case None => null
     }
@@ -154,7 +154,7 @@ class TestJsonConversion extends FunSuite{
     assert(readLevel.get.entities.size.equals(level.entities.size))
 
     FileManager.saveLevel(level)
-    val secondFileName = level.levelInfo.name+1
+    val secondFileName = level.levelInfo.name + 1
     val readLevel2 = FileManager.loadCustomLevel(level.levelInfo.name)
     assert(readLevel2.isDefined)
     assert(readLevel2.get.levelInfo.name.equals(level.levelInfo.name))
