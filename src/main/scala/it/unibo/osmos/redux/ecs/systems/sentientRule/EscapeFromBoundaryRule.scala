@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.ecs.systems.sentientRule
 
-import it.unibo.osmos.redux.ecs.entities.SentientProperty
 import it.unibo.osmos.redux.ecs.entities.builders.SentientCellBuilder
+import it.unibo.osmos.redux.ecs.entities.properties.composed.SentientProperty
 import it.unibo.osmos.redux.ecs.systems.borderconditions.{CircularBorder, RectangularBorder}
 import it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils._
 import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}

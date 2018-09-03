@@ -2,6 +2,7 @@ package it.unibo.osmos.redux.ecs.systems
 
 import it.unibo.osmos.redux.ecs.entities.EMEvents.{EntityCreated, EntityDeleted}
 import it.unibo.osmos.redux.ecs.entities._
+import it.unibo.osmos.redux.ecs.entities.properties.basic.Property
 
 import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag

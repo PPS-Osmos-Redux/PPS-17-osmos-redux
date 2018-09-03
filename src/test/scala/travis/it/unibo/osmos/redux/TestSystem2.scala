@@ -2,6 +2,8 @@ package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities._
+import it.unibo.osmos.redux.ecs.entities.composed.MovableProperty
+import it.unibo.osmos.redux.ecs.entities.properties.composed.{InputProperty, MovableProperty}
 import it.unibo.osmos.redux.ecs.systems.{AbstractSystem2, DrawSystem}
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.{BeforeAndAfter, FunSuite}

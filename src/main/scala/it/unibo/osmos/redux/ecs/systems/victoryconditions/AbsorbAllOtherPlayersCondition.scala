@@ -1,6 +1,7 @@
 package it.unibo.osmos.redux.ecs.systems.victoryconditions
 
-import it.unibo.osmos.redux.ecs.entities.{DeathProperty, EntityType}
+import it.unibo.osmos.redux.ecs.entities.EntityType
+import it.unibo.osmos.redux.ecs.entities.properties.composed.DeathProperty
 
 import scala.collection.mutable.ListBuffer
 

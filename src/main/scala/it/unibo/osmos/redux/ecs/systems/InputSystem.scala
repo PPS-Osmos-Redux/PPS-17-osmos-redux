@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.ecs.systems
 
 import it.unibo.osmos.redux.ecs.components.{DimensionComponent, PositionComponent, SpawnAction, SpeedComponent}
-import it.unibo.osmos.redux.ecs.entities.InputProperty
+import it.unibo.osmos.redux.ecs.entities.properties.composed.InputProperty
 import it.unibo.osmos.redux.utils.{InputEventQueue, MathUtils, Point, Vector}
 
 case class InputSystem() extends AbstractSystem[InputProperty] {

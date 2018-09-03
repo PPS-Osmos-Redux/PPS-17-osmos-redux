@@ -1,5 +1,7 @@
 package it.unibo.osmos.redux.ecs.systems
 
+import it.unibo.osmos.redux.ecs.entities.composed.MovableProperty
+import it.unibo.osmos.redux.ecs.entities.properties.composed.{GravityProperty, MovableProperty}
 import it.unibo.osmos.redux.ecs.entities.{EntityType, _}
 import it.unibo.osmos.redux.utils.{MathUtils, Point, Vector}
 

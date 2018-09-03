@@ -1,7 +1,9 @@
 package it.unibo.osmos.redux.ecs.systems
 
 import it.unibo.osmos.redux.ecs.components.{DimensionComponent, PositionComponent, SpawnAction, SpeedComponent}
-import it.unibo.osmos.redux.ecs.entities.{SentientEnemyProperty, _}
+import it.unibo.osmos.redux.ecs.entities._
+import it.unibo.osmos.redux.ecs.entities.composed.SentientProperty
+import it.unibo.osmos.redux.ecs.entities.properties.composed.{SentientEnemyProperty, SentientProperty}
 import it.unibo.osmos.redux.ecs.systems.sentientRule._
 import it.unibo.osmos.redux.mvc.model.Level
 import it.unibo.osmos.redux.utils.{Point, Vector}

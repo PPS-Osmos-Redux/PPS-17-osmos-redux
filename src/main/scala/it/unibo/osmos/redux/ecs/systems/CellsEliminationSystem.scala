@@ -1,6 +1,7 @@
 package it.unibo.osmos.redux.ecs.systems
 
-import it.unibo.osmos.redux.ecs.entities.{DeathProperty, EntityManager}
+import it.unibo.osmos.redux.ecs.entities.EntityManager
+import it.unibo.osmos.redux.ecs.entities.properties.composed.DeathProperty
 
 case class CellsEliminationSystem() extends AbstractSystem[DeathProperty] {
 

@@ -3,7 +3,8 @@ package it.unibo.osmos.redux.multiplayer.server
 import akka.actor.{ActorRef, PoisonPill}
 import akka.pattern.ask
 import akka.util.Timeout
-import it.unibo.osmos.redux.ecs.entities.{EntityManager, PlayerCellEntity}
+import it.unibo.osmos.redux.ecs.entities.EntityManager
+import it.unibo.osmos.redux.ecs.entities.properties.composed.PlayerCellEntity
 import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.multiplayer.lobby.GameLobby
 import it.unibo.osmos.redux.multiplayer.players.{BasePlayer, ReferablePlayer}

@@ -2,7 +2,7 @@ package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.builders.{CellBuilder, PlayerCellBuilder}
-import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager, PlayerCellEntity}
+import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager}
 import it.unibo.osmos.redux.ecs.systems.CellsEliminationSystem
 import org.scalatest.FunSuite
 

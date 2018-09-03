@@ -1,6 +1,7 @@
 package it.unibo.osmos.redux.mvc.model
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.{CellEntity, GravityCellEntity, PlayerCellEntity, SentientCellEntity, _}
+import it.unibo.osmos.redux.ecs.entities.properties.composed.PlayerCellEntity
+import it.unibo.osmos.redux.ecs.entities.{CellEntity, GravityCellEntity, SentientCellEntity, _}
 import it.unibo.osmos.redux.mvc.controller.LevelInfo
 import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper

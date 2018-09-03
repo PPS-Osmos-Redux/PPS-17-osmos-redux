@@ -1,6 +1,8 @@
 package it.unibo.osmos.redux.ecs.systems
 
-import it.unibo.osmos.redux.ecs.entities.{DeathProperty, EntityType, PlayerCellEntity}
+import it.unibo.osmos.redux.ecs.entities.composed.PlayerCellEntity
+import it.unibo.osmos.redux.ecs.entities.properties.composed.{DeathProperty, PlayerCellEntity}
+import it.unibo.osmos.redux.ecs.entities.{EntityType, PlayerCellEntity}
 import it.unibo.osmos.redux.ecs.systems.victoryconditions.{AbsorbAllOtherPlayersCondition, AbsorbCellsWithTypeVictoryCondition, BecomeHugeVictoryCondition, BecomeTheBiggestVictoryCondition}
 import it.unibo.osmos.redux.multiplayer.server.Server
 import it.unibo.osmos.redux.mvc.model.VictoryRules

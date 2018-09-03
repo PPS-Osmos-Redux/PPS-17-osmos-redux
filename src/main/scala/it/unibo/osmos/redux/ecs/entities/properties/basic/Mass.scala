@@ -1,4 +1,4 @@
-package it.unibo.osmos.redux.ecs.entities
+package it.unibo.osmos.redux.ecs.entities.properties.basic
 
 import it.unibo.osmos.redux.ecs.components.MassComponent
 

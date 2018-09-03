@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.ecs.systems
 
-import it.unibo.osmos.redux.ecs.entities.MovableProperty
+import it.unibo.osmos.redux.ecs.entities.properties.composed.MovableProperty
 import it.unibo.osmos.redux.utils.Constants
 
 case class MovementSystem() extends AbstractSystem[MovableProperty] {
