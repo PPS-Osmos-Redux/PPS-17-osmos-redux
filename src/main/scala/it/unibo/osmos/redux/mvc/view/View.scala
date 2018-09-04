@@ -91,7 +91,9 @@ object View {
 
     override def onResumeLevel(): Unit = checkController(() => controller.get.resumeLevel())
 
-    override def onStopLevel(): Unit = checkController(() => controller.get.stopLevel())
+    override def onStopLevel(victory: Boolean): Unit = checkController(() => controller.get.stopLevel(victory))
+
+    override def onLevelSpeedChanged(increment: Boolean): Unit = checkController(() => controller.get.changeLevelSpeed(increment))
 
     override def onDisplayError(exception: Throwable): Unit = {
       // TODO change for a better output

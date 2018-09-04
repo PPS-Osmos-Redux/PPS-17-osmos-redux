@@ -53,8 +53,9 @@ trait Controller {
 
   /**
     * Stops the level.
+    * @param If the level have been won or lost.
     */
-  def stopLevel(): Unit
+  def stopLevel(victory: Boolean = false): Unit
 
   /**
     * Pauses the level.
@@ -65,6 +66,12 @@ trait Controller {
     * Resumes the level.
     */
   def resumeLevel(): Unit
+
+  /**
+    * Changes the level speed by speeding up or slowing down depending on the input.
+    * @param increment Determines whether the level speed needs to be increased or decreased.
+    */
+  def changeLevelSpeed(increment: Boolean = false): Unit
 
   /**
     * Saves a level.
@@ -111,7 +118,7 @@ trait Controller {
 
 }
 
-case class ControllerImpl() extends Controller with GameStateHolder {
+case class ControllerImpl() extends Controller {
 
   implicit val who: String = "Controller"
 
@@ -147,7 +154,6 @@ case class ControllerImpl() extends Controller with GameStateHolder {
 
       //create and initialize the game engine
       if(engine.isEmpty) engine = Some(GameEngine())
-      //TODO: engine must need a GameStateHolder for the EndGameSystem
       engine.get.init(loadedLevel.get, levelContext)
       levelContext.setupLevel(loadedLevel.get.levelMap.mapShape)
       GenericResponse(true)
@@ -267,7 +273,16 @@ case class ControllerImpl() extends Controller with GameStateHolder {
     }
   }
 
-  override def stopLevel(): Unit = {
+  override def changeLevelSpeed(increment: Boolean = false): Unit = {
+    Logger.log("changeLevelSpeed")
+
+    multiPlayerMode match {
+      case Some(MultiPlayerMode.Server) | None => if (engine.isDefined) engine.get.changeSpeed(increment)
+      case _ =>
+    }
+  }
+
+  override def stopLevel(victory: Boolean = false): Unit = {
     Logger.log("stopLevel")
 
     multiPlayerMode match {
@@ -276,6 +291,8 @@ case class ControllerImpl() extends Controller with GameStateHolder {
       case _ =>
         if (server.isDefined) server.get.stopGame()
         if (engine.isDefined) engine.get.stop()
+
+        saveProgress(if (victory) GameWon else GameLost)
     }
   }
 
@@ -297,21 +314,12 @@ case class ControllerImpl() extends Controller with GameStateHolder {
     }
   }
 
-  //TODO useless for controller
-  override def gameCurrentState: GameStateEventWrapper = ???
-
   override def getSoundPath(soundType: SoundsType.Value): Option[String] = soundType match {
     case SoundsType.menu => Some(FileManager.loadMenuMusic())
     case SoundsType.level => Some(FileManager.loadLevelMusic())
     case SoundsType.button => Some(FileManager.loadButtonsSound())
     case _ => Logger.log("Sound type not managed!! [getSoundPath]")
               None
-  }
-
-  override def notify(event: GameStateEventWrapper): Unit = lastLoadedLevel match {
-    case Some(lastLevel:String) => SinglePlayerLevels.newEndGameEvent(event, lastLevel)
-      FileManager.saveUserProgress(SinglePlayerLevels.userStatistics)
-    case _ =>
   }
 
   override def getCustomLevels: List[LevelInfo] = FileManager.customLevelsFilesName match {
@@ -330,5 +338,11 @@ case class ControllerImpl() extends Controller with GameStateHolder {
     case Success(_) => true
     case Failure(exception) => Logger.log("Error occurred removing custom level file" + exception.getMessage)
                                false
+  }
+
+  private def saveProgress(event: GameStateEventWrapper): Unit = lastLoadedLevel match {
+    case Some(lastLevel:String) => SinglePlayerLevels.newEndGameEvent(event, lastLevel)
+      FileManager.saveUserProgress(SinglePlayerLevels.userStatistics)
+    case _ =>
   }
 }
