@@ -1,17 +1,17 @@
-package it.unibo.osmos.redux.mvc.model
+package it.unibo.osmos.redux.mvc.controller
 
-import it.unibo.osmos.redux.mvc.controller.LevelInfo
+import it.unibo.osmos.redux.mvc.model.VictoryRules
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GameStateEventWrapper, GameWon}
 import it.unibo.osmos.redux.utils.Logger
 
 object SinglePlayerLevels {
   implicit val who:String = "SinglePlayerLevels"
   private var levels:List[CampaignLevel] = List(
-    CampaignLevel(LevelInfo("1", VictoryRules.becomeTheBiggest), LevelStat(0,0)),
-    CampaignLevel(LevelInfo("2", VictoryRules.becomeTheBiggest, isAvailable = false), LevelStat(0,0)),
-    CampaignLevel(LevelInfo("3", VictoryRules.becomeTheBiggest, isAvailable = false), LevelStat(0,0)),
-    CampaignLevel(LevelInfo("4", VictoryRules.becomeTheBiggest, isAvailable = false), LevelStat(0,0)),
-    CampaignLevel(LevelInfo("5", VictoryRules.becomeTheBiggest, isAvailable = false), LevelStat(0,0)))
+    CampaignLevel(LevelInfo("1", VictoryRules.becomeTheBiggest), CampaignLevelStat(0,0)),
+    CampaignLevel(LevelInfo("2", VictoryRules.becomeTheBiggest, isAvailable = false), CampaignLevelStat(0,0)),
+    CampaignLevel(LevelInfo("3", VictoryRules.becomeTheBiggest, isAvailable = false), CampaignLevelStat(0,0)),
+    CampaignLevel(LevelInfo("4", VictoryRules.becomeTheBiggest, isAvailable = false), CampaignLevelStat(0,0)),
+    CampaignLevel(LevelInfo("5", VictoryRules.becomeTheBiggest, isAvailable = false), CampaignLevelStat(0,0)))
 
   /**
     * Return the last unlocked level.
@@ -67,12 +67,12 @@ object SinglePlayerLevels {
     * reset the user progress
     */
   def reset():Unit ={
-    levels.head.levelStat = LevelStat(0,0)
-    //TODO: delete user progress file
+    levels.head.levelStat = CampaignLevelStat(0,0)
     levels.filter(lv => !lv.levelInfo.name.equals(levels.head.levelInfo.name)).foreach(lv => {
       lv.levelInfo.isAvailable = false
-      lv.levelStat = LevelStat(0,0)
+      lv.levelStat = CampaignLevelStat(0,0)
     })
+    FileManager.saveUserProgress(levels)
   }
 
   private def searchLastAvailableLevel(cLevels:List[LevelInfo] = getLevelsInfo):Option[String] = cLevels match {
@@ -94,5 +94,3 @@ object SinglePlayerLevels {
     case None => Logger.log("Error: level " + levelName + " doesn't exists [IncreaseDefeats]")
   }
 }
-
-case class CampaignLevel(levelInfo: LevelInfo, var levelStat: LevelStat)

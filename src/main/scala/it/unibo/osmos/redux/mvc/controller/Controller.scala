@@ -132,22 +132,10 @@ case class ControllerImpl() extends Controller {
   override def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): Unit = {
     Logger.log("initLevel")
 
-    var loadedLevel:Option[Level] = None
-
-    if (isCustom) {
-      loadedLevel = FileManager.loadCustomLevel(chosenLevel)
-      /*Because user stats are not influenced by custom level end game results*/
-      lastLoadedLevel = None
-    } else {
-      loadedLevel = FileManager.loadResource(chosenLevel)
-      lastLoadedLevel = Some(chosenLevel)
-    }
+    val loadedLevel:Option[Level] = loadLevel(chosenLevel, isCustom, levelContext.levelContextType == LevelContextType.simulation)
 
     if (loadedLevel.isDefined) {
-      loadedLevel.get.isSimulation = levelContext.levelContextType == LevelContextType.simulation
-
       val player = loadedLevel.get.entities.find(_.isInstanceOf[PlayerCellEntity])
-      if (player.isEmpty && !loadedLevel.get.isSimulation) Logger.log("Error: Cannot start a normal level if the player is not present")
       //assign current player uuid to the
       if(player.isDefined) levelContext.setPlayerUUID(player.get.getUUID)
 
@@ -233,7 +221,8 @@ case class ControllerImpl() extends Controller {
     Logger.log("initMultiPlayerLevel")
 
     val promise = Promise[GenericResponse[Boolean]]()
-
+    //End game result of the multiplayer levels doesn't influence campaign statistics
+    lastLoadedLevel = None
     //load level definition
     val loadedLevel = FileManager.loadResource(levelInfo.name, isMultiPlayer = true).get
 
@@ -343,4 +332,15 @@ case class ControllerImpl() extends Controller {
       FileManager.saveUserProgress(SinglePlayerLevels.getCampaignLevels)
     case _ =>
   }
+
+  private def loadLevel(chosenLevel:String, isCustom:Boolean, isSimulation:Boolean): Option[Level] = if (isCustom) {
+    /*Because user campaign stats are not influenced by end game results of the custom levels*/
+    lastLoadedLevel = None
+    FileManager.loadCustomLevel(chosenLevel)
+  } else {
+    val loadedLevel = FileManager.loadResource(chosenLevel)
+    if (isSimulation) lastLoadedLevel = None else lastLoadedLevel = Some(chosenLevel)
+    loadedLevel
+  }
 }
+
