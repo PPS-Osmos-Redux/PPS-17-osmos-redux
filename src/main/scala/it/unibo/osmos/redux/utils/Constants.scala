@@ -6,6 +6,13 @@ object Constants {
     final val CELL_MAX_SPEED: Double = 4
   }
 
+  object Game {
+    final val defaultSpeed: Int = 60
+    final val speedChangeStep: Int = 30
+    final val maximumSpeed: Int = 240
+    final val minimumSpeed: Int = 30
+  }
+
   object MultiPlayer {
     final val defaultSystemConfig: String = "akka-config/kryo.conf"
     final val defaultSystemName: String = "Osmos-Redux-MultiPlayer-System"

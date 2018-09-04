@@ -2,7 +2,7 @@ package it.unibo.osmos.redux.ecs.entities.builders
 
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityType}
-import it.unibo.osmos.redux.utils.Point
+import it.unibo.osmos.redux.utils.{Point, Vector}
 
 /** Builder for Cell Entities */
 class CellBuilder() {
@@ -32,6 +32,11 @@ class CellBuilder() {
 
   def withAcceleration(x: Double, y: Double): CellBuilder = {
     this.acceleration = AccelerationComponent(x, y)
+    this
+  }
+
+  def withAcceleration(acceleration: Vector): CellBuilder = {
+    this.acceleration = AccelerationComponent(acceleration)
     this
   }
 
@@ -67,6 +72,11 @@ class CellBuilder() {
 
   def withSpeed(x: Double, y: Double): CellBuilder = {
     this.speed = SpeedComponent(x, y)
+    this
+  }
+
+  def withSpeed(speed: Vector): CellBuilder = {
+    this.speed = SpeedComponent(speed)
     this
   }
 

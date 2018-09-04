@@ -130,10 +130,7 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
     if (accel.vector.x == 0) {
       entity.getAccelerationComponent.vector_(initialAccelerationVector.multiply(percentage))
     } else {
-      val temp = accel.vector.multiply(percentage)
-      entity.getAccelerationComponent.vector_(accel.vector.subtract(temp))
-      //entity.getAccelerationComponent.vector.x_(accel.vector.x - accel.vector.x * percentage)
-      //entity.getAccelerationComponent.vector.y_(accel.vector.y - accel.vector.y * percentage)
+      accel.vector_(accel.vector subtract(accel.vector multiply percentage))
     }
   }
 }

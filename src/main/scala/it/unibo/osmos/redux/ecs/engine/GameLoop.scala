@@ -16,7 +16,6 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
   private val lock: ReentrantLock = new ReentrantLock()
   private var status: GameStatus = GameStatus.Idle
   private var stopFlag: Boolean = false
-  private val tickTime = 1000 / engine.getFps
 
   override def run(): Unit = {
     status = GameStatus.Running
@@ -39,6 +38,7 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
       //println(s"Execution time: $execTime ms")
 
       if (!stopFlag) {
+        val tickTime = getTickTime
         if (execTime < tickTime) {
           val sleepTime = tickTime - execTime
           try {
@@ -99,7 +99,13 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
   def getStatus: GameStatus = status
 
   /**
-    * Tries to unlock the lock, if it fails it does not halt the
+    * Gets the current tick time.
+    * @return The current tick time in milliseconds.
+    */
+  private def getTickTime: Int = 1000 / engine.getFps
+
+  /**
+    * Tries to unlock the lock, if it fails it does not halt the game.
     */
   private def tryUnlock(): Unit = {
     try {

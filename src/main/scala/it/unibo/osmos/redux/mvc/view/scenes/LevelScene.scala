@@ -180,6 +180,15 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   }
 
   /**
+    * OnKeyPressed handler, reacting to up or down arrow key pressed, changes the game speed
+    */
+  onKeyPressed = keyEvent => keyEvent.getCode match {
+    case KeyCode.UP => listener.onLevelSpeedChanged(true)
+    case KeyCode.DOWN => listener.onLevelSpeedChanged()
+    case _ => //do nothing
+  }
+
+  /**
     * Sends a MouseEventWrapper to the LevelContextListener
     *
     * @param mouseEvent the mouse event
@@ -269,7 +278,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
   override def onLevelEnd(levelResult: Boolean): Unit = {
     /* Calling stop level */
-    listener.onStopLevel()
+    listener.onStopLevel(levelResult)
 
     /* Creating an end screen with a button */
     val endScreen = LevelScreen.Builder(this)
@@ -399,6 +408,12 @@ trait LevelSceneListener {
   /**
     * Called when the level gets stopped
     */
-  def onStopLevel()
+  def onStopLevel(victory: Boolean = false)
+
+  /**
+    * Called when the level speed changes
+    * @param increment If the speed needs to increased or decreased
+    */
+  def onLevelSpeedChanged(increment: Boolean = false)
 
 }

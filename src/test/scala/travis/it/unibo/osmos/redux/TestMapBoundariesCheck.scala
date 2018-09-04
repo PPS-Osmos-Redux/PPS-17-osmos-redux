@@ -1,38 +1,37 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.{PlayerCellEntity, _}
+import it.unibo.osmos.redux.ecs.entities._
+import it.unibo.osmos.redux.ecs.entities.builders._
 import it.unibo.osmos.redux.mvc.controller.LevelInfo
 import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.utils.Point
-import org.scalatest.FunSuite
+import org.scalatest.{BeforeAndAfter, FunSuite}
 
-class TestMapBoundariesCheck extends FunSuite {
-  val a = AccelerationComponent(1, 1)
-  val c = CollidableComponent(true)
+class TestMapBoundariesCheck extends FunSuite with BeforeAndAfter {
+
   val d = DimensionComponent(2)
-  val s = SpeedComponent(4, 0)
-  val v = VisibleComponent(true)
-  val et = TypeComponent(EntityType.Matter)
-  val etg = TypeComponent(EntityType.Attractive)
-  val sp = SpawnerComponent(true)
-  val sw = SpecificWeightComponent(1)
-  val spawner = SpawnerComponent(false)
+  val p = Point(-3, -3)
+  val p1 = Point(3, -3)
+  val p2 = Point(-3, 3)
+  val p3 = Point(3, 3)
+  var ce:CellEntity = _
+  var pce:CellEntity = _
+  var gc:CellEntity = _
+  var sc:CellEntity = _
+
+  before{
+    ce = new CellBuilder().withPosition(p).withDimension(d).build
+    pce = PlayerCellBuilder().withPosition(p1).withDimension(d).build
+    gc = GravityCellBuilder().withPosition(p2).withDimension(d).build
+    sc = SentientCellBuilder().withPosition(p3).withDimension(d).build
+  }
 
   val levelId: String = 1.toString
 
   test("Rectangular map boundaries") {
-    val p = PositionComponent(Point(-3, -3))
-    val p1 = PositionComponent(Point(3, -3))
-    val p2 = PositionComponent(Point(-3, 3))
-    val p3 = PositionComponent(Point(3, 3))
 
-    //Entities
-    val ce = CellEntity(a, c, d, p, s, v, et)
-    val pce = PlayerCellEntity(a, c, d, p1, s, v, sp, et)
-    val gc = GravityCellEntity(a, c, d, p2, s, v, etg, sw)
-    val sc = SentientCellEntity(a, c, d, p3, s, v, spawner)
     val listCells = List(ce, pce, gc, sc)
     //LevelMap
     val rectangle: MapShape = Rectangle((0, 0), 10, 10)
@@ -54,16 +53,6 @@ class TestMapBoundariesCheck extends FunSuite {
   }
 
   test("Circular map boundaries") {
-    val p = PositionComponent(Point(-3, -3))
-    val p1 = PositionComponent(Point(3, -3))
-    val p2 = PositionComponent(Point(-3, 3))
-    val p3 = PositionComponent(Point(3, 3))
-
-    //Entities
-    val ce = CellEntity(a, c, d, p, s, v, et)
-    val pce = PlayerCellEntity(a, c, d, p1, s, v, sp, et)
-    val gc = GravityCellEntity(a, c, d, p2, s, v, etg, sw)
-    val sc = SentientCellEntity(a, c, d, p3, s, v, spawner)
     val listCells = List(ce, pce, gc, sc)
     //LevelMap
     val circle: MapShape = Circle((0, 0), 5)
