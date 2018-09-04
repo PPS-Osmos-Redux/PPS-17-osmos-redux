@@ -8,6 +8,8 @@ import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.layout.{TilePane, VBox}
 import scalafx.stage.Stage
 
+import scala.collection.mutable
+
 /**
   * This scene lets the players choose which level they want to play
   *
@@ -16,6 +18,35 @@ import scalafx.stage.Stage
   */
 class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSelectionSceneListener, previousSceneListener: BackClickListener) extends DefaultBackScene(parentStage, previousSceneListener)
   with MainMenuBarListener with LevelNodeListener {
+
+  /**
+    * The levels shown
+    *
+    * @return the list of levels as LevelInfo
+    */
+  lazy val levels: mutable.Buffer[LevelInfo] = listener.getSingleLevels.toBuffer
+
+  /**
+    * This method loads the level into the level container, thus letting the player choose them
+    */
+  def loadLevels(): Unit = levels foreach (level => levelsContainer.children.add(new LevelNode(LevelSelectionScene.this, level, levels.indexOf(level))))
+
+  /**
+    * This method refreshes the level list to acquire the new LevelInfos
+    */
+  protected def refreshLevels() : Unit = {
+    levels.clear()
+    levels.appendAll(listener.getSingleLevels)
+  }
+
+  /**
+    * This method refreshes the level list and reload the nodes
+    */
+  private def reloadLevels() : Unit = {
+    refreshLevels()
+    levelsContainer.children.clear()
+    loadLevels()
+  }
 
   /**
     * The central level container
@@ -44,18 +75,6 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
   /* Setting the root container*/
   root = container
 
-  /**
-    * The levels shown
-    *
-    * @return the list of levels as LevelInfo
-    */
-  def levels: List[LevelInfo] = listener.getSingleLevels
-
-  /**
-    * This method loads the level into the level container, thus letting the player choose them
-    */
-  def loadLevels(): Unit = levels foreach (level => levelsContainer.children.add(new LevelNode(LevelSelectionScene.this, level, levels.indexOf(level))))
-
   override def onFullScreenSettingClick(): Unit = {
     parentStage.fullScreen = !parentStage.fullScreen.get()
   }
@@ -69,7 +88,7 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
     */
   def onLevelPlayClick(levelInfo: LevelInfo, simulation: Boolean, custom: Boolean = false): Unit = {
     /* Creating a listener on the run*/
-    val upperLevelSceneListener: UpperLevelSceneListener = () => parentStage.scene = new LevelSelectionScene(parentStage, listener, previousSceneListener)
+    val upperLevelSceneListener: UpperLevelSceneListener = () => {parentStage.scene = this; reloadLevels()}
     /* Creating a new level scene */
     val levelScene = new LevelScene(parentStage, levelInfo, listener, upperLevelSceneListener)
     /* Creating the level context */
