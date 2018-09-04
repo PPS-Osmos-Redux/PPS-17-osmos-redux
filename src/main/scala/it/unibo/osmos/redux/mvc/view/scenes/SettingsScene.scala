@@ -1,22 +1,23 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
-import it.unibo.osmos.redux.mvc.controller.FileManager
+import it.unibo.osmos.redux.mvc.controller.MusicPlayer
 import it.unibo.osmos.redux.mvc.view.components.custom.StyledButton
 import it.unibo.osmos.redux.mvc.view.context.LevelContext
 import it.unibo.osmos.redux.mvc.view.stages.PrimaryStageListener
+import javafx.scene.media.MediaPlayer.Status._
 import scalafx.geometry.Pos
-import scalafx.scene.control.{Label, Slider}
+import scalafx.scene.control.{CheckBox, Label, Slider}
 import scalafx.scene.layout._
 import scalafx.stage.Stage
 
 class SettingsScene(override val parentStage: Stage, listener: PrimaryStageListener, previousSceneListener: BackClickListener) extends DefaultBackScene(parentStage, previousSceneListener) {
 
-  private val volumeLabel = new Label("Volume")
+  implicit def toDouble(number: Number): Double = number.doubleValue()
 
   private val volumeSlider = new Slider() {
     min = 0
     max = 100
-    value = 50
+    value = MusicPlayer.getVolume * 100
     showTickLabels = true
     showTickMarks = true
     majorTickUnit = 50
@@ -24,12 +25,39 @@ class SettingsScene(override val parentStage: Stage, listener: PrimaryStageListe
     blockIncrement = 10
     minWidth = 480
     maxWidth <== parentStage.width / 4
-    // onScroll = _
+  }
+  volumeSlider.valueProperty().addListener((_, _, newVal) => {
+    val valueToPlayerRange = newVal / 100
+    MusicPlayer.changeVolume(valueToPlayerRange)
+  })
+
+  private val volumeLabel = new Label("Volume")
+
+  private val volumeCheckBox = new CheckBox() {
+    selected = MusicPlayer.getMediaPlayerStatus match {
+      case Some(PLAYING) =>
+        volumeSlider.disable = false
+        true
+      case _ =>
+        volumeSlider.disable = true
+        false
+    }
+    onAction = _ => {
+      MusicPlayer.getMediaPlayerStatus match {
+        case Some(PLAYING) =>
+          MusicPlayer.pause()
+          volumeSlider.disable = true
+        case Some(PAUSED) =>
+          MusicPlayer.resume()
+          volumeSlider.disable = false
+        case _ =>
+      }
+    }
   }
 
   private val volumeContainer = new HBox(6) {
     alignment = Pos.Center
-    children = Seq(volumeLabel, volumeSlider)
+    children = Seq(volumeLabel, volumeCheckBox)
   }
 
   private val resetGameData = new StyledButton("Reset game data") {
@@ -42,8 +70,9 @@ class SettingsScene(override val parentStage: Stage, listener: PrimaryStageListe
     */
   protected val container: VBox = new VBox(10) {
     alignment = Pos.Center
-    children = Seq(volumeContainer, resetGameData, goBack)
-    styleClass.add("settings-vbox")
+    children = Seq(volumeContainer, volumeSlider, resetGameData, goBack)
+    //styleClass.add("settings-vbox")
+
   }
 
   /* Setting the root container*/
