@@ -27,9 +27,8 @@ trait Controller {
     * @param levelContext The level context.
     * @param chosenLevel The name of the chosen level.
     * @param isCustom True if the level is a custom one, false otherwise
-    * @return None if level loaded with success, Some(String) if exception occurs
     */
-  def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): GenericResponse[Boolean]
+  def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): Unit
 
   /**
     * Initializes the multi-player lobby and the server or client.
@@ -53,8 +52,9 @@ trait Controller {
 
   /**
     * Stops the level.
+    * @param If the level have been won or lost.
     */
-  def stopLevel(): Unit
+  def stopLevel(victory: Boolean = false): Unit
 
   /**
     * Pauses the level.
@@ -65,6 +65,12 @@ trait Controller {
     * Resumes the level.
     */
   def resumeLevel(): Unit
+
+  /**
+    * Changes the level speed by speeding up or slowing down depending on the input.
+    * @param increment Determines whether the level speed needs to be increased or decreased.
+    */
+  def changeLevelSpeed(increment: Boolean = false): Unit
 
   /**
     * Saves a level.
@@ -88,7 +94,7 @@ trait Controller {
     * Gets all the levels in the campaign.
     * @return The list of LevelInfo.
     */
-  def getSinglePlayerLevels:List[LevelInfo] = SinglePlayerLevels.getLevels
+  def getSinglePlayerLevels:List[LevelInfo] = SinglePlayerLevels.getLevelsInfo
 
   /**
     * Gets all multi-player levels.
@@ -111,7 +117,7 @@ trait Controller {
 
 }
 
-case class ControllerImpl() extends Controller with GameStateHolder {
+case class ControllerImpl() extends Controller {
 
   implicit val who: String = "Controller"
 
@@ -123,36 +129,22 @@ case class ControllerImpl() extends Controller with GameStateHolder {
   private var server: Option[Server] = None
   private var client: Option[Client] = None
 
-  override def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): GenericResponse[Boolean] = {
+  override def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): Unit = {
     Logger.log("initLevel")
 
-    var loadedLevel:Option[Level] = None
-
-    if (isCustom) {
-      loadedLevel = FileManager.loadCustomLevel(chosenLevel)
-      /*Because user stats are not influenced by custom level end game results*/
-      lastLoadedLevel = None
-    } else {
-      loadedLevel = FileManager.loadResource(chosenLevel)
-      lastLoadedLevel = Some(chosenLevel)
-    }
+    val loadedLevel:Option[Level] = loadLevel(chosenLevel, isCustom, levelContext.levelContextType == LevelContextType.simulation)
 
     if (loadedLevel.isDefined) {
-      loadedLevel.get.isSimulation = levelContext.levelContextType == LevelContextType.simulation
-
       val player = loadedLevel.get.entities.find(_.isInstanceOf[PlayerCellEntity])
-      if (player.isEmpty && !loadedLevel.get.isSimulation) return GenericResponse(false, "Cannot start a normal level if the player is not present")
       //assign current player uuid to the
       if(player.isDefined) levelContext.setPlayerUUID(player.get.getUUID)
 
       //create and initialize the game engine
       if(engine.isEmpty) engine = Some(GameEngine())
-      //TODO: engine must need a GameStateHolder for the EndGameSystem
       engine.get.init(loadedLevel.get, levelContext)
       levelContext.setupLevel(loadedLevel.get.levelMap.mapShape)
-      GenericResponse(true)
     } else {
-      GenericResponse(false, "Error: level " + chosenLevel + " not found! The level " + (if(isCustom) "is" else "isn't") + "custom level")
+      Logger.log( "Error: level " + chosenLevel + " not found! The level " + (if(isCustom) "is" else "isn't") + "custom level")
     }
   }
 
@@ -229,14 +221,15 @@ case class ControllerImpl() extends Controller with GameStateHolder {
     Logger.log("initMultiPlayerLevel")
 
     val promise = Promise[GenericResponse[Boolean]]()
-
+    //End game result of the multiplayer levels doesn't influence campaign statistics
+    lastLoadedLevel = None
     //load level definition
     val loadedLevel = FileManager.loadResource(levelInfo.name, isMultiPlayer = true).get
 
     multiPlayerMode.get match {
       case MultiPlayerMode.Server =>
         //assign clients to players and wait confirmation
-        server.get.initGame(loadedLevel, levelInfo).future onComplete {
+        server.get.initGame(loadedLevel).future onComplete {
           case Success(_) =>
             //create the engine
             if (engine.isEmpty) engine = Some(GameEngine())
@@ -267,7 +260,16 @@ case class ControllerImpl() extends Controller with GameStateHolder {
     }
   }
 
-  override def stopLevel(): Unit = {
+  override def changeLevelSpeed(increment: Boolean = false): Unit = {
+    Logger.log("changeLevelSpeed")
+
+    multiPlayerMode match {
+      case Some(MultiPlayerMode.Server) | None => if (engine.isDefined) engine.get.changeSpeed(increment)
+      case _ =>
+    }
+  }
+
+  override def stopLevel(victory: Boolean = false): Unit = {
     Logger.log("stopLevel")
 
     multiPlayerMode match {
@@ -276,6 +278,8 @@ case class ControllerImpl() extends Controller with GameStateHolder {
       case _ =>
         if (server.isDefined) server.get.stopGame()
         if (engine.isDefined) engine.get.stop()
+
+        saveProgress(if (victory) GameWon else GameLost)
     }
   }
 
@@ -297,21 +301,12 @@ case class ControllerImpl() extends Controller with GameStateHolder {
     }
   }
 
-  //TODO useless for controller
-  override def gameCurrentState: GameStateEventWrapper = ???
-
   override def getSoundPath(soundType: SoundsType.Value): Option[String] = soundType match {
     case SoundsType.menu => Some(FileManager.loadMenuMusic())
     case SoundsType.level => Some(FileManager.loadLevelMusic())
     case SoundsType.button => Some(FileManager.loadButtonsSound())
     case _ => Logger.log("Sound type not managed!! [getSoundPath]")
               None
-  }
-
-  override def notify(event: GameStateEventWrapper): Unit = lastLoadedLevel match {
-    case Some(lastLevel:String) => SinglePlayerLevels.newEndGameEvent(event, lastLevel)
-      FileManager.saveUserProgress(SinglePlayerLevels.userStatistics)
-    case _ =>
   }
 
   override def getCustomLevels: List[LevelInfo] = FileManager.customLevelsFilesName match {
@@ -331,4 +326,21 @@ case class ControllerImpl() extends Controller with GameStateHolder {
     case Failure(exception) => Logger.log("Error occurred removing custom level file" + exception.getMessage)
                                false
   }
+
+  private def saveProgress(event: GameStateEventWrapper): Unit = lastLoadedLevel match {
+    case Some(lastLevel:String) => SinglePlayerLevels.newEndGameEvent(event, lastLevel)
+      FileManager.saveUserProgress(SinglePlayerLevels.getCampaignLevels)
+    case _ =>
+  }
+
+  private def loadLevel(chosenLevel:String, isCustom:Boolean, isSimulation:Boolean): Option[Level] = if (isCustom) {
+    /*Because user campaign stats are not influenced by end game results of the custom levels*/
+    lastLoadedLevel = None
+    FileManager.loadCustomLevel(chosenLevel)
+  } else {
+    val loadedLevel = FileManager.loadResource(chosenLevel)
+    if (isSimulation) lastLoadedLevel = None else lastLoadedLevel = Some(chosenLevel)
+    loadedLevel
+  }
 }
+

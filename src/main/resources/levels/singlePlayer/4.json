@@ -24,6 +24,9 @@
       "speed": {
         "speedX": 0,
         "speedY": 0
+      },
+      "spawner": {
+        "canSpawn": true
       }
     },
     {
@@ -50,6 +53,40 @@
       "speed": {
         "speedX": 0,
         "speedY": 0
+      },
+      "spawner": {
+        "canSpawn": true
+      }
+    }, {
+      "acceleration": {
+        "accelerationX": 1.0,
+        "accelerationY": 1.0
+      },
+      "visible": {
+        "visible": true
+      },
+      "collidable": {
+        "collidable": true
+      },
+      "spawner": {
+        "canSpawn": true
+      },
+      "typeEntity": {
+        "componentType": "Controlled"
+      },
+      "position": {
+        "point": {
+          "x": 900.0,
+          "y": 400.0
+        }
+      },
+      "cellType": "playerCell",
+      "dimension": {
+        "radius": 50.0
+      },
+      "speed": {
+        "speedX": 4.0,
+        "speedY": 0.0
       }
     }],
   "name": "4",

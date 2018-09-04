@@ -25,7 +25,7 @@
       },
       "cellType": "playerCell",
       "dimension": {
-        "radius": 20.0
+        "radius": 50.0
       },
       "speed": {
         "speedX": 0.0,

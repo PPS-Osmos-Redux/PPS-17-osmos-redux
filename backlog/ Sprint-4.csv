@@ -1,0 +1,29 @@
+Item,Sprint Task,Volunteer,Initial Estimate of Effort,Final Effort,Remaining Effort
+Editor Livelli,"Fornire all'editor livelli: tipologie di cellule, tipologie di mappe, regole di vittorie e di rimbalzo",Andrea Procucci,2,1,0
+,Salvataggio del livello creato su file json e definizione del punto di salvataggio livelli,Andrea Procucci,1,3,0
+,Creazione dei componenti per la creazione dei livelli,Marco Galassi,10,15,0
+,Creazione nuova scena con canvas,Marco Galassi,2,5,0
+,Creazione scena per mostrare i livelli custom,Marco Galassi,5,5,0
+,Creazione screen per mostrare le istruzioni all'utente,Marco Galassi,3,3,0
+,Design dell'UI e delle operazioni possibili per l'utente,Marco Galassi,10,15,0
+Implementazione Intelligenza Artificiale in Scala,IA che insegue il player ed evita le cellule più grandi (senza perdita di massa),Andrea Placuzzi,3,3,0
+,IA che perde massa,Andrea Placuzzi,10,10,0
+Implementazione Intelligenza Artificiale in Prolog,IA che insegue il player (senza perdita di massa),Giacomo Venturini,2,Aborted,Aborted
+Multigiocatore a n giocatori,Creazione scena di inserimento dati,Marco Galassi + Davide Giacomini,1,6,0
+,Implementazione server (primo client che chiede setup),Davide Giacomini,2,2,0
+,"Implementazione client (disattivazione game loop, invio input, ricezione dati per draw entità)",Davide Giacomini,2,2,0
+,Implementazione delle interazioni tra view e controller (logica temporale del collegamento tra utenti),Marco Galassi + Davide Giacomini,2,8,0
+,Creazione scena per mostrare i possibili livelli multiplayer per il server,Marco Galassi,5,5,0
+,Validation and performance testing,Davide Giacomini,6,10,0
+,Configurazione akka alternativa per serializzazione tramite kryo serializer,Davide Giacomini,2,5,0
+,Gestione crash/disconnessione client e/o server tramite funzione watch akka,Davide Giacomini,6,6,0
+Gestione telecamera,"Creare supporto per telecamera, inizialmente fissa per le simulazioni",Marco Galassi + Giacomo Venturini,2,4,2
+,Fare in modo che la telecamera segua sempre la cellula del giocatore,Marco Galassi + Giacomo Venturini,1,4,2
+Definizione progressione giocatore tra livelli,Creazione dei livelli,Giacomo Venturini,2,2,2
+,Bilanciamento e testing valori di gioco,Giacomo Venturini,2,2,2
+Creazione animazioni,Aggiunta effetti grafici ai menù,Giacomo Venturini,4,4,1
+,Creazione di alert,Giacomo Venturini,-,2,1
+Gestione effetti sonori,"Musica di background per menù, livello e bottoni",Andrea Procucci,2,2,0
+Gestione impostazioni di gioco,Controllo volume effetti sonori,Andrea Procucci,2,2,0
+Statistiche di gioco,Numero di vittorie e sconfitte per ogni livello di campagna il tutto salvato su file,Andrea Procucci,2,3,0
+Revisione finale,Refactoring + controllo di stile,Giacomo Venturini,3,3,3

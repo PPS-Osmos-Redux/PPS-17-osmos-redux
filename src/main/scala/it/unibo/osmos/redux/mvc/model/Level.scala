@@ -83,8 +83,7 @@ case class LevelMap(mapShape:MapShape, collisionRule:CollisionRules.Value)
   */
 case class Level(var levelInfo:LevelInfo,
                  levelMap:LevelMap,
-                 var entities:List[CellEntity],
-                 var isSimulation:Boolean = false) {
+                 var entities:List[CellEntity]) {
 
   def checkCellPosition():Unit = levelMap.mapShape match {
     case rectangle:Rectangle => rectangularMapCheck(rectangle)
