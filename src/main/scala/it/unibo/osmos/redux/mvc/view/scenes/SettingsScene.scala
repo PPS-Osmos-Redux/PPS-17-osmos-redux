@@ -8,6 +8,7 @@ import javafx.scene.media.MediaPlayer.Status._
 import scalafx.geometry.Pos
 import scalafx.scene.control.{CheckBox, Label, Slider}
 import scalafx.scene.layout._
+import scalafx.scene.paint.Color
 import scalafx.stage.Stage
 
 class SettingsScene(override val parentStage: Stage, listener: PrimaryStageListener, previousSceneListener: BackClickListener) extends DefaultBackScene(parentStage, previousSceneListener) {
@@ -31,7 +32,9 @@ class SettingsScene(override val parentStage: Stage, listener: PrimaryStageListe
     MusicPlayer.changeVolume(valueToPlayerRange)
   })
 
-  private val volumeLabel = new Label("Volume")
+  private val volumeLabel = new Label("Volume") {
+    textFill = Color.web("#FFFFFF")
+  }
 
   private val volumeCheckBox = new CheckBox() {
     selected = MusicPlayer.getMediaPlayerStatus match {
@@ -55,7 +58,7 @@ class SettingsScene(override val parentStage: Stage, listener: PrimaryStageListe
     }
   }
 
-  private val volumeContainer = new HBox(6) {
+  private val volumeContainer = new HBox(25) {
     alignment = Pos.Center
     children = Seq(volumeLabel, volumeCheckBox)
   }
@@ -68,10 +71,10 @@ class SettingsScene(override val parentStage: Stage, listener: PrimaryStageListe
   /**
     * The central level container
     */
-  protected val container: VBox = new VBox(10) {
+  protected val container: VBox = new VBox(15) {
     alignment = Pos.Center
     children = Seq(volumeContainer, volumeSlider, resetGameData, goBack)
-    //styleClass.add("settings-vbox")
+    styleClass.add("settings-vbox")
 
   }
 
