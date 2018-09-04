@@ -1,13 +1,8 @@
 package it.unibo.osmos.redux.ecs.entities
 
-import java.util.UUID
+import it.unibo.osmos.redux.ecs.entities.properties.basic.Property
 
 /** Abstract class representing an ECS Entity */
 abstract class AbstractEntity extends Property {
-
-  /** Gets the UUID for this entity
-    *
-    * @return UUID for this entity
-    */
-  def getUUID: UUID
+  //TODO: maybe it can be deleted
 }

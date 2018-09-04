@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.ecs.components
 /**
   * Component Dimension (radius of the sphere)
   */
-trait DimensionComponent {
+trait DimensionComponent extends Component {
 
   /**
     * Getter. Return the radius of the sphere
@@ -16,6 +16,12 @@ trait DimensionComponent {
     * @param radius the new radius
     */
   def radius_(radius: Double): Unit
+
+  /**
+    * Makes a defensive copy of this instance.
+    * @return The new instance.
+    */
+  override def copy(): DimensionComponent = DimensionComponent(radius)
 }
 
 object DimensionComponent {

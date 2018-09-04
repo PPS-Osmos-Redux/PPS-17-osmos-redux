@@ -1,8 +1,8 @@
 package it.unibo.osmos.redux.ecs.systems
 
 import it.unibo.osmos.redux.ecs.components.{DimensionComponent, PositionComponent, SpawnAction, SpeedComponent}
-import it.unibo.osmos.redux.ecs.entities.{InputProperty, Property}
-import it.unibo.osmos.redux.utils.{InputEventQueue, MathUtils, Point}
+import it.unibo.osmos.redux.ecs.entities.properties.composed.InputProperty
+import it.unibo.osmos.redux.utils.{InputEventQueue, MathUtils, Point, Vector}
 
 case class InputSystem() extends AbstractSystem[InputProperty] {
 
@@ -23,8 +23,6 @@ case class InputSystem() extends AbstractSystem[InputProperty] {
     */
   val lostMassInitialVelocity: Double = 4.0
 
-  override def getGroupProperty(): Class[InputProperty] = classOf[InputProperty]
-
   override def update(): Unit = {
 
     //retrieve all input events
@@ -36,15 +34,18 @@ case class InputSystem() extends AbstractSystem[InputProperty] {
       val spawner = e.getSpawnerComponent
       val dim = e.getDimensionComponent
 
-      inputEvents foreach (ev => {
+      inputEvents filter (_.uuid == e.getUUID) foreach (ev => {
 
-        //TODO: probably at some point there will be different events and it will be necessary to filter them before applying deceleration
+        //TODO: probably at some point there will be different events and it will be necessary to filter them before applying deceleration (es. mouse pressed)
 
         val newPoint = MathUtils.normalizePoint(Point(pos.point.x - ev.point.x, pos.point.y - ev.point.y))
 
         //apply acceleration
-        accel.vector.x_(accel.vector.x + newPoint.x * accelCoefficient)
-        accel.vector.y_(accel.vector.y + newPoint.y * accelCoefficient)
+        //TODO: accel.vector_(accel.vector.add(newPoint.multiply(accelCoefficient)))
+        val v = Vector(newPoint.x * accelCoefficient, newPoint.y * accelCoefficient)
+        accel.vector_(accel.vector.add(v))
+        //accel.vector.x_(accel.vector.x + newPoint.x * accelCoefficient)
+        //accel.vector.y_(accel.vector.y + newPoint.y * accelCoefficient)
 
         //create a new spawn action
         val loseMassAmount = dim.radius * lostMassPercentage

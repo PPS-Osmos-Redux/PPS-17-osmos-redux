@@ -3,6 +3,8 @@ package it.unibo.osmos.redux.ecs.entities
 import java.util.UUID
 
 import it.unibo.osmos.redux.ecs.components._
+import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
+import it.unibo.osmos.redux.ecs.entities.properties.composed._
 
 /** Trait representing a CellEntity */
 trait CellEntity extends AbstractEntity with MovableProperty with CollidableProperty with DrawableProperty with DeathProperty with SentientEnemyProperty {}
@@ -30,9 +32,11 @@ object CellEntity {
                                     private val visible: VisibleComponent,
                                     private val typeEntity: TypeComponent) extends CellEntity {
 
-    private val EntityUUID: UUID = UUID.randomUUID()
+    require(dimension.radius > 0)
 
-    override def getUUID: UUID = EntityUUID
+    private val EntityUUID: String = UUID.randomUUID().toString
+
+    override def getUUID: String = EntityUUID
 
     override def getAccelerationComponent: AccelerationComponent = acceleration
 

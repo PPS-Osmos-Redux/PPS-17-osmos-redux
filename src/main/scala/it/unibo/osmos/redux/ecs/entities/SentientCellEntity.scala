@@ -1,8 +1,8 @@
 package it.unibo.osmos.redux.ecs.entities
 
-import java.util.UUID
-
 import it.unibo.osmos.redux.ecs.components._
+import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
+import it.unibo.osmos.redux.ecs.entities.properties.composed.SentientProperty
 
 /** Trait representing a sentient cell */
 trait SentientCellEntity extends CellEntity with SentientProperty {}
@@ -13,12 +13,19 @@ object SentientCellEntity {
             dimension: DimensionComponent,
             position: PositionComponent,
             speed: SpeedComponent,
-            visible: VisibleComponent): SentientCellEntity = SentientCellEntityImpl(CellEntity(acceleration,
-    collidable, dimension, position, speed, visible, TypeComponent(EntityType.Sentient)))
+            visible: VisibleComponent,
+            spawner: SpawnerComponent,
+            typeEntity: TypeComponent = TypeComponent(EntityType.Sentient)): SentientCellEntity =
+    SentientCellEntityImpl(CellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity), spawner)
 
-  private case class SentientCellEntityImpl(cellEntity: CellEntity) extends SentientCellEntity {
+  def apply(cell: CellEntity, spawner: SpawnerComponent): SentientCellEntity = SentientCellEntityImpl(cell, spawner)
 
-    override def getUUID: UUID = cellEntity.getUUID
+  def apply(builder: CellBuilder, spawner: SpawnerComponent): SentientCellEntity = apply(builder.build, spawner)
+
+
+  private case class SentientCellEntityImpl(cellEntity: CellEntity, spawner: SpawnerComponent) extends SentientCellEntity {
+
+    override def getUUID: String = cellEntity.getUUID
 
     override def getAccelerationComponent: AccelerationComponent = cellEntity.getAccelerationComponent
 
@@ -33,6 +40,8 @@ object SentientCellEntity {
     override def getVisibleComponent: VisibleComponent = cellEntity.getVisibleComponent
 
     override def getDimensionComponent: DimensionComponent = cellEntity.getDimensionComponent
+
+    override def getSpawnerComponent: SpawnerComponent = spawner
   }
 
 }

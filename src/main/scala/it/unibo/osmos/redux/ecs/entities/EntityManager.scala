@@ -1,5 +1,6 @@
 package it.unibo.osmos.redux.ecs.entities
 
+import it.unibo.osmos.redux.ecs.entities.properties.basic.Property
 import org.apache.commons.lang3.ClassUtils
 
 import scala.annotation.tailrec

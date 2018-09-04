@@ -1,8 +1,9 @@
 package it.unibo.osmos.redux.mvc.model
-import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.{CellEntity, GravityCellEntity, PlayerCellEntity, SentientCellEntity}
+
+import it.unibo.osmos.redux.ecs.entities.CellEntity
+import it.unibo.osmos.redux.mvc.controller.LevelInfo
 import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
-import it.unibo.osmos.redux.utils.{MathUtils, Point}
+import it.unibo.osmos.redux.utils.{Logger, MathUtils, Point}
 
 /**
   * List of cell types
@@ -30,19 +31,21 @@ object VictoryRules extends Enumeration {
   val becomeHuge: VictoryRules.Value = Value("Become_huge")
   val absorbTheRepulsors: VictoryRules.Value = Value("Absorb_the_repulsors")
   val absorbTheHostileCells: VictoryRules.Value = Value("Absorb_the_hostile_cells")
+  val absorbAllOtherPlayers: VictoryRules.Value = Value("Absorb_all_other_players")
 }
 
 /**
   * Map shape data structure
   */
+object MapShapeType extends Enumeration {
+  val Circle, Rectangle= Value
+}
 sealed trait MapShape {
-  val mapShape:String
+  val mapShape:MapShapeType.Value
   val center:(Double,Double)
 }
-object MapShape {
-  val rectangle:String = "RECTANGLE"
-  val circle:String = "CIRCLE"
 
+object MapShape {
   /**
     * Rectangular level map
     * @param center center of map
@@ -51,7 +54,7 @@ object MapShape {
     */
   case class Rectangle(override val center: (Double, Double), height:Double, base:Double)
                                                                           extends MapShape {
-    override val mapShape: String = MapShape.rectangle
+    override val mapShape: MapShapeType.Value = MapShapeType.Rectangle
   }
 
   /**
@@ -60,7 +63,7 @@ object MapShape {
     * @param radius circle radius
     */
   case class Circle(override val center: (Double, Double), radius:Double) extends MapShape {
-    override val mapShape: String = MapShape.circle
+    override val mapShape: MapShapeType.Value = MapShapeType.Circle
   }
 }
 
@@ -73,20 +76,20 @@ case class LevelMap(mapShape:MapShape, collisionRule:CollisionRules.Value)
 
 /**
   * Level configuratoin
-  * @param levelId level identifier
+  * @param levelInfo LevelInfo
   * @param levelMap level map
   * @param entities list of level entities
-  * @param victoryRule victory rule
   * @param isSimulation if it's a simulation
   */
-case class Level(levelId:Int,
+case class Level(var levelInfo:LevelInfo,
                  levelMap:LevelMap,
                  var entities:List[CellEntity],
-                 victoryRule:VictoryRules.Value, var isSimulation:Boolean = false) {
+                 var isSimulation:Boolean = false) {
 
   def checkCellPosition():Unit = levelMap.mapShape match {
     case rectangle:Rectangle => rectangularMapCheck(rectangle)
     case circle:Circle => circularMapCheck(circle)
+    case _ => Logger.log("Map shape not managed [checkCellPosition]")("Level")
   }
 
   /**
@@ -123,5 +126,4 @@ case class Level(levelId:Int,
                                                                       ent.getDimensionComponent.radius))
                        .filterNot(tup => tup._2 > circle.radius)
                        .map(t => t._1)
-
 }

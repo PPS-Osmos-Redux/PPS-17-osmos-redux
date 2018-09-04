@@ -1,10 +1,11 @@
 package it.unibo.osmos.redux.ecs.systems
 
-import it.unibo.osmos.redux.ecs.components.EntityType
-import it.unibo.osmos.redux.ecs.entities.CollidableProperty
+import it.unibo.osmos.redux.ecs.entities.EntityType
+import it.unibo.osmos.redux.ecs.entities.properties.composed.CollidableProperty
+import it.unibo.osmos.redux.ecs.systems.borderconditions.{CircularBorder, RectangularBorder}
 import it.unibo.osmos.redux.mvc.model.Level
 import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
-import it.unibo.osmos.redux.utils.{MathUtils, Point}
+import it.unibo.osmos.redux.utils.{MathUtils, Point, Vector}
 
 case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidableProperty] {
 
@@ -15,6 +16,8 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
   //constant that define the initial acceleration of a steady entity when a collision occurs
   private val initialAcceleration = 0.001
 
+  private val initialAccelerationVector = Vector(initialAcceleration, initialAcceleration)
+
   private val collisionRule = levelInfo.levelMap.collisionRule
   private val bounceRule = levelInfo.levelMap.mapShape match {
     case shape: Rectangle => RectangularBorder(Point(shape.center._1, shape.center._2), collisionRule, shape.base, shape.height)
@@ -22,17 +25,15 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
     case _ => throw new IllegalArgumentException
   }
 
-  override def getGroupProperty: Class[CollidableProperty] = classOf[CollidableProperty]
-
   override def update(): Unit = {
     //check collision with boundary
-    entities foreach(e => bounceRule.checkCollision(e))
+    entities foreach(e => bounceRule.checkAndSolveCollision(e))
     //check collision other entities
     for {
       (e1, xIndex) <- entities.zipWithIndex
       (e2, yIndex) <- entities.zipWithIndex
       if xIndex < yIndex //skip useless double checks
-      if e1.getCollidableComponent.isCollidable() && e2.getCollidableComponent.isCollidable()
+      if e1.getCollidableComponent.isCollidable && e2.getCollidableComponent.isCollidable
       overlap = computeOverlap(e1, e2)
       if overlap > 0 //check if they overlap (collide)
     } yield applyCollisionEffects(e1, e2, overlap)
@@ -112,8 +113,8 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
     val unitVector = MathUtils.unitVector(position1.point, position2.point)
     position1.point_(position1.point add (unitVector multiply quantityToMove))
     position2.point_(position2.point add (unitVector multiply (-quantityToMove)))
-    bounceRule.checkCollision(entity1)
-    bounceRule.checkCollision(entity2)
+    bounceRule.repositionIfOutsideMap(entity1)
+    bounceRule.repositionIfOutsideMap(entity2)
   }
 
 
@@ -127,11 +128,12 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
 
     //gain acceleration even if the entity is still
     if (accel.vector.x == 0) {
-      entity.getAccelerationComponent.vector.x_(initialAcceleration * percentage)
-      entity.getAccelerationComponent.vector.y_(initialAcceleration * percentage)
+      entity.getAccelerationComponent.vector_(initialAccelerationVector.multiply(percentage))
     } else {
-      entity.getAccelerationComponent.vector.x_(accel.vector.x - accel.vector.x * percentage)
-      entity.getAccelerationComponent.vector.y_(accel.vector.y - accel.vector.y * percentage)
+      val temp = accel.vector.multiply(percentage)
+      entity.getAccelerationComponent.vector_(accel.vector.subtract(temp))
+      //entity.getAccelerationComponent.vector.x_(accel.vector.x - accel.vector.x * percentage)
+      //entity.getAccelerationComponent.vector.y_(accel.vector.y - accel.vector.y * percentage)
     }
   }
 }
