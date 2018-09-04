@@ -12,7 +12,7 @@ import it.unibo.osmos.redux.mvc.view.drawables._
 import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import it.unibo.osmos.redux.utils.MathUtils._
-import it.unibo.osmos.redux.utils.Point
+import it.unibo.osmos.redux.utils.{Constants, Point}
 import javafx.scene.input.{KeyCode, MouseEvent}
 import scalafx.animation.FadeTransition
 import scalafx.application.Platform
@@ -42,16 +42,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     * The current game pending state: true if the game is paused
     */
   private var paused: BooleanProperty = BooleanProperty(false)
-  this.setOnKeyPressed(k => {
-    if (k.getCode == KeyCode.ESCAPE) {
-      // println("ESC key pressed")
-      if (true) {
-        onPause()
-      } else {
-        onResume()
-      }
-    }
-  })
+
   /**
     * The canvas which will draw the elements on the screen
     */
@@ -180,11 +171,23 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   }
 
   /**
-    * OnKeyPressed handler, reacting to up or down arrow key pressed, changes the game speed
+    * OnKeyPressed handler, reacting to esc, and arrow key press:
+    *  - the esc key pauses the game,
+    *  - the up and right keys speed up the game
+    *  - the down and left keys slow down the game
     */
   onKeyPressed = keyEvent => keyEvent.getCode match {
-    case KeyCode.UP => listener.onLevelSpeedChanged(true)
-    case KeyCode.DOWN => listener.onLevelSpeedChanged()
+    case KeyCode.ESCAPE =>
+      if (paused.value) {
+        onResume()
+      } else {
+        onPause()
+      }
+    case KeyCode.UP || KeyCode.LEFT =>
+      listener.onLevelSpeedChanged(true)
+      Constants.Game.speedChangeStep
+    case KeyCode.DOWN || KeyCode.RIGHT =>
+      listener.onLevelSpeedChanged()
     case _ => //do nothing
   }
 
@@ -412,6 +415,7 @@ trait LevelSceneListener {
 
   /**
     * Called when the level speed changes
+    *
     * @param increment If the speed needs to increased or decreased
     */
   def onLevelSpeedChanged(increment: Boolean = false)
