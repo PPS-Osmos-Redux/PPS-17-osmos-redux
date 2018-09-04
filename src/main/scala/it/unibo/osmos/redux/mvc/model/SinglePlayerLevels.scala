@@ -8,7 +8,7 @@ import scala.collection.mutable
 
 object SinglePlayerLevels {
   implicit val who:String = "SinglePlayerLevels"
-  private val levels:mutable.ArraySeq[CampaignLevel] = mutable.ArraySeq(
+  private var levels:List[CampaignLevel] = List(
     CampaignLevel(LevelInfo("1", VictoryRules.becomeTheBiggest), LevelStat(0,0)),
     CampaignLevel(LevelInfo("2", VictoryRules.becomeTheBiggest, isAvailable = false), LevelStat(0,0)),
     CampaignLevel(LevelInfo("3", VictoryRules.becomeTheBiggest, isAvailable = false), LevelStat(0,0)),
@@ -70,20 +70,14 @@ object SinglePlayerLevels {
     case _ =>
   }
 
-  private def updateLevels(toDoLevel:String):Unit = levels.map(cLv => cLv.levelInfo)
-                                                          .foreach(level => {
-                                                            if(level.name.equals(toDoLevel)) return
-                                                              unlockNextLevel()
-                                                           })
   /**
-    * Method for update application user progression.
-    * Used for update user stat
-    * @param loadedUserStat user stat
+    * Method for update campaign progress, should be  called once when the game starts
+    * @param campaignProgress campaign progress List[CampaignLevels]
     */
   def updateUserStat(campaignProgress: List[CampaignLevel]): Unit ={
     /* if my values are less updated than the file ones */
-    if(levels.map(l => l.levelInfo.name).indexOf(toDoLevel(campaignProgress)) < levels.map(l => l.levelInfo.name).indexOf(toDoLevel(campaignProgress))) {
-      updateLevels(toDoLevel(campaignProgress))
+    if(levels.map(l => l.levelInfo.name).indexOf(toDoLevel(campaignProgress)) <= levels.map(l => l.levelInfo.name).indexOf(toDoLevel(campaignProgress))) {
+      levels = campaignProgress
     }
   }
 }

@@ -8,7 +8,7 @@ import it.unibo.osmos.redux.mvc.model.JsonProtocols._
 import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.utils.Logger
 import spray.json._
-
+import spray.json.DefaultJsonProtocol._
 import scala.io.{BufferedSource, Source}
 import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}

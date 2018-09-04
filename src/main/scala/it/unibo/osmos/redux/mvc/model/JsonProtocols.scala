@@ -374,7 +374,17 @@ object JsonProtocols {
 
   implicit  val campaignLevelsFormatter:RootJsonFormat[CampaignLevel] = jsonFormat2(CampaignLevel)
 
-  implicit  val listCampaignLevelsFormatter:RootJsonFormat[List[CampaignLevel]] = jsonFormat1(List[CampaignLevel])
+  /*implicit object listStatFormatter extends RootJsonFormat[List[CampaignLevel]] {
+    def write(campaignLevels: List[CampaignLevel]) = JsObject("campaignProgress" -> campaignLevels.toJson)
+    def read(value: JsValue): List[CampaignLevel] = {
+      value.asJsObject.getFields("campaignProgress") match {
+        case Seq(campaignProgress) => campaignProgress.convertTo[List[CampaignLevel]]
+        case _ => throw DeserializationException("List of campaign level info expected")
+      }
+    }
+  }*/
+
+  //implicit  val listCampaignLevelsFormatter:RootJsonFormat[List[CampaignLevel]] = jsonFormat1(List[CampaignLevel])
 
   //implicit val userProgressFormatter:RootJsonFormat[UserStat] = jsonFormat2(UserStat)
 }
