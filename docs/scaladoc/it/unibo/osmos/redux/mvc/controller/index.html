@@ -3,9 +3,9 @@
         <head>
           <meta http-equiv="X-UA-Compatible" content="IE=edge" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-          <title>osmos-redux 1.1.0 API  - it.unibo.osmos.redux.mvc.controller</title>
-          <meta name="description" content="osmos - redux 1.1.0 API - it.unibo.osmos.redux.mvc.controller" />
-          <meta name="keywords" content="osmos redux 1.1.0 API it.unibo.osmos.redux.mvc.controller" />
+          <title>osmos-redux 1.2.0 API  - it.unibo.osmos.redux.mvc.controller</title>
+          <meta name="description" content="osmos - redux 1.2.0 API - it.unibo.osmos.redux.mvc.controller" />
+          <meta name="keywords" content="osmos redux 1.2.0 API it.unibo.osmos.redux.mvc.controller" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../../../../lib/index.css" media="screen" type="text/css" rel="stylesheet" />
@@ -28,7 +28,7 @@
         </head>
         <body>
       <div id="search">
-        <span id="doc-title">osmos-redux 1.1.0 API<span id="doc-version"></span></span>
+        <span id="doc-title">osmos-redux 1.2.0 API<span id="doc-version"></span></span>
         <span class="close-results"><span class="left">&lt;</span> Back</span>
         <div id="textfilter">
           <span class="input">
@@ -177,6 +177,26 @@
                         <span class="separator"></span>
                         <a class="object" href="FileManager$.html" title=""></a>
                         <a href="FileManager$.html" title="">FileManager</a>
+                      </li><li class="current-entities indented6">
+                        <span class="separator"></span>
+                        <a class="class" href="LevelInfo.html" title="Level information"></a>
+                        <a href="LevelInfo.html" title="Level information">LevelInfo</a>
+                      </li><li class="current-entities indented6">
+                        <span class="separator"></span>
+                        <a class="object" href="MediaPlayer$.html" title=""></a>
+                        <a href="MediaPlayer$.html" title="">MediaPlayer</a>
+                      </li><li class="current-entities indented6">
+                        <span class="separator"></span>
+                        <a class="object" href="ResourcesPaths$.html" title=""></a>
+                        <a href="ResourcesPaths$.html" title="">ResourcesPaths</a>
+                      </li><li class="current-entities indented6">
+                        <span class="separator"></span>
+                        <a class="object" href="SoundsType$.html" title="Sound types"></a>
+                        <a href="SoundsType$.html" title="Sound types">SoundsType</a>
+                      </li><li class="current-entities indented6">
+                        <span class="separator"></span>
+                        <a class="object" href="UserHomePaths$.html" title=""></a>
+                        <a href="UserHomePaths$.html" title="">UserHomePaths</a>
                       </li><li name="it.unibo.osmos.redux.mvc.model" visbl="pub" class="indented6 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="model"></a><a id="model:model"></a>
       <span class="permalink">
@@ -290,9 +310,9 @@
       <p class="shortcomment cmt">Controller base trait
 </p>
     </li><li name="it.unibo.osmos.redux.mvc.controller.ControllerImpl" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ControllerImplextendsControllerwithProductwithSerializable"></a><a id="ControllerImpl:ControllerImpl"></a>
+      <a id="ControllerImplextendsControllerwithGameStateHolderwithProductwithSerializable"></a><a id="ControllerImpl:ControllerImpl"></a>
       <span class="permalink">
-      <a href="../../../../../../it/unibo/osmos/redux/mvc/controller/index.html#ControllerImplextendsControllerwithProductwithSerializable" title="Permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/mvc/controller/index.html#ControllerImplextendsControllerwithGameStateHolderwithProductwithSerializable" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -301,10 +321,26 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="" href="ControllerImpl.html"><span class="name">ControllerImpl</span></a><span class="params">()</span><span class="result"> extends <a href="Controller.html" class="extype" name="it.unibo.osmos.redux.mvc.controller.Controller">Controller</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="" href="ControllerImpl.html"><span class="name">ControllerImpl</span></a><span class="params">()</span><span class="result"> extends <a href="Controller.html" class="extype" name="it.unibo.osmos.redux.mvc.controller.Controller">Controller</a> with <a href="../view/context/GameStateHolder.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.GameStateHolder">GameStateHolder</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
       
+    </li><li name="it.unibo.osmos.redux.mvc.controller.LevelInfo" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="LevelInfoextendsProductwithSerializable"></a><a id="LevelInfo:LevelInfo"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/mvc/controller/index.html#LevelInfoextendsProductwithSerializable" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a title="Level information" href="LevelInfo.html"><span class="name">LevelInfo</span></a><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="victoryRule">victoryRule: <a href="../model/VictoryRules$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="it.unibo.osmos.redux.mvc.model.VictoryRules.Value">model.VictoryRules.Value</a></span>, <span name="isAvailable">isAvailable: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">Level information</p><div class="fullcomment"><div class="comment cmt"><p>Level information</p></div><dl class="paramcmts block"><dt class="param">name</dt><dd class="cmt"><p>level name</p></dd><dt class="param">victoryRule</dt><dd class="cmt"><p>level victory rule</p></dd><dt class="param">isAvailable</dt><dd class="cmt"><p>is the level is available</p></dd></dl></div>
     </li></ol>
             </div>
 
@@ -326,6 +362,71 @@
       </span>
       <span class="symbol">
         <a title="" href="FileManager$.html"><span class="name">FileManager</span></a>
+      </span>
+      
+      
+    </li><li name="it.unibo.osmos.redux.mvc.controller.MediaPlayer" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="MediaPlayer"></a><a id="MediaPlayer:MediaPlayer"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/mvc/controller/index.html#MediaPlayer" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="MediaPlayer$.html"><span class="name">MediaPlayer</span></a>
+      </span>
+      
+      
+    </li><li name="it.unibo.osmos.redux.mvc.controller.ResourcesPaths" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ResourcesPaths"></a><a id="ResourcesPaths:ResourcesPaths"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/mvc/controller/index.html#ResourcesPaths" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="ResourcesPaths$.html"><span class="name">ResourcesPaths</span></a>
+      </span>
+      
+      
+    </li><li name="it.unibo.osmos.redux.mvc.controller.SoundsType" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SoundsType"></a><a id="SoundsType:SoundsType"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/mvc/controller/index.html#SoundsType" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a title="Sound types" href="SoundsType$.html"><span class="name">SoundsType</span></a><span class="result"> extends <span class="extype" name="scala.Enumeration">Enumeration</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">Sound types
+</p>
+    </li><li name="it.unibo.osmos.redux.mvc.controller.UserHomePaths" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="UserHomePaths"></a><a id="UserHomePaths:UserHomePaths"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/mvc/controller/index.html#UserHomePaths" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="UserHomePaths$.html"><span class="name">UserHomePaths</span></a>
       </span>
       
       

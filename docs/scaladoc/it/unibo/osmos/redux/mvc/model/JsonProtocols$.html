@@ -3,9 +3,9 @@
         <head>
           <meta http-equiv="X-UA-Compatible" content="IE=edge" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-          <title>osmos-redux 1.1.0 API  - it.unibo.osmos.redux.mvc.model.JsonProtocols</title>
-          <meta name="description" content="osmos - redux 1.1.0 API - it.unibo.osmos.redux.mvc.model.JsonProtocols" />
-          <meta name="keywords" content="osmos redux 1.1.0 API it.unibo.osmos.redux.mvc.model.JsonProtocols" />
+          <title>osmos-redux 1.2.0 API  - it.unibo.osmos.redux.mvc.model.JsonProtocols</title>
+          <meta name="description" content="osmos - redux 1.2.0 API - it.unibo.osmos.redux.mvc.model.JsonProtocols" />
+          <meta name="keywords" content="osmos redux 1.2.0 API it.unibo.osmos.redux.mvc.model.JsonProtocols" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../../../../lib/index.css" media="screen" type="text/css" rel="stylesheet" />
@@ -28,7 +28,7 @@
         </head>
         <body>
       <div id="search">
-        <span id="doc-title">osmos-redux 1.1.0 API<span id="doc-version"></span></span>
+        <span id="doc-title">osmos-redux 1.2.0 API<span id="doc-version"></span></span>
         <span class="close-results"><span class="left">&lt;</span> Back</span>
         <div id="textfilter">
           <span class="input">
@@ -186,21 +186,29 @@
                         <a class="class" href="LevelMap.html" title="Map of a level"></a>
                         <a href="LevelMap.html" title="Map of a level">LevelMap</a>
                       </li><li class="current-entities indented6">
+                        <span class="separator"></span>
+                        <a class="class" href="LevelStat.html" title="Statistics of a level"></a>
+                        <a href="LevelStat.html" title="Statistics of a level">LevelStat</a>
+                      </li><li class="current-entities indented6">
                         <a class="object" href="MapShape$.html" title=""></a>
-                        <a class="trait" href="MapShape.html" title="Map shape data structure"></a>
-                        <a href="MapShape.html" title="Map shape data structure">MapShape</a>
+                        <a class="trait" href="MapShape.html" title=""></a>
+                        <a href="MapShape.html" title="">MapShape</a>
                       </li><li class="current-entities indented6">
                         <span class="separator"></span>
-                        <a class="trait" href="Model.html" title="Model base trait"></a>
-                        <a href="Model.html" title="Model base trait">Model</a>
+                        <a class="object" href="MapShapeType$.html" title="Map shape data structure"></a>
+                        <a href="MapShapeType$.html" title="Map shape data structure">MapShapeType</a>
+                      </li><li class="current-entities indented6">
+                        <span class="separator"></span>
+                        <a class="object" href="MultiPlayerLevels$.html" title=""></a>
+                        <a href="MultiPlayerLevels$.html" title="">MultiPlayerLevels</a>
                       </li><li class="current-entities indented6">
                         <span class="separator"></span>
                         <a class="object" href="SinglePlayerLevels$.html" title=""></a>
                         <a href="SinglePlayerLevels$.html" title="">SinglePlayerLevels</a>
                       </li><li class="current-entities indented6">
                         <span class="separator"></span>
-                        <a class="object" href="UserProgress$.html" title=""></a>
-                        <a href="UserProgress$.html" title="">UserProgress</a>
+                        <a class="class" href="UserStat.html" title="Modelling user progression and stat"></a>
+                        <a href="UserStat.html" title="Modelling user progression and stat">UserStat</a>
                       </li><li class="current-entities indented6">
                         <span class="separator"></span>
                         <a class="object" href="VictoryRules$.html" title="Level victory rules"></a>
@@ -503,10 +511,10 @@
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="it.unibo.osmos.redux.mvc.model.JsonProtocols#levelFormatter" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="levelFormatter:spray.json.RootJsonFormat[it.unibo.osmos.redux.mvc.model.Level]"></a><a id="levelFormatter:RootJsonFormat[Level]"></a>
+    </li><li name="it.unibo.osmos.redux.mvc.model.JsonProtocols#levelStatFormatter" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="levelStatFormatter:spray.json.RootJsonFormat[it.unibo.osmos.redux.mvc.model.LevelStat]"></a><a id="levelStatFormatter:RootJsonFormat[LevelStat]"></a>
       <span class="permalink">
-      <a href="../../../../../../it/unibo/osmos/redux/mvc/model/JsonProtocols$.html#levelFormatter:spray.json.RootJsonFormat[it.unibo.osmos.redux.mvc.model.Level]" title="Permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/mvc/model/JsonProtocols$.html#levelStatFormatter:spray.json.RootJsonFormat[it.unibo.osmos.redux.mvc.model.LevelStat]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -515,7 +523,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">levelFormatter</span><span class="result">: <span class="extype" name="spray.json.RootJsonFormat">RootJsonFormat</span>[<a href="Level.html" class="extype" name="it.unibo.osmos.redux.mvc.model.Level">Level</a>]</span>
+        <span class="name">levelStatFormatter</span><span class="result">: <span class="extype" name="spray.json.RootJsonFormat">RootJsonFormat</span>[<a href="LevelStat.html" class="extype" name="it.unibo.osmos.redux.mvc.model.LevelStat">LevelStat</a>]</span>
       </span>
       
       
@@ -573,22 +581,6 @@
                 <span class="name">@native</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li name="it.unibo.osmos.redux.mvc.model.JsonProtocols#specificWeightFormatter" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="specificWeightFormatter:spray.json.RootJsonFormat[it.unibo.osmos.redux.ecs.components.SpecificWeightComponent]"></a><a id="specificWeightFormatter:RootJsonFormat[SpecificWeightComponent]"></a>
-      <span class="permalink">
-      <a href="../../../../../../it/unibo/osmos/redux/mvc/model/JsonProtocols$.html#specificWeightFormatter:spray.json.RootJsonFormat[it.unibo.osmos.redux.ecs.components.SpecificWeightComponent]" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier">implicit </span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">specificWeightFormatter</span><span class="result">: <span class="extype" name="spray.json.RootJsonFormat">RootJsonFormat</span>[<a href="../../ecs/components/SpecificWeightComponent.html" class="extype" name="it.unibo.osmos.redux.ecs.components.SpecificWeightComponent">SpecificWeightComponent</a>]</span>
-      </span>
-      
-      
     </li><li name="scala.AnyRef#synchronized" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a><a id="synchronized[T0](⇒T0):T0"></a>
       <span class="permalink">
@@ -622,9 +614,9 @@
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="it.unibo.osmos.redux.mvc.model.JsonProtocols#userProgressFormatter" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="userProgressFormatter:spray.json.RootJsonFormat[it.unibo.osmos.redux.mvc.model.UserProgress.UserStat]"></a><a id="userProgressFormatter:RootJsonFormat[UserStat]"></a>
+      <a id="userProgressFormatter:spray.json.RootJsonFormat[it.unibo.osmos.redux.mvc.model.UserStat]"></a><a id="userProgressFormatter:RootJsonFormat[UserStat]"></a>
       <span class="permalink">
-      <a href="../../../../../../it/unibo/osmos/redux/mvc/model/JsonProtocols$.html#userProgressFormatter:spray.json.RootJsonFormat[it.unibo.osmos.redux.mvc.model.UserProgress.UserStat]" title="Permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/mvc/model/JsonProtocols$.html#userProgressFormatter:spray.json.RootJsonFormat[it.unibo.osmos.redux.mvc.model.UserStat]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -633,7 +625,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">userProgressFormatter</span><span class="result">: <span class="extype" name="spray.json.RootJsonFormat">RootJsonFormat</span>[<a href="UserProgress$$UserStat.html" class="extype" name="it.unibo.osmos.redux.mvc.model.UserProgress.UserStat">UserStat</a>]</span>
+        <span class="name">userProgressFormatter</span><span class="result">: <span class="extype" name="spray.json.RootJsonFormat">RootJsonFormat</span>[<a href="UserStat.html" class="extype" name="it.unibo.osmos.redux.mvc.model.UserStat">UserStat</a>]</span>
       </span>
       
       
@@ -797,7 +789,7 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a title="" href="JsonProtocols$$EntityTypeFormatter$.html"><span class="name">EntityTypeFormatter</span></a><span class="result"> extends <span class="extype" name="spray.json.RootJsonFormat">RootJsonFormat</span>[<a href="../../ecs/components/EntityType$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="it.unibo.osmos.redux.ecs.components.EntityType.Value">ecs.components.EntityType.Value</a>]</span>
+        <a title="" href="JsonProtocols$$EntityTypeFormatter$.html"><span class="name">EntityTypeFormatter</span></a><span class="result"> extends <span class="extype" name="spray.json.RootJsonFormat">RootJsonFormat</span>[<a href="../../ecs/entities/EntityType$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="it.unibo.osmos.redux.ecs.entities.EntityType.Value">ecs.entities.EntityType.Value</a>]</span>
       </span>
       
       
@@ -817,6 +809,23 @@
       </span>
       
       
+    </li><li name="it.unibo.osmos.redux.mvc.model.JsonProtocols.LevelInfoFormatter" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LevelInfoFormatter"></a><a id="LevelInfoFormatter:LevelInfoFormatter"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/mvc/model/JsonProtocols$.html#LevelInfoFormatter" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a title="Take from levels only name and victoryRule" href="JsonProtocols$$LevelInfoFormatter$.html"><span class="name">LevelInfoFormatter</span></a><span class="result"> extends <span class="extype" name="spray.json.RootJsonFormat">RootJsonFormat</span>[<a href="../controller/LevelInfo.html" class="extype" name="it.unibo.osmos.redux.mvc.controller.LevelInfo">LevelInfo</a>]</span>
+      </span>
+      
+      <p class="shortcomment cmt">Take from levels only name and victoryRule
+</p>
     </li><li name="it.unibo.osmos.redux.mvc.model.JsonProtocols.LevelMapFormatter" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="LevelMapFormatter"></a><a id="LevelMapFormatter:LevelMapFormatter"></a>
       <span class="permalink">
@@ -929,6 +938,22 @@
       </span>
       
       
+    </li><li name="it.unibo.osmos.redux.mvc.model.JsonProtocols.SpecificWeightFormatter" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SpecificWeightFormatter"></a><a id="SpecificWeightFormatter:SpecificWeightFormatter"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/mvc/model/JsonProtocols$.html#SpecificWeightFormatter" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="JsonProtocols$$SpecificWeightFormatter$.html"><span class="name">SpecificWeightFormatter</span></a><span class="result"> extends <span class="extype" name="spray.json.RootJsonFormat">RootJsonFormat</span>[<a href="../../ecs/components/SpecificWeightComponent.html" class="extype" name="it.unibo.osmos.redux.ecs.components.SpecificWeightComponent">SpecificWeightComponent</a>]</span>
+      </span>
+      
+      
     </li><li name="it.unibo.osmos.redux.mvc.model.JsonProtocols.SpeedFormatter" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="SpeedFormatter"></a><a id="SpeedFormatter:SpeedFormatter"></a>
       <span class="permalink">
@@ -974,6 +999,22 @@
       </span>
       <span class="symbol">
         <a title="" href="JsonProtocols$$VisibleFormatter$.html"><span class="name">VisibleFormatter</span></a><span class="result"> extends <span class="extype" name="spray.json.RootJsonFormat">RootJsonFormat</span>[<a href="../../ecs/components/VisibleComponent.html" class="extype" name="it.unibo.osmos.redux.ecs.components.VisibleComponent">VisibleComponent</a>]</span>
+      </span>
+      
+      
+    </li><li name="it.unibo.osmos.redux.mvc.model.JsonProtocols.levelFormatter" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="levelFormatter"></a><a id="levelFormatter:levelFormatter"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/mvc/model/JsonProtocols$.html#levelFormatter" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="JsonProtocols$$levelFormatter$.html"><span class="name">levelFormatter</span></a><span class="result"> extends <span class="extype" name="spray.json.RootJsonFormat">RootJsonFormat</span>[<a href="Level.html" class="extype" name="it.unibo.osmos.redux.mvc.model.Level">Level</a>]</span>
       </span>
       
       

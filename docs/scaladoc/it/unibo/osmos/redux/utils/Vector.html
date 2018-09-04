@@ -3,9 +3,9 @@
         <head>
           <meta http-equiv="X-UA-Compatible" content="IE=edge" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-          <title>osmos-redux 1.1.0 API  - it.unibo.osmos.redux.utils.Vector</title>
-          <meta name="description" content="osmos - redux 1.1.0 API - it.unibo.osmos.redux.utils.Vector" />
-          <meta name="keywords" content="osmos redux 1.1.0 API it.unibo.osmos.redux.utils.Vector" />
+          <title>osmos-redux 1.2.0 API  - it.unibo.osmos.redux.utils.Vector</title>
+          <meta name="description" content="osmos - redux 1.2.0 API - it.unibo.osmos.redux.utils.Vector" />
+          <meta name="keywords" content="osmos redux 1.2.0 API it.unibo.osmos.redux.utils.Vector" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../../../lib/index.css" media="screen" type="text/css" rel="stylesheet" />
@@ -28,7 +28,7 @@
         </head>
         <body>
       <div id="search">
-        <span id="doc-title">osmos-redux 1.1.0 API<span id="doc-version"></span></span>
+        <span id="doc-title">osmos-redux 1.2.0 API<span id="doc-version"></span></span>
         <span class="close-results"><span class="left">&lt;</span> Back</span>
         <div id="textfilter">
           <span class="input">
@@ -151,8 +151,20 @@
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../index.html" class="extype" name="it.unibo.osmos.redux">redux</a></dd></dl></div>
     </li><li class="current-entities indented5">
                         <span class="separator"></span>
+                        <a class="object" href="Constants$.html" title=""></a>
+                        <a href="Constants$.html" title="">Constants</a>
+                      </li><li class="current-entities indented5">
+                        <span class="separator"></span>
+                        <a class="class" href="GenericResponse.html" title="Class modelling a generic response from a procedure, storing the generic result and a message"></a>
+                        <a href="GenericResponse.html" title="Class modelling a generic response from a procedure, storing the generic result and a message">GenericResponse</a>
+                      </li><li class="current-entities indented5">
+                        <span class="separator"></span>
                         <a class="object" href="InputEventQueue$.html" title="Singleton that stores all input events."></a>
                         <a href="InputEventQueue$.html" title="Singleton that stores all input events.">InputEventQueue</a>
+                      </li><li class="current-entities indented5">
+                        <span class="separator"></span>
+                        <a class="object" href="Logger$.html" title=""></a>
+                        <a href="Logger$.html" title="">Logger</a>
                       </li><li class="current-entities indented5">
                         <span class="separator"></span>
                         <a class="object" href="MathUtils$.html" title="Utility class that offers math related useful methods"></a>
@@ -171,8 +183,8 @@
                         <a href="Scala2P$.html" title="">Scala2P</a>
                       </li><li class="current-entities indented5">
                         <a class="object" href="Vector$.html" title=""></a>
-                        <a class="trait" href="" title="2D vector"></a>
-                        <a href="" title="2D vector">Vector</a>
+                        <a class="trait" href="" title="Mixin representing a 2D vector."></a>
+                        <a href="" title="Mixin representing a 2D vector.">Vector</a>
                       </li>
               </ul>
             </div>
@@ -203,7 +215,9 @@
       </h4>
 
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>2D vector</p></div><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Mixin representing a 2D vector.</p><p>The methods of this mixin won't alter
+the values of the classes that extends it.
+</p></div><div class="toggleContainer block">
           <span class="toggle">
             Linear Supertypes
           </span>
@@ -275,24 +289,6 @@
       <p class="shortcomment cmt">Getter for the vector x component
 </p><div class="fullcomment"><div class="comment cmt"><p>Getter for the vector x component
 </p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>x component</p></dd></dl></div>
-    </li><li name="it.unibo.osmos.redux.utils.Vector#x_" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
-      <a id="x_(newX:Double):Unit"></a><a id="x_(Double):Unit"></a>
-      <span class="permalink">
-      <a href="../../../../../it/unibo/osmos/redux/utils/Vector.html#x_(newX:Double):Unit" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">x_</span><span class="params">(<span name="newX">newX: <span class="extype" name="scala.Double">Double</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      
-      <p class="shortcomment cmt">Setter for the vector x component
-</p><div class="fullcomment"><div class="comment cmt"><p>Setter for the vector x component
-</p></div><dl class="paramcmts block"><dt class="param">newX</dt><dd class="cmt"><p>new x component</p></dd></dl></div>
     </li><li name="it.unibo.osmos.redux.utils.Vector#y" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="y:Double"></a>
       <span class="permalink">
@@ -311,24 +307,6 @@
       <p class="shortcomment cmt">Getter for the vector y component
 </p><div class="fullcomment"><div class="comment cmt"><p>Getter for the vector y component
 </p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>y component</p></dd></dl></div>
-    </li><li name="it.unibo.osmos.redux.utils.Vector#y_" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
-      <a id="y_(newY:Double):Unit"></a><a id="y_(Double):Unit"></a>
-      <span class="permalink">
-      <a href="../../../../../it/unibo/osmos/redux/utils/Vector.html#y_(newY:Double):Unit" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">y_</span><span class="params">(<span name="newY">newY: <span class="extype" name="scala.Double">Double</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      
-      <p class="shortcomment cmt">Setter for the vector y component
-</p><div class="fullcomment"><div class="comment cmt"><p>Setter for the vector y component
-</p></div><dl class="paramcmts block"><dt class="param">newY</dt><dd class="cmt"><p>new y component</p></dd></dl></div>
     </li></ol>
             </div>
 
@@ -548,10 +526,10 @@
                 <span class="name">@native</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li name="it.unibo.osmos.redux.utils.Vector#getLength" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="getLength:Double"></a>
+    </li><li name="it.unibo.osmos.redux.utils.Vector#getMagnitude" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getMagnitude:Double"></a>
       <span class="permalink">
-      <a href="../../../../../it/unibo/osmos/redux/utils/Vector.html#getLength:Double" title="Permalink">
+      <a href="../../../../../it/unibo/osmos/redux/utils/Vector.html#getMagnitude:Double" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -560,15 +538,16 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">getLength</span><span class="result">: <span class="extype" name="scala.Double">Double</span></span>
+        <span class="name">getMagnitude</span><span class="result">: <span class="extype" name="scala.Double">Double</span></span>
       </span>
       
-      <p class="shortcomment cmt">TODO
-</p>
-    </li><li name="it.unibo.osmos.redux.utils.Vector#getNewLength" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="getNewLength(newLength:Double):it.unibo.osmos.redux.utils.Vector"></a><a id="getNewLength(Double):Vector"></a>
+      <p class="shortcomment cmt">Gets the magnitude (module) of the vector applying parallelogram law
+</p><div class="fullcomment"><div class="comment cmt"><p>Gets the magnitude (module) of the vector applying parallelogram law
+</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>magnitude of this vector</p></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.utils.Vector#getNewMagnitude" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getNewMagnitude(desiredMagnitude:Double):it.unibo.osmos.redux.utils.Vector"></a><a id="getNewMagnitude(Double):Vector"></a>
       <span class="permalink">
-      <a href="../../../../../it/unibo/osmos/redux/utils/Vector.html#getNewLength(newLength:Double):it.unibo.osmos.redux.utils.Vector" title="Permalink">
+      <a href="../../../../../it/unibo/osmos/redux/utils/Vector.html#getNewMagnitude(desiredMagnitude:Double):it.unibo.osmos.redux.utils.Vector" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -577,11 +556,12 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">getNewLength</span><span class="params">(<span name="newLength">newLength: <span class="extype" name="scala.Double">Double</span></span>)</span><span class="result">: <a href="" class="extype" name="it.unibo.osmos.redux.utils.Vector">Vector</a></span>
+        <span class="name">getNewMagnitude</span><span class="params">(<span name="desiredMagnitude">desiredMagnitude: <span class="extype" name="scala.Double">Double</span></span>)</span><span class="result">: <a href="" class="extype" name="it.unibo.osmos.redux.utils.Vector">Vector</a></span>
       </span>
       
-      <p class="shortcomment cmt">TODO
-</p>
+      <p class="shortcomment cmt">Scales this vector magnitude (module) with the desired one
+</p><div class="fullcomment"><div class="comment cmt"><p>Scales this vector magnitude (module) with the desired one
+</p></div><dl class="paramcmts block"><dt class="param">desiredMagnitude</dt><dd class="cmt"><p>desired vector magnitude</p></dd><dt>returns</dt><dd class="cmt"><p>a new vector with the specified module</p></dd></dl></div>
     </li><li name="scala.AnyRef#hashCode" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
       <span class="permalink">
@@ -618,9 +598,9 @@
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="it.unibo.osmos.redux.utils.Vector#limit" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="limit(maxLength:Double):it.unibo.osmos.redux.utils.Vector"></a><a id="limit(Double):Vector"></a>
+      <a id="limit(maxMagnitude:Double):it.unibo.osmos.redux.utils.Vector"></a><a id="limit(Double):Vector"></a>
       <span class="permalink">
-      <a href="../../../../../it/unibo/osmos/redux/utils/Vector.html#limit(maxLength:Double):it.unibo.osmos.redux.utils.Vector" title="Permalink">
+      <a href="../../../../../it/unibo/osmos/redux/utils/Vector.html#limit(maxMagnitude:Double):it.unibo.osmos.redux.utils.Vector" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -629,10 +609,12 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">limit</span><span class="params">(<span name="maxLength">maxLength: <span class="extype" name="scala.Double">Double</span></span>)</span><span class="result">: <a href="" class="extype" name="it.unibo.osmos.redux.utils.Vector">Vector</a></span>
+        <span class="name">limit</span><span class="params">(<span name="maxMagnitude">maxMagnitude: <span class="extype" name="scala.Double">Double</span></span>)</span><span class="result">: <a href="" class="extype" name="it.unibo.osmos.redux.utils.Vector">Vector</a></span>
       </span>
       
-      <p class="shortcomment cmt">Limit the vector's length</p><div class="fullcomment"><div class="comment cmt"><p>Limit the vector's length</p></div><dl class="paramcmts block"><dt class="param">maxLength</dt><dd class="cmt"><p>max length of the vector</p></dd><dt>returns</dt><dd class="cmt"><p>the limited vector</p></dd></dl></div>
+      <p class="shortcomment cmt">Limits the vector's magnitude if it is greater than the given one
+</p><div class="fullcomment"><div class="comment cmt"><p>Limits the vector's magnitude if it is greater than the given one
+</p></div><dl class="paramcmts block"><dt class="param">maxMagnitude</dt><dd class="cmt"><p>the max magnitude of the vector</p></dd><dt>returns</dt><dd class="cmt"><p>a new vector</p></dd></dl></div>
     </li><li name="it.unibo.osmos.redux.utils.Vector#multiply" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="multiply(v:Double):it.unibo.osmos.redux.utils.Vector"></a><a id="multiply(Double):Vector"></a>
       <span class="permalink">
@@ -700,7 +682,7 @@
       
       <p class="shortcomment cmt">Gets the vector normalized
 </p><div class="fullcomment"><div class="comment cmt"><p>Gets the vector normalized
-</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>this vector normalized as a new instance</p></dd></dl></div>
+</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>a new normalized instance of this vector</p></dd></dl></div>
     </li><li name="scala.AnyRef#notify" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notify():Unit"></a>
       <span class="permalink">
@@ -739,23 +721,6 @@
                 <span class="name">@native</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li name="it.unibo.osmos.redux.utils.Vector#subtract" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="subtract(p:it.unibo.osmos.redux.utils.Point):it.unibo.osmos.redux.utils.Vector"></a><a id="subtract(Point):Vector"></a>
-      <span class="permalink">
-      <a href="../../../../../it/unibo/osmos/redux/utils/Vector.html#subtract(p:it.unibo.osmos.redux.utils.Point):it.unibo.osmos.redux.utils.Vector" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">subtract</span><span class="params">(<span name="p">p: <a href="Point.html" class="extype" name="it.unibo.osmos.redux.utils.Point">Point</a></span>)</span><span class="result">: <a href="" class="extype" name="it.unibo.osmos.redux.utils.Vector">Vector</a></span>
-      </span>
-      
-      <p class="shortcomment cmt">Vector-point subtraction.</p><div class="fullcomment"><div class="comment cmt"><p>Vector-point subtraction. Leaves this vector unchanged.
-</p></div><dl class="paramcmts block"><dt class="param">p</dt><dd class="cmt"><p>point to subtract</p></dd><dt>returns</dt><dd class="cmt"><p>subtraction result as a new instance</p></dd></dl></div>
     </li><li name="it.unibo.osmos.redux.utils.Vector#subtract" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="subtract(v:it.unibo.osmos.redux.utils.Vector):it.unibo.osmos.redux.utils.Vector"></a><a id="subtract(Vector):Vector"></a>
       <span class="permalink">

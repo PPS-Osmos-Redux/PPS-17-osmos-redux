@@ -3,9 +3,9 @@
         <head>
           <meta http-equiv="X-UA-Compatible" content="IE=edge" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-          <title>osmos-redux 1.1.0 API  - it.unibo.osmos.redux.ecs.engine.GameEngine</title>
-          <meta name="description" content="osmos - redux 1.1.0 API - it.unibo.osmos.redux.ecs.engine.GameEngine" />
-          <meta name="keywords" content="osmos redux 1.1.0 API it.unibo.osmos.redux.ecs.engine.GameEngine" />
+          <title>osmos-redux 1.2.0 API  - it.unibo.osmos.redux.ecs.engine.GameEngine</title>
+          <meta name="description" content="osmos - redux 1.2.0 API - it.unibo.osmos.redux.ecs.engine.GameEngine" />
+          <meta name="keywords" content="osmos redux 1.2.0 API it.unibo.osmos.redux.ecs.engine.GameEngine" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../../../../lib/index.css" media="screen" type="text/css" rel="stylesheet" />
@@ -28,7 +28,7 @@
         </head>
         <body>
       <div id="search">
-        <span id="doc-title">osmos-redux 1.1.0 API<span id="doc-version"></span></span>
+        <span id="doc-title">osmos-redux 1.2.0 API<span id="doc-version"></span></span>
         <span class="close-results"><span class="left">&lt;</span> Back</span>
         <div id="textfilter">
           <span class="input">
@@ -334,9 +334,9 @@
       
       <p class="shortcomment cmt">Gets the current game loop status.</p><div class="fullcomment"><div class="comment cmt"><p>Gets the current game loop status.</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>The current game loop status.</p></dd></dl></div>
     </li><li name="it.unibo.osmos.redux.ecs.engine.GameEngine#init" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
-      <a id="init(level:it.unibo.osmos.redux.mvc.model.Level,levelContext:it.unibo.osmos.redux.mvc.view.levels.LevelContext):Unit"></a><a id="init(Level,LevelContext):Unit"></a>
+      <a id="init(level:it.unibo.osmos.redux.mvc.model.Level,server:it.unibo.osmos.redux.multiplayer.server.Server):it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContext"></a><a id="init(Level,Server):MultiPlayerLevelContext"></a>
       <span class="permalink">
-      <a href="../../../../../../it/unibo/osmos/redux/ecs/engine/GameEngine.html#init(level:it.unibo.osmos.redux.mvc.model.Level,levelContext:it.unibo.osmos.redux.mvc.view.levels.LevelContext):Unit" title="Permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/ecs/engine/GameEngine.html#init(level:it.unibo.osmos.redux.mvc.model.Level,server:it.unibo.osmos.redux.multiplayer.server.Server):it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContext" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -345,7 +345,23 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">init</span><span class="params">(<span name="level">level: <a href="../../mvc/model/Level.html" class="extype" name="it.unibo.osmos.redux.mvc.model.Level">Level</a></span>, <span name="levelContext">levelContext: <a href="../../mvc/view/levels/LevelContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.levels.LevelContext">LevelContext</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">init</span><span class="params">(<span name="level">level: <a href="../../mvc/model/Level.html" class="extype" name="it.unibo.osmos.redux.mvc.model.Level">Level</a></span>, <span name="server">server: <a href="../../multiplayer/server/Server.html" class="extype" name="it.unibo.osmos.redux.multiplayer.server.Server">Server</a></span>)</span><span class="result">: <a href="../../mvc/view/context/MultiPlayerLevelContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContext">MultiPlayerLevelContext</a></span>
+      </span>
+      
+      <p class="shortcomment cmt">Initializes the game loop and server for a multi-player level.</p><div class="fullcomment"><div class="comment cmt"><p>Initializes the game loop and server for a multi-player level.</p></div><dl class="paramcmts block"><dt class="param">level</dt><dd class="cmt"><p>The object that contains all level data.</p></dd><dt class="param">server</dt><dd class="cmt"><p>The server.</p></dd><dt>returns</dt><dd class="cmt"><p>The context of the initialized game level.</p></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.ecs.engine.GameEngine#init" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="init(level:it.unibo.osmos.redux.mvc.model.Level,levelContext:it.unibo.osmos.redux.mvc.view.context.LevelContext):Unit"></a><a id="init(Level,LevelContext):Unit"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/ecs/engine/GameEngine.html#init(level:it.unibo.osmos.redux.mvc.model.Level,levelContext:it.unibo.osmos.redux.mvc.view.context.LevelContext):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">init</span><span class="params">(<span name="level">level: <a href="../../mvc/model/Level.html" class="extype" name="it.unibo.osmos.redux.mvc.model.Level">Level</a></span>, <span name="levelContext">levelContext: <a href="../../mvc/view/context/LevelContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.LevelContext">LevelContext</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       
       <p class="shortcomment cmt">Initializes the game loop with the input data that represents the level.</p><div class="fullcomment"><div class="comment cmt"><p>Initializes the game loop with the input data that represents the level.

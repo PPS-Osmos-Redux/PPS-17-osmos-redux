@@ -3,9 +3,9 @@
         <head>
           <meta http-equiv="X-UA-Compatible" content="IE=edge" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-          <title>osmos-redux 1.1.0 API  - it.unibo.osmos.redux.mvc.model</title>
-          <meta name="description" content="osmos - redux 1.1.0 API - it.unibo.osmos.redux.mvc.model" />
-          <meta name="keywords" content="osmos redux 1.1.0 API it.unibo.osmos.redux.mvc.model" />
+          <title>osmos-redux 1.2.0 API  - it.unibo.osmos.redux.mvc.model</title>
+          <meta name="description" content="osmos - redux 1.2.0 API - it.unibo.osmos.redux.mvc.model" />
+          <meta name="keywords" content="osmos redux 1.2.0 API it.unibo.osmos.redux.mvc.model" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../../../../lib/index.css" media="screen" type="text/css" rel="stylesheet" />
@@ -28,7 +28,7 @@
         </head>
         <body>
       <div id="search">
-        <span id="doc-title">osmos-redux 1.1.0 API<span id="doc-version"></span></span>
+        <span id="doc-title">osmos-redux 1.2.0 API<span id="doc-version"></span></span>
         <span class="close-results"><span class="left">&lt;</span> Back</span>
         <div id="textfilter">
           <span class="input">
@@ -202,21 +202,29 @@
                         <a class="class" href="LevelMap.html" title="Map of a level"></a>
                         <a href="LevelMap.html" title="Map of a level">LevelMap</a>
                       </li><li class="current-entities indented6">
+                        <span class="separator"></span>
+                        <a class="class" href="LevelStat.html" title="Statistics of a level"></a>
+                        <a href="LevelStat.html" title="Statistics of a level">LevelStat</a>
+                      </li><li class="current-entities indented6">
                         <a class="object" href="MapShape$.html" title=""></a>
-                        <a class="trait" href="MapShape.html" title="Map shape data structure"></a>
-                        <a href="MapShape.html" title="Map shape data structure">MapShape</a>
+                        <a class="trait" href="MapShape.html" title=""></a>
+                        <a href="MapShape.html" title="">MapShape</a>
                       </li><li class="current-entities indented6">
                         <span class="separator"></span>
-                        <a class="trait" href="Model.html" title="Model base trait"></a>
-                        <a href="Model.html" title="Model base trait">Model</a>
+                        <a class="object" href="MapShapeType$.html" title="Map shape data structure"></a>
+                        <a href="MapShapeType$.html" title="Map shape data structure">MapShapeType</a>
+                      </li><li class="current-entities indented6">
+                        <span class="separator"></span>
+                        <a class="object" href="MultiPlayerLevels$.html" title=""></a>
+                        <a href="MultiPlayerLevels$.html" title="">MultiPlayerLevels</a>
                       </li><li class="current-entities indented6">
                         <span class="separator"></span>
                         <a class="object" href="SinglePlayerLevels$.html" title=""></a>
                         <a href="SinglePlayerLevels$.html" title="">SinglePlayerLevels</a>
                       </li><li class="current-entities indented6">
                         <span class="separator"></span>
-                        <a class="object" href="UserProgress$.html" title=""></a>
-                        <a href="UserProgress$.html" title="">UserProgress</a>
+                        <a class="class" href="UserStat.html" title="Modelling user progression and stat"></a>
+                        <a href="UserStat.html" title="Modelling user progression and stat">UserStat</a>
                       </li><li class="current-entities indented6">
                         <span class="separator"></span>
                         <a class="object" href="VictoryRules$.html" title="Level victory rules"></a>
@@ -312,10 +320,10 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="Level configuratoin" href="Level.html"><span class="name">Level</span></a><span class="params">(<span name="levelId">levelId: <span class="extype" name="scala.Int">Int</span></span>, <span name="levelMap">levelMap: <a href="LevelMap.html" class="extype" name="it.unibo.osmos.redux.mvc.model.LevelMap">LevelMap</a></span>, <span name="entities">entities: <span class="extype" name="scala.List">List</span>[<a href="../../ecs/entities/CellEntity.html" class="extype" name="it.unibo.osmos.redux.ecs.entities.CellEntity">CellEntity</a>]</span>, <span name="victoryRule">victoryRule: <a href="VictoryRules$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="it.unibo.osmos.redux.mvc.model.VictoryRules.Value">VictoryRules.Value</a></span>, <span name="isSimulation">isSimulation: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="Level configuratoin" href="Level.html"><span class="name">Level</span></a><span class="params">(<span name="levelInfo">levelInfo: <a href="../controller/LevelInfo.html" class="extype" name="it.unibo.osmos.redux.mvc.controller.LevelInfo">LevelInfo</a></span>, <span name="levelMap">levelMap: <a href="LevelMap.html" class="extype" name="it.unibo.osmos.redux.mvc.model.LevelMap">LevelMap</a></span>, <span name="entities">entities: <span class="extype" name="scala.List">List</span>[<a href="../../ecs/entities/CellEntity.html" class="extype" name="it.unibo.osmos.redux.ecs.entities.CellEntity">CellEntity</a>]</span>, <span name="isSimulation">isSimulation: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
-      <p class="shortcomment cmt">Level configuratoin</p><div class="fullcomment"><div class="comment cmt"><p>Level configuratoin</p></div><dl class="paramcmts block"><dt class="param">levelId</dt><dd class="cmt"><p>level identifier</p></dd><dt class="param">levelMap</dt><dd class="cmt"><p>level map</p></dd><dt class="param">entities</dt><dd class="cmt"><p>list of level entities</p></dd><dt class="param">victoryRule</dt><dd class="cmt"><p>victory rule</p></dd><dt class="param">isSimulation</dt><dd class="cmt"><p>if it's a simulation</p></dd></dl></div>
+      <p class="shortcomment cmt">Level configuratoin</p><div class="fullcomment"><div class="comment cmt"><p>Level configuratoin</p></div><dl class="paramcmts block"><dt class="param">levelInfo</dt><dd class="cmt"><p>LevelInfo</p></dd><dt class="param">levelMap</dt><dd class="cmt"><p>level map</p></dd><dt class="param">entities</dt><dd class="cmt"><p>list of level entities</p></dd><dt class="param">isSimulation</dt><dd class="cmt"><p>if it's a simulation</p></dd></dl></div>
     </li><li name="it.unibo.osmos.redux.mvc.model.LevelMap" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="LevelMapextendsProductwithSerializable"></a><a id="LevelMap:LevelMap"></a>
       <span class="permalink">
@@ -332,6 +340,22 @@
       </span>
       
       <p class="shortcomment cmt">Map of a level</p><div class="fullcomment"><div class="comment cmt"><p>Map of a level</p></div><dl class="paramcmts block"><dt class="param">mapShape</dt><dd class="cmt"><p>map shape</p></dd><dt class="param">collisionRule</dt><dd class="cmt"><p>edges collision rule</p></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.mvc.model.LevelStat" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="LevelStatextendsProductwithSerializable"></a><a id="LevelStat:LevelStat"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/mvc/model/index.html#LevelStatextendsProductwithSerializable" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a title="Statistics of a level" href="LevelStat.html"><span class="name">LevelStat</span></a><span class="params">(<span name="levelName">levelName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="defeats">defeats: <span class="extype" name="scala.Int">Int</span></span>, <span name="victories">victories: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">Statistics of a level</p><div class="fullcomment"><div class="comment cmt"><p>Statistics of a level</p></div><dl class="paramcmts block"><dt class="param">levelName</dt><dd class="cmt"><p>level name</p></dd><dt class="param">defeats</dt><dd class="cmt"><p>number of defeats</p></dd><dt class="param">victories</dt><dd class="cmt"><p>number of victories</p></dd></dl></div>
     </li><li name="it.unibo.osmos.redux.mvc.model.MapShape" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="MapShapeextendsAnyRef"></a><a id="MapShape:MapShape"></a>
       <span class="permalink">
@@ -344,28 +368,26 @@
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <a title="Map shape data structure" href="MapShape.html"><span class="name">MapShape</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <a title="" href="MapShape.html"><span class="name">MapShape</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       
-      <p class="shortcomment cmt">Map shape data structure
-</p>
-    </li><li name="it.unibo.osmos.redux.mvc.model.Model" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="ModelextendsAnyRef"></a><a id="Model:Model"></a>
+      
+    </li><li name="it.unibo.osmos.redux.mvc.model.UserStat" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="UserStatextendsProductwithSerializable"></a><a id="UserStat:UserStat"></a>
       <span class="permalink">
-      <a href="../../../../../../it/unibo/osmos/redux/mvc/model/index.html#ModelextendsAnyRef" title="Permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/mvc/model/index.html#UserStatextendsProductwithSerializable" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">trait</span>
+        <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="Model base trait" href="Model.html"><span class="name">Model</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <a title="Modelling user progression and stat" href="UserStat.html"><span class="name">UserStat</span></a><span class="params">(<span name="toDoLevel">toDoLevel: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;1&quot;</span></span>, <span name="stats">stats: <span class="extype" name="scala.List">List</span>[<a href="LevelStat.html" class="extype" name="it.unibo.osmos.redux.mvc.model.LevelStat">LevelStat</a>] = <span class="defval" name="List(LevelStat(&quot;1&quot;, 0, 0),<br/>  LevelStat(&quot;2&quot;, 0, 0),<br/>  LevelStat(&quot;3&quot;, 0, 0),<br/>  LevelStat(&quot;4&quot;, 0, 0),<br/>  LevelStat(&quot;5&quot;, 0, 0))">...</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
-      <p class="shortcomment cmt">Model base trait
-</p>
+      <p class="shortcomment cmt">Modelling user progression and stat</p><div class="fullcomment"><div class="comment cmt"><p>Modelling user progression and stat</p></div><dl class="paramcmts block"><dt class="param">toDoLevel</dt><dd class="cmt"><p>last unlocked level</p></dd><dt class="param">stats</dt><dd class="cmt"><p>list of levels statistics</p></dd></dl></div>
     </li></ol>
             </div>
 
@@ -441,6 +463,39 @@
       </span>
       
       
+    </li><li name="it.unibo.osmos.redux.mvc.model.MapShapeType" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="MapShapeType"></a><a id="MapShapeType:MapShapeType"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/mvc/model/index.html#MapShapeType" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a title="Map shape data structure" href="MapShapeType$.html"><span class="name">MapShapeType</span></a><span class="result"> extends <span class="extype" name="scala.Enumeration">Enumeration</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">Map shape data structure
+</p>
+    </li><li name="it.unibo.osmos.redux.mvc.model.MultiPlayerLevels" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="MultiPlayerLevels"></a><a id="MultiPlayerLevels:MultiPlayerLevels"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/mvc/model/index.html#MultiPlayerLevels" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="MultiPlayerLevels$.html"><span class="name">MultiPlayerLevels</span></a>
+      </span>
+      
+      
     </li><li name="it.unibo.osmos.redux.mvc.model.SinglePlayerLevels" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="SinglePlayerLevels"></a><a id="SinglePlayerLevels:SinglePlayerLevels"></a>
       <span class="permalink">
@@ -454,22 +509,6 @@
       </span>
       <span class="symbol">
         <a title="" href="SinglePlayerLevels$.html"><span class="name">SinglePlayerLevels</span></a>
-      </span>
-      
-      
-    </li><li name="it.unibo.osmos.redux.mvc.model.UserProgress" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="UserProgress"></a><a id="UserProgress:UserProgress"></a>
-      <span class="permalink">
-      <a href="../../../../../../it/unibo/osmos/redux/mvc/model/index.html#UserProgress" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a title="" href="UserProgress$.html"><span class="name">UserProgress</span></a>
       </span>
       
       

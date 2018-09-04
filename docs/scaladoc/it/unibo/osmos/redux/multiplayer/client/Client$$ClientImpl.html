@@ -1,0 +1,927 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+          <title>osmos-redux 1.2.0 API  - it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl</title>
+          <meta name="description" content="osmos - redux 1.2.0 API - it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl" />
+          <meta name="keywords" content="osmos redux 1.2.0 API it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../../../../lib/index.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../../../../../lib/jquery.js"></script>
+      <script type="text/javascript" src="../../../../../../lib/jquery.panzoom.min.js"></script>
+      <script type="text/javascript" src="../../../../../../lib/jquery.mousewheel.min.js"></script>
+      <script type="text/javascript" src="../../../../../../lib/index.js"></script>
+      <script type="text/javascript" src="../../../../../../index.js"></script>
+      <script type="text/javascript" src="../../../../../../lib/scheduler.js"></script>
+      <script type="text/javascript" src="../../../../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../../../../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+        /* this variable can be used by the JS to determine the path to the root document */
+        var toRoot = '../../../../../../';
+      </script>
+    
+        </head>
+        <body>
+      <div id="search">
+        <span id="doc-title">osmos-redux 1.2.0 API<span id="doc-version"></span></span>
+        <span class="close-results"><span class="left">&lt;</span> Back</span>
+        <div id="textfilter">
+          <span class="input">
+            <input autocapitalize="none" placeholder="Search" id="index-input" type="text" accesskey="/" />
+            <i class="clear material-icons"></i>
+            <i id="search-icon" class="material-icons"></i>
+          </span>
+        </div>
+    </div>
+      <div id="search-results">
+        <div id="search-progress">
+          <div id="progress-fill"></div>
+        </div>
+        <div id="results-content">
+          <div id="entity-results"></div>
+          <div id="member-results"></div>
+        </div>
+      </div>
+      <div id="content-scroll-container" style="-webkit-overflow-scrolling: touch;">
+        <div id="content-container" style="-webkit-overflow-scrolling: touch;">
+          <div id="subpackage-spacer">
+            <div id="packages">
+              <h1>Packages</h1>
+              <ul>
+                <li name="_root_.root" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="_root_"></a><a id="root:_root_"></a>
+      <span class="permalink">
+      <a href="index.html#_root_" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="../../../../../../index.html"><span class="name">root</span></a>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../../../../../../index.html" class="extype" name="_root_">root</a></dd></dl></div>
+    </li><li name="_root_.it" visbl="pub" class="indented1 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="it"></a><a id="it:it"></a>
+      <span class="permalink">
+      <a href="index.html#it" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="../../../../../index.html"><span class="name">it</span></a>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../../../../../../index.html" class="extype" name="_root_">root</a></dd></dl></div>
+    </li><li name="it.unibo" visbl="pub" class="indented2 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="unibo"></a><a id="unibo:unibo"></a>
+      <span class="permalink">
+      <a href="../it/index.html#unibo" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="../../../../index.html"><span class="name">unibo</span></a>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../../../../../index.html" class="extype" name="it">it</a></dd></dl></div>
+    </li><li name="it.unibo.osmos" visbl="pub" class="indented3 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="osmos"></a><a id="osmos:osmos"></a>
+      <span class="permalink">
+      <a href="../../it/unibo/index.html#osmos" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="../../../index.html"><span class="name">osmos</span></a>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../../../../index.html" class="extype" name="it.unibo">unibo</a></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux" visbl="pub" class="indented4 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="redux"></a><a id="redux:redux"></a>
+      <span class="permalink">
+      <a href="../../../it/unibo/osmos/index.html#redux" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="../../index.html"><span class="name">redux</span></a>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../../../index.html" class="extype" name="it.unibo.osmos">osmos</a></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.multiplayer" visbl="pub" class="indented5 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="multiplayer"></a><a id="multiplayer:multiplayer"></a>
+      <span class="permalink">
+      <a href="../../../../it/unibo/osmos/redux/index.html#multiplayer" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="../index.html"><span class="name">multiplayer</span></a>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../../index.html" class="extype" name="it.unibo.osmos.redux">redux</a></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.multiplayer.client" visbl="pub" class="indented6 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="client"></a><a id="client:client"></a>
+      <span class="permalink">
+      <a href="../../../../../it/unibo/osmos/redux/multiplayer/index.html#client" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="index.html"><span class="name">client</span></a>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../index.html" class="extype" name="it.unibo.osmos.redux.multiplayer">multiplayer</a></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.multiplayer.client.Client" visbl="pub" class="indented7 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="Client"></a><a id="Client:Client"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/index.html#Client" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="Client$.html"><span class="name">Client</span></a>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="index.html" class="extype" name="it.unibo.osmos.redux.multiplayer.client">client</a></dd></dl></div>
+    </li><li class="current-entities indented7">
+                        <span class="separator"></span>
+                        <a class="class" href="" title=""></a>
+                        <a href="" title="">ClientImpl</a>
+                      </li>
+              </ul>
+            </div>
+          </div>
+          <div id="content">
+            <body class="class type">
+      <div id="definition">
+        <div class="big-circle class">c</div>
+        <p id="owner"><a href="../../../../../index.html" class="extype" name="it">it</a>.<a href="../../../../index.html" class="extype" name="it.unibo">unibo</a>.<a href="../../../index.html" class="extype" name="it.unibo.osmos">osmos</a>.<a href="../../index.html" class="extype" name="it.unibo.osmos.redux">redux</a>.<a href="../index.html" class="extype" name="it.unibo.osmos.redux.multiplayer">multiplayer</a>.<a href="index.html" class="extype" name="it.unibo.osmos.redux.multiplayer.client">client</a>.<a href="Client$.html" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client">Client</a></p>
+        <h1>ClientImpl<span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span></h1>
+        <h3><span class="morelinks"></span></h3>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ClientImpl</span><span class="params">()</span><span class="result"> extends <a href="Client.html" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client">Client</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+
+      
+          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <span class="toggle">
+            Linear Supertypes
+          </span>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <a href="Client.html" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client">Client</a>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+        </div></div>
+        
+
+      <div id="mbrsel">
+        <div class="toggle"></div>
+        <div id="memberfilter">
+          <i class="material-icons arrow"></i>
+          <span class="input">
+            <input id="mbrsel-input" placeholder="Filter all members" type="text" accesskey="/" />
+          </span>
+          <i class="clear material-icons"></i>
+        </div>
+        <div id="filterby">
+          <div id="order">
+            <span class="filtertype">Ordering</span>
+            <ol>
+              
+              <li class="alpha in"><span>Alphabetic</span></li>
+              <li class="inherit out"><span>By Inheritance</span></li>
+            </ol>
+          </div>
+          <div class="ancestors">
+                  <span class="filtertype">Inherited<br />
+                  </span>
+                  <ol id="linearization">
+                    <li class="in" name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl"><span>ClientImpl</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="it.unibo.osmos.redux.multiplayer.client.Client"><span>Client</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  </ol>
+                </div><div class="ancestors">
+              <span class="filtertype"></span>
+              <ol>
+                <li class="hideall out"><span>Hide All</span></li>
+                <li class="showall in"><span>Show All</span></li>
+              </ol>
+            </div>
+          <div id="visbl">
+              <span class="filtertype">Visibility</span>
+              <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+            </div>
+        </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        <div id="constructors" class="members">
+              <h3>Instance Constructors</h3>
+              <ol><li name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl#&lt;init&gt;" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="&lt;init&gt;():it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl"></a><a id="&lt;init&gt;:ClientImpl"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#&lt;init&gt;():it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">new</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ClientImpl</span><span class="params">()</span>
+      </span>
+      
+      
+    </li></ol>
+            </div>
+
+        
+
+        
+
+        <div class="values members">
+              <h3>Value Members</h3>
+              <ol>
+                <li name="scala.AnyRef#!=" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="!=(x$1:Any):Boolean"></a><a id="!=(Any):Boolean"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#!=(x$1:Any):Boolean" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef###" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="##():Int"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html###():Int" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef#==" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="==(x$1:Any):Boolean"></a><a id="==(Any):Boolean"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#==(x$1:Any):Boolean" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl#addPlayerToLobby" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="addPlayerToLobby(player:it.unibo.osmos.redux.multiplayer.players.BasePlayer):Unit"></a><a id="addPlayerToLobby(BasePlayer):Unit"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#addPlayerToLobby(player:it.unibo.osmos.redux.multiplayer.players.BasePlayer):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">addPlayerToLobby</span><span class="params">(<span name="player">player: <a href="../players/BasePlayer.html" class="extype" name="it.unibo.osmos.redux.multiplayer.players.BasePlayer">BasePlayer</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">Adds a player to the lobby.</p><div class="fullcomment"><div class="comment cmt"><p>Adds a player to the lobby.</p></div><dl class="paramcmts block"><dt class="param">player</dt><dd class="cmt"><p>The player to add.</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl">ClientImpl</a> → <a href="Client.html" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client">Client</a></dd></dl></div>
+    </li><li name="scala.Any#asInstanceOf" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="asInstanceOf[T0]:T0"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#asInstanceOf[T0]:T0" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl#bind" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="bind(actorRef:akka.actor.ActorRef):Unit"></a><a id="bind(ActorRef):Unit"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#bind(actorRef:akka.actor.ActorRef):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">bind</span><span class="params">(<span name="actorRef">actorRef: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">Binds this instance with the input ActorRef.</p><div class="fullcomment"><div class="comment cmt"><p>Binds this instance with the input ActorRef.</p></div><dl class="paramcmts block"><dt class="param">actorRef</dt><dd class="cmt"><p>The ActorRef</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl">ClientImpl</a> → <a href="Client.html" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client">Client</a></dd></dl></div>
+    </li><li name="scala.AnyRef#clone" visbl="prt" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="clone():Object"></a><a id="clone():AnyRef"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#clone():Object" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../../../java/lang/index.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@native</span><span class="args">()</span>
+              
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.CloneNotSupportedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl#closeLobby" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="closeLobby(byUser:Boolean):Unit"></a><a id="closeLobby(Boolean):Unit"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#closeLobby(byUser:Boolean):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">closeLobby</span><span class="params">(<span name="byUser">byUser: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">Closes the lobby.</p><div class="fullcomment"><div class="comment cmt"><p>Closes the lobby.</p></div><dl class="paramcmts block"><dt class="param">byUser</dt><dd class="cmt"><p>If the lobby have been closed by the user or not.</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl">ClientImpl</a> → <a href="Client.html" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client">Client</a></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl#connect" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="connect(address:String,port:Int):scala.concurrent.Promise[Boolean]"></a><a id="connect(String,Int):Promise[Boolean]"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#connect(address:String,port:Int):scala.concurrent.Promise[Boolean]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">connect</span><span class="params">(<span name="address">address: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="port">port: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Promise">Promise</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
+      </span>
+      
+      <p class="shortcomment cmt">Connects to a server.</p><div class="fullcomment"><div class="comment cmt"><p>Connects to a server.</p></div><dl class="paramcmts block"><dt class="param">address</dt><dd class="cmt"><p>The server address.</p></dd><dt class="param">port</dt><dd class="cmt"><p>The port address.</p></dd><dt>returns</dt><dd class="cmt"><p>Promise that completes with true if the connection has been successfully established; otherwise false.</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl">ClientImpl</a> → <a href="Client.html" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client">Client</a></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl#enterLobby" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="enterLobby(username:String,lobbyContext:it.unibo.osmos.redux.mvc.view.context.LobbyContext):scala.concurrent.Promise[Boolean]"></a><a id="enterLobby(String,LobbyContext):Promise[Boolean]"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#enterLobby(username:String,lobbyContext:it.unibo.osmos.redux.mvc.view.context.LobbyContext):scala.concurrent.Promise[Boolean]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">enterLobby</span><span class="params">(<span name="username">username: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="lobbyContext">lobbyContext: <a href="../../mvc/view/context/LobbyContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.LobbyContext">LobbyContext</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Promise">Promise</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
+      </span>
+      
+      <p class="shortcomment cmt">Requests to enter the lobby.</p><div class="fullcomment"><div class="comment cmt"><p>Requests to enter the lobby.</p></div><dl class="paramcmts block"><dt class="param">username</dt><dd class="cmt"><p>The username of the player.</p></dd><dt class="param">lobbyContext</dt><dd class="cmt"><p>The lobby context.</p></dd><dt>returns</dt><dd class="cmt"><p>Promise that completes with true if the client have successfully entered the lobby; otherwise false.</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl">ClientImpl</a> → <a href="Client.html" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client">Client</a></dd></dl></div>
+    </li><li name="scala.AnyRef#eq" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="eq(x$1:AnyRef):Boolean"></a><a id="eq(AnyRef):Boolean"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#eq(x$1:AnyRef):Boolean" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#finalize" visbl="prt" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="finalize():Unit"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#finalize():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../../../java/lang/index.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="symbol">classOf[java.lang.Throwable]</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.AnyRef#getClass" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getClass():Class[_]"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#getClass():Class[_]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd><dt>Annotations</dt><dd>
+                <span class="name">@native</span><span class="args">()</span>
+              
+        </dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl#getLobbyPlayers" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getLobbyPlayers:Seq[it.unibo.osmos.redux.multiplayer.players.BasePlayer]"></a><a id="getLobbyPlayers:Seq[BasePlayer]"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#getLobbyPlayers:Seq[it.unibo.osmos.redux.multiplayer.players.BasePlayer]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getLobbyPlayers</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="../players/BasePlayer.html" class="extype" name="it.unibo.osmos.redux.multiplayer.players.BasePlayer">BasePlayer</a>]</span>
+      </span>
+      
+      <p class="shortcomment cmt">Gets the lobby players.</p><div class="fullcomment"><div class="comment cmt"><p>Gets the lobby players.</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>All players in the lobby.</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl">ClientImpl</a> → <a href="Client.html" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client">Client</a></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl#getUUID" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getUUID:String"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#getUUID:String" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getUUID</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">Gets the uuid of the cell entity that represents this client.</p><div class="fullcomment"><div class="comment cmt"><p>Gets the uuid of the cell entity that represents this client.</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>The uuid</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl">ClientImpl</a> → <a href="Client.html" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client">Client</a></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl#initGame" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="initGame(levelContext:it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContext):Unit"></a><a id="initGame(MultiPlayerLevelContext):Unit"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#initGame(levelContext:it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContext):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">initGame</span><span class="params">(<span name="levelContext">levelContext: <a href="../../mvc/view/context/MultiPlayerLevelContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContext">MultiPlayerLevelContext</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">Initializes the game.</p><div class="fullcomment"><div class="comment cmt"><p>Initializes the game.</p></div><dl class="paramcmts block"><dt class="param">levelContext</dt><dd class="cmt"><p>The level context.</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl">ClientImpl</a> → <a href="Client.html" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client">Client</a></dd></dl></div>
+    </li><li name="scala.Any#isInstanceOf" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="isInstanceOf[T0]:Boolean"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#isInstanceOf[T0]:Boolean" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl#kill" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="kill():Unit"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#kill():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">kill</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">Kills this instance.</p><div class="fullcomment"><div class="comment cmt"><p>Kills this instance.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl">ClientImpl</a> → <a href="Client.html" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client">Client</a></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl#leaveGame" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="leaveGame():Unit"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#leaveGame():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">leaveGame</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">Leaves the game.</p><div class="fullcomment"><div class="comment cmt"><p>Leaves the game.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl">ClientImpl</a> → <a href="Client.html" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client">Client</a></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl#leaveLobby" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="leaveLobby():Unit"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#leaveLobby():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">leaveLobby</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">Requests to leave the lobby.</p><div class="fullcomment"><div class="comment cmt"><p>Requests to leave the lobby.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl">ClientImpl</a> → <a href="Client.html" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client">Client</a></dd></dl></div>
+    </li><li name="scala.AnyRef#ne" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="ne(x$1:AnyRef):Boolean"></a><a id="ne(AnyRef):Boolean"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#ne(x$1:AnyRef):Boolean" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#notify" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="notify():Unit"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#notify():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@native</span><span class="args">()</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.AnyRef#notifyAll" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="notifyAll():Unit"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#notifyAll():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@native</span><span class="args">()</span>
+              
+        </dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl#notifyRedraw" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="notifyRedraw(entities:Seq[it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity]):Unit"></a><a id="notifyRedraw(Seq[DrawableEntity]):Unit"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#notifyRedraw(entities:Seq[it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity]):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">notifyRedraw</span><span class="params">(<span name="entities">entities: <span class="extype" name="scala.Seq">Seq</span>[<a href="../../mvc/view/drawables/DrawableEntity.html" class="extype" name="it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity">DrawableEntity</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">Notifies the client to redraw.</p><div class="fullcomment"><div class="comment cmt"><p>Notifies the client to redraw.</p></div><dl class="paramcmts block"><dt class="param">entities</dt><dd class="cmt"><p>The entities to draw.</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl">ClientImpl</a> → <a href="Client.html" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client">Client</a></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl#removePlayerFromLobby" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="removePlayerFromLobby(username:String):Unit"></a><a id="removePlayerFromLobby(String):Unit"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#removePlayerFromLobby(username:String):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">removePlayerFromLobby</span><span class="params">(<span name="username">username: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">Removes a player from the lobby.</p><div class="fullcomment"><div class="comment cmt"><p>Removes a player from the lobby.</p></div><dl class="paramcmts block"><dt class="param">username</dt><dd class="cmt"><p>The username of the player.</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl">ClientImpl</a> → <a href="Client.html" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client">Client</a></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl#signalPlayerInput" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="signalPlayerInput(event:it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper):Unit"></a><a id="signalPlayerInput(MouseEventWrapper):Unit"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#signalPlayerInput(event:it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">signalPlayerInput</span><span class="params">(<span name="event">event: <a href="../../mvc/view/events/MouseEventWrapper.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper">MouseEventWrapper</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">Forwards player into to the server.</p><div class="fullcomment"><div class="comment cmt"><p>Forwards player into to the server.</p></div><dl class="paramcmts block"><dt class="param">event</dt><dd class="cmt"><p>The event.</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl">ClientImpl</a> → <a href="Client.html" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client">Client</a></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl#startGame" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="startGame(uuid:String,levelInfo:it.unibo.osmos.redux.mvc.controller.LevelInfo,mapShape:it.unibo.osmos.redux.mvc.model.MapShape):Unit"></a><a id="startGame(String,LevelInfo,MapShape):Unit"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#startGame(uuid:String,levelInfo:it.unibo.osmos.redux.mvc.controller.LevelInfo,mapShape:it.unibo.osmos.redux.mvc.model.MapShape):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">startGame</span><span class="params">(<span name="uuid">uuid: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="levelInfo">levelInfo: <a href="../../mvc/controller/LevelInfo.html" class="extype" name="it.unibo.osmos.redux.mvc.controller.LevelInfo">LevelInfo</a></span>, <span name="mapShape">mapShape: <a href="../../mvc/model/MapShape.html" class="extype" name="it.unibo.osmos.redux.mvc.model.MapShape">MapShape</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">Starts the game.</p><div class="fullcomment"><div class="comment cmt"><p>Starts the game.</p></div><dl class="paramcmts block"><dt class="param">uuid</dt><dd class="cmt"><p>The entity uuid assigned to this client by the server.</p></dd><dt class="param">levelInfo</dt><dd class="cmt"><p>The level info.</p></dd><dt class="param">mapShape</dt><dd class="cmt"><p>The shape of the level.</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl">ClientImpl</a> → <a href="Client.html" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client">Client</a></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl#stopGame" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="stopGame(victorious:Boolean):Unit"></a><a id="stopGame(Boolean):Unit"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#stopGame(victorious:Boolean):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">stopGame</span><span class="params">(<span name="victorious">victorious: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">Stops the game.</p><div class="fullcomment"><div class="comment cmt"><p>Stops the game.</p></div><dl class="paramcmts block"><dt class="param">victorious</dt><dd class="cmt"><p>If this client won or not.</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client.ClientImpl">ClientImpl</a> → <a href="Client.html" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client">Client</a></dd></dl></div>
+    </li><li name="scala.AnyRef#synchronized" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="synchronized[T0](x$1:=&gt;T0):T0"></a><a id="synchronized[T0](⇒T0):T0"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#synchronized[T0](x$1:=&gt;T0):T0" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.multiplayer.client.Client#timeout" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="timeout:akka.util.Timeout"></a><a id="timeout:Timeout"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#timeout:akka.util.Timeout" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">timeout</span><span class="result">: <span class="extype" name="akka.util.Timeout">Timeout</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Client.html" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client">Client</a></dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait():Unit"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#wait():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait(x$1:Long,x$2:Int):Unit"></a><a id="wait(Long,Int):Unit"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#wait(x$1:Long,x$2:Int):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait(x$1:Long):Unit"></a><a id="wait(Long):Unit"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#wait(x$1:Long):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@native</span><span class="args">()</span>
+              
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.multiplayer.client.Client#who" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="who:String"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/Client$$ClientImpl.html#who:String" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">who</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Client.html" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client">Client</a></dd></dl></div>
+    </li>
+              </ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        <div class="parent" name="scala.Serializable">
+              <h3>Inherited from <span class="extype" name="scala.Serializable">Serializable</span></h3>
+            </div><div class="parent" name="java.io.Serializable">
+              <h3>Inherited from <span class="extype" name="java.io.Serializable">Serializable</span></h3>
+            </div><div class="parent" name="scala.Product">
+              <h3>Inherited from <span class="extype" name="scala.Product">Product</span></h3>
+            </div><div class="parent" name="scala.Equals">
+              <h3>Inherited from <span class="extype" name="scala.Equals">Equals</span></h3>
+            </div><div class="parent" name="it.unibo.osmos.redux.multiplayer.client.Client">
+              <h3>Inherited from <a href="Client.html" class="extype" name="it.unibo.osmos.redux.multiplayer.client.Client">Client</a></h3>
+            </div><div class="parent" name="scala.AnyRef">
+              <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
+            </div><div class="parent" name="scala.Any">
+              <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>
+            </div>
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+    </body>
+          </div>
+        </div>
+      </div>
+    </body>
+      </html>
