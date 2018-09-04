@@ -65,10 +65,20 @@ object SinglePlayerLevels {
 
   private def findLevelByName(levelName:String):Option[CampaignLevel] = levels.find(cLv => cLv.levelInfo.name.equals(levelName))
 
+  private def increaseVictories(levelName:String): Unit = findLevelByName(levelName) match {
+    case Some(cLevel:CampaignLevel) => cLevel.levelStat.victories+=1
+    case None => Logger.log("Error: level " + levelName + " doesn't exists [IncreaseVictories]")
+  }
+
+  private def increaseDefeats(levelName:String): Unit = findLevelByName(levelName) match {
+    case Some(cLevel:CampaignLevel) => cLevel.levelStat.defeats+=1
+    case None => Logger.log("Error: level " + levelName + " doesn't exists [IncreaseDefeats]")
+  }
+
   def newEndGameEvent(endGame:GameStateEventWrapper, levelName:String): Unit = endGame match {
-    case GameWon => levels.find(cLv => cLv.levelInfo.name.equals(levelName)).get.levelStat.victories+=1
+    case GameWon => increaseVictories(levelName)
                     unlockNextLevel()
-    case GameLost => levels.find(cLv => cLv.levelInfo.name.equals(levelName)).get.levelStat.defeats+=1
+    case GameLost => increaseDefeats(levelName)
     case _ =>
   }
 
