@@ -175,8 +175,7 @@ object JsonProtocols {
       "position" -> playerCell.getPositionComponent.toJson,
       "speed" -> playerCell.getSpeedComponent.toJson,
       "visible" -> playerCell.getVisibleComponent.toJson,
-      "spawner" -> playerCell.getSpawnerComponent.toJson,
-      "typeEntity" -> playerCell.getTypeComponent.toJson)
+      "spawner" -> playerCell.getSpawnerComponent.toJson)
     def read(value: JsValue): PlayerCellEntity = {
       value.asJsObject.getFields("acceleration",
         "collidable",
@@ -184,17 +183,15 @@ object JsonProtocols {
         "position",
         "speed",
         "visible",
-        "spawner",
-        "typeEntity") match {
-        case Seq(acceleration, collidable, dimension, position, speed, visible, spawner, typeEntity) =>
+        "spawner") match {
+        case Seq(acceleration, collidable, dimension, position, speed, visible, spawner) =>
           PlayerCellEntity(acceleration.convertTo[AccelerationComponent],
             collidable.convertTo[CollidableComponent],
             dimension.convertTo[DimensionComponent],
             position.convertTo[PositionComponent],
             speed.convertTo[SpeedComponent],
             visible.convertTo[VisibleComponent],
-            spawner.convertTo[SpawnerComponent],
-            typeEntity.convertTo[TypeComponent])
+            spawner.convertTo[SpawnerComponent])
         case _ => throw DeserializationException("Player cell entity expected")
       }
     }
