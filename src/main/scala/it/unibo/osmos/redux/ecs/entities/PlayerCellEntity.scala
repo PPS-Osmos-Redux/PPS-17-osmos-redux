@@ -25,6 +25,8 @@ object PlayerCellEntity {
 
   private case class PlayerCellEntityImpl(cellEntity: CellEntity, private val spawner: SpawnerComponent) extends PlayerCellEntity {
 
+    require(cellEntity.getTypeComponent.typeEntity == EntityType.Controlled)
+
     override def getUUID: String = cellEntity.getUUID
 
     override def getAccelerationComponent: AccelerationComponent = cellEntity.getAccelerationComponent

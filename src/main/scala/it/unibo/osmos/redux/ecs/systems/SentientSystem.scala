@@ -58,7 +58,7 @@ case class SentientSystem(levelInfo: Level) extends AbstractSystem2[SentientProp
         sentient.getSpawnerComponent.enqueueActions(SpawnAction(
           PositionComponent(Point(spawnPoint.x, spawnPoint.y)),
           DimensionComponent(radiusAmount),
-          SpeedComponent(directionVector.x * lostMassInitialVelocity, directionVector.y * lostMassInitialVelocity)))
+          SpeedComponent(directionVector multiply lostMassInitialVelocity)))
         radiusAmount = 0.0
       }
     }
