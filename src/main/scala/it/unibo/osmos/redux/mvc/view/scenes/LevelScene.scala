@@ -26,9 +26,10 @@ import scalafx.util.Duration
 
 /**
   * This scene holds and manages a single level
-  * @param parentStage the parent stage
-  * @param levelInfo the level info
-  * @param listener the listener
+  *
+  * @param parentStage        the parent stage
+  * @param levelInfo          the level info
+  * @param listener           the listener
   * @param upperSceneListener the upper scene listener to manage the previously scene events
   */
 class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val listener: LevelSceneListener,
@@ -44,9 +45,10 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   this.setOnKeyPressed(k => {
     if (k.getCode == KeyCode.ESCAPE) {
       // println("ESC key pressed")
-      paused.value match {
-        case false => onPause()
-        case true => onResume()
+      if (true) {
+        onPause()
+      } else {
+        onResume()
       }
     }
   })
