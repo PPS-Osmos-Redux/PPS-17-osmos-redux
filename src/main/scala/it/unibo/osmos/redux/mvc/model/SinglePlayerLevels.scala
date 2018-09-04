@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.model
 
-import it.unibo.osmos.redux.mvc.controller.LevelInfo
+import it.unibo.osmos.redux.mvc.controller.{FileManager, LevelInfo}
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GameStateEventWrapper, GameWon}
 import it.unibo.osmos.redux.utils.Logger
 
@@ -63,6 +63,8 @@ object SinglePlayerLevels {
                                                return
                                              })
 
+  private def findLevelByName(levelName:String):Option[CampaignLevel] = levels.find(cLv => cLv.levelInfo.name.equals(levelName))
+
   def newEndGameEvent(endGame:GameStateEventWrapper, levelName:String): Unit = endGame match {
     case GameWon => levels.find(cLv => cLv.levelInfo.name.equals(levelName)).get.levelStat.victories+=1
                     unlockNextLevel()
@@ -74,12 +76,11 @@ object SinglePlayerLevels {
     * Method for update campaign progress, should be  called once when the game starts
     * @param campaignProgress campaign progress List[CampaignLevels]
     */
-  def updateUserStat(campaignProgress: List[CampaignLevel]): Unit ={
+  def updateUserStat(campaignProgress: List[CampaignLevel]): Unit =
     /* if my values are less updated than the file ones */
-    if(levels.map(l => l.levelInfo.name).indexOf(toDoLevel(campaignProgress)) <= levels.map(l => l.levelInfo.name).indexOf(toDoLevel(campaignProgress))) {
-      levels = campaignProgress
-    }
-  }
+    if(levels.map(l => l.levelInfo.name).indexOf(toDoLevel(campaignProgress)) <= levels.map(l => l.levelInfo.name).indexOf(toDoLevel(campaignProgress))) levels = campaignProgress
+
+
 }
 
 case class CampaignLevel(levelInfo: LevelInfo, var levelStat: LevelStat)

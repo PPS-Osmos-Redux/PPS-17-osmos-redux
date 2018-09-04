@@ -27,9 +27,8 @@ trait Controller {
     * @param levelContext The level context.
     * @param chosenLevel The name of the chosen level.
     * @param isCustom True if the level is a custom one, false otherwise
-    * @return None if level loaded with success, Some(String) if exception occurs
     */
-  def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): GenericResponse[Boolean]
+  def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): Unit
 
   /**
     * Initializes the multi-player lobby and the server or client.
@@ -130,7 +129,7 @@ case class ControllerImpl() extends Controller {
   private var server: Option[Server] = None
   private var client: Option[Client] = None
 
-  override def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): GenericResponse[Boolean] = {
+  override def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): Unit = {
     Logger.log("initLevel")
 
     var loadedLevel:Option[Level] = None
@@ -148,7 +147,7 @@ case class ControllerImpl() extends Controller {
       loadedLevel.get.isSimulation = levelContext.levelContextType == LevelContextType.simulation
 
       val player = loadedLevel.get.entities.find(_.isInstanceOf[PlayerCellEntity])
-      if (player.isEmpty && !loadedLevel.get.isSimulation) return GenericResponse(false, "Cannot start a normal level if the player is not present")
+      if (player.isEmpty && !loadedLevel.get.isSimulation) Logger.log("Error: Cannot start a normal level if the player is not present")
       //assign current player uuid to the
       if(player.isDefined) levelContext.setPlayerUUID(player.get.getUUID)
 
@@ -156,9 +155,8 @@ case class ControllerImpl() extends Controller {
       if(engine.isEmpty) engine = Some(GameEngine())
       engine.get.init(loadedLevel.get, levelContext)
       levelContext.setupLevel(loadedLevel.get.levelMap.mapShape)
-      GenericResponse(true)
     } else {
-      GenericResponse(false, "Error: level " + chosenLevel + " not found! The level " + (if(isCustom) "is" else "isn't") + "custom level")
+      Logger.log( "Error: level " + chosenLevel + " not found! The level " + (if(isCustom) "is" else "isn't") + "custom level")
     }
   }
 
