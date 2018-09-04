@@ -2,7 +2,7 @@ package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.{PlayerCellEntity, _}
-import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
+import it.unibo.osmos.redux.ecs.entities.builders.{CellBuilder, PlayerCellBuilder}
 import it.unibo.osmos.redux.ecs.entities.properties.basic.Position
 import it.unibo.osmos.redux.ecs.systems.SpawnSystem
 import it.unibo.osmos.redux.utils.Point
@@ -14,7 +14,7 @@ class TestSpawnSystem extends FunSuite {
     EntityManager.clear()
 
     val system = SpawnSystem()
-    val pce = PlayerCellEntity(new CellBuilder(), SpawnerComponent(true))
+    val pce = PlayerCellBuilder().withSpawner(true).build
 
     pce.getSpawnerComponent.canSpawn_(false)
     EntityManager.add(pce)
@@ -27,7 +27,7 @@ class TestSpawnSystem extends FunSuite {
     EntityManager.clear()
 
     val system = SpawnSystem()
-    val pce = PlayerCellEntity(new CellBuilder(), SpawnerComponent(true))
+    val pce = PlayerCellBuilder().withSpawner(true).build
 
     pce.getSpawnerComponent.clearActions()
     EntityManager.add(pce)
@@ -40,7 +40,7 @@ class TestSpawnSystem extends FunSuite {
     EntityManager.clear()
 
     val system = SpawnSystem()
-    val pce = PlayerCellEntity(new CellBuilder(), SpawnerComponent(true))
+    val pce = PlayerCellBuilder().withSpawner(true).build
 
     val pos = PositionComponent(Point(100, 0))
     val speed = SpeedComponent(34, 12)

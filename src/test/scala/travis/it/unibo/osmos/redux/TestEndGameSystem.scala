@@ -49,7 +49,7 @@ class TestEndGameSystem extends FunSuite with BeforeAndAfter {
     val pcp = PositionComponent(Point(50, 64))
     val pcs = SpeedComponent(4, 0)
     val pcv = VisibleComponent(true)
-    val pct = TypeComponent(EntityType.Matter)
+    val pct = TypeComponent(EntityType.Controlled)
     val spw = SpawnerComponent(false)
     val playerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv, spw, pct)
 
@@ -90,7 +90,7 @@ class TestEndGameSystem extends FunSuite with BeforeAndAfter {
     val pcp = PositionComponent(Point(50, 64))
     val pcs = SpeedComponent(4, 0)
     val pcv = VisibleComponent(true)
-    val pct = TypeComponent(EntityType.Matter)
+    val pct = TypeComponent(EntityType.Controlled)
     val spw = SpawnerComponent(false)
     val playerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv, spw, pct)
 
@@ -125,7 +125,7 @@ class TestEndGameSystem extends FunSuite with BeforeAndAfter {
     val pcp = PositionComponent(Point(50, 64))
     val pcs = SpeedComponent(0, 0)
     val pcv = VisibleComponent(true)
-    val pct = TypeComponent(EntityType.Matter)
+    val pct = TypeComponent(EntityType.Controlled)
     val spw = SpawnerComponent(false)
     val playerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv, spw, pct)
 
@@ -159,7 +159,7 @@ class TestEndGameSystem extends FunSuite with BeforeAndAfter {
     val pcp = PositionComponent(Point(50, 64))
     val pcs = SpeedComponent(4, 0)
     val pcv = VisibleComponent(true)
-    val pct = TypeComponent(EntityType.Matter)
+    val pct = TypeComponent(EntityType.Controlled)
     val spw = SpawnerComponent(false)
     val playerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv, spw, pct)
 

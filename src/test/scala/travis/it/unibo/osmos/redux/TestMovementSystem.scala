@@ -40,7 +40,7 @@ class TestMovementSystem extends FunSuite with BeforeAndAfter {
     val pcp = PositionComponent(Point(130, 150))
     val pcs = SpeedComponent(4, 0)
     val pcv = VisibleComponent(true)
-    val pct = TypeComponent(EntityType.Matter)
+    val pct = TypeComponent(EntityType.Controlled)
     val spw = SpawnerComponent(false)
     val playerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv, spw, pct)
 
