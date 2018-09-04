@@ -4,6 +4,7 @@ import it.unibo.osmos.redux.ecs.entities.EntityType
 import it.unibo.osmos.redux.mvc.controller.{LevelInfo, MusicPlayer, SoundsType}
 import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.ViewConstants
+import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Colors._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.components.level.{LevelScreen, LevelStateBoxListener}
@@ -19,6 +20,8 @@ import scalafx.application.Platform
 import scalafx.beans.property.BooleanProperty
 import scalafx.geometry.Pos
 import scalafx.scene.canvas.Canvas
+import scalafx.scene.effect.Light.Spot
+import scalafx.scene.effect.{DropShadow, Lighting}
 import scalafx.scene.image.Image
 import scalafx.scene.layout.VBox
 import scalafx.scene.paint.Color
@@ -54,6 +57,23 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     height <== parentStage.height
     cache = true
     opacity = 0.0
+
+    val light: Spot = new Spot()
+    light.color = Color.White
+    light.x <== width / 2
+    light.y <== height / 2
+    light.z = 210
+    light.pointsAtX <== width / 2
+    light.pointsAtY <== height / 2
+    light.pointsAtZ = -10
+    light.specularExponent = 2.0
+
+    val lighting: Lighting = new Lighting()
+    lighting.light = light
+    lighting.surfaceScale = 1.0
+    lighting.diffuseConstant = 2.0
+
+    effect = lighting
   }
 
   /**
@@ -241,14 +261,14 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     * @param mouseEvent the mouse event
     */
   protected def sendMouseEvent(mouseEvent: MouseEvent): Unit = levelContext match {
-    case Some(lc) => if (!paused.value) lc notifyMouseEvent MouseEventWrapper(Point(mouseEvent.getX, mouseEvent.getY), lc.getPlayerUUID)
+    case Some(lc) => if (!paused.value) lc notifyMouseEvent MouseEventWrapper(Point(mouseEvent.getX - halfWindowWidth, mouseEvent.getY - halfWindowHeight), lc.getPlayerUUID)
     case _ =>
   }
 
   override def onLevelSetup(mapShape: MapShape): Unit = mapBorder match {
     case Some(_) => throw new IllegalStateException("Map has already been set")
     case _ =>
-      val center = Point(mapShape.center._1, mapShape.center._2)
+      val center = Point(mapShape.center._1 + halfWindowWidth, mapShape.center._2 + halfWindowHeight)
       mapShape match {
         case c: MapShape.Circle => mapBorder = Option(new Circle {
           centerX = center.x
@@ -266,8 +286,12 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
       /* Configuring the mapBorder */
       mapBorder.get.fill = Color.Transparent
       mapBorder.get.stroke = Color.White
-      mapBorder.get.strokeWidth = 2.0
+      mapBorder.get.strokeWidth = 5.0
       mapBorder.get.opacity <== canvas.opacity
+      mapBorder.get.effect = new DropShadow {
+        color = Color.White
+        radius = 10.0
+      }
 
       Platform.runLater({
         /* Adding the mapBorder */
