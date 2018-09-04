@@ -17,18 +17,22 @@ import javafx.scene.input.{KeyCode, MouseEvent}
 import scalafx.animation.FadeTransition
 import scalafx.application.Platform
 import scalafx.beans.property.BooleanProperty
+import scalafx.geometry.Pos
 import scalafx.scene.canvas.Canvas
 import scalafx.scene.image.Image
+import scalafx.scene.layout.VBox
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.{Circle, Rectangle, Shape}
+import scalafx.scene.text.{Font, Text}
 import scalafx.stage.Stage
 import scalafx.util.Duration
 
 /**
   * This scene holds and manages a single level
-  * @param parentStage the parent stage
-  * @param levelInfo the level info
-  * @param listener the listener
+  *
+  * @param parentStage        the parent stage
+  * @param levelInfo          the level info
+  * @param listener           the listener
   * @param upperSceneListener the upper scene listener to manage the previously scene events
   */
 class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val listener: LevelSceneListener,
@@ -41,15 +45,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     * The current game pending state: true if the game is paused
     */
   private var paused: BooleanProperty = BooleanProperty(false)
-  this.setOnKeyPressed(k => {
-    if (k.getCode == KeyCode.ESCAPE) {
-      // println("ESC key pressed")
-      paused.value match {
-        case false => onPause()
-        case true => onResume()
-      }
-    }
-  })
+
   /**
     * The canvas which will draw the elements on the screen
     */
@@ -74,7 +70,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     * The splash screen showed when the game is paused
     */
   private val splashScreen = LevelScreen.Builder(this)
-    .withText(if (levelInfo != null) levelInfo.victoryRule.toString else "", 50, Color.White)
+    .withText(if (levelInfo != null) levelInfo.victoryRule.toString.replace("_", " ") else "", 50, Color.White)
     .build()
   splashScreen.opacity = 0.0
 
@@ -105,6 +101,21 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   }
 
   /**
+    * The splash screen text displayed when speeding up or slowing down the game
+    */
+  private val speedSplashScreenText = new Text("") {
+    font = Font.font("Verdana", 30)
+    fill = Color.White
+  }
+
+  private val speedChangeSplashScreen: VBox = new VBox() {
+    alignment = Pos.TopRight
+    alignmentInParent = Pos.TopRight
+    children = speedSplashScreenText
+  }
+  speedChangeSplashScreen.opacity = 0.0
+
+  /**
     * The images used to draw cells, background and level
     */
   private val cellDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(cellTexture), canvas.graphicsContext2D)
@@ -121,7 +132,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   /**
     * The content of the whole scene
     */
-  content = Seq(canvas, pauseScreen, splashScreen)
+  content = Seq(canvas, pauseScreen, splashScreen, speedChangeSplashScreen)
 
   /**
     * The level context, created with the LevelScene. It still needs to be properly setup
@@ -178,12 +189,50 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   }
 
   /**
-    * OnKeyPressed handler, reacting to up or down arrow key pressed, changes the game speed
+    * OnKeyPressed handler, reacting to esc, and arrow key press:
+    *  - the esc key pauses the game,
+    *  - the up and right keys speed up the game
+    *  - the down and left keys slow down the game
     */
   onKeyPressed = keyEvent => keyEvent.getCode match {
-    case KeyCode.UP => listener.onLevelSpeedChanged(true)
-    case KeyCode.DOWN => listener.onLevelSpeedChanged()
+    case KeyCode.ESCAPE =>
+      if (paused.value) {
+        onResume()
+      } else {
+        onPause()
+      }
+    case KeyCode.UP | KeyCode.RIGHT =>
+      listener.onLevelSpeedChanged(true)
+      displaySpeedChange("Speed up ►►")
+    case KeyCode.DOWN | KeyCode.LEFT =>
+      listener.onLevelSpeedChanged()
+      displaySpeedChange("Speed down ◄◄")
     case _ => //do nothing
+  }
+
+  /*VBox(spacing = 4) {
+    prefWidth <== parentScene.width
+    prefHeight <== parentScene.height
+    alignment = Pos.Center
+    alignmentInParent = Pos.Center
+    parentScene fill = Color.Black
+
+    children = components*/
+  private def displaySpeedChange(text: String): Unit = {
+    speedSplashScreenText.text = text
+    /* Splash screen animation, starting with a FadeIn */
+    new FadeTransition(Duration.apply(300), speedChangeSplashScreen) {
+      fromValue = 0.0
+      toValue = 1.0
+      autoReverse = true
+      /* FadeOut */
+      onFinished = _ => new FadeTransition(Duration.apply(300), speedChangeSplashScreen) {
+        fromValue = 1.0
+        toValue = 0.0
+        autoReverse = true
+
+      }.play()
+    }.play()
   }
 
   /**
@@ -410,6 +459,7 @@ trait LevelSceneListener {
 
   /**
     * Called when the level speed changes
+    *
     * @param increment If the speed needs to increased or decreased
     */
   def onLevelSpeedChanged(increment: Boolean = false)
