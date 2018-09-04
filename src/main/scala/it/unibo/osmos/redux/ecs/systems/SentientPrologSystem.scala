@@ -1,17 +1,13 @@
 package it.unibo.osmos.redux.ecs.systems
 
 import alice.tuprolog._
-import it.unibo.osmos.redux.ecs.entities.{SentientEnemyProperty, SentientProperty}
+import it.unibo.osmos.redux.ecs.entities.properties.composed.{SentientEnemyProperty, SentientProperty}
 import it.unibo.osmos.redux.utils.Scala2P.{separate, _}
 import it.unibo.osmos.redux.utils.{PrologRules, Vector}
 
-case class SentientPrologSystem() extends AbstractSystemWithTwoTypeOfEntity[SentientProperty, SentientEnemyProperty]() {
+case class SentientPrologSystem() extends AbstractSystem2[SentientProperty, SentientEnemyProperty]() {
 
   private val prologEngine: Term => Stream[SolveInfo] = mkPrologEngine(PrologRules.rules)
-
-  override protected def getGroupProperty: Class[SentientProperty] = classOf[SentientProperty]
-
-  override protected def getGroupPropertySecondType: Class[SentientEnemyProperty] = classOf[SentientEnemyProperty]
 
   override def update(): Unit = {
     var i = 0

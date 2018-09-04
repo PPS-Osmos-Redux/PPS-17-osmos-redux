@@ -1,6 +1,8 @@
 package it.unibo.osmos.redux.ecs.entities
 
 import it.unibo.osmos.redux.ecs.components._
+import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
+import it.unibo.osmos.redux.ecs.entities.properties.composed.SentientProperty
 
 /** Trait representing a sentient cell */
 trait SentientCellEntity extends CellEntity with SentientProperty {}
@@ -12,8 +14,14 @@ object SentientCellEntity {
             position: PositionComponent,
             speed: SpeedComponent,
             visible: VisibleComponent,
-            spawner: SpawnerComponent): SentientCellEntity = SentientCellEntityImpl(CellEntity(acceleration,
-    collidable, dimension, position, speed, visible, TypeComponent(EntityType.Sentient)), spawner)
+            spawner: SpawnerComponent,
+            typeEntity: TypeComponent = TypeComponent(EntityType.Sentient)): SentientCellEntity =
+    SentientCellEntityImpl(CellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity), spawner)
+
+  def apply(cell: CellEntity, spawner: SpawnerComponent): SentientCellEntity = SentientCellEntityImpl(cell, spawner)
+
+  def apply(builder: CellBuilder, spawner: SpawnerComponent): SentientCellEntity = apply(builder.build, spawner)
+
 
   private case class SentientCellEntityImpl(cellEntity: CellEntity, spawner: SpawnerComponent) extends SentientCellEntity {
 

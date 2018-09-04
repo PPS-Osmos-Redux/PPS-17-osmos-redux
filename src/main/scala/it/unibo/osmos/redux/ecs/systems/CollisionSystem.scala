@@ -1,6 +1,8 @@
 package it.unibo.osmos.redux.ecs.systems
 
-import it.unibo.osmos.redux.ecs.entities.{CollidableProperty, EntityType}
+import it.unibo.osmos.redux.ecs.entities.EntityType
+import it.unibo.osmos.redux.ecs.entities.properties.composed.CollidableProperty
+import it.unibo.osmos.redux.ecs.systems.borderconditions.{CircularBorder, RectangularBorder}
 import it.unibo.osmos.redux.mvc.model.Level
 import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.utils.{MathUtils, Point, Vector}
@@ -22,8 +24,6 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
     case shape: Circle => CircularBorder(Point(shape.center._1, shape.center._2), collisionRule, shape.radius)
     case _ => throw new IllegalArgumentException
   }
-
-  override def getGroupProperty: Class[CollidableProperty] = classOf[CollidableProperty]
 
   override def update(): Unit = {
     //check collision with boundary
@@ -130,10 +130,7 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
     if (accel.vector.x == 0) {
       entity.getAccelerationComponent.vector_(initialAccelerationVector.multiply(percentage))
     } else {
-      val temp = accel.vector.multiply(percentage)
-      entity.getAccelerationComponent.vector_(accel.vector.subtract(temp))
-      //entity.getAccelerationComponent.vector.x_(accel.vector.x - accel.vector.x * percentage)
-      //entity.getAccelerationComponent.vector.y_(accel.vector.y - accel.vector.y * percentage)
+      accel.vector_(accel.vector subtract(accel.vector multiply percentage))
     }
   }
 }

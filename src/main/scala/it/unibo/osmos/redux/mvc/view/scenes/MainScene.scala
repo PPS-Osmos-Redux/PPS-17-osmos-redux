@@ -1,10 +1,8 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
-import it.unibo.osmos.redux.mvc.controller.{MediaPlayer, SoundsType}
+import it.unibo.osmos.redux.mvc.controller.{MusicPlayer, SoundsType}
 import it.unibo.osmos.redux.mvc.view.components.menu.{MainMenuBar, MainMenuBarListener, MainMenuCenterBox, MainMenuCenterBoxListener}
-import it.unibo.osmos.redux.mvc.view.containers.SettingsContainer
-import scalafx.scene.Parent
 import scalafx.scene.layout._
 import scalafx.stage.Stage
 
@@ -14,7 +12,7 @@ import scalafx.stage.Stage
 class MainScene(override val parentStage: Stage, val listener: MainSceneListener) extends BaseScene(parentStage)
   with MainMenuCenterBoxListener with MainMenuBarListener with UpperMultiPlayerSceneListener with BackClickListener {
 
-  MediaPlayer.play(SoundsType.menu)
+  MusicPlayer.play(SoundsType.menu)
 
   /* Requesting a structured layout */
   private val rootLayout: BorderPane = new BorderPane {
@@ -45,9 +43,9 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
 
   override def onSettingsClick(): Unit = {
     // TODO: this will change only the root, pressing back won't go on the correct main menu
-    val v = new SettingsContainer(parentStage, listener)
-    root = v.container
-    //listener.onSettingsClick()
+    //val v = new SettingsContainer(parentStage, listener)
+    //root = v.container
+    listener.onSettingsClick()
   }
 
   override def onExitClick(): Unit = {
@@ -89,7 +87,7 @@ trait MainSceneListener {
   /**
     * Called when the user clicks on the settings button
     */
-  def onSettingsClick(container: Parent)
+  def onSettingsClick()
 
 }
 

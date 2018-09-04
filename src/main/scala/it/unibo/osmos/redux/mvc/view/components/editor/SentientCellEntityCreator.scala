@@ -11,7 +11,7 @@ class SentientCellEntityCreator extends AbstractSpawnerCellEntityCreator {
   override def configureBuilder(builder: CellBuilder, withEntityType: Boolean = false): Unit = {
     builder match {
       case scb: SentientCellBuilder =>
-        super.configureBuilder(scb, withEntityType = false)
+        super.configureBuilder(scb)
         scb.withSpawner(canSpawn.value)
       case _ => throw new IllegalArgumentException("SentientCellEntityCreator must use a SentientCellBuilder")
     }

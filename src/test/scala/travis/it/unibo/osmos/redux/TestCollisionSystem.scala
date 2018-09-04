@@ -1,7 +1,8 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager, EntityType}
+import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
+import it.unibo.osmos.redux.ecs.entities.{EntityManager, EntityType}
 import it.unibo.osmos.redux.ecs.systems.CollisionSystem
 import it.unibo.osmos.redux.mvc.controller.LevelInfo
 import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
@@ -11,12 +12,8 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 
 class TestCollisionSystem extends FunSuite with BeforeAndAfter {
 
-  val entity1 = CellEntity(AccelerationComponent(0, 0), CollidableComponent(true), DimensionComponent(5),
-    PositionComponent(Point(70, 50)), SpeedComponent(0, 0), VisibleComponent(true), TypeComponent(EntityType.Matter))
-  val entity2 = CellEntity(AccelerationComponent(0, 0), CollidableComponent(true), DimensionComponent(2),
-    PositionComponent(Point(60, 80)), SpeedComponent(0, 0), VisibleComponent(true), TypeComponent(EntityType.Matter))
-  val antiMatterEntity = CellEntity(AccelerationComponent(0, 0), CollidableComponent(true), DimensionComponent(2),
-    PositionComponent(Point(65, 81)), SpeedComponent(0, 0), VisibleComponent(true), TypeComponent(EntityType.AntiMatter))
+  val dimension:Double = 5
+  val dimension1:Double = 2
 
   var levelInfo: Level = _
 
@@ -37,136 +34,120 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
   test("CollisionSystem should not collide the entity with herself") {
     val system = CollisionSystem(levelInfo)
 
-    val originalDim = entity1.getDimensionComponent
-    val originalAccel = entity1.getAccelerationComponent
+    val entity = new CellBuilder().withPosition(70,50).withDimension(dimension).build
 
-    EntityManager.add(entity1)
+    val originalDim = entity.getDimensionComponent.copy()
+    val originalAccel = entity.getAccelerationComponent.copy()
+
+    EntityManager.add(entity)
 
     system.update()
 
-    assert(entity1.getDimensionComponent == originalDim && entity1.getAccelerationComponent == originalAccel)
+    assert(entity.getDimensionComponent == originalDim && entity.getAccelerationComponent == originalAccel)
   }
 
   test("CollisionSystem should not consider entities that do not have CollisionProperty") {
     val system = CollisionSystem(levelInfo)
 
-    entity1.getPositionComponent.point_(Point(56, 79))
-    entity2.getCollidableComponent.setCollidable(true)
-    entity2.getPositionComponent.point_(Point(60, 80))
-    entity2.getCollidableComponent.setCollidable(false)
+    val entity = new CellBuilder().withPosition(56, 79).withDimension(dimension).build
+    val entity1 = new CellBuilder().withPosition(60, 80).withDimension(dimension1).collidable(false).build
 
+    val originalDim = entity.getDimensionComponent.radius
+    val originalAccel = entity.getAccelerationComponent.vector
     val originalDim1 = entity1.getDimensionComponent.radius
     val originalAccel1 = entity1.getAccelerationComponent.vector
-    val originalDim2 = entity2.getDimensionComponent.radius
-    val originalAccel2 = entity2.getAccelerationComponent.vector
 
+    EntityManager.add(entity)
     EntityManager.add(entity1)
-    EntityManager.add(entity2)
 
     system.update()
 
-    assert(entity1.getDimensionComponent.radius == originalDim1 && entity1.getAccelerationComponent.vector == originalAccel1 &&
-      entity2.getDimensionComponent.radius == originalDim2 && entity2.getAccelerationComponent.vector == originalAccel2)
+    assert(entity.getDimensionComponent.radius == originalDim && entity.getAccelerationComponent.vector == originalAccel &&
+      entity1.getDimensionComponent.radius == originalDim1 && entity1.getAccelerationComponent.vector == originalAccel1)
   }
 
   test("CollisionSystem should not collide two entities if the distance between the centers is greater than the sum of their radii") {
     val system = CollisionSystem(levelInfo)
 
+    val entity = new CellBuilder().withPosition(70, 50).withDimension(dimension).build
+    val entity1 = new CellBuilder().withPosition(60, 80).withDimension(dimension1).build
+
+    val originalDim = entity.getDimensionComponent
+    val originalAccel = entity.getAccelerationComponent
     val originalDim1 = entity1.getDimensionComponent
     val originalAccel1 = entity1.getAccelerationComponent
-    val originalDim2 = entity2.getDimensionComponent
-    val originalAccel2 = entity2.getAccelerationComponent
 
+    EntityManager.add(entity)
     EntityManager.add(entity1)
-    EntityManager.add(entity2)
 
     system.update()
 
-    assert(entity1.getDimensionComponent == originalDim1 && entity1.getAccelerationComponent == originalAccel1 &&
-      entity2.getDimensionComponent == originalDim2 && entity2.getAccelerationComponent == originalAccel2)
+    assert(entity.getDimensionComponent == originalDim && entity.getAccelerationComponent == originalAccel &&
+      entity1.getDimensionComponent == originalDim1 && entity1.getAccelerationComponent == originalAccel1)
   }
 
   test("CollisionSystem should collide two entities if the distance between the centers is less than the sum of their radii") {
     val system = CollisionSystem(levelInfo)
 
-    entity1.getDimensionComponent.radius_(5)
-    entity1.getPositionComponent.point_(Point(60, 80))
-    entity1.getCollidableComponent.setCollidable(true)
-    entity2.getDimensionComponent.radius_(2)
-    entity2.getPositionComponent.point_(Point(66, 80))
-    entity2.getCollidableComponent.setCollidable(true)
+    val entity = new CellBuilder().withPosition(60, 80).withDimension(dimension).build
+    val entity1 = new CellBuilder().withPosition(66, 80).withDimension(dimension1).build
 
+    EntityManager.add(entity)
     EntityManager.add(entity1)
-    EntityManager.add(entity2)
 
     system.update()
 
-    assert(entity1.getDimensionComponent.radius == 5.2)
-    assert(entity1.getPositionComponent.point == Point(59.5, 80))
-    assert(entity2.getDimensionComponent.radius == 1.8)
-    assert(entity2.getPositionComponent.point == Point(66.5, 80))
+    assert(entity.getDimensionComponent.radius == 5.2)
+    assert(entity.getPositionComponent.point == Point(59.5, 80))
+    assert(entity1.getDimensionComponent.radius == 1.8)
+    assert(entity1.getPositionComponent.point == Point(66.5, 80))
   }
 
   test("Collision with AntiMatter entity should reduce both dimension's entity") {
     val system = CollisionSystem(levelInfo)
 
-    entity1.getDimensionComponent.radius_(5)
-    entity1.getPositionComponent.point_(Point(60, 80))
-    entity1.getCollidableComponent.setCollidable(true)
+    val entity = new CellBuilder().withPosition(60, 80).withDimension(dimension).build
+    val antiMatterEntity =  new CellBuilder().withPosition(65, 81).withDimension(dimension1)
+                                              .withEntityType(EntityType.AntiMatter).build
 
-    val originalDim1 = DimensionComponent(entity1.getDimensionComponent.radius)
-    val originalAccel1 = AccelerationComponent(entity1.getAccelerationComponent.vector.x, entity1.getAccelerationComponent.vector.y)
-    val originalDim2 = DimensionComponent(antiMatterEntity.getDimensionComponent.radius)
-    val originalAccel2 = AccelerationComponent(antiMatterEntity.getAccelerationComponent.vector.x, antiMatterEntity.getAccelerationComponent.vector.y)
+    val originalDim = entity.getDimensionComponent.copy()
+    val originalAccel =entity.getAccelerationComponent.copy()
+    val originalDim1 = antiMatterEntity.getDimensionComponent.copy()
+    val originalAccel1 = antiMatterEntity.getAccelerationComponent.copy()
 
-    EntityManager.add(entity1)
+    EntityManager.add(entity)
     EntityManager.add(antiMatterEntity)
 
     system.update()
 
-    assert(entity1.getDimensionComponent.radius < originalDim1.radius && entity1.getAccelerationComponent != originalAccel1 &&
-      antiMatterEntity.getDimensionComponent.radius < originalDim2.radius && antiMatterEntity.getAccelerationComponent != originalAccel2)
+    assert(entity.getDimensionComponent.radius < originalDim.radius && entity.getAccelerationComponent != originalAccel &&
+      antiMatterEntity.getDimensionComponent.radius < originalDim1.radius && antiMatterEntity.getAccelerationComponent != originalAccel1)
   }
 
   test("Collision with rectangular shape border, using bouncing collision rule, bounces entities back") {
     setupLevelInfo(Rectangle((160, 100), 100, 160), CollisionRules.bouncing)
     val system = CollisionSystem(levelInfo)
 
-    val lcca = AccelerationComponent(0, 0)
-    val lccc = CollidableComponent(true)
     val lccd = DimensionComponent(2)
     val lccp = PositionComponent(Point(79, 58))
     val lccs = SpeedComponent(-4, 2)
-    val lccv = VisibleComponent(true)
-    val lcct = TypeComponent(EntityType.Matter)
-    val leftCollisionCellEntity = CellEntity(lcca, lccc, lccd, lccp, lccs, lccv, lcct)
+    val leftCollisionCellEntity = new CellBuilder().withPosition(lccp).withDimension(lccd).withSpeed(lccs).build
 
-    val rcca = AccelerationComponent(0, 0)
-    val rccc = CollidableComponent(true)
+
     val rccd = DimensionComponent(7)
     val rccp = PositionComponent(Point(237, 90))
     val rccs = SpeedComponent(6, 0)
-    val rccv = VisibleComponent(true)
-    val rcct = TypeComponent(EntityType.Matter)
-    val rightCollisionCellEntity = CellEntity(rcca, rccc, rccd, rccp, rccs, rccv, rcct)
+    val rightCollisionCellEntity = new CellBuilder().withPosition(rccp).withDimension(rccd).withSpeed(rccs).build
 
-    val tcca = AccelerationComponent(0, 0)
-    val tccc = CollidableComponent(true)
     val tccd = DimensionComponent(8)
     val tccp = PositionComponent(Point(166, 56))
     val tccs = SpeedComponent(6, -4)
-    val tccv = VisibleComponent(true)
-    val tcct = TypeComponent(EntityType.Matter)
-    val topCollisionCellEntity = CellEntity(tcca, tccc, tccd, tccp, tccs, tccv, tcct)
+    val topCollisionCellEntity = new CellBuilder().withPosition(tccp).withDimension(tccd).withSpeed(tccs).build
 
-    val bcca = AccelerationComponent(0, 0)
-    val bccc = CollidableComponent(true)
     val bccd = DimensionComponent(5)
     val bccp = PositionComponent(Point(113, 151))
     val bccs = SpeedComponent(-2, 7)
-    val bccv = VisibleComponent(true)
-    val bcct = TypeComponent(EntityType.Matter)
-    val bottomCollisionCellEntity = CellEntity(bcca, bccc, bccd, bccp, bccs, bccv, bcct)
+    val bottomCollisionCellEntity = new CellBuilder().withPosition(bccp).withDimension(bccd).withSpeed(bccs).build
 
     EntityManager.add(leftCollisionCellEntity)
     EntityManager.add(rightCollisionCellEntity)
@@ -192,41 +173,25 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
     setupLevelInfo(Rectangle((160, 100), 100, 160), CollisionRules.instantDeath)
     val system = CollisionSystem(levelInfo)
 
-    val lcca = AccelerationComponent(0, 0)
-    val lccc = CollidableComponent(true)
     val lccd = DimensionComponent(2)
     val lccp = PositionComponent(Point(79, 58))
     val lccs = SpeedComponent(-4, 2)
-    val lccv = VisibleComponent(true)
-    val lcct = TypeComponent(EntityType.Matter)
-    val leftCollisionCellEntity = CellEntity(lcca, lccc, lccd, lccp, lccs, lccv, lcct)
+    val leftCollisionCellEntity = new CellBuilder().withPosition(lccp).withDimension(lccd).withSpeed(lccs).build
 
-    val rcca = AccelerationComponent(0, 0)
-    val rccc = CollidableComponent(true)
     val rccd = DimensionComponent(7)
     val rccp = PositionComponent(Point(237, 90))
     val rccs = SpeedComponent(6, 0)
-    val rccv = VisibleComponent(true)
-    val rcct = TypeComponent(EntityType.Matter)
-    val rightCollisionCellEntity = CellEntity(rcca, rccc, rccd, rccp, rccs, rccv, rcct)
+    val rightCollisionCellEntity = new CellBuilder().withPosition(rccp).withDimension(rccd).withSpeed(rccs).build
 
-    val tcca = AccelerationComponent(0, 0)
-    val tccc = CollidableComponent(true)
     val tccd = DimensionComponent(8)
     val tccp = PositionComponent(Point(166, 56))
     val tccs = SpeedComponent(6, -4)
-    val tccv = VisibleComponent(true)
-    val tcct = TypeComponent(EntityType.Matter)
-    val topCollisionCellEntity = CellEntity(tcca, tccc, tccd, tccp, tccs, tccv, tcct)
+    val topCollisionCellEntity = new CellBuilder().withPosition(tccp).withDimension(tccd).withSpeed(tccs).build
 
-    val bcca = AccelerationComponent(0, 0)
-    val bccc = CollidableComponent(true)
     val bccd = DimensionComponent(5)
     val bccp = PositionComponent(Point(113, 151))
     val bccs = SpeedComponent(-2, 7)
-    val bccv = VisibleComponent(true)
-    val bcct = TypeComponent(EntityType.Matter)
-    val bottomCollisionCellEntity = CellEntity(bcca, bccc, bccd, bccp, bccs, bccv, bcct)
+    val bottomCollisionCellEntity = new CellBuilder().withPosition(bccp).withDimension(bccd).withSpeed(bccs).build
 
     EntityManager.add(leftCollisionCellEntity)
     EntityManager.add(rightCollisionCellEntity)
@@ -259,14 +224,10 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
     setupLevelInfo(mapShape, CollisionRules.bouncing)
     val system = CollisionSystem(levelInfo)
 
-    val ca = AccelerationComponent(0, 0)
-    val cc = CollidableComponent(true)
     val cd = DimensionComponent(20)
     val cp = PositionComponent(Point(108, 280))
     val cs = SpeedComponent(-10.0, -20.0)
-    val cv = VisibleComponent(true)
-    val ct = TypeComponent(EntityType.Matter)
-    val cellEntity = CellEntity(ca, cc, cd, cp, cs, cv, ct)
+    val cellEntity = new CellBuilder().withPosition(cp).withDimension(cd).withSpeed(cs).build
 
     EntityManager.add(cellEntity)
 
@@ -283,14 +244,10 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
     setupLevelInfo(mapShape, CollisionRules.instantDeath)
     val system = CollisionSystem(levelInfo)
 
-    val ca = AccelerationComponent(0, 0)
-    val cc = CollidableComponent(true)
     val cd = DimensionComponent(20)
     val cp = PositionComponent(Point(108, 280))
     val cs = SpeedComponent(-10.0, -20.0)
-    val cv = VisibleComponent(true)
-    val ct = TypeComponent(EntityType.Matter)
-    val cellEntity = CellEntity(ca, cc, cd, cp, cs, cv, ct)
+    val cellEntity = new CellBuilder().withPosition(cp).withDimension(cd).withSpeed(cs).build
 
     EntityManager.add(cellEntity)
 
@@ -304,29 +261,26 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
   test("After collision between two entities, both entities remain within the map") {
     val system = CollisionSystem(levelInfo)
 
-    entity1.getDimensionComponent.radius_(10)
-    entity1.getPositionComponent.point_(Point(61, 36))
-    entity1.getCollidableComponent.setCollidable(true)
-    entity2.getDimensionComponent.radius_(6)
-    entity2.getPositionComponent.point_(Point(60, 49))
-    entity2.getCollidableComponent.setCollidable(true)
+    val entity = new CellBuilder().withPosition(61, 36).withDimension(10).build
+    val entity1 = new CellBuilder().withPosition(60, 49).withDimension(6).build
 
+    EntityManager.add(entity)
     EntityManager.add(entity1)
-    EntityManager.add(entity2)
 
     system.update()
     val map = levelInfo.levelMap.mapShape.asInstanceOf[Rectangle]
-    val boundaryLeft = map.center._1 - map.base/2
-    val boundaryRight = map.center._1 + map.base/2
-    val boundaryTop = map.center._2 + map.height/2
-    val boundaryBottom = map.center._2 - map.height/2
+    val boundaryLeft = map.center._1 - map.base / 2
+    val boundaryRight = map.center._1 + map.base / 2
+    val boundaryTop = map.center._2 + map.height / 2
+    val boundaryBottom = map.center._2 - map.height / 2
 
+    assert(entity.getPositionComponent.point.x >= boundaryLeft + entity.getDimensionComponent.radius)
+    assert(entity.getPositionComponent.point.x <= boundaryRight - entity.getDimensionComponent.radius)
+    assert(entity.getPositionComponent.point.y >= boundaryBottom + entity.getDimensionComponent.radius)
+    assert(entity.getPositionComponent.point.y <= boundaryTop - entity.getDimensionComponent.radius)
     assert(entity1.getPositionComponent.point.x >= boundaryLeft + entity1.getDimensionComponent.radius)
     assert(entity1.getPositionComponent.point.x <= boundaryRight - entity1.getDimensionComponent.radius)
     assert(entity1.getPositionComponent.point.y >= boundaryBottom + entity1.getDimensionComponent.radius)
     assert(entity1.getPositionComponent.point.y <= boundaryTop - entity1.getDimensionComponent.radius)
-    assert(entity2.getPositionComponent.point.x >= boundaryLeft + entity2.getDimensionComponent.radius)
-    assert(entity2.getPositionComponent.point.x <= boundaryRight - entity2.getDimensionComponent.radius)
-    assert(entity2.getPositionComponent.point.y >= boundaryBottom + entity2.getDimensionComponent.radius)
-    assert(entity2.getPositionComponent.point.y <= boundaryTop - entity2.getDimensionComponent.radius)  }
+  }
 }

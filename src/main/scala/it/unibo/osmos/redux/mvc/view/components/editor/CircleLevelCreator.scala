@@ -22,7 +22,7 @@ class CircleLevelCreator extends BaseEditorCreator[MapShape.Circle] {
   /* Radius node*/
   val radius: DoubleProperty = DoubleProperty(0.0)
   private val radiusNode = new VBox(2.0, new Label("Radius"),
-    new TitledDoubleField("radius: ", radius).innerNode,
+    new TitledDoubleField("radius: ", radius, 1.0, Double.MaxValue).innerNode,
   )
 
   children = Seq(centerNode, radiusNode)

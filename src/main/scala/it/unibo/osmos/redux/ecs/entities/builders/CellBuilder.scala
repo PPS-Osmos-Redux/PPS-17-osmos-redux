@@ -2,7 +2,7 @@ package it.unibo.osmos.redux.ecs.entities.builders
 
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityType}
-import it.unibo.osmos.redux.utils.Point
+import it.unibo.osmos.redux.utils.{Point, Vector}
 
 /** Builder for Cell Entities */
 class CellBuilder() {
@@ -35,8 +35,13 @@ class CellBuilder() {
     this
   }
 
+  def withAcceleration(acceleration: Vector): CellBuilder = {
+    this.acceleration = AccelerationComponent(acceleration)
+    this
+  }
+
   def withAcceleration(acceleration: AccelerationComponent): CellBuilder = {
-    this.acceleration = AccelerationComponent(acceleration.vector.x, acceleration.vector.y)
+    this.acceleration = acceleration.copy()
     this
   }
 
@@ -46,7 +51,7 @@ class CellBuilder() {
   }
 
   def withDimension(dimension: DimensionComponent): CellBuilder = {
-    this.dimension = DimensionComponent(dimension.radius)
+    this.dimension = dimension.copy()
     this
   }
 
@@ -56,12 +61,12 @@ class CellBuilder() {
   }
 
   def withPosition(position: Point): CellBuilder = {
-    this.position = PositionComponent(Point(position.x, position.y))
+    this.position = PositionComponent(position)
     this
   }
 
   def withPosition(position: PositionComponent): CellBuilder = {
-    this.position = PositionComponent(Point(position.point.x, position.point.y))
+    this.position = position.copy()
     this
   }
 
@@ -70,8 +75,13 @@ class CellBuilder() {
     this
   }
 
+  def withSpeed(speed: Vector): CellBuilder = {
+    this.speed = SpeedComponent(speed)
+    this
+  }
+
   def withSpeed(speed: SpeedComponent): CellBuilder = {
-    this.speed = SpeedComponent(speed.vector.x, speed.vector.y)
+    this.speed = speed.copy()
     this
   }
 

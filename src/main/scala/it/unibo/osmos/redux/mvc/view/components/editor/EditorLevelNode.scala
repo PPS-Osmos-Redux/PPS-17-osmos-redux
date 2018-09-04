@@ -36,7 +36,7 @@ class EditorLevelNode(override val listener: EditorLevelNodeListener, override v
   /* The upper text */
   override lazy val text: Text = new Text() {
     margin = Insets(0, 0, 20, 0)
-    style = "-fx-font-size: 12pt"
+    style = "-fx-font-size: 20pt"
     text = "Level " + levelInfo.name
   }
 
@@ -59,5 +59,5 @@ class EditorLevelNode(override val listener: EditorLevelNodeListener, override v
   }
 
   children.add(deleteButton)
-  
+
 }

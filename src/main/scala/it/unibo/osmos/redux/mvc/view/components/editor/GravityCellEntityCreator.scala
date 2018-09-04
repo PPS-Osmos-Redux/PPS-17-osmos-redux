@@ -10,13 +10,12 @@ import scalafx.scene.layout.VBox
 /**
   * A panel showing input nodes which is also capable of providing the requested GravityCellEntity
   *
-  * @param isAttractive true if the gravity cell is an attractive one, false if it is repulsive
   */
-class GravityCellEntityCreator(var isAttractive: Boolean) extends CellEntityCreator {
+class GravityCellEntityCreator extends CellEntityCreator {
 
   /* Specific weight node*/
-  val weight: DoubleProperty = DoubleProperty(0.0)
-  val weightNode = new VBox(2.0, new Label("Weight"), new TitledDoubleField("Weight: ", weight).innerNode)
+  val weight: DoubleProperty = DoubleProperty(1.0)
+  val weightNode = new VBox(2.0, new Label("Weight"), new TitledDoubleField("Weight: ", weight, 0.0, Double.MaxValue).innerNode)
 
   children.add(weightNode)
 
