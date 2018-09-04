@@ -13,8 +13,8 @@
       },
       "position": {
         "point": {
-          "x": 100.0,
-          "y": 300.0
+          "x": -500.0,
+          "y": -200.0
         }
       },
       "cellType": "sentientCell",
@@ -42,8 +42,8 @@
       },
       "position": {
         "point": {
-          "x": 800.0,
-          "y": 800.0
+          "x": 200.0,
+          "y": 300.0
         }
       },
       "cellType": "sentientCell",
@@ -76,8 +76,8 @@
       },
       "position": {
         "point": {
-          "x": 900.0,
-          "y": 400.0
+          "x": 300.0,
+          "y": -100.0
         }
       },
       "cellType": "playerCell",
@@ -98,8 +98,8 @@
       "mapShape": "Rectangle",
       "height": 900,
       "base": 1000,
-      "centerX": 600.0,
-      "centerY": 500.0
+      "centerX": 0.0,
+      "centerY": 0.0
     },
     "collisionRule": "Bouncing"
   }
