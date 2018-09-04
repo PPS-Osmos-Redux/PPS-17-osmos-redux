@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux
 
-import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager, EntityType, PlayerCellEntity}
+import it.unibo.osmos.redux.ecs.entities.EntityManager
+import it.unibo.osmos.redux.ecs.entities.builders.{CellBuilder, PlayerCellBuilder}
 import it.unibo.osmos.redux.ecs.systems.MovementSystem
 import it.unibo.osmos.redux.utils.{Point, Vector}
 import org.scalactic.Tolerance._
@@ -29,24 +29,9 @@ class TestMovementSystem extends FunSuite with BeforeAndAfter {
 
   test("MovableProperty entities' acceleration, speed and position are updated correctly") {
 
-    val ca = AccelerationComponent(1, 1)
-    val cc = CollidableComponent(true)
-    val cd = DimensionComponent(5)
-    val cp = PositionComponent(Point(110, 170))
-    val cs = SpeedComponent(2, 0)
-    val cv = VisibleComponent(true)
-    val ct = TypeComponent(EntityType.Matter)
-    val cellEntity = CellEntity(ca, cc, cd, cp, cs, cv, ct)
+    val cellEntity = new CellBuilder().withAcceleration(1,1).withSpeed(2,0).withPosition(110,170).build
 
-    val pca = AccelerationComponent(-4, -1)
-    val pcc = CollidableComponent(true)
-    val pcd = DimensionComponent(5)
-    val pcp = PositionComponent(Point(130, 150))
-    val pcs = SpeedComponent(4, 0)
-    val pcv = VisibleComponent(true)
-    val pct = TypeComponent(EntityType.Controlled)
-    val spw = SpawnerComponent(false)
-    val playerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv, spw, pct)
+    val playerCellEntity = PlayerCellBuilder().withAcceleration(-4, -1).withSpeed(4,0).withPosition(130, 150).build
 
     EntityManager.add(cellEntity)
     EntityManager.add(playerCellEntity)
@@ -64,14 +49,7 @@ class TestMovementSystem extends FunSuite with BeforeAndAfter {
 
   test("MovableProperty entities' speed does not exceed max speed") {
 
-    val ca = AccelerationComponent(4, 2)
-    val cc = CollidableComponent(true)
-    val cd = DimensionComponent(5)
-    val cp = PositionComponent(Point(110, 170))
-    val cs = SpeedComponent(2, 2)
-    val cv = VisibleComponent(true)
-    val ct = TypeComponent(EntityType.Matter)
-    val cellEntity = CellEntity(ca, cc, cd, cp, cs, cv, ct)
+    val cellEntity = new CellBuilder().withAcceleration(4,2).withSpeed(2,2).withPosition(110,170).build
 
     EntityManager.add(cellEntity)
 
