@@ -1,6 +1,7 @@
 package it.unibo.osmos.redux.mvc.controller
 
 import javafx.scene.media.MediaPlayer.Status
+import javafx.scene.media.MediaPlayer.Status._
 import javafx.util
 import scalafx.scene.media.{AudioClip, Media, MediaPlayer}
 
@@ -28,13 +29,17 @@ object MusicPlayer {
     */
   def play(sound: SoundsType.Value): Unit = controller match {
     case Some(_) =>
-      val soundPath = controller.get.getSoundPath(sound)
-      if (soundPath.isDefined) {
-        sound match {
-          case s if s.equals(SoundsType.level) || s.equals(SoundsType.menu) => checkMediaPlayerStatus(soundPath.get)
-          case SoundsType.button => playButtonSound(soundPath.get)
-          case _ => println("Sound not managed! [MediaPlayer play]")
-        }
+      getMediaPlayerStatus match {
+        case Some(PAUSED) =>
+        case _ =>
+          val soundPath = controller.get.getSoundPath(sound)
+          if (soundPath.isDefined) {
+            sound match {
+              case s if s.equals(SoundsType.level) || s.equals(SoundsType.menu) => checkMediaPlayerStatus(soundPath.get)
+              case SoundsType.button => playButtonSound(soundPath.get)
+              case _ => println("Sound not managed! [MediaPlayer play]")
+            }
+          }
       }
     case _ => println("Error: controller is not defined [MediaPlayer play]")
   }
