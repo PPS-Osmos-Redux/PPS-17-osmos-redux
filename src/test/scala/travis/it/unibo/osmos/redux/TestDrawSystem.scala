@@ -69,25 +69,27 @@ class TestDrawSystem extends FunSuite with BeforeAndAfter {
   val position1 = PositionComponent(Point(3, 4))
   val spawner = SpawnerComponent(false)
 
+  var spy: DrawSystemSpy = _
+  var system: DrawSystem = _
+
+  before{
+    spy = DrawSystemSpy()
+    system = DrawSystem(spy)
+  }
+
   after(EntityManager.clear())
 
   test("PlayerCellEntity not present") {
-    val spy = DrawSystemSpy()
-    val system = DrawSystem(spy)
     system.update()
     assert(spy.player.isEmpty)
   }
 
   test("CellEntity enemies not present") {
-    val spy = DrawSystemSpy()
-    val system = DrawSystem(spy)
     system.update()
     assert(spy.entities.isEmpty)
   }
 
   test("PlayerCellEntity is present, but not visible") {
-    val spy = DrawSystemSpy()
-    val system = DrawSystem(spy)
     val pce = PlayerCellEntity(acceleration, collidable, dimension, position, speed, notVisible, spawner, playerTypeEntity)
     EntityManager.add(pce)
     spy.setPlayerUUID(pce.getUUID)
@@ -96,8 +98,6 @@ class TestDrawSystem extends FunSuite with BeforeAndAfter {
   }
 
   test("PlayerCellEntity is present and visible") {
-    val spy = DrawSystemSpy()
-    val system = DrawSystem(spy)
     val pce = PlayerCellEntity(acceleration, collidable, dimension, position, speed, visible, spawner, playerTypeEntity)
     EntityManager.add(pce)
     spy.setPlayerUUID(pce.getUUID)
@@ -106,8 +106,6 @@ class TestDrawSystem extends FunSuite with BeforeAndAfter {
   }
 
   test("PlayerCellEntity correctly wrapped") {
-    val spy = DrawSystemSpy()
-    val system = DrawSystem(spy)
     val pce = PlayerCellEntity(acceleration, collidable, dimension, position, speed, visible, spawner, playerTypeEntity)
     EntityManager.add(pce)
     spy.setPlayerUUID(pce.getUUID)
@@ -121,8 +119,6 @@ class TestDrawSystem extends FunSuite with BeforeAndAfter {
   }
 
   test("filter visible CellEntity") {
-    val spy = DrawSystemSpy()
-    val system = DrawSystem(spy)
     val visibleCE = CellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity)
     val notVisibleCE = CellEntity(acceleration, collidable, dimension1, position1, speed, notVisible, typeEntity)
     EntityManager.add(visibleCE)
@@ -132,8 +128,6 @@ class TestDrawSystem extends FunSuite with BeforeAndAfter {
   }
 
   test("CellEntity enemies correctly wrapped") {
-    val spy = DrawSystemSpy()
-    val system = DrawSystem(spy)
     val visibleCE = CellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity)
     val visibleCE1 = CellEntity(acceleration, collidable, dimension1, position1, speed1, visible, typeEntity)
     EntityManager.add(visibleCE)

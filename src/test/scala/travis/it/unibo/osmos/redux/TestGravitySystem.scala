@@ -26,6 +26,10 @@ class TestGravitySystem extends FunSuite with BeforeAndAfter {
   val repulsePosition = PositionComponent(Point(7, 2))
   var acceleration = AccelerationComponent(0, 0)
 
+  var gravitySystem: GravitySystem = _
+
+  before(gravitySystem = GravitySystem())
+
   after {
     EntityManager.clear()
     acceleration = AccelerationComponent(0, 0)
@@ -38,7 +42,6 @@ class TestGravitySystem extends FunSuite with BeforeAndAfter {
 
   test("Acceleration of CellEntity should not change without GravityCellEntity") {
     val cellEntity = CellEntity(acceleration, collidable, dimension, position, speed, visible, baseTypeEntity)
-    val gravitySystem = GravitySystem()
     EntityManager.add(cellEntity)
     val originalAcceleration = cellEntity.getAccelerationComponent.copy()
     gravitySystem.update()
@@ -49,10 +52,9 @@ class TestGravitySystem extends FunSuite with BeforeAndAfter {
   test("Attractive GravityCellEntity should change acceleration of CellEntity to attract") {
     val cellEntity = CellEntity(acceleration, collidable, dimension1, position1, speed, visible, baseTypeEntity)
     val gravity = GravityCellEntity(acceleration, collidable, dimension, position, speed, visible, attractiveTypeEntity, specificWeight)
-    val system = GravitySystem()
     EntityManager.add(cellEntity)
     EntityManager.add(gravity)
-    system.update()
+    gravitySystem.update()
     assert(cellEntity.getAccelerationComponent.vector.x === -1.017 +- TOLERANCE)
     assert(cellEntity.getAccelerationComponent.vector.y === -1.357 +- TOLERANCE)
   }
@@ -60,10 +62,9 @@ class TestGravitySystem extends FunSuite with BeforeAndAfter {
   test("Repulse GravityCellEntity should change acceleration of CellEntity to repulse") {
     val cellEntity = CellEntity(acceleration, collidable, dimension1, position1, speed, visible, baseTypeEntity)
     val gravity = GravityCellEntity(acceleration, collidable, repulseDimension, repulsePosition, speed, visible, repulseTypeEntity, repulseSpecificWeight)
-    val system = GravitySystem()
     EntityManager.add(cellEntity)
     EntityManager.add(gravity)
-    system.update()
+    gravitySystem.update()
     assert(cellEntity.getAccelerationComponent.vector.x === -4.496 +- TOLERANCE)
     assert(cellEntity.getAccelerationComponent.vector.y === 2.248 +- TOLERANCE)
   }
@@ -72,11 +73,10 @@ class TestGravitySystem extends FunSuite with BeforeAndAfter {
     val cellEntity = CellEntity(acceleration, collidable, dimension1, position1, speed, visible, baseTypeEntity)
     val gravityAttractive = GravityCellEntity(AccelerationComponent(0, 0), collidable, dimension, position, speed, visible, attractiveTypeEntity, specificWeight)
     val gravityRepulse = GravityCellEntity(AccelerationComponent(1, 1), collidable, repulseDimension, repulsePosition, speed, visible, repulseTypeEntity, repulseSpecificWeight)
-    val system = GravitySystem()
     EntityManager.add(cellEntity)
     EntityManager.add(gravityAttractive)
     EntityManager.add(gravityRepulse)
-    system.update()
+    gravitySystem.update()
     assert(cellEntity.getAccelerationComponent.vector.x === -5.513 +- TOLERANCE)
     assert(cellEntity.getAccelerationComponent.vector.y === 0.891 +- TOLERANCE)
     assert(gravityAttractive.getAccelerationComponent.vector.x === -1.824 +- TOLERANCE)

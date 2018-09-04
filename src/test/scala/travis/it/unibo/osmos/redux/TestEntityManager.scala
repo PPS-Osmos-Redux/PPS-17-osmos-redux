@@ -1,6 +1,5 @@
 package it.unibo.osmos.redux
 
-import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities._
 import it.unibo.osmos.redux.ecs.entities.builders.{CellBuilder, PlayerCellBuilder}
 import it.unibo.osmos.redux.ecs.entities.properties.composed.DeathProperty

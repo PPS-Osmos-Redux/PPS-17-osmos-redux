@@ -5,9 +5,9 @@ import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager, EntityType,
 import it.unibo.osmos.redux.ecs.systems.InputSystem
 import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
 import it.unibo.osmos.redux.utils.{InputEventQueue, MathUtils, Point}
-import org.scalatest.FunSuite
+import org.scalatest.{BeforeAndAfter, FunSuite}
 
-class TestInputSystem extends FunSuite {
+class TestInputSystem extends FunSuite with BeforeAndAfter {
 
   val acceleration = Seq(AccelerationComponent(1, 1), AccelerationComponent(2, 2), AccelerationComponent(3, 3))
   val collidable = Seq(CollidableComponent(true), CollidableComponent(true), CollidableComponent(false))
@@ -17,10 +17,13 @@ class TestInputSystem extends FunSuite {
   val visibility = Seq(VisibleComponent(true), VisibleComponent(false), VisibleComponent(false))
   val typeEntity = Seq(TypeComponent(EntityType.Controlled), TypeComponent(EntityType.Matter), TypeComponent(EntityType.Matter))
 
-  test("InputSystem updates entities acceleration correctly") {
+  var system: InputSystem = _
 
-    //setup input system
-    val system = InputSystem()
+  before(system = InputSystem())
+
+  after(EntityManager.clear())
+
+  test("InputSystem updates entities acceleration correctly") {
 
     //add entities to the system using entity manager
     val pce = PlayerCellEntity(acceleration(0), collidable(0), dimension(0), position(0), speed(0), visibility(0), SpawnerComponent(false), typeEntity(0))
@@ -42,9 +45,6 @@ class TestInputSystem extends FunSuite {
   }
 
   test("InputSystem should update only entities with input property") {
-
-    //setup input system
-    val system = InputSystem()
 
     //add entities to the system using entity manager
     val pce = PlayerCellEntity(acceleration(0), collidable(0), dimension(0), position(0), speed(0), visibility(0), SpawnerComponent(false), typeEntity(0))
