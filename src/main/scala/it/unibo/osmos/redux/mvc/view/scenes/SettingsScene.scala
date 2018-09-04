@@ -1,41 +1,53 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
-import it.unibo.osmos.redux.mvc.view.components.menu.{MainMenuBar, MainMenuBarListener}
+import it.unibo.osmos.redux.mvc.controller.FileManager
+import it.unibo.osmos.redux.mvc.view.components.custom.StyledButton
 import it.unibo.osmos.redux.mvc.view.context.LevelContext
 import it.unibo.osmos.redux.mvc.view.stages.PrimaryStageListener
 import scalafx.geometry.Pos
-import scalafx.scene.control.CheckBox
-import scalafx.scene.layout.VBox
+import scalafx.scene.control.{Label, Slider}
+import scalafx.scene.layout._
 import scalafx.stage.Stage
 
-class SettingsScene(override val parentStage: Stage, listener: PrimaryStageListener, previousSceneListener: BackClickListener) extends DefaultBackScene(parentStage, previousSceneListener) with MainMenuBarListener {
+class SettingsScene(override val parentStage: Stage, listener: PrimaryStageListener, previousSceneListener: BackClickListener) extends DefaultBackScene(parentStage, previousSceneListener) {
 
-  /**
-    * The upper main menu bar
-    */
-  protected val menuBar = new MainMenuBar(this)
+  private val volumeLabel = new Label("Volume")
 
-  private val fullScreen = new CheckBox("Fullscreen") {
-    onAction = _ => parentStage.fullScreen = !parentStage.fullScreen.get()
+  private val volumeSlider = new Slider() {
+    min = 0
+    max = 100
+    value = 50
+    showTickLabels = true
+    showTickMarks = true
+    majorTickUnit = 50
+    minorTickCount = 5
+    blockIncrement = 10
+    minWidth = 480
+    maxWidth <== parentStage.width / 4
+    // onScroll = _
   }
 
-  fullScreen.selected = parentStage.fullScreen.get()
+  private val volumeContainer = new HBox(6) {
+    alignment = Pos.Center
+    children = Seq(volumeLabel, volumeSlider)
+  }
+
+  private val resetGameData = new StyledButton("Reset game data") {
+    // TODO: add reset game data action
+    // onAction = _
+  }
 
   /**
     * The central level container
     */
-  protected val container: VBox = new VBox {
+  protected val container: VBox = new VBox(10) {
     alignment = Pos.Center
-    children = Seq(fullScreen, goBack)
+    children = Seq(volumeContainer, resetGameData, goBack)
+    styleClass.add("settings-vbox")
   }
 
   /* Setting the root container*/
   root = container
-
-  override def onFullScreenSettingClick(): Unit = {
-    parentStage.fullScreen = !parentStage.fullScreen.get()
-  }
-
 }
 
 /**

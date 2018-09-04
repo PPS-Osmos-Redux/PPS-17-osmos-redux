@@ -147,9 +147,16 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   }
 
   override def onExit(): Unit = {
+    goToPreviousScene()
+    listener.onStopLevel()
+  }
+
+  /**
+    * Called when the user has to go to the LevelSelectionScene
+    */
+  private def goToPreviousScene(): Unit = {
     MediaPlayer.play(SoundsType.menu)
     upperSceneListener.onStopLevel()
-    listener.onStopLevel()
   }
 
   /**
@@ -168,6 +175,15 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
     /* Sending the event */
     sendMouseEvent(mouseEvent)
+  }
+
+  /**
+    * OnKeyPressed handler, reacting to up or down arrow key pressed, changes the game speed
+    */
+  onKeyPressed = keyEvent => keyEvent.getCode match {
+    case KeyCode.UP => listener.onLevelSpeedChanged(true)
+    case KeyCode.DOWN => listener.onLevelSpeedChanged()
+    case _ => //do nothing
   }
 
   /**
@@ -260,12 +276,12 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
   override def onLevelEnd(levelResult: Boolean): Unit = {
     /* Calling stop level */
-    listener.onStopLevel()
+    listener.onStopLevel(levelResult)
 
     /* Creating an end screen with a button */
     val endScreen = LevelScreen.Builder(this)
       .withText(if (levelResult) "You won!" else "You lost.", 50, Color.White)
-      .withButton("Return to Level Selection", _ => onExit())
+      .withButton("Return to Level Selection", _ => goToPreviousScene())
       .build()
     endScreen.opacity = 0.0
 
@@ -390,6 +406,12 @@ trait LevelSceneListener {
   /**
     * Called when the level gets stopped
     */
-  def onStopLevel()
+  def onStopLevel(victory: Boolean = false)
+
+  /**
+    * Called when the level speed changes
+    * @param increment If the speed needs to increased or decreased
+    */
+  def onLevelSpeedChanged(increment: Boolean = false)
 
 }

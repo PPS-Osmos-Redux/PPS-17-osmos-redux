@@ -57,10 +57,7 @@ object OsmosReduxPrimaryStage {
 
     override def onEditorClick(): Unit = scene = new EditorLevelSelectionScene(this, listener)
 
-    override def onSettingsClick(container: Parent): Unit = {
-      mainScene.root = container
-      //scene = new SettingsScene(this, listener, mainScene)
-    }
+    override def onSettingsClick(): Unit = scene = new SettingsScene(this, listener, mainScene)
 
     /* Stopping the game when the user closes the window */
     onCloseRequest = _ => System.exit(0)
