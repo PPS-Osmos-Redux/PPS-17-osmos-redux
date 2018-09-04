@@ -23,7 +23,7 @@ import scalafx.scene.canvas.Canvas
 import scalafx.scene.effect.Light.Spot
 import scalafx.scene.effect.{DropShadow, Lighting}
 import scalafx.scene.image.Image
-import scalafx.scene.layout.VBox
+import scalafx.scene.layout.{StackPane, VBox}
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.{Circle, Rectangle, Shape}
 import scalafx.scene.text.{Font, Text}
@@ -73,6 +73,8 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     lighting.surfaceScale = 1.0
     lighting.diffuseConstant = 2.0
 
+    pickOnBounds = false
+
     effect = lighting
   }
 
@@ -100,22 +102,19 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     new FadeTransition(Duration.apply(2000), splashScreen) {
       fromValue = 0.0
       toValue = 1.0
-      autoReverse = true
       /* FadeOut */
-      onFinished = _ => new FadeTransition(Duration.apply(1000), splashScreen) {
+      onFinished = _ => new FadeTransition(Duration.apply(2000), splashScreen) {
         fromValue = 1.0
         toValue = 0.0
-        autoReverse = true
         /* Showing the canvas */
-        onFinished = _ => new FadeTransition(Duration.apply(3000), canvas) {
-          fromValue = 0.0
-          toValue = 1.0
-          onFinished = _ => {
-            /* Removing the splash screen to reduce the load. Then the level is started */
-            content.remove(splashScreen)
-          }
+        onFinished = _ => {
+          canvas.opacity = 1.0
+          content.remove(splashScreen)
+          /* Adding the mapBorder */
+          content.add(mapBorder.get)
+          /* Removing the splash screen to reduce the load. Then the level is started */
           listener.onStartLevel()
-        }.play()
+        }
       }.play()
     }.play()
   }
@@ -123,17 +122,17 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   /**
     * The splash screen text displayed when speeding up or slowing down the game
     */
-  private val speedSplashScreenText = new Text("") {
+  private val speedScreenText = new Text("") {
     font = Font.font("Verdana", 30)
     fill = Color.White
   }
 
-  private val speedChangeSplashScreen: VBox = new VBox() {
+  private val speedChangeScreen: VBox = new VBox() {
     alignment = Pos.TopRight
     alignmentInParent = Pos.TopRight
-    children = speedSplashScreenText
+    children = speedScreenText
   }
-  speedChangeSplashScreen.opacity = 0.0
+  speedChangeScreen.opacity = 0.0
 
   /**
     * The images used to draw cells, background and level
@@ -152,7 +151,9 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   /**
     * The content of the whole scene
     */
-  content = Seq(canvas, pauseScreen, splashScreen, speedChangeSplashScreen)
+  content = new StackPane() {
+    children = Seq(canvas, speedChangeScreen, splashScreen, pauseScreen)
+  }
 
   /**
     * The level context, created with the LevelScene. It still needs to be properly setup
@@ -239,14 +240,14 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
     children = components*/
   private def displaySpeedChange(text: String): Unit = {
-    speedSplashScreenText.text = text
+    speedScreenText.text = text
     /* Splash screen animation, starting with a FadeIn */
-    new FadeTransition(Duration.apply(300), speedChangeSplashScreen) {
+    new FadeTransition(Duration.apply(300), speedChangeScreen) {
       fromValue = 0.0
       toValue = 1.0
       autoReverse = true
       /* FadeOut */
-      onFinished = _ => new FadeTransition(Duration.apply(300), speedChangeSplashScreen) {
+      onFinished = _ => new FadeTransition(Duration.apply(300), speedChangeScreen) {
         fromValue = 1.0
         toValue = 0.0
         autoReverse = true
@@ -288,14 +289,15 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
       mapBorder.get.stroke = Color.White
       mapBorder.get.strokeWidth = 5.0
       mapBorder.get.opacity <== canvas.opacity
+      mapBorder.get.pickOnBounds = false
+      mapBorder.get.mouseTransparent = true
       mapBorder.get.effect = new DropShadow {
         color = Color.White
         radius = 10.0
       }
 
       Platform.runLater({
-        /* Adding the mapBorder */
-        content.add(mapBorder.get)
+
 
         /* Starting the level */
         startLevel()
