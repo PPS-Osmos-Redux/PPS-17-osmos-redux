@@ -242,7 +242,7 @@ case class ControllerImpl() extends Controller {
     multiPlayerMode.get match {
       case MultiPlayerMode.Server =>
         //assign clients to players and wait confirmation
-        server.get.initGame(loadedLevel, levelInfo).future onComplete {
+        server.get.initGame(loadedLevel).future onComplete {
           case Success(_) =>
             //create the engine
             if (engine.isEmpty) engine = Some(GameEngine())
