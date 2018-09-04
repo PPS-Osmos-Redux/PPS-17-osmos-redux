@@ -340,9 +340,12 @@ object JsonProtocols {
   implicit object LevelInfoFormatter extends RootJsonFormat[LevelInfo] {
     def write(levelInfo: LevelInfo) = JsObject(
       "name" -> JsString(levelInfo.name),
-      "victoryRule" -> levelInfo.victoryRule.toJson)
+      "victoryRule" -> levelInfo.victoryRule.toJson,
+      "isAvailable" -> JsBoolean(levelInfo.isAvailable))
     def read(value: JsValue): LevelInfo = {
-      value.asJsObject.getFields("name","victoryRule") match {
+      value.asJsObject.getFields("name","victoryRule", "isAvailable") match {
+        case Seq(JsString(name), victoryRule, JsBoolean(isAvailable)) =>
+          LevelInfo(name, victoryRule.convertTo[VictoryRules.Value], isAvailable)
         case Seq(JsString(name), victoryRule) =>
           LevelInfo(name, victoryRule.convertTo[VictoryRules.Value])
         case _ => throw DeserializationException("Level info expected")
@@ -370,18 +373,4 @@ object JsonProtocols {
   implicit  val levelStatFormatter:RootJsonFormat[LevelStat] = jsonFormat2(LevelStat)
 
   implicit  val campaignLevelsFormatter:RootJsonFormat[CampaignLevel] = jsonFormat2(CampaignLevel)
-
-  /*implicit object listStatFormatter extends RootJsonFormat[List[CampaignLevel]] {
-    def write(campaignLevels: List[CampaignLevel]) = JsObject("campaignProgress" -> campaignLevels.toJson)
-    def read(value: JsValue): List[CampaignLevel] = {
-      value.asJsObject.getFields("campaignProgress") match {
-        case Seq(campaignProgress) => campaignProgress.convertTo[List[CampaignLevel]]
-        case _ => throw DeserializationException("List of campaign level info expected")
-      }
-    }
-  }*/
-
-  //implicit  val listCampaignLevelsFormatter:RootJsonFormat[List[CampaignLevel]] = jsonFormat1(List[CampaignLevel])
-
-  //implicit val userProgressFormatter:RootJsonFormat[UserStat] = jsonFormat2(UserStat)
 }
