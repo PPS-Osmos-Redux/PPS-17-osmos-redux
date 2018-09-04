@@ -1,10 +1,8 @@
 package it.unibo.osmos.redux.mvc.model
 
-import it.unibo.osmos.redux.mvc.controller.{FileManager, LevelInfo}
+import it.unibo.osmos.redux.mvc.controller.LevelInfo
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GameStateEventWrapper, GameWon}
 import it.unibo.osmos.redux.utils.Logger
-
-import scala.collection.mutable
 
 object SinglePlayerLevels {
   implicit val who:String = "SinglePlayerLevels"
@@ -16,12 +14,54 @@ object SinglePlayerLevels {
     CampaignLevel(LevelInfo("5", VictoryRules.becomeTheBiggest, isAvailable = false), LevelStat(0,0)))
 
   /**
-    * get the campaign levels
-    * @return campaign levels
+    * Return the last unlocked level.
+    * @return the last unlocked level
     */
-  def getLevelsInfo:List[LevelInfo] = levels.map(lv => lv.levelInfo).toList
+  def toDoLevel(campaignLevels:List[CampaignLevel] = levels):String = searchLastAvailableLevel() match {
+    case Some(levelName) => levelName
+    case _ => Logger.log("Error: campaign levels list is empty OR the last level had to be enabled")
+              ""
+  }
 
-  def getCampaignLevels:List[CampaignLevel] = levels.toList
+  /**
+    * Unlock the next level
+    */
+  private def unlockNextLevel():Unit =  levels.map(cLv => cLv.levelInfo).find(lv => !lv.isAvailable) match {
+    case Some(nextLevel) => nextLevel.isAvailable = true
+    case _ => Logger.log("All levels are unlocked")
+  }
+
+  /**
+    * get the campaign levels info
+    * @return List[LevelInfo]
+    */
+  def getLevelsInfo:List[LevelInfo] = levels.map(lv => lv.levelInfo)
+
+  /**
+    * get the campaign levels
+    * @return List[CampaignLevel]
+    */
+  def getCampaignLevels:List[CampaignLevel] = levels
+
+  /**
+    * Should be called when user win or lose a campaign level
+    * @param endGame end game result GameWon or GameLost
+    * @param levelName name of the played lavel
+    */
+  def newEndGameEvent(endGame:GameStateEventWrapper, levelName:String): Unit = endGame match {
+    case GameWon => increaseVictories(levelName)
+                    unlockNextLevel()
+    case GameLost => increaseDefeats(levelName)
+    case _ =>
+  }
+
+  /**
+    * Method for update campaign progress, should be  called once when the game starts
+    * @param campaignProgress campaign progress List[CampaignLevels]
+    */
+  def updateUserStat(campaignProgress: List[CampaignLevel]): Unit =
+  /* if my values are less updated than the file ones */
+    if(levels.map(l => l.levelInfo.name).indexOf(toDoLevel(campaignProgress)) <= levels.map(l => l.levelInfo.name).indexOf(toDoLevel(campaignProgress))) levels = campaignProgress
 
   /**
     * reset the user progress
@@ -35,33 +75,12 @@ object SinglePlayerLevels {
     })
   }
 
-
-  /**
-    * Return the last unlocked level.
-    * @return the last unlocked level
-    */
-  def toDoLevel(campaignLevels:List[CampaignLevel] = levels.toList):String = {
-    def searchLastAvailableLevel(cLevels:List[LevelInfo]):Option[String] = cLevels match {
-      case LevelInfo(lv:String, _, av:Boolean)+:LevelInfo(_:String, _, av2:Boolean)+:_ if av && !av2 =>
-        Some(lv)
-      case LevelInfo(lv:String, _, av:Boolean)+:List(LevelInfo(lv2:String, _, av2:Boolean)) =>
-        if(av && !av2) Some(lv) else Some (lv2)
-      case _+:t => searchLastAvailableLevel(t)
-      case _ => Logger.log("Error: single player levels list is empty")
-                None
-    }
-    searchLastAvailableLevel(campaignLevels.map(cLv => cLv.levelInfo)).get
+  private def searchLastAvailableLevel(cLevels:List[LevelInfo] = getLevelsInfo):Option[String] = cLevels match {
+    case LevelInfo(lv, _, av)::LevelInfo(_, _, av2)::_ if av && !av2 => Some(lv)
+    case List(LevelInfo(lv2, _, true)) => Some (lv2)
+    case _::t => searchLastAvailableLevel(t)
+    case _ => None
   }
-
-  /**
-    * Unlock the next level
-    */
-  private def unlockNextLevel():Unit = levels.map(cLv => cLv.levelInfo)
-                                             .filter(lv => !lv.isAvailable)
-                                             .foreach(level => {
-                                               level.isAvailable = true
-                                               return
-                                             })
 
   private def findLevelByName(levelName:String):Option[CampaignLevel] = levels.find(cLv => cLv.levelInfo.name.equals(levelName))
 
@@ -74,23 +93,6 @@ object SinglePlayerLevels {
     case Some(cLevel:CampaignLevel) => cLevel.levelStat.defeats+=1
     case None => Logger.log("Error: level " + levelName + " doesn't exists [IncreaseDefeats]")
   }
-
-  def newEndGameEvent(endGame:GameStateEventWrapper, levelName:String): Unit = endGame match {
-    case GameWon => increaseVictories(levelName)
-                    unlockNextLevel()
-    case GameLost => increaseDefeats(levelName)
-    case _ =>
-  }
-
-  /**
-    * Method for update campaign progress, should be  called once when the game starts
-    * @param campaignProgress campaign progress List[CampaignLevels]
-    */
-  def updateUserStat(campaignProgress: List[CampaignLevel]): Unit =
-    /* if my values are less updated than the file ones */
-    if(levels.map(l => l.levelInfo.name).indexOf(toDoLevel(campaignProgress)) <= levels.map(l => l.levelInfo.name).indexOf(toDoLevel(campaignProgress))) levels = campaignProgress
-
-
 }
 
 case class CampaignLevel(levelInfo: LevelInfo, var levelStat: LevelStat)
