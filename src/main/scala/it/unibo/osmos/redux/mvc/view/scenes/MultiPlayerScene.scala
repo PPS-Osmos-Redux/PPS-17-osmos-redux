@@ -100,7 +100,7 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
       if (mode.value) {
         /* If we are the server, we must choose the level first. We ask for the lobby when the level is chosen */
         //TODO: change methods to get the level info
-        parentStage.scene = new MultiPlayerLevelSelectionScene(parentStage, listener, levelInfo => goToLobby(user, Option(levelInfo)), user)
+        parentStage.scene = new MultiPlayerLevelSelectionScene(parentStage, listener, levelInfo => goToLobby(user, Option(levelInfo)), user,???)
       } else {
         /* If we are the client */
         goToLobby(user, Option.empty)
