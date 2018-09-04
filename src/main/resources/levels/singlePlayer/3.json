@@ -11,7 +11,7 @@
       "collidable": true
     },
     "typeEntity": {
-      "entity_type": "Matter"
+      "componentType": "Matter"
     },
     "position": {
       "point": {
@@ -46,13 +46,13 @@
     },
     "position": {
       "point": {
-        "x": 0.0,
-        "y": 0.0
+        "x": 900.0,
+        "y": 400.0
       }
     },
     "cellType": "playerCell",
     "dimension": {
-      "radius": 5.0
+      "radius": 50.0
     },
     "speed": {
       "speedX": 4.0,
@@ -73,12 +73,12 @@
       "collidable": true
     },
     "typeEntity": {
-      "entity_type": "Matter"
+      "componentType": "Attractive"
     },
     "position": {
       "point": {
-        "x": 0.0,
-        "y": 0.0
+        "x": 1040.0,
+        "y": 500.0
       }
     },
     "cellType": "gravityCell",
@@ -96,8 +96,8 @@
   },
   "levelMap": {
     "mapShape": {
-      "centerX": 50.1,
-      "centerY": 50.2,
+      "centerX": 1040.1,
+      "centerY": 500.2,
       "mapShape": "Circle",
       "radius": 250
     },

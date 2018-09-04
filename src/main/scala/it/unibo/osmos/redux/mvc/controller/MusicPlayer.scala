@@ -3,7 +3,6 @@ package it.unibo.osmos.redux.mvc.controller
 import javafx.scene.media.MediaPlayer.Status
 import javafx.scene.media.MediaPlayer.Status._
 import javafx.util
-import scalafx.scene.media.{AudioClip, Media, MediaPlayer}
 
 /**
   * Sound types
@@ -13,7 +12,7 @@ object SoundsType extends Enumeration {
 }
 
 object MusicPlayer {
-
+  import scalafx.scene.media.{AudioClip, Media, MediaPlayer}
   private var controller: Option[Controller] = None
   private var mediaPlayer: Option[MediaPlayer] = None
   private var lastLoadedSound: Option[String] = None
