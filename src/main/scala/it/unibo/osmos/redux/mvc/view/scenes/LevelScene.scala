@@ -75,7 +75,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
     pickOnBounds = false
 
-    // effect = lighting
+    effect = lighting
   }
 
   /**
@@ -218,20 +218,21 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   }
 
   onScroll = scrollEvent => if (!paused.value && inputEnabled) {
-    val delta = 1.2
+    val delta = 1.1
 
-    var scale = canvas.getScaleY // currently we only use Y, same value is used for X
+    // X and Y scale are the same
+    var scale = canvas.getScaleX
 
-    if (scrollEvent.getDeltaY < 0)
+    if (scrollEvent.getDeltaX < 0) {
       scale /= delta
-    else
+    } else {
       scale *= delta
+    }
 
-    val MIN_SCALE = 1.0
-    val MAX_SCALE = 10.0
-    scale = clamp(scale, MIN_SCALE, MAX_SCALE)
+    val maxZoomOutScale = 1.0
+    val maxZoomInScale = 10.0
+    scale = clamp(scale, maxZoomOutScale, maxZoomInScale)
 
-    //canvas.setScale(scale)
     canvas.setScaleX(scale)
     canvas.setScaleY(scale)
 
