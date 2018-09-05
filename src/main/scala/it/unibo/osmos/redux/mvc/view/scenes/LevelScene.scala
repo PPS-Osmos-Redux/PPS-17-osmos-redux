@@ -4,9 +4,9 @@ import it.unibo.osmos.redux.ecs.entities.EntityType
 import it.unibo.osmos.redux.mvc.controller.{LevelInfo, MusicPlayer, SoundsType}
 import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.ViewConstants
-import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Colors._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
+import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
 import it.unibo.osmos.redux.mvc.view.components.level.{LevelScreen, LevelStateBoxListener}
 import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextListener}
 import it.unibo.osmos.redux.mvc.view.drawables._
@@ -75,7 +75,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
     pickOnBounds = false
 
-    effect = lighting
+    // effect = lighting
   }
 
   /**
@@ -87,6 +87,11 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     .withButton("Return to Level Selection", _ => onExit())
     .build()
   pauseScreen.visible <== paused
+
+  /** Value indicating when the user can execute actions
+    * like pausing the game or moving around
+    */
+  private var inputEnabled = false
 
   /**
     * The splash screen showed when the game is paused
@@ -111,7 +116,8 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
           canvas.opacity = 1.0
           content.remove(splashScreen)
           /* Adding the mapBorder */
-          content.add(mapBorder.get)
+          //content.add(mapBorder.get)
+          inputEnabled = true
           /* Removing the splash screen to reduce the load. Then the level is started */
           listener.onStartLevel()
         }
@@ -194,7 +200,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   /**
     * OnMouseClicked handler, reacting only if the game is not paused
     */
-  onMouseClicked = mouseEvent => if (!paused.value) {
+  onMouseClicked = mouseEvent => if (!paused.value && inputEnabled) {
     /* Creating a circle representing the player click */
     val clickCircle = Circle(mouseEvent.getX, mouseEvent.getY, 2.0, defaultPlayerColor)
     content.add(clickCircle)
@@ -207,6 +213,40 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
     /* Sending the event */
     sendMouseEvent(mouseEvent)
+  } else {println(inputEnabled)}
+
+  onScroll = scrollEvent => if (!paused.value && inputEnabled) {
+    val delta = 1.2
+
+    var scale = canvas.getScaleY // currently we only use Y, same value is used for X
+
+    if (scrollEvent.getDeltaY < 0)
+      scale /= delta
+    else
+      scale *= delta
+
+    val MIN_SCALE = 1.0
+    val MAX_SCALE = 10.0
+    scale = clamp(scale, MIN_SCALE, MAX_SCALE)
+
+    //canvas.setScale(scale)
+    canvas.setScaleX(scale)
+    canvas.setScaleY(scale)
+
+    scrollEvent.consume()
+  }
+
+  private def clamp(value: Double, min: Double, max: Double): Double = {
+    value match {
+      case v if v < min => min
+      case v if v > max => max
+      case _ => value
+    }
+  }
+
+  private def setPivot(x: Double, y: Double): Unit = {
+    canvas.setTranslateX(x)
+    canvas.setTranslateY(y)
   }
 
   /**
@@ -231,14 +271,6 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     case _ => //do nothing
   }
 
-  /*VBox(spacing = 4) {
-    prefWidth <== parentScene.width
-    prefHeight <== parentScene.height
-    alignment = Pos.Center
-    alignmentInParent = Pos.Center
-    parentScene fill = Color.Black
-
-    children = components*/
   private def displaySpeedChange(text: String): Unit = {
     speedScreenText.text = text
     /* Splash screen animation, starting with a FadeIn */
@@ -251,7 +283,6 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
         fromValue = 1.0
         toValue = 0.0
         autoReverse = true
-
       }.play()
     }.play()
   }
@@ -262,7 +293,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     * @param mouseEvent the mouse event
     */
   protected def sendMouseEvent(mouseEvent: MouseEvent): Unit = levelContext match {
-    case Some(lc) => if (!paused.value) lc notifyMouseEvent MouseEventWrapper(Point(mouseEvent.getX - halfWindowWidth, mouseEvent.getY - halfWindowHeight), lc.getPlayerUUID)
+    case Some(lc) => if (!paused.value && inputEnabled) lc notifyMouseEvent MouseEventWrapper(Point((mouseEvent.getX /*+ canvas.getTranslateX*/ - halfWindowWidth) / canvas.getScaleX, (mouseEvent.getY /*+ canvas.getTranslateY*/ - halfWindowHeight) / canvas.getScaleY), lc.getPlayerUUID)
     case _ =>
   }
 
@@ -285,13 +316,14 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
       }
 
       /* Configuring the mapBorder */
+      // TODO: remove
       mapBorder.get.fill = Color.Transparent
       mapBorder.get.stroke = Color.White
       mapBorder.get.strokeWidth = 5.0
       mapBorder.get.opacity <== canvas.opacity
       mapBorder.get.pickOnBounds = false
       mapBorder.get.mouseTransparent = true
-      mapBorder.get.effect = new DropShadow {
+      mapBorder.get.effect = new DropShadow() {
         color = Color.White
         radius = 10.0
       }
@@ -303,6 +335,11 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
         startLevel()
       })
   }
+
+  var playerPosX = 0.0
+  var playerPosY = 0.0
+  var precX = 0.0
+  var precY = 0.0
 
   override def onDrawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = {
 
@@ -321,10 +358,24 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
       canvas.graphicsContext2D.clearRect(0, 0, width.value, height.value)
       /* Draw the background */
       canvas.graphicsContext2D.drawImage(backgroundImage, 0, 0, width.value, height.value)
+      // TODO: make it colored white if bouncing, red if instant death
+      val mapRadius = 500
+      val mapDiameter = mapRadius * 2
+      val xCenterPosition = ViewConstants.Window.halfWindowWidth - mapRadius
+      val yCenterPosition = ViewConstants.Window.halfWindowHeight - mapRadius
+      canvas.graphicsContext2D.strokeOval(xCenterPosition, yCenterPosition, mapDiameter, mapDiameter)
       /* Draw the entities */
       playerEntity match {
         case Some(pe) => entitiesWrappers foreach (e => e._1 match {
-          case `pe` => playerCellDrawable.draw(e._1, e._2)
+          case `pe` =>
+            if (canvas.getScaleY == 1.0) {
+              setPivot(0, 0)
+            } else {
+              playerPosX = e._1.center.x
+              playerPosY = e._1.center.y
+              setPivot(-playerPosX * canvas.getScaleX, -playerPosY * canvas.getScaleY)
+            }
+            playerCellDrawable.draw(e._1, e._2)
           case _ => drawEntity(e._1, e._2)
         })
         case _ => entitiesWrappers foreach (e => drawEntity(e._1, e._2))
@@ -352,6 +403,8 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   override def onLevelEnd(levelResult: Boolean): Unit = {
     /* Calling stop level */
     listener.onStopLevel(levelResult)
+
+    inputEnabled = false
 
     /* Creating an end screen with a button */
     val endScreen = LevelScreen.Builder(this)
