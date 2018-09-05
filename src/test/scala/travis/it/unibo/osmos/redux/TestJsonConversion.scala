@@ -145,8 +145,8 @@ class TestJsonConversion extends FunSuite {
   }
 
   test("Writing and reading custom level") {
-    val optFilePath = LevelFileManager.saveCustomLevel(level)
-    assert(optFilePath)
+    val saveResult = LevelFileManager.saveCustomLevel(level)
+    assert(saveResult)
     val readLevel = LevelFileManager.getCustomLevel(level.levelInfo.name)
     assert(readLevel.isDefined)
     assert(readLevel.get.levelInfo.name.equals(level.levelInfo.name))
@@ -154,14 +154,20 @@ class TestJsonConversion extends FunSuite {
     assert(readLevel.get.levelInfo.victoryRule.equals(level.levelInfo.victoryRule))
     assert(readLevel.get.entities.size.equals(level.entities.size))
 
+    val firstFileName = level.levelInfo.name
+    //A file with the same name exists so it changes level name adding 1 at the end
     LevelFileManager.saveCustomLevel(level)
-    val secondFileName = level.levelInfo.name + 1
+    //Reading the second saved level
     val readLevel2 = LevelFileManager.getCustomLevel(level.levelInfo.name)
     assert(readLevel2.isDefined)
+
     assert(readLevel2.get.levelInfo.name.equals(level.levelInfo.name))
+    //Delete second file SinglePlayerLevel1
     LevelFileManager.deleteFile(level.levelInfo.name)
     assert(LevelFileManager.getCustomLevel(level.levelInfo.name).isEmpty)
-    LevelFileManager.deleteFile(secondFileName)
-    assert(LevelFileManager.getCustomLevel(secondFileName).isEmpty)
+
+    //Delete firts file SinglePlayerLevel
+    LevelFileManager.deleteFile(firstFileName)
+    assert(LevelFileManager.getCustomLevel(firstFileName).isEmpty)
   }
 }
