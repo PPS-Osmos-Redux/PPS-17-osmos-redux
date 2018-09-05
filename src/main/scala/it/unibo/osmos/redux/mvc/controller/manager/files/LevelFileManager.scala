@@ -43,7 +43,6 @@ object LevelFileManager {
   def saveCustomLevel(level: Level): Boolean = {
     val filePath = processFilePath(level.levelInfo.name)
     val levelFile = new File(filePath._1.toUri)
-    println(filePath._2)
     level.levelInfo.name = filePath._2
     createDirectoriesTree(levelFile)
     saveToFile(levelFile, level.toJson.prettyPrint)
