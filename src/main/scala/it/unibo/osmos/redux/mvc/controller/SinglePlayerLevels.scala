@@ -13,6 +13,15 @@ object SinglePlayerLevels {
     CampaignLevel(LevelInfo("4", VictoryRules.becomeTheBiggest, isAvailable = false), CampaignLevelStat(0,0)),
     CampaignLevel(LevelInfo("5", VictoryRules.becomeTheBiggest, isAvailable = false), CampaignLevelStat(0,0)))
 
+  private var spLevels:List[CampaignLevel] = List()
+
+  /**
+    * Load campaign levels, this method use default values for stats
+    * @param campaignLevels loaded from resources campaign levels info
+    */
+  def loadCampaignLevels(campaignLevels:List[LevelInfo]): Unit =
+    campaignLevels.foreach(lvInfo => spLevels = CampaignLevel(lvInfo)::spLevels)
+
   /**
     * Return the last unlocked level.
     * @return the last unlocked level
