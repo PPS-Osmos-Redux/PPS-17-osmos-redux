@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux
 
-import it.unibo.osmos.redux.mvc.controller.SinglePlayerLevels
+import it.unibo.osmos.redux.mvc.controller.levels.manager.SinglePlayerLevels
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GameWon}
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
@@ -10,6 +10,9 @@ class TestLevelsProgression extends FunSuite with BeforeAndAfter {
 
   test("Test complete levels"){
     assert(SinglePlayerLevels.toDoLevel().equals(SinglePlayerLevels.getLevelsInfo.head.name))
+    //Win level 1
+    SinglePlayerLevels.newEndGameEvent(GameWon, SinglePlayerLevels.getLevelsInfo.head.name)
+    assert(SinglePlayerLevels.toDoLevel().equals(SinglePlayerLevels.getLevelsInfo(1).name))
     //Win level 1
     SinglePlayerLevels.newEndGameEvent(GameWon, SinglePlayerLevels.getLevelsInfo.head.name)
     assert(SinglePlayerLevels.toDoLevel().equals(SinglePlayerLevels.getLevelsInfo(1).name))
