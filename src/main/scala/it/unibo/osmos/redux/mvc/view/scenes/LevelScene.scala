@@ -22,7 +22,7 @@ import scalafx.geometry.Pos
 import scalafx.scene.canvas.Canvas
 import scalafx.scene.effect.Light.Spot
 import scalafx.scene.effect.{DropShadow, Lighting}
-import scalafx.scene.image.Image
+import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.{StackPane, VBox}
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.{Circle, Rectangle, Shape}
@@ -158,7 +158,10 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     * The content of the whole scene
     */
   content = new StackPane() {
-    children = Seq(canvas, speedChangeScreen, splashScreen, pauseScreen)
+    children = Seq(/*new ImageView(backgroundImage) {
+      fitWidth <== canvas.width
+      fitHeight <== canvas.height
+    }, */ canvas, speedChangeScreen, splashScreen, pauseScreen)
   }
 
   /**
@@ -221,19 +224,19 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     val delta = 1.1
 
     // X and Y scale are the same
-    var scale = canvas.getScaleY
+    var scale = canvas.scaleY.value
     if (scrollEvent.getDeltaY < 0) {
       scale /= delta
     } else {
       scale *= delta
     }
 
-    val maxZoomOutScale = 1.0
+    val maxZoomOutScale = 0.5
     val maxZoomInScale = 2.0
     scale = clamp(scale, maxZoomOutScale, maxZoomInScale)
 
-    canvas.setScaleX(scale)
-    canvas.setScaleY(scale)
+    canvas.scaleX = scale
+    canvas.scaleY = scale
 
     scrollEvent.consume()
   }
@@ -247,8 +250,8 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   }
 
   private def setPivot(x: Double, y: Double): Unit = {
-    canvas.setTranslateX(x)
-    canvas.setTranslateY(y)
+    canvas.translateX = x
+    canvas.translateY = y
   }
 
   /**
@@ -351,7 +354,13 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
       })
   }
 
+  /**
+    * Player position x-coordinate
+    */
   val playerPosX : DoubleProperty = DoubleProperty(0.0)
+  /**
+    * Player position y-coordinate
+    */
   val playerPosY : DoubleProperty = DoubleProperty(0.0)
 
   override def onDrawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = {
@@ -368,10 +377,9 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     /* We must draw to the screen the entire collection */
     Platform.runLater({
       /* Clear the screen */
-      canvas.graphicsContext2D.clearRect(0, 0, width.value, height.value)
+      canvas.graphicsContext2D.clearRect(0, 0, width.value * 2, height.value * 2)
       /* Draw the background */
-      canvas.graphicsContext2D.drawImage(backgroundImage, 0, 0, width.value, height.value)
-
+      canvas.graphicsContext2D.drawImage(backgroundImage, 0, 0, width.value * 2, height.value * 2)
 
       /* Draw the entities */
       playerEntity match {
