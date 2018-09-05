@@ -16,8 +16,8 @@
       },
       "position": {
         "point": {
-          "x": 300.0,
-          "y": 300.0
+          "x": -300.0,
+          "y": -200.0
         }
       },
       "cellType": "sentientCell",
@@ -45,8 +45,8 @@
       },
       "position": {
         "point": {
-          "x": 800.0,
-          "y": 800.0
+          "x": 200.0,
+          "y": 300.0
         }
       },
       "cellType": "sentientCell",
@@ -67,8 +67,8 @@
       "mapShape": "Rectangle",
       "height": 900,
       "base": 1000,
-      "centerX": 600.0,
-      "centerY": 500.0
+      "centerX": 0.0,
+      "centerY": 0.0
     },
     "collisionRule": "Bouncing"
   }
