@@ -1,7 +1,8 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.ecs.entities.EntityType
-import it.unibo.osmos.redux.mvc.controller.{LevelInfo, MusicPlayer, SoundsType}
+import it.unibo.osmos.redux.mvc.controller.manager.sounds.{MusicPlayer, SoundsType}
+import it.unibo.osmos.redux.mvc.controller.LevelInfo
 import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.ViewConstants
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._

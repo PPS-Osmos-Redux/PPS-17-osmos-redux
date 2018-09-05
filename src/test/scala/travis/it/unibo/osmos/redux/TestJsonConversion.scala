@@ -2,7 +2,8 @@ package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.{PlayerCellEntity, _}
-import it.unibo.osmos.redux.mvc.controller.{FileManager, LevelInfo}
+import it.unibo.osmos.redux.mvc.controller.LevelInfo
+import it.unibo.osmos.redux.mvc.controller.manager.files.{FileManager, LevelFileManager}
 import it.unibo.osmos.redux.mvc.model.MapShape._
 import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.utils.Point
@@ -119,7 +120,7 @@ class TestJsonConversion extends FunSuite {
 
 
   test("File reading and conversion (SinglePlayer + MultiPlayer)") {
-    val spConvertedLevel = FileManager.loadResource("SinglePlayerLevel") match {
+    val spConvertedLevel = LevelFileManager.getLevelFromResource("SinglePlayerLevel") match {
       case Some(value) => value
       case None => null
     }
@@ -129,14 +130,14 @@ class TestJsonConversion extends FunSuite {
     assert(spConvertedLevel.levelInfo.victoryRule.equals(level.levelInfo.victoryRule))
     assert(spConvertedLevel.entities.size.equals(level.entities.size))
 
-    val mpWrongLevel = FileManager.loadResource("ShouldntWorks", isMultiPlayer = true) match {
+    val mpWrongLevel = LevelFileManager.getLevelFromResource("ShouldntWorks", isMultiPlayer = true) match {
       case Some(value) => value
       case None => null
     }
     assert(mpWrongLevel != null)
     assert(!(mpWrongLevel.entities.count(cell => cell.isInstanceOf[PlayerCellEntity]) >= 2))
 
-    val mpRightLevel = FileManager.loadResource("ShouldWorks", isMultiPlayer = true) match {
+    val mpRightLevel = LevelFileManager.getLevelFromResource("ShouldWorks", isMultiPlayer = true) match {
       case Some(value) => value
       case None => null
     }
@@ -145,23 +146,23 @@ class TestJsonConversion extends FunSuite {
   }
 
   test("Writing and reading custom level") {
-    val optFilePath = FileManager.saveLevel(level)
-    assert(optFilePath.isDefined)
-    val readLevel = FileManager.loadCustomLevel(level.levelInfo.name)
+    val optFilePath = LevelFileManager.saveCustomLevel(level)
+    assert(optFilePath)
+    val readLevel = LevelFileManager.getCustomLevel(level.levelInfo.name)
     assert(readLevel.isDefined)
     assert(readLevel.get.levelInfo.name.equals(level.levelInfo.name))
     assert(readLevel.get.levelMap.equals(level.levelMap))
     assert(readLevel.get.levelInfo.victoryRule.equals(level.levelInfo.victoryRule))
     assert(readLevel.get.entities.size.equals(level.entities.size))
 
-    FileManager.saveLevel(level)
+    LevelFileManager.saveCustomLevel(level)
     val secondFileName = level.levelInfo.name + 1
-    val readLevel2 = FileManager.loadCustomLevel(level.levelInfo.name)
+    val readLevel2 = LevelFileManager.getCustomLevel(level.levelInfo.name)
     assert(readLevel2.isDefined)
     assert(readLevel2.get.levelInfo.name.equals(level.levelInfo.name))
-    FileManager.deleteLevel(level.levelInfo.name)
-    assert(FileManager.loadCustomLevel(level.levelInfo.name).isEmpty)
-    FileManager.deleteLevel(secondFileName)
-    assert(FileManager.loadCustomLevel(secondFileName).isEmpty)
+    FileManager.deleteFile(level.levelInfo.name)
+    assert(LevelFileManager.getCustomLevel(level.levelInfo.name).isEmpty)
+    FileManager.deleteFile(secondFileName)
+    assert(LevelFileManager.getCustomLevel(secondFileName).isEmpty)
   }
 }

@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
-import it.unibo.osmos.redux.mvc.controller.FileManager
+import it.unibo.osmos.redux.mvc.controller.manager.files.FileManager
 import scalafx.scene.Scene
 import scalafx.stage.Stage
 

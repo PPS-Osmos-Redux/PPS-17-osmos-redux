@@ -1,5 +1,6 @@
 package it.unibo.osmos.redux.mvc.controller
 
+import it.unibo.osmos.redux.mvc.controller.manager.files.UserProgressFileManager
 import it.unibo.osmos.redux.mvc.model.VictoryRules
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GameStateEventWrapper, GameWon}
 import it.unibo.osmos.redux.utils.Logger
@@ -81,7 +82,7 @@ object SinglePlayerLevels {
       lv.levelInfo.isAvailable = false
       lv.levelStat = CampaignLevelStat(0,0)
     })
-    FileManager.saveUserProgress(levels)
+    UserProgressFileManager.saveUserProgress(levels)
   }
 
   private def isMostRecent(loadedToDoLevelName:String) =

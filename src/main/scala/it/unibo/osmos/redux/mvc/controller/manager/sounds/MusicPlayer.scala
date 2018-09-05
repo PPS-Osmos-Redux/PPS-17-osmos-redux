@@ -1,5 +1,7 @@
-package it.unibo.osmos.redux.mvc.controller
+package it.unibo.osmos.redux.mvc.controller.manager.sounds
 
+import it.unibo.osmos.redux.mvc.controller.Controller
+import it.unibo.osmos.redux.mvc.controller.manager.files.FileManager
 import javafx.scene.media.MediaPlayer.Status
 import javafx.scene.media.MediaPlayer.Status._
 import javafx.util
