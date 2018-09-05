@@ -3,7 +3,7 @@ package it.unibo.osmos.redux
 import it.unibo.osmos.redux.ecs.entities._
 import it.unibo.osmos.redux.ecs.entities.builders.{CellBuilder, PlayerCellBuilder, SentientCellBuilder}
 import it.unibo.osmos.redux.ecs.systems.EndGameSystem
-import it.unibo.osmos.redux.mvc.model.{MapShape, VictoryRules}
+import it.unibo.osmos.redux.mvc.controller.levels.structure.{MapShape, VictoryRules}
 import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextListener}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GamePending, GameWon}
