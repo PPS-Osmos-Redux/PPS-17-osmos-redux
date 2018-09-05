@@ -27,9 +27,8 @@ trait Controller {
     * @param levelContext The level context.
     * @param chosenLevel The name of the chosen level.
     * @param isCustom True if the level is a custom one, false otherwise
-    * @return None if level loaded with success, Some(String) if exception occurs
     */
-  def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): GenericResponse[Boolean]
+  def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): Unit
 
   /**
     * Initializes the multi-player lobby and the server or client.
@@ -95,7 +94,7 @@ trait Controller {
     * Gets all the levels in the campaign.
     * @return The list of LevelInfo.
     */
-  def getSinglePlayerLevels:List[LevelInfo] = SinglePlayerLevels.getLevels
+  def getSinglePlayerLevels:List[LevelInfo] = SinglePlayerLevels.getLevelsInfo
 
   /**
     * Gets all multi-player levels.
@@ -130,25 +129,13 @@ case class ControllerImpl() extends Controller {
   private var server: Option[Server] = None
   private var client: Option[Client] = None
 
-  override def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): GenericResponse[Boolean] = {
+  override def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): Unit = {
     Logger.log("initLevel")
 
-    var loadedLevel:Option[Level] = None
-
-    if (isCustom) {
-      loadedLevel = FileManager.loadCustomLevel(chosenLevel)
-      /*Because user stats are not influenced by custom level end game results*/
-      lastLoadedLevel = None
-    } else {
-      loadedLevel = FileManager.loadResource(chosenLevel)
-      lastLoadedLevel = Some(chosenLevel)
-    }
+    val loadedLevel:Option[Level] = loadLevel(chosenLevel, isCustom, levelContext.levelContextType == LevelContextType.simulation)
 
     if (loadedLevel.isDefined) {
-      loadedLevel.get.isSimulation = levelContext.levelContextType == LevelContextType.simulation
-
       val player = loadedLevel.get.entities.find(_.isInstanceOf[PlayerCellEntity])
-      if (player.isEmpty && !loadedLevel.get.isSimulation) return GenericResponse(false, "Cannot start a normal level if the player is not present")
       //assign current player uuid to the
       if(player.isDefined) levelContext.setPlayerUUID(player.get.getUUID)
 
@@ -156,9 +143,8 @@ case class ControllerImpl() extends Controller {
       if(engine.isEmpty) engine = Some(GameEngine())
       engine.get.init(loadedLevel.get, levelContext)
       levelContext.setupLevel(loadedLevel.get.levelMap.mapShape)
-      GenericResponse(true)
     } else {
-      GenericResponse(false, "Error: level " + chosenLevel + " not found! The level " + (if(isCustom) "is" else "isn't") + "custom level")
+      Logger.log( "Error: level " + chosenLevel + " not found! The level " + (if(isCustom) "is" else "isn't") + "custom level")
     }
   }
 
@@ -235,7 +221,8 @@ case class ControllerImpl() extends Controller {
     Logger.log("initMultiPlayerLevel")
 
     val promise = Promise[GenericResponse[Boolean]]()
-
+    //End game result of the multiplayer levels doesn't influence campaign statistics
+    lastLoadedLevel = None
     //load level definition
     val loadedLevel = FileManager.loadResource(levelInfo.name, isMultiPlayer = true).get
 
@@ -342,7 +329,18 @@ case class ControllerImpl() extends Controller {
 
   private def saveProgress(event: GameStateEventWrapper): Unit = lastLoadedLevel match {
     case Some(lastLevel:String) => SinglePlayerLevels.newEndGameEvent(event, lastLevel)
-      FileManager.saveUserProgress(SinglePlayerLevels.userStatistics)
+      FileManager.saveUserProgress(SinglePlayerLevels.getCampaignLevels)
     case _ =>
   }
+
+  private def loadLevel(chosenLevel:String, isCustom:Boolean, isSimulation:Boolean): Option[Level] = if (isCustom) {
+    /*Because user campaign stats are not influenced by end game results of the custom levels*/
+    lastLoadedLevel = None
+    FileManager.loadCustomLevel(chosenLevel)
+  } else {
+    val loadedLevel = FileManager.loadResource(chosenLevel)
+    if (isSimulation) lastLoadedLevel = None else lastLoadedLevel = Some(chosenLevel)
+    loadedLevel
+  }
 }
+

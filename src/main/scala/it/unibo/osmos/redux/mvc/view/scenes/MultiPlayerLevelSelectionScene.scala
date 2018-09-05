@@ -5,17 +5,27 @@ import it.unibo.osmos.redux.mvc.view.components.level.LevelNodeListener
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.{MultiPlayerLevelNode, User}
 import scalafx.stage.Stage
 
+import scala.collection.mutable
+
 /**
   * Scene in which the user can choose a level to play in multiplayer mode
   * @param parentStage the parent stage
   * @param listener the listener
   * @param upperListener the upper scene listener, which will be called to store the level selection
   */
-class MultiPlayerLevelSelectionScene(override val parentStage: Stage, override val listener: MultiPlayerLevelSelectionSceneListener, val upperListener: UpperMultiPlayerLevelSelectionSceneListener, val user: User)
-  extends LevelSelectionScene(parentStage, listener) with LevelNodeListener {
+class MultiPlayerLevelSelectionScene(override val parentStage: Stage, override val listener: MultiPlayerLevelSelectionSceneListener, val upperListener: UpperMultiPlayerLevelSelectionSceneListener, val user: User, previousSceneListener: BackClickListener)
+  extends LevelSelectionScene(parentStage, listener, previousSceneListener) with LevelNodeListener {
 
-  override def levels: List[LevelInfo] = listener.getMultiPlayerLevels
+  /** Multiplayer levels are always available */
+  override lazy val levels: mutable.Buffer[LevelInfo] = listener.getMultiPlayerLevels.toBuffer
+
   override def loadLevels(): Unit = levels foreach(level => levelsContainer.children.add(new MultiPlayerLevelNode(this, level)))
+
+  /** Overridden to manage multiplayer levels*/
+  override def refreshLevels(): Unit = {
+    levels.clear()
+    levels.appendAll(listener.getMultiPlayerLevels)
+  }
 
   override def onLevelPlayClick(levelInfo: LevelInfo, simulation: Boolean, custom: Boolean): Unit = upperListener.onLevelSelected(levelInfo)
 }

@@ -1,9 +1,10 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.ecs.entities.EntityType
-import it.unibo.osmos.redux.mvc.controller.{LevelInfo, MediaPlayer, SoundsType}
+import it.unibo.osmos.redux.mvc.controller.{LevelInfo, MusicPlayer, SoundsType}
 import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.ViewConstants
+import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Colors._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.components.level.{LevelScreen, LevelStateBoxListener}
@@ -17,39 +18,37 @@ import javafx.scene.input.{KeyCode, MouseEvent}
 import scalafx.animation.FadeTransition
 import scalafx.application.Platform
 import scalafx.beans.property.BooleanProperty
+import scalafx.geometry.Pos
 import scalafx.scene.canvas.Canvas
+import scalafx.scene.effect.Light.Spot
+import scalafx.scene.effect.{DropShadow, Lighting}
 import scalafx.scene.image.Image
+import scalafx.scene.layout.{StackPane, VBox}
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.{Circle, Rectangle, Shape}
+import scalafx.scene.text.{Font, Text}
 import scalafx.stage.Stage
 import scalafx.util.Duration
 
 /**
   * This scene holds and manages a single level
-  * @param parentStage the parent stage
-  * @param levelInfo the level info
-  * @param listener the listener
+  *
+  * @param parentStage        the parent stage
+  * @param levelInfo          the level info
+  * @param listener           the listener
   * @param upperSceneListener the upper scene listener to manage the previously scene events
   */
 class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val listener: LevelSceneListener,
                  val upperSceneListener: UpperLevelSceneListener)
   extends BaseScene(parentStage) with LevelContextListener with LevelStateBoxListener {
 
-  MediaPlayer.play(SoundsType.level)
+  MusicPlayer.play(SoundsType.level)
 
   /**
     * The current game pending state: true if the game is paused
     */
   private var paused: BooleanProperty = BooleanProperty(false)
-  this.setOnKeyPressed(k => {
-    if (k.getCode == KeyCode.ESCAPE) {
-      // println("ESC key pressed")
-      paused.value match {
-        case false => onPause()
-        case true => onResume()
-      }
-    }
-  })
+
   /**
     * The canvas which will draw the elements on the screen
     */
@@ -58,6 +57,25 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     height <== parentStage.height
     cache = true
     opacity = 0.0
+
+    val light: Spot = new Spot()
+    light.color = Color.White
+    light.x <== width / 2
+    light.y <== height / 2
+    light.z = 210
+    light.pointsAtX <== width / 2
+    light.pointsAtY <== height / 2
+    light.pointsAtZ = -10
+    light.specularExponent = 2.0
+
+    val lighting: Lighting = new Lighting()
+    lighting.light = light
+    lighting.surfaceScale = 1.0
+    lighting.diffuseConstant = 2.0
+
+    pickOnBounds = false
+
+    effect = lighting
   }
 
   /**
@@ -74,7 +92,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     * The splash screen showed when the game is paused
     */
   private val splashScreen = LevelScreen.Builder(this)
-    .withText(if (levelInfo != null) levelInfo.victoryRule.toString else "", 50, Color.White)
+    .withText(if (levelInfo != null) levelInfo.victoryRule.toString.replace("_", " ") else "", 50, Color.White)
     .build()
   splashScreen.opacity = 0.0
 
@@ -84,25 +102,37 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     new FadeTransition(Duration.apply(2000), splashScreen) {
       fromValue = 0.0
       toValue = 1.0
-      autoReverse = true
       /* FadeOut */
-      onFinished = _ => new FadeTransition(Duration.apply(1000), splashScreen) {
+      onFinished = _ => new FadeTransition(Duration.apply(2000), splashScreen) {
         fromValue = 1.0
         toValue = 0.0
-        autoReverse = true
         /* Showing the canvas */
-        onFinished = _ => new FadeTransition(Duration.apply(3000), canvas) {
-          fromValue = 0.0
-          toValue = 1.0
-          onFinished = _ => {
-            /* Removing the splash screen to reduce the load. Then the level is started */
-            content.remove(splashScreen)
-          }
+        onFinished = _ => {
+          canvas.opacity = 1.0
+          content.remove(splashScreen)
+          /* Adding the mapBorder */
+          content.add(mapBorder.get)
+          /* Removing the splash screen to reduce the load. Then the level is started */
           listener.onStartLevel()
-        }.play()
+        }
       }.play()
     }.play()
   }
+
+  /**
+    * The splash screen text displayed when speeding up or slowing down the game
+    */
+  private val speedScreenText = new Text("") {
+    font = Font.font("Verdana", 30)
+    fill = Color.White
+  }
+
+  private val speedChangeScreen: VBox = new VBox() {
+    alignment = Pos.TopRight
+    alignmentInParent = Pos.TopRight
+    children = speedScreenText
+  }
+  speedChangeScreen.opacity = 0.0
 
   /**
     * The images used to draw cells, background and level
@@ -121,7 +151,9 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   /**
     * The content of the whole scene
     */
-  content = Seq(canvas, pauseScreen, splashScreen)
+  content = new StackPane() {
+    children = Seq(canvas, speedChangeScreen, splashScreen, pauseScreen)
+  }
 
   /**
     * The level context, created with the LevelScene. It still needs to be properly setup
@@ -155,7 +187,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     * Called when the user has to go to the LevelSelectionScene
     */
   private def goToPreviousScene(): Unit = {
-    MediaPlayer.play(SoundsType.menu)
+    MusicPlayer.play(SoundsType.menu)
     upperSceneListener.onStopLevel()
   }
 
@@ -178,12 +210,50 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   }
 
   /**
-    * OnKeyPressed handler, reacting to up or down arrow key pressed, changes the game speed
+    * OnKeyPressed handler, reacting to esc, and arrow key press:
+    *  - the esc key pauses the game,
+    *  - the up and right keys speed up the game
+    *  - the down and left keys slow down the game
     */
   onKeyPressed = keyEvent => keyEvent.getCode match {
-    case KeyCode.UP => listener.onLevelSpeedChanged(true)
-    case KeyCode.DOWN => listener.onLevelSpeedChanged()
+    case KeyCode.ESCAPE =>
+      if (paused.value) {
+        onResume()
+      } else {
+        onPause()
+      }
+    case KeyCode.UP | KeyCode.RIGHT =>
+      listener.onLevelSpeedChanged(true)
+      displaySpeedChange("Speed up ►►")
+    case KeyCode.DOWN | KeyCode.LEFT =>
+      listener.onLevelSpeedChanged()
+      displaySpeedChange("Speed down ◄◄")
     case _ => //do nothing
+  }
+
+  /*VBox(spacing = 4) {
+    prefWidth <== parentScene.width
+    prefHeight <== parentScene.height
+    alignment = Pos.Center
+    alignmentInParent = Pos.Center
+    parentScene fill = Color.Black
+
+    children = components*/
+  private def displaySpeedChange(text: String): Unit = {
+    speedScreenText.text = text
+    /* Splash screen animation, starting with a FadeIn */
+    new FadeTransition(Duration.apply(300), speedChangeScreen) {
+      fromValue = 0.0
+      toValue = 1.0
+      autoReverse = true
+      /* FadeOut */
+      onFinished = _ => new FadeTransition(Duration.apply(300), speedChangeScreen) {
+        fromValue = 1.0
+        toValue = 0.0
+        autoReverse = true
+
+      }.play()
+    }.play()
   }
 
   /**
@@ -192,14 +262,14 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     * @param mouseEvent the mouse event
     */
   protected def sendMouseEvent(mouseEvent: MouseEvent): Unit = levelContext match {
-    case Some(lc) => if (!paused.value) lc notifyMouseEvent MouseEventWrapper(Point(mouseEvent.getX, mouseEvent.getY), lc.getPlayerUUID)
+    case Some(lc) => if (!paused.value) lc notifyMouseEvent MouseEventWrapper(Point(mouseEvent.getX - halfWindowWidth, mouseEvent.getY - halfWindowHeight), lc.getPlayerUUID)
     case _ =>
   }
 
   override def onLevelSetup(mapShape: MapShape): Unit = mapBorder match {
     case Some(_) => throw new IllegalStateException("Map has already been set")
     case _ =>
-      val center = Point(mapShape.center._1, mapShape.center._2)
+      val center = Point(mapShape.center._1 + halfWindowWidth, mapShape.center._2 + halfWindowHeight)
       mapShape match {
         case c: MapShape.Circle => mapBorder = Option(new Circle {
           centerX = center.x
@@ -217,12 +287,17 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
       /* Configuring the mapBorder */
       mapBorder.get.fill = Color.Transparent
       mapBorder.get.stroke = Color.White
-      mapBorder.get.strokeWidth = 2.0
+      mapBorder.get.strokeWidth = 5.0
       mapBorder.get.opacity <== canvas.opacity
+      mapBorder.get.pickOnBounds = false
+      mapBorder.get.mouseTransparent = true
+      mapBorder.get.effect = new DropShadow {
+        color = Color.White
+        radius = 10.0
+      }
 
       Platform.runLater({
-        /* Adding the mapBorder */
-        content.add(mapBorder.get)
+
 
         /* Starting the level */
         startLevel()
@@ -410,6 +485,7 @@ trait LevelSceneListener {
 
   /**
     * Called when the level speed changes
+    *
     * @param increment If the speed needs to increased or decreased
     */
   def onLevelSpeedChanged(increment: Boolean = false)

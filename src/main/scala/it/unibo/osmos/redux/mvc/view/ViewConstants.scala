@@ -14,7 +14,9 @@ object ViewConstants {
   object Window {
     val defaultWindowTitle: String = "Osmos-Redux"
     val defaultWindowWidth: Double = Screen.primary.visualBounds.width
+    val halfWindowWidth: Double = defaultWindowWidth / 2
     val defaultWindowHeight: Double = Screen.primary.visualBounds.height
+    val halfWindowHeight: Double = defaultWindowHeight / 2
   }
 
   object Entities {

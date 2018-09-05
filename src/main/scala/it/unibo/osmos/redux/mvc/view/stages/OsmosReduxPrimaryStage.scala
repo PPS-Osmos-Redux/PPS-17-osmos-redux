@@ -48,14 +48,11 @@ object OsmosReduxPrimaryStage {
       */
     scene = mainScene
 
-    override def onPlayClick(): Unit = {
-      //mainScene.root = new LevelSelectionContainer(mainScene.parentStage).getContainer
-      scene = new LevelSelectionScene(this, listener)
-    }
+    override def onPlayClick(): Unit = scene = new LevelSelectionScene(this, listener, mainScene)
 
     override def onMultiPlayerClick(): Unit = scene = new MultiPlayerScene(this, listener, mainScene)
 
-    override def onEditorClick(): Unit = scene = new EditorLevelSelectionScene(this, listener)
+    override def onEditorClick(): Unit = scene = new EditorLevelSelectionScene(this, listener, mainScene)
 
     override def onSettingsClick(): Unit = scene = new SettingsScene(this, listener, mainScene)
 
