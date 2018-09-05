@@ -61,7 +61,7 @@ object SinglePlayerLevels {
     */
   def updateUserStat(campaignProgress: List[CampaignLevel]): Unit =
   /* if my values are less updated than the file ones */
-    if(levels.map(l => l.levelInfo.name).indexOf(toDoLevel(campaignProgress)) <= levels.map(l => l.levelInfo.name).indexOf(toDoLevel(campaignProgress))) levels = campaignProgress
+    if(isMostRecent(toDoLevel(campaignProgress))) levels = campaignProgress
 
   /**
     * reset the user progress
@@ -74,6 +74,11 @@ object SinglePlayerLevels {
     })
     FileManager.saveUserProgress(levels)
   }
+
+  private def isMostRecent(loadedToDoLevelName:String) =
+    getIndexOfLevelByName(toDoLevel()) <= getIndexOfLevelByName(loadedToDoLevelName)
+
+  private def getIndexOfLevelByName(levelName:String) = levels.map(cLv => cLv.levelInfo.name).indexOf(levelName)
 
   private def searchLastAvailableLevel(cLevels:List[LevelInfo] = getLevelsInfo):Option[String] = cLevels match {
     case LevelInfo(lv, _, av)::LevelInfo(_, _, av2)::_ if av && !av2 => Some(lv)
