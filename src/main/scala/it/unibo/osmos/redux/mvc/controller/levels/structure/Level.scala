@@ -1,8 +1,7 @@
-package it.unibo.osmos.redux.mvc.model
+package it.unibo.osmos.redux.mvc.controller.levels.structure
 
 import it.unibo.osmos.redux.ecs.entities.CellEntity
-import it.unibo.osmos.redux.mvc.controller.LevelInfo
-import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
+import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.utils.{Logger, MathUtils, Point}
 
 /**
@@ -14,65 +13,6 @@ object CellType {
   val playerCell = "playerCell"
   val basicCell = "basicCell"
 }
-
-/**
-  * Map edges collision rules
-  */
-object CollisionRules extends Enumeration {
-  val bouncing: CollisionRules.Value = Value("Bouncing")
-  val instantDeath: CollisionRules.Value = Value("Instant_death")
-}
-
-/**
-  * Level victory rules
-  */
-object VictoryRules extends Enumeration {
-  val becomeTheBiggest: VictoryRules.Value = Value("Become_the_biggest")
-  val becomeHuge: VictoryRules.Value = Value("Become_huge")
-  val absorbTheRepulsors: VictoryRules.Value = Value("Absorb_the_repulsors")
-  val absorbTheHostileCells: VictoryRules.Value = Value("Absorb_the_hostile_cells")
-  val absorbAllOtherPlayers: VictoryRules.Value = Value("Absorb_all_other_players")
-}
-
-/**
-  * Map shape data structure
-  */
-object MapShapeType extends Enumeration {
-  val Circle, Rectangle= Value
-}
-sealed trait MapShape {
-  val mapShape:MapShapeType.Value
-  val center:Point
-}
-
-object MapShape {
-  /**
-    * Rectangular level map
-    * @param center center of map
-    * @param height rectangle height
-    * @param base rectangle base
-    */
-  case class Rectangle(override val center: Point, height:Double, base:Double)
-                                                                          extends MapShape {
-    override val mapShape: MapShapeType.Value = MapShapeType.Rectangle
-  }
-
-  /**
-    * Circular level map
-    * @param center center of map
-    * @param radius circle radius
-    */
-  case class Circle(override val center: Point, radius:Double) extends MapShape {
-    override val mapShape: MapShapeType.Value = MapShapeType.Circle
-  }
-}
-
-/**
-  * Map of a level
-  * @param mapShape map shape
-  * @param collisionRule edges collision rule
-  */
-case class LevelMap(mapShape:MapShape, collisionRule:CollisionRules.Value)
 
 /**
   * Level configuratoin

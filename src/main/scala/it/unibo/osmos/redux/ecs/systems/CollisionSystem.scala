@@ -3,8 +3,8 @@ package it.unibo.osmos.redux.ecs.systems
 import it.unibo.osmos.redux.ecs.entities.EntityType
 import it.unibo.osmos.redux.ecs.entities.properties.composed.CollidableProperty
 import it.unibo.osmos.redux.ecs.systems.borderconditions.{CircularBorder, RectangularBorder}
-import it.unibo.osmos.redux.mvc.model.Level
-import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
+import it.unibo.osmos.redux.mvc.controller.levels.structure.Level
+import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.utils.{MathUtils, Point, Vector}
 
 case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidableProperty] {

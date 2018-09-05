@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
-import it.unibo.osmos.redux.mvc.controller.LevelInfo
+import it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.level.LevelNodeListener
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.{MultiPlayerLevelNode, User}
 import scalafx.stage.Stage

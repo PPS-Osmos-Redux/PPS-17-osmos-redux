@@ -1,13 +1,14 @@
 package it.unibo.osmos.redux.mvc.controller.manager.files
 
 import java.io.File
-import spray.json._
-import spray.json.DefaultJsonProtocol._
-import FileManager._
+
+import it.unibo.osmos.redux.mvc.controller.levels.manager.SinglePlayerLevels
+import it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel
+import it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.{createDirectoriesTree, loadFile, saveToFile, _}
+import it.unibo.osmos.redux.mvc.controller.manager.files.UserHomePaths.userProgressDirectory
 import it.unibo.osmos.redux.mvc.model.JsonProtocols._
-import FileManager.{createDirectoriesTree, loadFile, saveToFile}
-import UserHomePaths.userProgressDirectory
-import it.unibo.osmos.redux.mvc.controller.{CampaignLevel, SinglePlayerLevels}
+import spray.json.DefaultJsonProtocol._
+import spray.json._
 
 object UserProgressFileManager {
   /**

@@ -3,8 +3,8 @@ package it.unibo.osmos.redux
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities._
 import it.unibo.osmos.redux.ecs.entities.builders._
-import it.unibo.osmos.redux.mvc.controller.LevelInfo
-import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
+import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.{Circle, Rectangle}
+import it.unibo.osmos.redux.mvc.controller.levels.structure._
 import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.{BeforeAndAfter, FunSuite}

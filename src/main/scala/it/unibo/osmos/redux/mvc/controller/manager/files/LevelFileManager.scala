@@ -3,13 +3,11 @@ package it.unibo.osmos.redux.mvc.controller.manager.files
 import java.io.File
 import java.nio.file.{Files, Path}
 
-import spray.json._
-import spray.json.DefaultJsonProtocol._
+import it.unibo.osmos.redux.mvc.controller.levels.structure.{Level, LevelInfo}
+import it.unibo.osmos.redux.mvc.controller.manager.files.FileManager._
 import it.unibo.osmos.redux.mvc.model.JsonProtocols._
-import FileManager._
-import it.unibo.osmos.redux.mvc.controller.LevelInfo
-import it.unibo.osmos.redux.mvc.model.Level
 import it.unibo.osmos.redux.utils.Logger
+import spray.json._
 
 import scala.io.Source
 import scala.util.{Failure, Success, Try}
@@ -43,7 +41,10 @@ object LevelFileManager {
     * @return true if the operation is completed with success
     */
   def saveCustomLevel(level: Level): Boolean = {
-    val levelFile = new File(processFilePath(level.levelInfo.name).toUri)
+    val filePath = processFilePath(level.levelInfo.name)
+    val levelFile = new File(filePath._1.toUri)
+    println(filePath._2)
+    level.levelInfo.name = filePath._2
     createDirectoriesTree(levelFile)
     saveToFile(levelFile, level.toJson.prettyPrint)
   }
@@ -77,12 +78,13 @@ object LevelFileManager {
   private def textToLevelInfo(text:String): Try[LevelInfo] = Try(text.parseJson.convertTo[LevelInfo])
 
   import UserHomePaths._
-  def processFilePath(fileName:String, index:Option[Int] = None): Path = {
-    val path = defaultFS.getPath(levelsDirectory + fileName+index.getOrElse("") + jsonExtension)
+  def processFilePath(fileName:String, index:Option[Int] = None): (Path, String) = {
+    val uniqueName =  fileName+index.getOrElse("")
+    val path = defaultFS.getPath(levelsDirectory + uniqueName + jsonExtension)
     if (Files.exists(path)) {
       processFilePath(fileName, if(index.isDefined) Some(index.get+1) else Some(1))
     } else {
-      path
+      (path, uniqueName)
     }
   }
 

@@ -4,9 +4,8 @@ import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.builders.{CellBuilder, SentientCellBuilder}
 import it.unibo.osmos.redux.ecs.entities.{EntityManager, EntityType}
 import it.unibo.osmos.redux.ecs.systems.SentientSystem
-import it.unibo.osmos.redux.mvc.controller.LevelInfo
-import it.unibo.osmos.redux.mvc.model.MapShape.Rectangle
-import it.unibo.osmos.redux.mvc.model._
+import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.Rectangle
+import it.unibo.osmos.redux.mvc.controller.levels.structure._
 import it.unibo.osmos.redux.utils._
 import org.scalactic.Tolerance._
 import org.scalatest.{BeforeAndAfter, FunSuite}

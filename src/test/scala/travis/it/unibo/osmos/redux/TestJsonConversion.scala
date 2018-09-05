@@ -2,10 +2,9 @@ package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.{PlayerCellEntity, _}
-import it.unibo.osmos.redux.mvc.controller.LevelInfo
+import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.{Circle, Rectangle}
+import it.unibo.osmos.redux.mvc.controller.levels.structure._
 import it.unibo.osmos.redux.mvc.controller.manager.files.{FileManager, LevelFileManager}
-import it.unibo.osmos.redux.mvc.model.MapShape._
-import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.FunSuite
 

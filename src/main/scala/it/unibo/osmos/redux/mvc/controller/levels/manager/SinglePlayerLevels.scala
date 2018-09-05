@@ -1,18 +1,18 @@
-package it.unibo.osmos.redux.mvc.controller
+package it.unibo.osmos.redux.mvc.controller.levels.manager
 
+import it.unibo.osmos.redux.mvc.controller.levels.structure.{CampaignLevel, CampaignLevelStat, LevelInfo, VictoryRules}
 import it.unibo.osmos.redux.mvc.controller.manager.files.UserProgressFileManager
-import it.unibo.osmos.redux.mvc.model.VictoryRules
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GameStateEventWrapper, GameWon}
 import it.unibo.osmos.redux.utils.Logger
 
 object SinglePlayerLevels {
   implicit val who:String = "SinglePlayerLevels"
   private var levels:List[CampaignLevel] = List(
-    CampaignLevel(LevelInfo("1", VictoryRules.becomeTheBiggest), CampaignLevelStat(0,0)),
-    CampaignLevel(LevelInfo("2", VictoryRules.becomeTheBiggest, isAvailable = false), CampaignLevelStat(0,0)),
-    CampaignLevel(LevelInfo("3", VictoryRules.becomeTheBiggest, isAvailable = false), CampaignLevelStat(0,0)),
-    CampaignLevel(LevelInfo("4", VictoryRules.becomeTheBiggest, isAvailable = false), CampaignLevelStat(0,0)),
-    CampaignLevel(LevelInfo("5", VictoryRules.becomeTheBiggest, isAvailable = false), CampaignLevelStat(0,0)))
+    CampaignLevel(LevelInfo("1", VictoryRules.becomeTheBiggest), CampaignLevelStat()),
+    CampaignLevel(LevelInfo("2", VictoryRules.becomeTheBiggest, isAvailable = false), CampaignLevelStat()),
+    CampaignLevel(LevelInfo("3", VictoryRules.becomeTheBiggest, isAvailable = false), CampaignLevelStat()),
+    CampaignLevel(LevelInfo("4", VictoryRules.becomeTheBiggest, isAvailable = false), CampaignLevelStat()),
+    CampaignLevel(LevelInfo("5", VictoryRules.becomeTheBiggest, isAvailable = false), CampaignLevelStat()))
 
   private var spLevels:List[CampaignLevel] = List()
 
@@ -77,10 +77,10 @@ object SinglePlayerLevels {
     * reset the user progress
     */
   def reset():Unit ={
-    levels.head.levelStat = CampaignLevelStat(0,0)
+    levels.head.levelStat = CampaignLevelStat()
     levels.filter(lv => !lv.levelInfo.name.equals(levels.head.levelInfo.name)).foreach(lv => {
       lv.levelInfo.isAvailable = false
-      lv.levelStat = CampaignLevelStat(0,0)
+      lv.levelStat = CampaignLevelStat()
     })
     UserProgressFileManager.saveUserProgress(levels)
   }

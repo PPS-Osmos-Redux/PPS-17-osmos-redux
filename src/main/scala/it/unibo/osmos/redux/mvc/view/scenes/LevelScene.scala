@@ -1,13 +1,12 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.ecs.entities.EntityType
+import it.unibo.osmos.redux.mvc.controller.levels.structure.{LevelInfo, MapShape}
 import it.unibo.osmos.redux.mvc.controller.manager.sounds.{MusicPlayer, SoundsType}
-import it.unibo.osmos.redux.mvc.controller.LevelInfo
-import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.ViewConstants
-import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Colors._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
+import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
 import it.unibo.osmos.redux.mvc.view.components.level.{LevelScreen, LevelStateBoxListener}
 import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextListener}
 import it.unibo.osmos.redux.mvc.view.drawables._

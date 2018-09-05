@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.components.editor
 
-import it.unibo.osmos.redux.mvc.model.MapShape
+import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape
 import it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField
 import it.unibo.osmos.redux.utils.Point
 import scalafx.beans.property.DoubleProperty

@@ -1,7 +1,8 @@
-package it.unibo.osmos.redux.mvc.controller
+package it.unibo.osmos.redux.mvc.controller.levels.structure
 
 /**
   * Campaign level
+ *
   * @param levelInfo level info
   * @param levelStat level statistics
   */

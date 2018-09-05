@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.ecs.systems.borderconditions
 
 import it.unibo.osmos.redux.ecs.entities.properties.composed.CollidableProperty
-import it.unibo.osmos.redux.mvc.model.CollisionRules
+import it.unibo.osmos.redux.mvc.controller.levels.structure.CollisionRules
 import it.unibo.osmos.redux.utils.Point
 
 /** Abstract class implementing the border collision strategy

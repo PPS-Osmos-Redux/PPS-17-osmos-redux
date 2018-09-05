@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
-import it.unibo.osmos.redux.mvc.controller.LevelInfo
+import it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.level.{LevelNode, LevelNodeListener}
 import it.unibo.osmos.redux.mvc.view.components.menu.MainMenuBarListener
 import it.unibo.osmos.redux.mvc.view.context.LevelContext
