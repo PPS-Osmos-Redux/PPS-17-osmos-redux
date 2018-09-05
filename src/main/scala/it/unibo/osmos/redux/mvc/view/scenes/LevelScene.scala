@@ -1,8 +1,8 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.ecs.entities.EntityType
-import it.unibo.osmos.redux.mvc.controller.{LevelInfo, MusicPlayer, SoundsType}
-import it.unibo.osmos.redux.mvc.model.MapShape
+import it.unibo.osmos.redux.mvc.controller.levels.structure.{LevelInfo, MapShape}
+import it.unibo.osmos.redux.mvc.controller.manager.sounds.{MusicPlayer, SoundsType}
 import it.unibo.osmos.redux.mvc.view.ViewConstants
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Colors._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
@@ -312,7 +312,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     case Some(_) => throw new IllegalStateException("Map has already been set")
     case _ =>
       this.mapShape = mapShape
-      val center = Point(mapShape.center._1 + halfWindowWidth, mapShape.center._2 + halfWindowHeight)
+      val center = Point(mapShape.center.x + halfWindowWidth, mapShape.center.y + halfWindowHeight)
       mapShape match {
         case c: MapShape.Circle => mapBorder = Option(new Circle {
           centerX = center.x
@@ -377,8 +377,8 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
           val yCenterPosition = ViewConstants.Window.halfWindowHeight - c.radius
           canvas.graphicsContext2D.strokeOval(xCenterPosition, yCenterPosition, diameter, diameter)
         case r: MapShape.Rectangle =>
-          val xCenterPosition = ViewConstants.Window.halfWindowWidth - r.center._1 - r.base / 2
-          val yCenterPosition = ViewConstants.Window.halfWindowHeight - r.center._2 - r.height / 2
+          val xCenterPosition = ViewConstants.Window.halfWindowWidth - r.center.x - r.base / 2
+          val yCenterPosition = ViewConstants.Window.halfWindowHeight - r.center.y - r.height / 2
           canvas.graphicsContext2D.strokeRect(xCenterPosition, yCenterPosition, r.base, r.height)
         case _ => throw new IllegalArgumentException
       }

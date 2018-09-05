@@ -1,17 +1,27 @@
-package it.unibo.osmos.redux.mvc.controller
+package it.unibo.osmos.redux.mvc.controller.levels.manager
 
-import it.unibo.osmos.redux.mvc.model.VictoryRules
+import it.unibo.osmos.redux.mvc.controller.levels.structure.{CampaignLevel, CampaignLevelStat, LevelInfo, VictoryRules}
+import it.unibo.osmos.redux.mvc.controller.manager.files.UserProgressFileManager
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GameStateEventWrapper, GameWon}
 import it.unibo.osmos.redux.utils.Logger
 
 object SinglePlayerLevels {
   implicit val who:String = "SinglePlayerLevels"
   private var levels:List[CampaignLevel] = List(
-    CampaignLevel(LevelInfo("1", VictoryRules.becomeTheBiggest), CampaignLevelStat(0,0)),
-    CampaignLevel(LevelInfo("2", VictoryRules.becomeTheBiggest, isAvailable = false), CampaignLevelStat(0,0)),
-    CampaignLevel(LevelInfo("3", VictoryRules.becomeTheBiggest, isAvailable = false), CampaignLevelStat(0,0)),
-    CampaignLevel(LevelInfo("4", VictoryRules.becomeTheBiggest, isAvailable = false), CampaignLevelStat(0,0)),
-    CampaignLevel(LevelInfo("5", VictoryRules.becomeTheBiggest, isAvailable = false), CampaignLevelStat(0,0)))
+    CampaignLevel(LevelInfo("1", VictoryRules.becomeTheBiggest), CampaignLevelStat()),
+    CampaignLevel(LevelInfo("2", VictoryRules.becomeTheBiggest, isAvailable = false), CampaignLevelStat()),
+    CampaignLevel(LevelInfo("3", VictoryRules.becomeTheBiggest, isAvailable = false), CampaignLevelStat()),
+    CampaignLevel(LevelInfo("4", VictoryRules.becomeTheBiggest, isAvailable = false), CampaignLevelStat()),
+    CampaignLevel(LevelInfo("5", VictoryRules.becomeTheBiggest, isAvailable = false), CampaignLevelStat()))
+
+  private var spLevels:List[CampaignLevel] = List()
+
+  /**
+    * Load campaign levels, this method use default values for stats
+    * @param campaignLevels loaded from resources campaign levels info
+    */
+  def loadCampaignLevels(campaignLevels:List[LevelInfo]): Unit =
+    campaignLevels.foreach(lvInfo => spLevels = CampaignLevel(lvInfo)::spLevels)
 
   /**
     * Return the last unlocked level.
@@ -50,7 +60,7 @@ object SinglePlayerLevels {
     */
   def newEndGameEvent(endGame:GameStateEventWrapper, levelName:String): Unit = endGame match {
     case GameWon => increaseVictories(levelName)
-                    unlockNextLevel()
+                    if(toDoLevel().equals(levelName)) unlockNextLevel()
     case GameLost => increaseDefeats(levelName)
     case _ =>
   }
@@ -61,19 +71,24 @@ object SinglePlayerLevels {
     */
   def updateUserStat(campaignProgress: List[CampaignLevel]): Unit =
   /* if my values are less updated than the file ones */
-    if(levels.map(l => l.levelInfo.name).indexOf(toDoLevel(campaignProgress)) <= levels.map(l => l.levelInfo.name).indexOf(toDoLevel(campaignProgress))) levels = campaignProgress
+    if(isMostRecent(toDoLevel(campaignProgress))) levels = campaignProgress
 
   /**
     * reset the user progress
     */
   def reset():Unit ={
-    levels.head.levelStat = CampaignLevelStat(0,0)
+    levels.head.levelStat = CampaignLevelStat()
     levels.filter(lv => !lv.levelInfo.name.equals(levels.head.levelInfo.name)).foreach(lv => {
       lv.levelInfo.isAvailable = false
-      lv.levelStat = CampaignLevelStat(0,0)
+      lv.levelStat = CampaignLevelStat()
     })
-    FileManager.saveUserProgress(levels)
+    UserProgressFileManager.saveUserProgress(levels)
   }
+
+  private def isMostRecent(loadedToDoLevelName:String) =
+    getIndexOfLevelByName(toDoLevel()) <= getIndexOfLevelByName(loadedToDoLevelName)
+
+  private def getIndexOfLevelByName(levelName:String) = levels.map(cLv => cLv.levelInfo.name).indexOf(levelName)
 
   private def searchLastAvailableLevel(cLevels:List[LevelInfo] = getLevelsInfo):Option[String] = cLevels match {
     case LevelInfo(lv, _, av)::LevelInfo(_, _, av2)::_ if av && !av2 => Some(lv)
