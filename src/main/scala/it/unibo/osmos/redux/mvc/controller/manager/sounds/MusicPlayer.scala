@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.mvc.controller.manager.sounds
 
 import it.unibo.osmos.redux.mvc.controller.Controller
-import it.unibo.osmos.redux.mvc.controller.manager.files.FileManager
+import it.unibo.osmos.redux.mvc.controller.manager.files.{FileManager, SoundFileManager}
 import javafx.scene.media.MediaPlayer.Status
 import javafx.scene.media.MediaPlayer.Status._
 import javafx.util
@@ -90,7 +90,7 @@ object MusicPlayer {
 
   private def playButtonSound(sound: String): Unit = buttonAudioClip match {
     case Some(bac) => bac.play(generalVolume)
-    case _ => buttonAudioClip = Some(new AudioClip(FileManager.loadButtonsSound())); playButtonSound(sound)
+    case _ => buttonAudioClip = Some(new AudioClip(SoundFileManager.loadButtonsSound())); playButtonSound(sound)
   }
 
   private def canApplyStateChange(allowedStates: List[Status]): Boolean = mediaPlayer match {

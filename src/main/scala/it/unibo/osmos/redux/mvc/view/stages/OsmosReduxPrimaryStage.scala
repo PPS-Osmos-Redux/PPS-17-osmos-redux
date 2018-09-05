@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.stages
 
-import it.unibo.osmos.redux.mvc.controller.manager.files.FileManager
+import it.unibo.osmos.redux.mvc.controller.manager.files.{FileManager, StyleFileManager}
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
 import it.unibo.osmos.redux.mvc.view.scenes._
 import scalafx.application.JFXApp
@@ -40,7 +40,7 @@ object OsmosReduxPrimaryStage {
 
     private val mainScene = new MainScene(this, this) {
       // TODO: changing scene will ignore the imported style
-      stylesheets.addAll(FileManager.getStyle)
+      stylesheets.addAll(StyleFileManager.getStyle)
     }
 
     /**

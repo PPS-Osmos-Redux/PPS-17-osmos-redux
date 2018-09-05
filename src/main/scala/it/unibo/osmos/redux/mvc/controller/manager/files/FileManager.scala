@@ -3,37 +3,15 @@ package it.unibo.osmos.redux.mvc.controller.manager.files
 import java.io.{File, PrintWriter}
 import java.nio.file._
 
+import it.unibo.osmos.redux.utils.Constants.UserHomePaths
 import it.unibo.osmos.redux.utils.Logger
 
 import scala.io.{BufferedSource, Source}
 import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}
 
-object ResourcesPaths {
-  val separator: String = "/"
-  val levelStartPath: String = separator + "levels"
-  val singlePlayerLevelsPath: String = levelStartPath + separator + "singlePlayer" + separator
-  val multiPlayerLevelsPath: String = levelStartPath + separator + "multiPlayer" + separator
-}
-
-object UserHomePaths {
-  val defaultFS: FileSystem = FileSystems.getDefault
-  val systemSeparator: String = defaultFS.getSeparator
-  val userHome: String = System.getProperty("user.home")
-
-  val gameDirectory:String = "Osmos-Redux" + systemSeparator
-
-  val levelsDirectory: String = userHome + systemSeparator + gameDirectory +
-    "CustomLevels" + systemSeparator
-
-  val userProgressFileName = "UserProgress"
-
-  val userProgressDirectory:String = userHome + systemSeparator + gameDirectory +
-    userProgressFileName + systemSeparator
-}
-
-object FileManager {
-  implicit val who: String = "FileManager"
+abstract class FileManager {
+  implicit val who: String
   val jsonExtension = ".json"
 
   /**
@@ -54,44 +32,6 @@ object FileManager {
        exception.toString)
      false
   }
-
-  /**
-    * Return file name without json extension
-    * @param file file object
-    * @return file name
-    */
-  implicit def getFileNameWithoutJsonExtension(file:File):String = file.getName.substring(0,file.getName.length-jsonExtension.length)
-
-  def getStyle: String = {
-    try {
-      val url = getClass.getResource("/style/style.css")
-      //println("style url: " + url)
-      url.toString
-    } catch {
-      case _: NullPointerException =>
-        Logger.log("Error: style.css file not found")
-        throw new NullPointerException("style.css file not found");
-    }
-  }
-
-  val soundsPath: String = ResourcesPaths.separator + "sounds" + ResourcesPaths.separator
-  /**
-    * Gets menu music path
-    * @return menu music string path
-    */
-  def loadMenuMusic(): String = getClass.getResource(soundsPath + "MenuMusic.mp3").toURI toString
-
-  /**
-    * Gets button sound path
-    * @return button sound string path
-    */
-  def loadButtonsSound(): String = getClass.getResource(soundsPath + "ButtonSound.mp3").toURI toString
-
-  /**
-    * Gets level music path
-    * @return level music string path
-    */
-  def loadLevelMusic(): String = getClass.getResource(soundsPath + "LevelMusic.mp3").toURI toString
 
   /**
     * Create a new file or overwrite its content if it exists

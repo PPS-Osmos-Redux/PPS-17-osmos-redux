@@ -159,9 +159,9 @@ class TestJsonConversion extends FunSuite {
     val readLevel2 = LevelFileManager.getCustomLevel(level.levelInfo.name)
     assert(readLevel2.isDefined)
     assert(readLevel2.get.levelInfo.name.equals(level.levelInfo.name))
-    FileManager.deleteFile(level.levelInfo.name)
+    LevelFileManager.deleteFile(level.levelInfo.name)
     assert(LevelFileManager.getCustomLevel(level.levelInfo.name).isEmpty)
-    FileManager.deleteFile(secondFileName)
+    LevelFileManager.deleteFile(secondFileName)
     assert(LevelFileManager.getCustomLevel(secondFileName).isEmpty)
   }
 }

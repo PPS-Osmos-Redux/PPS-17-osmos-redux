@@ -7,7 +7,7 @@ import it.unibo.osmos.redux.multiplayer.common.{ActorSystemHolder, MultiPlayerMo
 import it.unibo.osmos.redux.multiplayer.server.Server
 import it.unibo.osmos.redux.mvc.controller.levels.manager.{MultiPlayerLevels, SinglePlayerLevels}
 import it.unibo.osmos.redux.mvc.controller.levels.structure._
-import it.unibo.osmos.redux.mvc.controller.manager.files.{FileManager, LevelFileManager, UserProgressFileManager}
+import it.unibo.osmos.redux.mvc.controller.manager.files.{SoundFileManager, LevelFileManager, UserProgressFileManager}
 import it.unibo.osmos.redux.mvc.controller.manager.sounds.SoundsType
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context._
@@ -55,7 +55,7 @@ trait Controller {
 
   /**
     * Stops the level.
-    * @param If the level have been won or lost.
+    * @param victory the level have been won or lost.
     */
   def stopLevel(victory: Boolean = false): Unit
 
@@ -305,9 +305,9 @@ case class ControllerImpl() extends Controller {
   }
 
   override def getSoundPath(soundType: SoundsType.Value): Option[String] = soundType match {
-    case SoundsType.menu => Some(FileManager.loadMenuMusic())
-    case SoundsType.level => Some(FileManager.loadLevelMusic())
-    case SoundsType.button => Some(FileManager.loadButtonsSound())
+    case SoundsType.menu => Some(SoundFileManager.loadMenuMusic())
+    case SoundsType.level => Some(SoundFileManager.loadLevelMusic())
+    case SoundsType.button => Some(SoundFileManager.loadButtonsSound())
     case _ => Logger.log("Sound type not managed!! [getSoundPath]")
               None
   }
@@ -324,7 +324,7 @@ case class ControllerImpl() extends Controller {
     LevelFileManager.saveCustomLevel(lv)
   }
 
-  override def removeLevel(name: String): Boolean = FileManager.deleteFile(name) match {
+  override def removeLevel(name: String): Boolean = LevelFileManager.deleteFile(name) match {
     case Success(_) => true
     case Failure(exception) => Logger.log("Error occurred removing custom level file" + exception.getMessage)
                                false

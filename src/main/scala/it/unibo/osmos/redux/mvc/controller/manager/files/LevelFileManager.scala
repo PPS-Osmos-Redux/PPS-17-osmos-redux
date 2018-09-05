@@ -4,15 +4,15 @@ import java.io.File
 import java.nio.file.{Files, Path}
 
 import it.unibo.osmos.redux.mvc.controller.levels.structure.{Level, LevelInfo}
-import it.unibo.osmos.redux.mvc.controller.manager.files.FileManager._
 import it.unibo.osmos.redux.mvc.model.JsonProtocols._
 import it.unibo.osmos.redux.utils.Logger
 import spray.json._
 
 import scala.io.Source
 import scala.util.{Failure, Success, Try}
+import it.unibo.osmos.redux.utils.Constants.UserHomePaths._
 
-object LevelFileManager {
+object LevelFileManager extends FileManager {
 
   implicit val who: String = "LevelFileManager"
 
@@ -23,7 +23,7 @@ object LevelFileManager {
     * @return content of file wrapped into a Option
     */
   def getLevelFromResource(chosenLevel: String, isMultiPlayer: Boolean = false): Option[Level] = {
-    import ResourcesPaths.{multiPlayerLevelsPath, singlePlayerLevelsPath}
+    import it.unibo.osmos.redux.utils.Constants.ResourcesPaths._
     val levelsPath = if (isMultiPlayer) multiPlayerLevelsPath else singlePlayerLevelsPath
     val fileStream = this.getClass.getResourceAsStream(levelsPath + chosenLevel + jsonExtension)
     val fileContent = Source.fromInputStream(fileStream).mkString
@@ -55,7 +55,7 @@ object LevelFileManager {
     * @return an option with the required level if it doesn't fail
     */
   def getCustomLevel(implicit fileName: String): Option[Level] =
-    loadFile(UserHomePaths.levelsDirectory + fileName + jsonExtension) match {
+    loadFile(levelsDirectory + fileName + jsonExtension) match {
       case Some(text) => textToLevel(text).toOption
       case _ => None
     }
@@ -67,8 +67,8 @@ object LevelFileManager {
     */
   def getCustomLevelsInfo: Try[List[LevelInfo]] = {
     /*Create directory tree for avoid NullPointer exception later*/
-    createDirectoriesTree(new File(UserHomePaths.levelsDirectory + "rnd.txt"))
-    Try(new File(UserHomePaths.levelsDirectory).listFiles((_, name) => name.endsWith(jsonExtension))
+    createDirectoriesTree(new File(levelsDirectory + "rnd.txt"))
+    Try(new File(levelsDirectory).listFiles((_, name) => name.endsWith(jsonExtension))
       .map(f => loadLevelInfo(f))
       .filter(optLvl => optLvl.isDefined).map(opt => opt.get).toList)
   }
@@ -76,8 +76,7 @@ object LevelFileManager {
   private def textToLevel(text: String): Try[Level] = Try(text.parseJson.convertTo[Level])
   private def textToLevelInfo(text:String): Try[LevelInfo] = Try(text.parseJson.convertTo[LevelInfo])
 
-  import UserHomePaths._
-  def processFilePath(fileName:String, index:Option[Int] = None): (Path, String) = {
+  private def processFilePath(fileName:String, index:Option[Int] = None): (Path, String) = {
     val uniqueName =  fileName+index.getOrElse("")
     val path = defaultFS.getPath(levelsDirectory + uniqueName + jsonExtension)
     if (Files.exists(path)) {
@@ -88,8 +87,15 @@ object LevelFileManager {
   }
 
   private def loadLevelInfo(implicit fileName: String): Option[LevelInfo] =
-    loadFile(UserHomePaths.levelsDirectory + fileName + jsonExtension) match {
+    loadFile(levelsDirectory + fileName + jsonExtension) match {
       case Some(text) => textToLevelInfo(text).toOption
       case _ => None
     }
+
+  /**
+    * Return file name without json extension
+    * @param file file object
+    * @return file name
+    */
+  private implicit def getFileNameWithoutJsonExtension(file:File):String = file.getName.substring(0,file.getName.length-jsonExtension.length)
 }
