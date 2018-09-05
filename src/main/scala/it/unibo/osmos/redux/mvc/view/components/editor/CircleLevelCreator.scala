@@ -2,6 +2,7 @@ package it.unibo.osmos.redux.mvc.view.components.editor
 
 import it.unibo.osmos.redux.mvc.model.MapShape
 import it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField
+import it.unibo.osmos.redux.utils.Point
 import scalafx.beans.property.{DoubleProperty, ObjectProperty}
 import scalafx.scene.control.{Label, TextField}
 import scalafx.scene.layout.{HBox, VBox}
@@ -27,5 +28,5 @@ class CircleLevelCreator extends BaseEditorCreator[MapShape.Circle] {
 
   children = Seq(centerNode, radiusNode)
 
-  override def create(): MapShape.Circle = MapShape.Circle((xCenter.value, yCenter.value), radius.value)
+  override def create(): MapShape.Circle = MapShape.Circle(Point(xCenter.value, yCenter.value), radius.value)
 }

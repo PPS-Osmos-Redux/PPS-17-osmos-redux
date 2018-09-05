@@ -12,8 +12,8 @@ import it.unibo.osmos.redux.utils.{Point, Vector}
 case class EscapeFromBoundaryRule(levelInfo: Level) extends SentientRule {
 
   private val bounceRule = levelInfo.levelMap.mapShape match {
-    case shape: Rectangle => RectangularBorder(Point(shape.center._1, shape.center._2), CollisionRules.bouncing, shape.base, shape.height)
-    case shape: Circle => CircularBorder(Point(shape.center._1, shape.center._2), CollisionRules.bouncing, shape.radius)
+    case shape: Rectangle => RectangularBorder(Point(shape.center.x, shape.center.y), CollisionRules.bouncing, shape.base, shape.height)
+    case shape: Circle => CircularBorder(Point(shape.center.x, shape.center.y), CollisionRules.bouncing, shape.radius)
     case _ => throw new IllegalArgumentException
   }
 

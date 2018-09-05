@@ -18,7 +18,7 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
   var levelInfo: Level = _
 
   before {
-    setupLevelInfo(Rectangle((100, 100), 100, 150), CollisionRules.bouncing)
+    setupLevelInfo(Rectangle(Point(100, 100), 100, 150), CollisionRules.bouncing)
   }
 
   after {
@@ -125,7 +125,7 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
   }
 
   test("Collision with rectangular shape border, using bouncing collision rule, bounces entities back") {
-    setupLevelInfo(Rectangle((160, 100), 100, 160), CollisionRules.bouncing)
+    setupLevelInfo(Rectangle(Point(160, 100), 100, 160), CollisionRules.bouncing)
     val system = CollisionSystem(levelInfo)
 
     val lccd = DimensionComponent(2)
@@ -170,7 +170,7 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
   }
 
   test("Collision with rectangular shape border, using instant death collision rule, reduces entities' radius") {
-    setupLevelInfo(Rectangle((160, 100), 100, 160), CollisionRules.instantDeath)
+    setupLevelInfo(Rectangle(Point(160, 100), 100, 160), CollisionRules.instantDeath)
     val system = CollisionSystem(levelInfo)
 
     val lccd = DimensionComponent(2)
@@ -220,7 +220,7 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
   test("Collision with circular shape border, using bouncing collision rule, bounces entities back") {
     val levelCenter = Point(300.0, 300.0)
     val levelRadius = 200.0
-    val mapShape = Circle((levelCenter.x, levelCenter.y), levelRadius)
+    val mapShape = Circle(Point(levelCenter.x, levelCenter.y), levelRadius)
     setupLevelInfo(mapShape, CollisionRules.bouncing)
     val system = CollisionSystem(levelInfo)
 
@@ -240,7 +240,7 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
   test("Collision with circular shape border, using instant death collision rule, reduces entities' radius") {
     val levelCenter = Point(300.0, 300.0)
     val levelRadius = 200.0
-    val mapShape = Circle((levelCenter.x, levelCenter.y), levelRadius)
+    val mapShape = Circle(Point(levelCenter.x, levelCenter.y), levelRadius)
     setupLevelInfo(mapShape, CollisionRules.instantDeath)
     val system = CollisionSystem(levelInfo)
 
@@ -269,10 +269,10 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
 
     system.update()
     val map = levelInfo.levelMap.mapShape.asInstanceOf[Rectangle]
-    val boundaryLeft = map.center._1 - map.base / 2
-    val boundaryRight = map.center._1 + map.base / 2
-    val boundaryTop = map.center._2 + map.height / 2
-    val boundaryBottom = map.center._2 - map.height / 2
+    val boundaryLeft = map.center.x - map.base / 2
+    val boundaryRight = map.center.x + map.base / 2
+    val boundaryTop = map.center.y + map.height / 2
+    val boundaryBottom = map.center.y - map.height / 2
 
     assert(entity.getPositionComponent.point.x >= boundaryLeft + entity.getDimensionComponent.radius)
     assert(entity.getPositionComponent.point.x <= boundaryRight - entity.getDimensionComponent.radius)

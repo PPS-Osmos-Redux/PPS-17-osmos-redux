@@ -42,7 +42,7 @@ object MapShapeType extends Enumeration {
 }
 sealed trait MapShape {
   val mapShape:MapShapeType.Value
-  val center:(Double,Double)
+  val center:Point
 }
 
 object MapShape {
@@ -52,7 +52,7 @@ object MapShape {
     * @param height rectangle height
     * @param base rectangle base
     */
-  case class Rectangle(override val center: (Double, Double), height:Double, base:Double)
+  case class Rectangle(override val center: Point, height:Double, base:Double)
                                                                           extends MapShape {
     override val mapShape: MapShapeType.Value = MapShapeType.Rectangle
   }
@@ -62,7 +62,7 @@ object MapShape {
     * @param center center of map
     * @param radius circle radius
     */
-  case class Circle(override val center: (Double, Double), radius:Double) extends MapShape {
+  case class Circle(override val center: Point, radius:Double) extends MapShape {
     override val mapShape: MapShapeType.Value = MapShapeType.Circle
   }
 }
@@ -79,7 +79,6 @@ case class LevelMap(mapShape:MapShape, collisionRule:CollisionRules.Value)
   * @param levelInfo LevelInfo
   * @param levelMap level map
   * @param entities list of level entities
-  * @param isSimulation if it's a simulation
   */
 case class Level(var levelInfo:LevelInfo,
                  levelMap:LevelMap,
@@ -97,8 +96,8 @@ case class Level(var levelInfo:LevelInfo,
     */
   def rectangularMapCheck(rectangle:Rectangle): Unit = {
     /*calculate map bound*/
-    var westMiddlePointX = rectangle.center._1 - (rectangle.base/2)
-    var northMiddlePointY = rectangle.center._2 - (rectangle.height/2)
+    var westMiddlePointX = rectangle.center.x - (rectangle.base/2)
+    var northMiddlePointY = rectangle.center.y - (rectangle.height/2)
     //const for translate point if they are negative
     val kx:Double = if(westMiddlePointX < 0) -westMiddlePointX else 0
     val ky:Double = if(northMiddlePointY < 0) -northMiddlePointY else 0
@@ -121,7 +120,7 @@ case class Level(var levelInfo:LevelInfo,
 
   def circularMapCheck(circle:Circle): Unit =
     entities = entities.map(ent => (ent, MathUtils.euclideanDistance(ent.getPositionComponent.point,
-                                                                      Point(circle.center._1, circle.center._2)) +
+                                                                      Point(circle.center.x, circle.center.y)) +
                                                                       ent.getDimensionComponent.radius))
                        .filterNot(tup => tup._2 > circle.radius)
                        .map(t => t._1)

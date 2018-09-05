@@ -155,10 +155,12 @@
   },
   "levelMap": {
     "mapShape": {
+      "center": {
+        "x": 0.0,
+        "y": 0.0
+      },
       "mapShape": "Circle",
-      "radius": 350.0,
-      "centerX": 0.0,
-      "centerY": 0.0
+      "radius": 350.0
     },
     "collisionRule": "Bouncing"
   }

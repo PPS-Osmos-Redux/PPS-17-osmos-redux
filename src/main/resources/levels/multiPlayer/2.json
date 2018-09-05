@@ -149,11 +149,13 @@
   },
   "levelMap": {
     "mapShape": {
+      "center": {
+        "x": 0.0,
+        "y": 0.0
+      },
       "mapShape": "Rectangle",
       "height": 600.1,
-      "base": 500.6,
-      "centerX": 0.0,
-      "centerY": 0.0
+      "base": 500.6
     },
     "collisionRule": "Bouncing"
   }

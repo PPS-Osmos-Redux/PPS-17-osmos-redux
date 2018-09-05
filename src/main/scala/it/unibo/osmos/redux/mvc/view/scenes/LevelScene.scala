@@ -269,7 +269,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   override def onLevelSetup(mapShape: MapShape): Unit = mapBorder match {
     case Some(_) => throw new IllegalStateException("Map has already been set")
     case _ =>
-      val center = Point(mapShape.center._1 + halfWindowWidth, mapShape.center._2 + halfWindowHeight)
+      val center = Point(mapShape.center.x + halfWindowWidth, mapShape.center.y + halfWindowHeight)
       mapShape match {
         case c: MapShape.Circle => mapBorder = Option(new Circle {
           centerX = center.x

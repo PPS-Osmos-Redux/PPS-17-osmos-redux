@@ -20,8 +20,8 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
 
   private val collisionRule = levelInfo.levelMap.collisionRule
   private val bounceRule = levelInfo.levelMap.mapShape match {
-    case shape: Rectangle => RectangularBorder(Point(shape.center._1, shape.center._2), collisionRule, shape.base, shape.height)
-    case shape: Circle => CircularBorder(Point(shape.center._1, shape.center._2), collisionRule, shape.radius)
+    case shape: Rectangle => RectangularBorder(Point(shape.center.x, shape.center.y), collisionRule, shape.base, shape.height)
+    case shape: Circle => CircularBorder(Point(shape.center.x, shape.center.y), collisionRule, shape.radius)
     case _ => throw new IllegalArgumentException
   }
 

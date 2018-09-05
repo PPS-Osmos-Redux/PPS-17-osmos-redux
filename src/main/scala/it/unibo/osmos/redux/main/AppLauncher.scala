@@ -8,7 +8,6 @@ import scalafx.application.JFXApp
   * Application entry point.
   */
 object AppLauncher extends JFXApp {
-  SinglePlayerLevels.loadCampaignLevels(FileManager.loadCampaignLevels())
   SinglePlayerLevels.updateUserStat(FileManager.loadUserProgress())
   val controller: Controller = new ControllerImpl
   MusicPlayer.setController(controller)

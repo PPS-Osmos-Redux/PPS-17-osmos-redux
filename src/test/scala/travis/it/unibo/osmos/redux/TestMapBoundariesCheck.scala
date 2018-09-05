@@ -34,7 +34,7 @@ class TestMapBoundariesCheck extends FunSuite with BeforeAndAfter {
 
     val listCells = List(ce, pce, gc, sc)
     //LevelMap
-    val rectangle: MapShape = Rectangle((0, 0), 10, 10)
+    val rectangle: MapShape = Rectangle(Point(0, 0), 10, 10)
     val levelMap: LevelMap = LevelMap(rectangle, CollisionRules.bouncing)
     //Level
     var level: Level = Level(LevelInfo(levelId, VictoryRules.becomeTheBiggest),
@@ -55,7 +55,7 @@ class TestMapBoundariesCheck extends FunSuite with BeforeAndAfter {
   test("Circular map boundaries") {
     val listCells = List(ce, pce, gc, sc)
     //LevelMap
-    val circle: MapShape = Circle((0, 0), 5)
+    val circle: MapShape = Circle(Point(0, 0), 5)
     val levelMap: LevelMap = LevelMap(circle, CollisionRules.bouncing)
     //Level
     var level: Level = Level(LevelInfo(levelId, VictoryRules.becomeTheBiggest),

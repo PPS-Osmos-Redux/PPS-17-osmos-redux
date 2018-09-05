@@ -29,8 +29,8 @@ class TestJsonConversion extends FunSuite {
   val sc = SentientCellEntity(a, c, d, p, s, v, spawner)
   val listCell: List[CellEntity] = List(ce, pce, gc, sc)
   //LevelMap
-  val rectangle: MapShape = Rectangle((50, 50), 10.1, 5.6)
-  val circle: MapShape = Circle((50.1, 50.2), 5.7)
+  val rectangle: MapShape = Rectangle(Point(50, 50), 10.1, 5.6)
+  val circle: MapShape = Circle(Point(50.1, 50.2), 5.7)
   val listShape: List[MapShape] = List(rectangle, circle)
   val levelMap: LevelMap = LevelMap(rectangle, CollisionRules.bouncing)
   //Level
