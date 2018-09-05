@@ -213,7 +213,9 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
     /* Sending the event */
     sendMouseEvent(mouseEvent)
-  } else {println(inputEnabled)}
+  } else {
+    println(inputEnabled)
+  }
 
   onScroll = scrollEvent => if (!paused.value && inputEnabled) {
     val delta = 1.2
@@ -293,13 +295,22 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     * @param mouseEvent the mouse event
     */
   protected def sendMouseEvent(mouseEvent: MouseEvent): Unit = levelContext match {
-    case Some(lc) => if (!paused.value && inputEnabled) lc notifyMouseEvent MouseEventWrapper(Point((mouseEvent.getX /*+ canvas.getTranslateX*/ - halfWindowWidth) / canvas.getScaleX, (mouseEvent.getY /*+ canvas.getTranslateY*/ - halfWindowHeight) / canvas.getScaleY), lc.getPlayerUUID)
+    case Some(lc) =>
+      if (!paused.value && inputEnabled) {
+        // transforms click coordinates considering window size and zoom
+        val x = mouseEvent.getX - halfWindowWidth - canvas.getTranslateX / canvas.getScaleX
+        val y = mouseEvent.getY - halfWindowHeight - canvas.getTranslateY / canvas.getScaleY
+        lc notifyMouseEvent MouseEventWrapper(Point(x, y), lc.getPlayerUUID)
+      }
     case _ =>
   }
+
+  private var mapShape: MapShape = _
 
   override def onLevelSetup(mapShape: MapShape): Unit = mapBorder match {
     case Some(_) => throw new IllegalStateException("Map has already been set")
     case _ =>
+      this.mapShape = mapShape
       val center = Point(mapShape.center._1 + halfWindowWidth, mapShape.center._2 + halfWindowHeight)
       mapShape match {
         case c: MapShape.Circle => mapBorder = Option(new Circle {
@@ -329,8 +340,6 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
       }
 
       Platform.runLater({
-
-
         /* Starting the level */
         startLevel()
       })
@@ -359,11 +368,20 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
       /* Draw the background */
       canvas.graphicsContext2D.drawImage(backgroundImage, 0, 0, width.value, height.value)
       // TODO: make it colored white if bouncing, red if instant death
-      val mapRadius = 500
-      val mapDiameter = mapRadius * 2
-      val xCenterPosition = ViewConstants.Window.halfWindowWidth - mapRadius
-      val yCenterPosition = ViewConstants.Window.halfWindowHeight - mapRadius
-      canvas.graphicsContext2D.strokeOval(xCenterPosition, yCenterPosition, mapDiameter, mapDiameter)
+      canvas.graphicsContext2D.stroke = Color.Red
+      mapShape match {
+        case c: MapShape.Circle =>
+          val diameter = c.radius * 2
+          val xCenterPosition = ViewConstants.Window.halfWindowWidth - c.radius
+          val yCenterPosition = ViewConstants.Window.halfWindowHeight - c.radius
+          canvas.graphicsContext2D.strokeOval(xCenterPosition, yCenterPosition, diameter, diameter)
+        case r: MapShape.Rectangle =>
+          val xCenterPosition = ViewConstants.Window.halfWindowWidth - r.center._1 - r.base / 2
+          val yCenterPosition = ViewConstants.Window.halfWindowHeight - r.center._2 - r.height / 2
+          canvas.graphicsContext2D.strokeRect(xCenterPosition, yCenterPosition, r.base, r.height)
+        case _ => throw new IllegalArgumentException
+      }
+
       /* Draw the entities */
       playerEntity match {
         case Some(pe) => entitiesWrappers foreach (e => e._1 match {
