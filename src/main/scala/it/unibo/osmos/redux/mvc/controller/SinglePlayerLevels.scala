@@ -50,7 +50,7 @@ object SinglePlayerLevels {
     */
   def newEndGameEvent(endGame:GameStateEventWrapper, levelName:String): Unit = endGame match {
     case GameWon => increaseVictories(levelName)
-                    unlockNextLevel()
+                    if(toDoLevel().equals(levelName)) unlockNextLevel()
     case GameLost => increaseDefeats(levelName)
     case _ =>
   }
