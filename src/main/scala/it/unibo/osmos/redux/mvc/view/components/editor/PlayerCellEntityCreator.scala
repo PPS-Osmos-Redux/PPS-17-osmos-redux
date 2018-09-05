@@ -1,14 +1,14 @@
 package it.unibo.osmos.redux.mvc.view.components.editor
 
 import it.unibo.osmos.redux.ecs.entities.CellEntity
-import it.unibo.osmos.redux.ecs.entities.builders.{CellBuilder, PlayerCellBuilder}
+import it.unibo.osmos.redux.ecs.entities.builders.{EntityBuilder, PlayerCellBuilder}
 
 /**
   * A panel showing input nodes which is also capable of providing the requested PlayerCellEntity
   */
 class PlayerCellEntityCreator extends AbstractSpawnerCellEntityCreator {
 
-  override def configureBuilder(builder: CellBuilder, withEntityType: Boolean = true): Unit = {
+  override def configureBuilder[T](builder: EntityBuilder[T], withEntityType: Boolean = true): Unit = {
     builder match {
       case pce: PlayerCellBuilder =>
         super.configureBuilder(pce, withEntityType = true)
@@ -22,5 +22,4 @@ class PlayerCellEntityCreator extends AbstractSpawnerCellEntityCreator {
     configureBuilder(builder)
     builder.build
   }
-
 }

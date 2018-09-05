@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.components.editor
 
-import it.unibo.osmos.redux.ecs.entities.builders.{CellBuilder, GravityCellBuilder}
-import it.unibo.osmos.redux.ecs.entities.{CellEntity, GravityCellEntity}
+import it.unibo.osmos.redux.ecs.entities.CellEntity
+import it.unibo.osmos.redux.ecs.entities.builders.{EntityBuilder, GravityCellBuilder}
 import it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField
 import scalafx.beans.property.DoubleProperty
 import scalafx.scene.control.Label
@@ -19,7 +19,7 @@ class GravityCellEntityCreator extends CellEntityCreator {
 
   children.add(weightNode)
 
-  override def configureBuilder(builder: CellBuilder, withEntityType: Boolean = true): Unit = {
+  override def configureBuilder[T](builder: EntityBuilder[T], withEntityType: Boolean = true): Unit = {
     builder match {
       case gcb: GravityCellBuilder =>
         super.configureBuilder(gcb)
@@ -33,5 +33,4 @@ class GravityCellEntityCreator extends CellEntityCreator {
     configureBuilder(builder)
     builder.build
   }
-
 }

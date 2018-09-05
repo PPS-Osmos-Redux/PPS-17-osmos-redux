@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.components.editor
 
-import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
+import it.unibo.osmos.redux.ecs.entities.builders.{CellBuilder, EntityBuilder}
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityType}
 import it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField
 import scalafx.beans.property.{DoubleProperty, ObjectProperty}
@@ -57,7 +57,7 @@ class CellEntityCreator extends BaseEditorCreator[CellEntity] with EditorCellBui
     * Method that configures the basic cell builder. It may be overridden by other cell entity creators
     * @param builder the cell builder
     */
-  override def configureBuilder(builder: CellBuilder, withEntityType: Boolean = true): Unit = {
+  override def configureBuilder[T](builder: EntityBuilder[T], withEntityType: Boolean = true): Unit = {
     builder
       .visible(true)
       .collidable(true)
@@ -69,7 +69,7 @@ class CellEntityCreator extends BaseEditorCreator[CellEntity] with EditorCellBui
   }
 
   override def create(): CellEntity = {
-    val builder = new CellBuilder()
+    val builder = CellBuilder()
     configureBuilder(builder)
     builder.build
   }
