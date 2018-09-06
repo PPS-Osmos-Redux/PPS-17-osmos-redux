@@ -3,14 +3,12 @@ package it.unibo.osmos.redux.mvc.view
 import it.unibo.osmos.redux.ecs.entities.CellEntity
 import it.unibo.osmos.redux.mvc.controller.Controller
 import it.unibo.osmos.redux.mvc.controller.levels.structure.{CollisionRules, LevelInfo, MapShape, VictoryRules}
+import it.unibo.osmos.redux.mvc.view.components.custom.AlertFactory
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LobbyContext}
 import it.unibo.osmos.redux.mvc.view.stages.{OsmosReduxPrimaryStage, PrimaryStageListener}
 import it.unibo.osmos.redux.utils.GenericResponse
 import scalafx.application.{JFXApp, Platform}
-import scalafx.scene.control.Alert.AlertType
-import scalafx.scene.control.{Alert, Label, TextArea}
-import scalafx.scene.layout.VBox
 
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 import scala.util.{Failure, Success}
@@ -94,26 +92,9 @@ object View {
 
     override def onLevelSpeedChanged(increment: Boolean): Unit = checkController(() => controller.get.changeLevelSpeed(increment))
 
-    override def onDisplayError(exception: Throwable): Unit = {
-      // TODO change for a better output
+    def onDisplayError(message: String): Unit = {
       Platform.runLater {
-        val dialogPaneContent = new VBox()
-
-        val label = new Label("Stack Trace:")
-
-        val textArea = new TextArea()
-        textArea.setText(exception.getMessage)
-
-        dialogPaneContent.getChildren.addAll(label, textArea)
-
-        val alert = new Alert(AlertType.Error) {
-          title = "Error Dialog"
-          headerText = None
-          graphic = null
-        }
-        // Set content for Dialog Pane
-        alert.getDialogPane.setContent(dialogPaneContent)
-        alert.showAndWait()
+        AlertFactory.createErrorAlert("Error Dialog", message).showAndWait()
       }
     }
 
@@ -127,11 +108,11 @@ object View {
     override def onLobbyRequest(user: User, levelInfo: Option[LevelInfo], lobbyContext: LobbyContext, callback: (User, Option[LevelInfo], LobbyContext, GenericResponse[Boolean]) => Unit): Unit =
       checkController(() => controller.get.initLobby(user, lobbyContext).future.onComplete {
         case Success(value) => callback(user, levelInfo, lobbyContext, value)
-        case Failure(e) => onDisplayError(e)
+        case Failure(e) => onDisplayError("Connection call succeeded but did not receive response")
       })
 
     override def onStartMultiplayerGameClick(levelInfo: LevelInfo): Unit = checkController(() => controller.get.initMultiPlayerLevel(levelInfo).future.onComplete {
-      case Failure(e) => onDisplayError(e)
+      case Failure(e) => onDisplayError("Failed controller init")
       case Success(_) => //do nothing
     })
 
