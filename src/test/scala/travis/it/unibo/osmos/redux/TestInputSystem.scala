@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.builders.{CellBuilder, PlayerCellBuilder}
+import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 import it.unibo.osmos.redux.ecs.entities.{EntityManager, PlayerCellEntity}
 import it.unibo.osmos.redux.ecs.systems.InputSystem
 import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
@@ -15,10 +15,10 @@ class TestInputSystem extends FunSuite with BeforeAndAfter {
 
   before{
     system = InputSystem()
-    pce = PlayerCellBuilder()
-      .withAcceleration(1,1).withSpeed(4,0)
-      .withDimension(5).withPosition(0,0)
-      .build.asInstanceOf[PlayerCellEntity]
+    pce = CellBuilder()
+      .withAcceleration(1, 1).withSpeed(4, 0)
+      .withDimension(5).withPosition(0, 0)
+      .buildPlayerEntity()
   }
 
   after(EntityManager.clear())
@@ -46,7 +46,7 @@ class TestInputSystem extends FunSuite with BeforeAndAfter {
   test("InputSystem should update only entities with input property") {
 
     //add entities to the system using entity manager
-    val ce = new CellBuilder().build
+    val ce = CellBuilder().buildCellEntity()
     EntityManager.add(pce)
     EntityManager.add(ce)
 

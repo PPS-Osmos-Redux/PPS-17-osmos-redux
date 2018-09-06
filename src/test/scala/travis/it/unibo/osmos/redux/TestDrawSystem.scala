@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.entities._
-import it.unibo.osmos.redux.ecs.entities.builders.{CellBuilder, PlayerCellBuilder}
+import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 import it.unibo.osmos.redux.ecs.entities.properties.composed.DrawableProperty
 import it.unibo.osmos.redux.ecs.systems.DrawSystem
 import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape
@@ -75,7 +75,7 @@ class TestDrawSystem extends FunSuite with BeforeAndAfter {
   }
 
   test("PlayerCellEntity is present, but not visible") {
-    val pce = PlayerCellBuilder().visible(false).build
+    val pce = CellBuilder().visible(false).buildPlayerEntity()
     EntityManager.add(pce)
     spy.setPlayerUUID(pce.getUUID)
     system.update()
@@ -83,7 +83,7 @@ class TestDrawSystem extends FunSuite with BeforeAndAfter {
   }
 
   test("PlayerCellEntity is present and visible") {
-    val pce = PlayerCellBuilder().build
+    val pce = CellBuilder().buildPlayerEntity()
     EntityManager.add(pce)
     spy.setPlayerUUID(pce.getUUID)
     system.update()
@@ -91,7 +91,7 @@ class TestDrawSystem extends FunSuite with BeforeAndAfter {
   }
 
   test("PlayerCellEntity correctly wrapped") {
-    val pce = PlayerCellBuilder().build
+    val pce = CellBuilder().buildPlayerEntity()
     EntityManager.add(pce)
     spy.setPlayerUUID(pce.getUUID)
     system.update()
@@ -104,8 +104,8 @@ class TestDrawSystem extends FunSuite with BeforeAndAfter {
   }
 
   test("filter visible CellEntity") {
-    val visibleCE = new CellBuilder().withDimension(5).withPosition(3,3).build
-    val notVisibleCE = new CellBuilder().withDimension(7).withPosition(4,4).visible(false).build
+    val visibleCE = CellBuilder().withDimension(5).withPosition(3,3).buildCellEntity()
+    val notVisibleCE = CellBuilder().withDimension(7).withPosition(4,4).visible(false).buildCellEntity()
     EntityManager.add(visibleCE)
     EntityManager.add(notVisibleCE)
     system.update()
@@ -113,8 +113,8 @@ class TestDrawSystem extends FunSuite with BeforeAndAfter {
   }
 
   test("CellEntity enemies correctly wrapped") {
-    val visibleCE = new CellBuilder().withDimension(5).withPosition(3,3).withSpeed(2,-2).build
-    val visibleCE1 = new CellBuilder().withDimension(7).withPosition(4,4).withSpeed(3,4).build
+    val visibleCE = CellBuilder().withDimension(5).withPosition(3,3).withSpeed(2,-2).buildCellEntity()
+    val visibleCE1 = CellBuilder().withDimension(7).withPosition(4,4).withSpeed(3,4).buildCellEntity()
     EntityManager.add(visibleCE)
     EntityManager.add(visibleCE1)
     system.update()

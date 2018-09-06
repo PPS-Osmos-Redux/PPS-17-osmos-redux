@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.entities._
-import it.unibo.osmos.redux.ecs.entities.builders.{CellBuilder, PlayerCellBuilder}
+import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 import it.unibo.osmos.redux.ecs.entities.properties.composed.{InputProperty, MovableProperty}
 import it.unibo.osmos.redux.ecs.systems.AbstractSystem2
 import org.scalatest.{BeforeAndAfter, FunSuite}
@@ -30,14 +30,14 @@ class TestSystem2 extends FunSuite with BeforeAndAfter {
 
   test("After add one entity of first type, the system have one entity of first type") {
     val fakeSystem = FakeSystem2()
-    EntityManager.add(new CellBuilder().build)
+    EntityManager.add(CellBuilder().buildCellEntity())
     assert(fakeSystem.getEntitiesOfFirstType.size == 1)
     assert(fakeSystem.getEntitiesOfSecondType.isEmpty)
   }
 
   test("An entity of both types is found in both lists") {
     val fakeSystem = FakeSystem2()
-    EntityManager.add(PlayerCellBuilder().build)
+    EntityManager.add(CellBuilder().buildPlayerEntity())
     assert(fakeSystem.getEntitiesOfFirstType.size == 1)
     assert(fakeSystem.getEntitiesOfSecondType.size == 1)
   }

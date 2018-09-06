@@ -16,16 +16,16 @@ class TestMapBoundariesCheck extends FunSuite with BeforeAndAfter {
   val p1 = Point(3, -3)
   val p2 = Point(-3, 3)
   val p3 = Point(3, 3)
-  var ce:CellEntity = _
-  var pce:CellEntity = _
-  var gc:CellEntity = _
-  var sc:CellEntity = _
+  var ce: CellEntity = _
+  var pce: PlayerCellEntity = _
+  var gc: GravityCellEntity = _
+  var sc: SentientCellEntity = _
 
   before{
-    ce = new CellBuilder().withPosition(p).withDimension(d).build
-    pce = PlayerCellBuilder().withPosition(p1).withDimension(d).build
-    gc = GravityCellBuilder().withPosition(p2).withDimension(d).build
-    sc = SentientCellBuilder().withPosition(p3).withDimension(d).build
+    ce = CellBuilder().withPosition(p).withDimension(d).buildCellEntity()
+    pce = CellBuilder().withPosition(p1).withDimension(d).buildPlayerEntity()
+    gc = CellBuilder().withPosition(p2).withDimension(d).buildGravityEntity()
+    sc = CellBuilder().withPosition(p3).withDimension(d).buildSentientEntity()
   }
 
   val levelName: String = "1"
