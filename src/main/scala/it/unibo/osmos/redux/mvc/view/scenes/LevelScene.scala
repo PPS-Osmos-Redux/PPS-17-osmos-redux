@@ -17,12 +17,12 @@ import it.unibo.osmos.redux.utils.Point
 import javafx.scene.input.{KeyCode, MouseEvent}
 import scalafx.animation.FadeTransition
 import scalafx.application.Platform
-import scalafx.beans.property.BooleanProperty
+import scalafx.beans.property.{BooleanProperty, DoubleProperty}
 import scalafx.geometry.Pos
 import scalafx.scene.canvas.Canvas
 import scalafx.scene.effect.Light.Spot
 import scalafx.scene.effect.{DropShadow, Lighting}
-import scalafx.scene.image.Image
+import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.{StackPane, VBox}
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.{Circle, Rectangle, Shape}
@@ -52,7 +52,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   /**
     * The canvas which will draw the elements on the screen
     */
-  private val canvas: Canvas = new Canvas(parentStage.getWidth, parentStage.getHeight) {
+  private val canvas: Canvas = new Canvas {
     width <== parentStage.width
     height <== parentStage.height
     cache = true
@@ -75,7 +75,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
     pickOnBounds = false
 
-    effect = lighting
+    //effect = lighting
   }
 
   /**
@@ -116,7 +116,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
           canvas.opacity = 1.0
           content.remove(splashScreen)
           /* Adding the mapBorder */
-          //content.add(mapBorder.get)
+          content.add(mapBorder.get)
           inputEnabled = true
           /* Removing the splash screen to reduce the load. Then the level is started */
           listener.onStartLevel()
@@ -158,7 +158,10 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     * The content of the whole scene
     */
   content = new StackPane() {
-    children = Seq(canvas, speedChangeScreen, splashScreen, pauseScreen)
+    children = Seq(/*new ImageView(backgroundImage) {
+      fitWidth <== canvas.width
+      fitHeight <== canvas.height
+    }, */ canvas, speedChangeScreen, splashScreen, pauseScreen)
   }
 
   /**
@@ -213,28 +216,25 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
     /* Sending the event */
     sendMouseEvent(mouseEvent)
-  } else {
-    println(inputEnabled)
   }
 
   onScroll = scrollEvent => if (!paused.value && inputEnabled) {
     val delta = 1.1
 
     // X and Y scale are the same
-    var scale = canvas.getScaleX
-
-    if (scrollEvent.getDeltaX < 0) {
+    var scale = canvas.scaleY.value
+    if (scrollEvent.getDeltaY < 0) {
       scale /= delta
     } else {
       scale *= delta
     }
 
-    val maxZoomOutScale = 1.0
-    val maxZoomInScale = 10.0
+    val maxZoomOutScale = 0.5
+    val maxZoomInScale = 2.0
     scale = clamp(scale, maxZoomOutScale, maxZoomInScale)
 
-    canvas.setScaleX(scale)
-    canvas.setScaleY(scale)
+    canvas.scaleX = scale
+    canvas.scaleY = scale
 
     scrollEvent.consume()
   }
@@ -248,8 +248,8 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   }
 
   private def setPivot(x: Double, y: Double): Unit = {
-    canvas.setTranslateX(x)
-    canvas.setTranslateY(y)
+    canvas.translateX = x
+    canvas.translateY = y
   }
 
   /**
@@ -258,7 +258,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     *  - the up and right keys speed up the game
     *  - the down and left keys slow down the game
     */
-  onKeyPressed = keyEvent => keyEvent.getCode match {
+  onKeyPressed = keyEvent => if(inputEnabled) keyEvent.getCode match {
     case KeyCode.ESCAPE =>
       if (paused.value) {
         onResume()
@@ -328,9 +328,9 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
       }
 
       /* Configuring the mapBorder */
-      // TODO: remove
+      // TODO: make it colored white if bouncing, red if instant death
       mapBorder.get.fill = Color.Transparent
-      mapBorder.get.stroke = Color.White
+      mapBorder.get.stroke = Color.DarkRed
       mapBorder.get.strokeWidth = 5.0
       mapBorder.get.opacity <== canvas.opacity
       mapBorder.get.pickOnBounds = false
@@ -339,6 +339,12 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
         color = Color.White
         radius = 10.0
       }
+      /* Scale binding (with canvas)*/
+      mapBorder.get.scaleX <== canvas.scaleX
+      mapBorder.get.scaleY <== canvas.scaleY
+      /* Translate binding (with canvas)*/
+      mapBorder.get.translateX <== (- canvas.scaleX * playerPosX)
+      mapBorder.get.translateY <== (- canvas.scaleY * playerPosY)
 
       Platform.runLater({
         /* Starting the level */
@@ -346,10 +352,14 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
       })
   }
 
-  var playerPosX = 0.0
-  var playerPosY = 0.0
-  var precX = 0.0
-  var precY = 0.0
+  /**
+    * Player position x-coordinate
+    */
+  val playerPosX : DoubleProperty = DoubleProperty(0.0)
+  /**
+    * Player position y-coordinate
+    */
+  val playerPosY : DoubleProperty = DoubleProperty(0.0)
 
   override def onDrawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = {
 
@@ -365,23 +375,9 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     /* We must draw to the screen the entire collection */
     Platform.runLater({
       /* Clear the screen */
-      canvas.graphicsContext2D.clearRect(0, 0, width.value, height.value)
+      canvas.graphicsContext2D.clearRect(0, 0, width.value * 2, height.value * 2)
       /* Draw the background */
-      canvas.graphicsContext2D.drawImage(backgroundImage, 0, 0, width.value, height.value)
-      // TODO: make it colored white if bouncing, red if instant death
-      canvas.graphicsContext2D.stroke = Color.Red
-      mapShape match {
-        case c: MapShape.Circle =>
-          val diameter = c.radius * 2
-          val xCenterPosition = ViewConstants.Window.halfWindowWidth - c.radius
-          val yCenterPosition = ViewConstants.Window.halfWindowHeight - c.radius
-          canvas.graphicsContext2D.strokeOval(xCenterPosition, yCenterPosition, diameter, diameter)
-        case r: MapShape.Rectangle =>
-          val xCenterPosition = ViewConstants.Window.halfWindowWidth - r.center.x - r.base / 2
-          val yCenterPosition = ViewConstants.Window.halfWindowHeight - r.center.y - r.height / 2
-          canvas.graphicsContext2D.strokeRect(xCenterPosition, yCenterPosition, r.base, r.height)
-        case _ => throw new IllegalArgumentException
-      }
+      canvas.graphicsContext2D.drawImage(backgroundImage, 0, 0, width.value * 2, height.value * 2)
 
       /* Draw the entities */
       playerEntity match {
@@ -389,10 +385,12 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
           case `pe` =>
             if (canvas.getScaleY == 1.0) {
               setPivot(0, 0)
+              playerPosX.value = 0.0
+              playerPosY.value = 0.0
             } else {
-              playerPosX = e._1.center.x
-              playerPosY = e._1.center.y
-              setPivot(-playerPosX * canvas.getScaleX, -playerPosY * canvas.getScaleY)
+              playerPosX.value = e._1.center.x
+              playerPosY.value = e._1.center.y
+              setPivot(-playerPosX.value * canvas.getScaleX, -playerPosY.value * canvas.getScaleY)
             }
             playerCellDrawable.draw(e._1, e._2)
           case _ => drawEntity(e._1, e._2)
