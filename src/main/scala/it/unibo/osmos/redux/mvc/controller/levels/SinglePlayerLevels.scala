@@ -75,6 +75,7 @@ object SinglePlayerLevels {
     * reset the user progress
     */
   def reset():Unit ={
+    println("reset done")
     levels.head.levelStat = CampaignLevelStat()
     levels.filter(lv => !lv.levelInfo.name.equals(levels.head.levelInfo.name)).foreach(lv => {
       lv.levelInfo.isAvailable = false
