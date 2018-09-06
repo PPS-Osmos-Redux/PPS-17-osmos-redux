@@ -42,4 +42,10 @@ object UserProgressFileManager extends FileManager {
       case _ => saveUserProgress(SinglePlayerLevels.getCampaignLevels)
         loadUserProgress()
     }
+
+  /**
+    * Delete user progress file
+    * @return Try[Unit]
+    */
+  def deleteUserProgress(): Try[Unit] = deleteFile(defaultFS.getPath(userProgressFileName + jsonExtension).toAbsolutePath)
 }
