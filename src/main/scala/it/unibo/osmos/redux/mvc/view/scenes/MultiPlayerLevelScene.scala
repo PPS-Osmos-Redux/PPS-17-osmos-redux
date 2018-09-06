@@ -6,7 +6,7 @@ import it.unibo.osmos.redux.utils.Point
 import javafx.scene.input.MouseEvent
 import scalafx.stage.Stage
 
-class MultiPlayerLevelScene(override val parentStage: Stage, override val levelInfo: LevelInfo, override val listener: LevelSceneListener, override val upperSceneListener: UpperLevelSceneListener)
+class MultiPlayerLevelScene(override val parentStage: Stage, override val levelInfo: LevelInfo, override val listener: LevelSceneListener, override val upperSceneListener: BackClickListener)
   extends LevelScene(parentStage, levelInfo, listener, upperSceneListener) {
 
   /**

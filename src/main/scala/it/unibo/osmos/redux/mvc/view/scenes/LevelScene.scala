@@ -17,7 +17,7 @@ import it.unibo.osmos.redux.utils.Point
 import javafx.scene.input.{KeyCode, MouseEvent}
 import scalafx.animation.FadeTransition
 import scalafx.application.Platform
-import scalafx.beans.property.BooleanProperty
+import scalafx.beans.property.{BooleanProperty, DoubleProperty}
 import scalafx.geometry.Pos
 import scalafx.scene.canvas.Canvas
 import scalafx.scene.effect.Light.Spot
@@ -39,8 +39,9 @@ import scalafx.util.Duration
   * @param upperSceneListener the upper scene listener to manage the previously scene events
   */
 class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val listener: LevelSceneListener,
-                 val upperSceneListener: UpperLevelSceneListener)
-  extends BaseScene(parentStage) with LevelContextListener with LevelStateBoxListener {
+                 val upperSceneListener: BackClickListener)
+//extends BaseScene(parentStage) with LevelContextListener with LevelStateBoxListener {
+  extends DefaultBackScene(parentStage, upperSceneListener) with LevelContextListener {
 
   MusicPlayer.play(SoundsType.level)
 
@@ -52,7 +53,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   /**
     * The canvas which will draw the elements on the screen
     */
-  private val canvas: Canvas = new Canvas(parentStage.getWidth, parentStage.getHeight) {
+  private val canvas: Canvas = new Canvas {
     width <== parentStage.width
     height <== parentStage.height
     cache = true
@@ -75,8 +76,12 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
     pickOnBounds = false
 
-    effect = lighting
+    //effect = lighting
   }
+
+  /* DefaultBackScene goBack button configurations */
+  setText("Return to Level Selection")
+  setAdditionalAction(onExit)
 
   /**
     * The screen showed when the game is paused (with a bound property)
@@ -84,7 +89,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   private val pauseScreen = LevelScreen.Builder(this)
     .withText("Game paused", 30, Color.White)
     .withButton("Resume", _ => onResume())
-    .withButton("Return to Level Selection", _ => onExit())
+    .withNode(goBack)
     .build()
   pauseScreen.visible <== paused
 
@@ -116,7 +121,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
           canvas.opacity = 1.0
           content.remove(splashScreen)
           /* Adding the mapBorder */
-          //content.add(mapBorder.get)
+          content.add(mapBorder.get)
           inputEnabled = true
           /* Removing the splash screen to reduce the load. Then the level is started */
           listener.onStartLevel()
@@ -137,8 +142,8 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     alignment = Pos.TopRight
     alignmentInParent = Pos.TopRight
     children = speedScreenText
+    opacity = 0.0
   }
-  speedChangeScreen.opacity = 0.0
 
   /**
     * The images used to draw cells, background and level
@@ -177,15 +182,15 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     listener.onPauseLevel()
   }
 
-  override def onResume(): Unit = {
+  protected def onResume(): Unit = {
     canvas.opacity = 1
     paused.value = false
 
     listener.onResumeLevel()
   }
 
-  override def onExit(): Unit = {
-    goToPreviousScene()
+  private def onExit(): Unit = {
+    MusicPlayer.play(SoundsType.menu)
     listener.onStopLevel()
   }
 
@@ -194,7 +199,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     */
   private def goToPreviousScene(): Unit = {
     MusicPlayer.play(SoundsType.menu)
-    upperSceneListener.onStopLevel()
+    upperSceneListener.onBackClick()
   }
 
   /**
@@ -213,24 +218,21 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
     /* Sending the event */
     sendMouseEvent(mouseEvent)
-  } else {
-    println(inputEnabled)
   }
 
   onScroll = scrollEvent => if (!paused.value && inputEnabled) {
     val delta = 1.1
 
     // X and Y scale are the same
-    var scale = canvas.getScaleX
-
-    if (scrollEvent.getDeltaX < 0) {
+    var scale = canvas.getScaleY
+    if (scrollEvent.getDeltaY < 0) {
       scale /= delta
     } else {
       scale *= delta
     }
 
     val maxZoomOutScale = 1.0
-    val maxZoomInScale = 10.0
+    val maxZoomInScale = 2.0
     scale = clamp(scale, maxZoomOutScale, maxZoomInScale)
 
     canvas.setScaleX(scale)
@@ -258,7 +260,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     *  - the up and right keys speed up the game
     *  - the down and left keys slow down the game
     */
-  onKeyPressed = keyEvent => keyEvent.getCode match {
+  onKeyPressed = keyEvent => if (inputEnabled) keyEvent.getCode match {
     case KeyCode.ESCAPE =>
       if (paused.value) {
         onResume()
@@ -328,9 +330,9 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
       }
 
       /* Configuring the mapBorder */
-      // TODO: remove
+      // TODO: make it colored white if bouncing, red if instant death
       mapBorder.get.fill = Color.Transparent
-      mapBorder.get.stroke = Color.White
+      mapBorder.get.stroke = Color.DarkRed
       mapBorder.get.strokeWidth = 5.0
       mapBorder.get.opacity <== canvas.opacity
       mapBorder.get.pickOnBounds = false
@@ -339,6 +341,12 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
         color = Color.White
         radius = 10.0
       }
+      /* Scale binding (with canvas)*/
+      mapBorder.get.scaleX <== canvas.scaleX
+      mapBorder.get.scaleY <== canvas.scaleY
+      /* Translate binding (with canvas)*/
+      mapBorder.get.translateX <== (-canvas.scaleX * playerPosX)
+      mapBorder.get.translateY <== (-canvas.scaleY * playerPosY)
 
       Platform.runLater({
         /* Starting the level */
@@ -346,10 +354,8 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
       })
   }
 
-  var playerPosX = 0.0
-  var playerPosY = 0.0
-  var precX = 0.0
-  var precY = 0.0
+  val playerPosX: DoubleProperty = DoubleProperty(0.0)
+  val playerPosY: DoubleProperty = DoubleProperty(0.0)
 
   override def onDrawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = {
 
@@ -368,20 +374,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
       canvas.graphicsContext2D.clearRect(0, 0, width.value, height.value)
       /* Draw the background */
       canvas.graphicsContext2D.drawImage(backgroundImage, 0, 0, width.value, height.value)
-      // TODO: make it colored white if bouncing, red if instant death
-      canvas.graphicsContext2D.stroke = Color.Red
-      mapShape match {
-        case c: MapShape.Circle =>
-          val diameter = c.radius * 2
-          val xCenterPosition = ViewConstants.Window.halfWindowWidth - c.radius
-          val yCenterPosition = ViewConstants.Window.halfWindowHeight - c.radius
-          canvas.graphicsContext2D.strokeOval(xCenterPosition, yCenterPosition, diameter, diameter)
-        case r: MapShape.Rectangle =>
-          val xCenterPosition = ViewConstants.Window.halfWindowWidth - r.center.x - r.base / 2
-          val yCenterPosition = ViewConstants.Window.halfWindowHeight - r.center.y - r.height / 2
-          canvas.graphicsContext2D.strokeRect(xCenterPosition, yCenterPosition, r.base, r.height)
-        case _ => throw new IllegalArgumentException
-      }
+
 
       /* Draw the entities */
       playerEntity match {
@@ -389,10 +382,12 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
           case `pe` =>
             if (canvas.getScaleY == 1.0) {
               setPivot(0, 0)
+              playerPosX.value = 0.0
+              playerPosY.value = 0.0
             } else {
-              playerPosX = e._1.center.x
-              playerPosY = e._1.center.y
-              setPivot(-playerPosX * canvas.getScaleX, -playerPosY * canvas.getScaleY)
+              playerPosX.value = e._1.center.x
+              playerPosY.value = e._1.center.y
+              setPivot(-playerPosX.value * canvas.getScaleX, -playerPosY.value * canvas.getScaleY)
             }
             playerCellDrawable.draw(e._1, e._2)
           case _ => drawEntity(e._1, e._2)
@@ -424,6 +419,8 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     listener.onStopLevel(levelResult)
 
     inputEnabled = false
+
+    setAdditionalAction(goToPreviousScene)
 
     /* Creating an end screen with a button */
     val endScreen = LevelScreen.Builder(this)
@@ -521,7 +518,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 /**
   * Trait used by LevelScene to notify an event to the upper scene
   */
-trait UpperLevelSceneListener {
+trait UpperLevelSceneListener extends BackClickListener {
 
   /**
     * Called when the level gets stopped
