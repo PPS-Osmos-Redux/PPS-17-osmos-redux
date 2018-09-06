@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
-import it.unibo.osmos.redux.mvc.controller.LevelInfo
+import it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.custom.StyledButton
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.{User, UserWithProperties}
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, LobbyContextListener, MultiPlayerLevelContext}
@@ -24,7 +24,7 @@ import scalafx.stage.Stage
 class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: MultiPlayerLobbySceneListener,
                             val upperSceneListener: UpperMultiPlayerLobbySceneListener, val user: User)
   extends BaseScene(parentStage) with LobbyContextListener {
-
+  
   /**
     * The lobby context, created with the MultiPlayerLobbyScene. It still needs to be properly setup
     */

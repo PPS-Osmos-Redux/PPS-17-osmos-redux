@@ -3,8 +3,8 @@ package it.unibo.osmos.redux.ecs.systems
 import it.unibo.osmos.redux.ecs.entities.EntityType
 import it.unibo.osmos.redux.ecs.entities.properties.composed.CollidableProperty
 import it.unibo.osmos.redux.ecs.systems.borderconditions.{CircularBorder, RectangularBorder}
-import it.unibo.osmos.redux.mvc.model.Level
-import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
+import it.unibo.osmos.redux.mvc.controller.levels.structure.Level
+import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.utils.{MathUtils, Point, Vector}
 
 case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidableProperty] {
@@ -13,16 +13,15 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
   private val massExchangeRate = 0.2
   //constants that controls how much deceleration is applied to an entity when colliding with another one
   private val decelerationAmount = 0.1
-  //constant that define the initial acceleration of a steady entity when a collision occurs
-  private val initialAcceleration = 0.001
-
-  private val initialAccelerationVector = Vector(initialAcceleration, initialAcceleration)
-
-  private val collisionRule = levelInfo.levelMap.collisionRule
+  //the initial acceleration vector of a steady entity when a collision occurs
+  private val initialAccelerationVector = Vector(0.01, 0.01)
+  //the bouncing rule
   private val bounceRule = levelInfo.levelMap.mapShape match {
-    case shape: Rectangle => RectangularBorder(Point(shape.center._1, shape.center._2), collisionRule, shape.base, shape.height)
-    case shape: Circle => CircularBorder(Point(shape.center._1, shape.center._2), collisionRule, shape.radius)
-    case _ => throw new IllegalArgumentException
+    case shape: Rectangle =>
+      RectangularBorder(Point(shape.center.x, shape.center.y), levelInfo.levelMap.collisionRule, shape.base, shape.height)
+    case shape: Circle =>
+      CircularBorder(Point(shape.center.x, shape.center.y), levelInfo.levelMap.collisionRule, shape.radius)
+    case _ => throw new IllegalArgumentException("Invalid map shape, unable to initialize bounce rule.")
   }
 
   override def update(): Unit = {
@@ -71,9 +70,12 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
     //exchange mass between the two entities
     exchangeMass(bigEntity, smallEntity, overlap)
 
+    //compute direction vector
+    val dir = MathUtils.unitVector(bigEntity.getPositionComponent.point, smallEntity.getPositionComponent.point)
+
     //apply deceleration to both entities, proportionally to their size
-    decelerateEntity(smallEntity, decelerationAmount)
-    decelerateEntity(bigEntity, decelerationAmount)
+    accelerateEntity(smallEntity, dir multiply -decelerationAmount)
+    accelerateEntity(bigEntity, dir multiply decelerationAmount)
   }
 
   /**
@@ -117,23 +119,19 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
     bounceRule.repositionIfOutsideMap(entity2)
   }
 
-
   /**
-    * Applies deceleration to the input entity.
-    * @param entity The entity to slow down
-    * @param percentage The percentage of deceleration to apply
+    * Applies acceleration to the input entity.
+    * @param entity The entity.
+    * @param direction The vector to apply to the acceleration.
     */
-  private def decelerateEntity(entity: CollidableProperty, percentage: Double): Unit = {
+  private def accelerateEntity(entity: CollidableProperty, direction: Vector): Unit = {
     val accel = entity.getAccelerationComponent
 
     //gain acceleration even if the entity is still
-    if (accel.vector.x == 0) {
-      entity.getAccelerationComponent.vector_(initialAccelerationVector.multiply(percentage))
+    if (accel.vector == Vector(0,0)) {
+      entity.getAccelerationComponent.vector_(direction multiply initialAccelerationVector)
     } else {
-      val temp = accel.vector.multiply(percentage)
-      entity.getAccelerationComponent.vector_(accel.vector.subtract(temp))
-      //entity.getAccelerationComponent.vector.x_(accel.vector.x - accel.vector.x * percentage)
-      //entity.getAccelerationComponent.vector.y_(accel.vector.y - accel.vector.y * percentage)
+      accel.vector_(accel.vector add direction)
     }
   }
 }

@@ -1,41 +1,84 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
-import it.unibo.osmos.redux.mvc.view.components.menu.{MainMenuBar, MainMenuBarListener}
+import it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels
+import it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer
+import it.unibo.osmos.redux.mvc.view.components.custom.{AlertFactory, StyledButton}
 import it.unibo.osmos.redux.mvc.view.context.LevelContext
 import it.unibo.osmos.redux.mvc.view.stages.PrimaryStageListener
+import javafx.scene.media.MediaPlayer.Status._
 import scalafx.geometry.Pos
-import scalafx.scene.control.CheckBox
-import scalafx.scene.layout.VBox
+import scalafx.scene.control.{CheckBox, Label, Slider}
+import scalafx.scene.layout._
+import scalafx.scene.paint.Color
 import scalafx.stage.Stage
 
-class SettingsScene(override val parentStage: Stage, listener: PrimaryStageListener, previousSceneListener: BackClickListener) extends DefaultBackScene(parentStage, previousSceneListener) with MainMenuBarListener {
+class SettingsScene(override val parentStage: Stage, listener: PrimaryStageListener, previousSceneListener: BackClickListener) extends DefaultBackScene(parentStage, previousSceneListener) {
 
-  /**
-    * The upper main menu bar
-    */
-  protected val menuBar = new MainMenuBar(this)
+  implicit def toDouble(number: Number): Double = number.doubleValue()
 
-  private val fullScreen = new CheckBox("Fullscreen") {
-    onAction = _ => parentStage.fullScreen = !parentStage.fullScreen.get()
+  private val volumeSlider = new Slider() {
+    min = 0
+    max = 100
+    value = MusicPlayer.getVolume * 100
+    showTickLabels = true
+    showTickMarks = true
+    majorTickUnit = 50
+    minorTickCount = 5
+    blockIncrement = 10
+    minWidth = 480
+    maxWidth <== parentStage.width / 4
+  }
+  volumeSlider.valueProperty().addListener((_, _, newVal) => {
+    val valueToPlayerRange = newVal / 100
+    MusicPlayer.changeVolume(valueToPlayerRange)
+  })
+
+  private val volumeLabel = new Label("Volume") {
+    textFill = Color.web("#FFFFFF")
   }
 
-  fullScreen.selected = parentStage.fullScreen.get()
+  private val volumeCheckBox = new CheckBox() {
+    selected = MusicPlayer.getMediaPlayerStatus match {
+      case Some(PLAYING) =>
+        volumeSlider.disable = false
+        true
+      case _ =>
+        volumeSlider.disable = true
+        false
+    }
+    onAction = _ => {
+      MusicPlayer.getMediaPlayerStatus match {
+        case Some(PLAYING) =>
+          MusicPlayer.pause()
+          volumeSlider.disable = true
+        case Some(PAUSED) =>
+          MusicPlayer.resume()
+          volumeSlider.disable = false
+        case _ =>
+      }
+    }
+  }
+
+  private val volumeContainer = new HBox(25) {
+    alignment = Pos.Center
+    children = Seq(volumeLabel, volumeCheckBox)
+  }
+
+  private val resetGameData = new StyledButton("Reset game data") {
+    onAction = _ => AlertFactory.showConfirmationAlert(text.value + "?", "Your progresses will be lost", SinglePlayerLevels.reset(), {})
+  }
 
   /**
-    * The central level container
+    * The central container
     */
-  protected val container: VBox = new VBox {
+  protected val container: VBox = new VBox(15) {
     alignment = Pos.Center
-    children = Seq(fullScreen, goBack)
+    children = Seq(volumeContainer, volumeSlider, resetGameData, goBack)
+    styleClass.add("settings-vbox")
   }
 
   /* Setting the root container*/
   root = container
-
-  override def onFullScreenSettingClick(): Unit = {
-    parentStage.fullScreen = !parentStage.fullScreen.get()
-  }
-
 }
 
 /**

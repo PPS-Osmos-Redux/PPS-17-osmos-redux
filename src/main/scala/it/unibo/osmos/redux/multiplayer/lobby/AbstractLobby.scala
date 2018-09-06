@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.multiplayer.lobby
 
 import it.unibo.osmos.redux.multiplayer.players.Player
-import it.unibo.osmos.redux.mvc.controller.LevelInfo
+import it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, MultiPlayerLevelContext}
 import it.unibo.osmos.redux.mvc.view.events._

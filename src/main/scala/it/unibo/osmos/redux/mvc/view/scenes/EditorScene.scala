@@ -1,21 +1,20 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
-import scalafx.Includes._
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityType}
-import it.unibo.osmos.redux.mvc.model.{CollisionRules, MapShape, MapShapeType, VictoryRules}
-import it.unibo.osmos.redux.mvc.view.ViewConstants
+import it.unibo.osmos.redux.mvc.controller.levels.structure.{CollisionRules, MapShape, MapShapeType, VictoryRules}
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
+import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
 import it.unibo.osmos.redux.mvc.view.components.custom.{StyledButton, TitledComboBox}
 import it.unibo.osmos.redux.mvc.view.components.editor._
 import it.unibo.osmos.redux.mvc.view.components.level.LevelScreen
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
+import javafx.scene.input.KeyCode
 import javafx.scene.paint.ImagePattern
-import scalafx.beans.property.{BooleanProperty, DoubleProperty, ObjectProperty}
+import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.{Alert, TextInputDialog}
 import scalafx.scene.effect.DropShadow
 import scalafx.scene.image.ImageView
-import javafx.scene.input.KeyCode
 import scalafx.scene.layout._
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.{Circle, Rectangle, Shape}
@@ -29,7 +28,7 @@ import scala.collection.mutable.ListBuffer
   * @param parentStage the parent stage
   * @param listener the EditorSceneListener
   */
-class EditorScene (override val parentStage: Stage, val listener: EditorSceneListener, val upperListener: UpperEditorSceneListener) extends BaseScene(parentStage) {
+class EditorScene (override val parentStage: Stage, val listener: EditorSceneListener, val upperListener: BackClickListener) extends DefaultBackScene(parentStage, upperListener, "Exit Level") {
 
   /* Entities currently built */
   var builtEntities: ListBuffer[CellEntity] = ListBuffer()
@@ -72,17 +71,17 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
 
   /** Pane containing the field to configure the circular level */
   private val circularLevelBuilder: CircleLevelCreator = new CircleLevelCreator {
-    xCenter.value = ViewConstants.Window.defaultWindowWidth / 2
-    yCenter.value = ViewConstants.Window.defaultWindowHeight / 2
-    radius.value = 400.0
+    xCenter.value = 0.0
+    yCenter.value = 0.0
+    radius.value = 350.0
   }
   /** Pane containing the field to configure the rectangular level */
   private val rectangularLevelBuilder: RectangleLevelCreator = new RectangleLevelCreator {
     visible = false
-    levelWidth.value = ViewConstants.Window.defaultWindowWidth / 2
-    levelHeight.value = ViewConstants.Window.defaultWindowHeight / 2
-    xCenter.value = ViewConstants.Window.defaultWindowWidth / 2
-    yCenter.value = ViewConstants.Window.defaultWindowHeight / 2
+    levelWidth.value = halfWindowWidth
+    levelHeight.value = halfWindowHeight
+    xCenter.value = 0.0
+    yCenter.value = 0.0
   }
 
   /**
@@ -195,10 +194,10 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     top = new HBox(20.0, new StyledButton("Save Level") {
       /** We begin the procedure to save the level */
       onAction = _ => saveLevel()
-    }, new StyledButton("Exit Level") {
+    }, goBack /*new StyledButton("Exit Level") {
       /* We go back */
-      onAction = _ => upperListener.onExitEditor()
-    }){
+      onAction = _ => upperListener.onBackClick()
+    }*/){
       margin = Insets(10.0)
       alignment = Pos.Center
     }
@@ -266,8 +265,8 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     * The placeholder which models the circular level
     */
   val circularLevelPlaceholder: Circle = new Circle() {
-    centerX <== circularLevelBuilder.xCenter
-    centerY <== circularLevelBuilder.yCenter
+    centerX <== circularLevelBuilder.xCenter + halfWindowWidth
+    centerY <== circularLevelBuilder.yCenter + halfWindowHeight
     radius <== circularLevelBuilder.radius
     stroke = Color.White
     strokeWidth = 2.0
@@ -282,8 +281,8 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   val rectangularLevelPlaceholder: Rectangle = new Rectangle() {
     width <== rectangularLevelBuilder.levelWidth
     height <== rectangularLevelBuilder.levelHeight
-    x <== rectangularLevelBuilder.xCenter - rectangularLevelBuilder.levelWidth /2
-    y <== rectangularLevelBuilder.yCenter - rectangularLevelBuilder.levelHeight /2
+    x <== rectangularLevelBuilder.xCenter - rectangularLevelBuilder.levelWidth /2 + halfWindowWidth
+    y <== rectangularLevelBuilder.yCenter - rectangularLevelBuilder.levelHeight /2 + halfWindowHeight
     stroke = Color.White
     strokeWidth = 2.0
     fill = Color.Transparent
@@ -335,8 +334,8 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     entityPlaceholder.centerX.value = e.getX
     entityPlaceholder.centerY.value = e.getY
     val visibleBuilder = getVisibleCellBuilder
-    visibleBuilder.x.value = e.getX
-    visibleBuilder.y.value = e.getY
+    visibleBuilder.x.value = e.getX - halfWindowWidth
+    visibleBuilder.y.value = e.getY - halfWindowHeight
   }
 
   /**
