@@ -5,17 +5,25 @@ import java.nio.file.{Files, Path, Paths}
 
 import it.unibo.osmos.redux.mvc.controller.levels.structure.{Level, LevelInfo}
 import it.unibo.osmos.redux.mvc.model.JsonProtocols._
-import it.unibo.osmos.redux.utils.Constants.UserHomePaths
 import it.unibo.osmos.redux.utils.Logger
 import spray.json._
-
+import spray.json.DefaultJsonProtocol._
+import it.unibo.osmos.redux.utils.Constants.UserHomePaths._
 import scala.io.Source
 import scala.util.{Failure, Success, Try}
-import it.unibo.osmos.redux.utils.Constants.UserHomePaths._
 
 object LevelFileManager extends FileManager {
 
   implicit val who: String = "LevelFileManager"
+
+  def getLevelsConfigResourcesPath(multiplayer:Boolean = false) : Option[List[String]] = {
+    import it.unibo.osmos.redux.utils.Constants.ResourcesPaths._
+    val levelsPath = if (multiplayer) configMultiPlayer else configSinglePlayer
+    val fileStream =  this.getClass.getResourceAsStream(levelsPath + jsonExtension)
+    val fileContent = Source.fromInputStream(fileStream).mkString
+    fileStream.close()
+    Try(fileContent.parseJson.convertTo[List[String]]).toOption
+  }
 
   /**
     * Reads a file from the resources folder
@@ -49,7 +57,12 @@ object LevelFileManager extends FileManager {
     saveToFile(levelFile, level.toJson.prettyPrint)
   }
 
-  def deleteCustomLevel(levelName:String): Try[Unit] = deleteFile(Paths.get(UserHomePaths.levelsDirectory + levelName + jsonExtension))
+  /**
+    * Delete a custom level file
+    * @param levelName the name of the file
+    * @return Try[Unit]
+    */
+  def deleteCustomLevel(levelName:String): Try[Unit] = deleteFile(Paths.get(levelsDirectory + levelName + jsonExtension))
 
   /**
     * Load level from file saved into user home directory
@@ -74,6 +87,17 @@ object LevelFileManager extends FileManager {
     Try(new File(levelsDirectory).listFiles((_, name) => name.endsWith(jsonExtension))
       .map(f => loadLevelInfo(f))
       .filter(optLvl => optLvl.isDefined).map(opt => opt.get).toList)
+  }
+
+  def getResourceLevelInfo(filePath:String):Option[LevelInfo] = {
+    val fileStream =  this.getClass.getResourceAsStream(filePath)
+    val fileContent = Source.fromInputStream(fileStream).mkString
+    fileStream.close()
+    Try(fileContent.parseJson.convertTo[LevelInfo]) match {
+      case Success(value) => Some(value)
+      case Failure(_) => Logger.log("File not found into resources: " + filePath)
+        None
+    }
   }
 
   private def textToLevel(text: String): Try[Level] = Try(text.parseJson.convertTo[Level])

@@ -5,11 +5,13 @@ import it.unibo.osmos.redux.mvc.controller.levels.structure.{LevelInfo, VictoryR
 import scala.collection.mutable
 
 object MultiPlayerLevels {
-  private val levels:mutable.ArraySeq[LevelInfo] = mutable.ArraySeq(
-    LevelInfo("1", VictoryRules.absorbAllOtherPlayers),
-    LevelInfo("2", VictoryRules.absorbAllOtherPlayers),
-    LevelInfo("3", VictoryRules.absorbAllOtherPlayers),
-    LevelInfo("4", VictoryRules.absorbAllOtherPlayers),
-    LevelInfo("5", VictoryRules.absorbAllOtherPlayers))
-  def getLevels:List[LevelInfo] = levels.toList
+  private var levels:List[LevelInfo] = List()
+  def getLevels:List[LevelInfo] = levels
+
+  /**
+    * Initialize levels
+    * @param levelsInfo Level[Info]
+    */
+  def init(levelsInfo:List[Option[LevelInfo]]): Unit =
+    levelsInfo.filter(lv => lv isDefined).foreach(lvInfo => levels = lvInfo.get::levels)
 }

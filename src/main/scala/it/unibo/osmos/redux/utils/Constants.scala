@@ -40,6 +40,8 @@ object Constants {
     val levelStartPath: String = separator + "levels"
     val singlePlayerLevelsPath: String = levelStartPath + separator + "singlePlayer" + separator
     val multiPlayerLevelsPath: String = levelStartPath + separator + "multiPlayer" + separator
+    val configSinglePlayer:String = levelStartPath + separator + "config" + separator + "SinglePlayerLevels"
+    val configMultiPlayer:String = levelStartPath + separator + "config" + separator + "MultiPlayerLevels"
   }
 
   object UserHomePaths {
