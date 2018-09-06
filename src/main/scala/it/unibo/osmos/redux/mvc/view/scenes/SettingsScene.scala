@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
-import it.unibo.osmos.redux.mvc.controller.levels.manager.SinglePlayerLevels
+import it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels
 import it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer
 import it.unibo.osmos.redux.mvc.view.components.custom.{AlertFactory, StyledButton}
 import it.unibo.osmos.redux.mvc.view.context.LevelContext
