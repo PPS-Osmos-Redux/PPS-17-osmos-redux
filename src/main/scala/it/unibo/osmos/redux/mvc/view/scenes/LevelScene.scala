@@ -41,6 +41,7 @@ import scalafx.util.Duration
 class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val listener: LevelSceneListener,
                  val upperSceneListener: UpperLevelSceneListener)
   extends BaseScene(parentStage) with LevelContextListener with LevelStateBoxListener {
+//DefaultBackScene(parentStage, upperSceneListener, "Return to Level Selection") with LevelContextListener with LevelStateBoxListener {
 
   MusicPlayer.play(SoundsType.level)
 
@@ -84,6 +85,8 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   private val pauseScreen = LevelScreen.Builder(this)
     .withText("Game paused", 30, Color.White)
     .withButton("Resume", _ => onResume())
+    // TODO:
+    //.withNode(goBack)
     .withButton("Return to Level Selection", _ => onExit())
     .build()
   pauseScreen.visible <== paused
@@ -511,7 +514,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 /**
   * Trait used by LevelScene to notify an event to the upper scene
   */
-trait UpperLevelSceneListener {
+trait UpperLevelSceneListener /*extends BackClickListener*/ {
 
   /**
     * Called when the level gets stopped

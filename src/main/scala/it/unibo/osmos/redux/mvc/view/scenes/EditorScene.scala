@@ -28,7 +28,7 @@ import scala.collection.mutable.ListBuffer
   * @param parentStage the parent stage
   * @param listener the EditorSceneListener
   */
-class EditorScene (override val parentStage: Stage, val listener: EditorSceneListener, val upperListener: UpperEditorSceneListener) extends BaseScene(parentStage) {
+class EditorScene (override val parentStage: Stage, val listener: EditorSceneListener, val upperListener: BackClickListener) extends DefaultBackScene(parentStage, upperListener, "Exit Level") {
 
   /* Entities currently built */
   var builtEntities: ListBuffer[CellEntity] = ListBuffer()
@@ -194,10 +194,10 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     top = new HBox(20.0, new StyledButton("Save Level") {
       /** We begin the procedure to save the level */
       onAction = _ => saveLevel()
-    }, new StyledButton("Exit Level") {
+    }, goBack /*new StyledButton("Exit Level") {
       /* We go back */
-      onAction = _ => upperListener.onExitEditor()
-    }){
+      onAction = _ => upperListener.onBackClick()
+    }*/){
       margin = Insets(10.0)
       alignment = Pos.Center
     }
