@@ -4,6 +4,7 @@ import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityType}
 import it.unibo.osmos.redux.mvc.controller.levels.structure.{CollisionRules, MapShape, MapShapeType, VictoryRules}
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
+import it.unibo.osmos.redux.mvc.view.ViewConstants.Editor._
 import it.unibo.osmos.redux.mvc.view.components.custom.{StyledButton, TitledComboBox}
 import it.unibo.osmos.redux.mvc.view.components.editor._
 import it.unibo.osmos.redux.mvc.view.components.level.LevelScreen
@@ -30,24 +31,18 @@ import scala.collection.mutable.ListBuffer
   */
 class EditorScene (override val parentStage: Stage, val listener: EditorSceneListener, val upperListener: BackClickListener) extends DefaultBackScene(parentStage, upperListener, "Exit Level") {
 
-  /* Entities currently built */
+  /** Entities currently built */
   var builtEntities: ListBuffer[CellEntity] = ListBuffer()
 
-  /**
-    * The background image
-    */
+  /** The background image */
   val background: ImageView = new ImageView(ImageLoader.getImage(backgroundTexture)) {
     fitWidth <== parentStage.width
     fitHeight <== parentStage.height
   }
 
-  /**
-    * Boolean binding with the istructionScreen
-    */
+  /** Boolean binding with the instructionScreen */
   private val instructionScreenVisible: BooleanProperty = BooleanProperty(false)
-  /**
-    * The instruction screen
-    */
+  /** The instruction screen*/
   private val instructionScreen = LevelScreen.Builder(this)
     .withText("Instructions", 50, Color.White)
     .withText("Press [Ctrl] to toggle the placeholder visibility", 30, Color.White)
@@ -58,14 +53,13 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     .build()
   instructionScreen.visible <== instructionScreenVisible
 
+  /** This method makes the instruction screen appear/disappear */
   private def changeInstructionScreenState(): Unit = {
     instructionScreenVisible.value = !instructionScreenVisible.value
     background.opacity = if (instructionScreenVisible.value) 0.3 else 1.0
   }
 
-  /**
-    * Level Type
-    */
+  /** Level Type */
   private val levelType: ObjectProperty[MapShapeType.Value] = ObjectProperty(MapShapeType.Circle)
   private val levelTypeBox = new TitledComboBox[MapShapeType.Value]("Level Type:", MapShapeType.values.toSeq, mapType => levelType.value = mapType)
 
@@ -73,49 +67,43 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   private val circularLevelBuilder: CircleLevelCreator = new CircleLevelCreator {
     xCenter.value = 0.0
     yCenter.value = 0.0
-    radius.value = 350.0
+    radius.value = startingLevelRadius
   }
   /** Pane containing the field to configure the rectangular level */
   private val rectangularLevelBuilder: RectangleLevelCreator = new RectangleLevelCreator {
     visible = false
-    levelWidth.value = halfWindowWidth
-    levelHeight.value = halfWindowHeight
+    levelWidth.value = startingLevelWidth
+    levelHeight.value = startingLevelHeight
     xCenter.value = 0.0
     yCenter.value = 0.0
   }
 
-  /**
-    * Level Type
-    */
+  /** Victory Rule */
   private val victoryRule: ObjectProperty[VictoryRules.Value] = ObjectProperty(VictoryRules.becomeTheBiggest)
   private val victoryRuleBox = new TitledComboBox[VictoryRules.Value]("Victory Rule:", VictoryRules.values.toSeq, vr => victoryRule.value = vr)
 
-  /**
-    * Level Type
-    */
+  /** Collision Rule */
   private val collisionRule: ObjectProperty[CollisionRules.Value] = ObjectProperty(CollisionRules.bouncing)
   private val collisionRuleBox = new TitledComboBox[CollisionRules.Value]("Collision Rule:", CollisionRules.values.toSeq, cr => collisionRule.value = cr)
 
-  /**
-    * Entity Type
-    */
+  /** Entity Type */
   private val entityType: ObjectProperty[EntityType.Value] = ObjectProperty(EntityType.Matter)
   private val entityComboBox = new TitledComboBox[EntityType.Value]("Entity Type:", EntityType.values.toSeq, et => {
     entityType.value = et
   })
 
-  /* Pane containing the field to configure the entities*/
+  /** Pane containing the field to configure the entities*/
   private val cellEntityCreator: CellEntityCreator = new CellEntityCreator
-  /* Pane containing the field to configure the gravity entities*/
+  /** Pane containing the field to configure the gravity entities*/
   private val gravityCellEntityCreator: GravityCellEntityCreator = new GravityCellEntityCreator {
     weight.value = 1.0
     visible = false
   }
-  /* Pane containing the field to configure the sentient entities*/
+  /** Pane containing the field to configure the sentient entities*/
   private val sentientCellEntityCreator: CellEntityCreator = new SentientCellEntityCreator {
     visible = false
   }
-  /* Pane containing the field to configure the player entities*/
+  /** Pane containing the field to configure the player entities*/
   private val playerCellEntityCreator: CellEntityCreator = new PlayerCellEntityCreator {
     visible = false
   }
@@ -129,7 +117,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     */
   private def getVisibleCellBuilder: CellEntityCreator = entityBuilders.filter((b) => b.visible.value).head
 
-  /* The entity container*/
+  /** The entity container*/
   private val entityContainer: VBox = new VBox(1.0) {
     margin = Insets(10.0)
 
@@ -184,7 +172,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   private val mainContainer: BorderPane = new BorderPane() {
     prefWidth <== parentStage.width
     prefHeight <== parentStage.height
-    /* We don't show the container if the instructions are visible*/
+    /** We don't show the container if the instructions are visible*/
     visible <== !instructionScreenVisible
     left = entityContainer
     right = new VBox(5.0, victoryRuleBox.root, collisionRuleBox.root, levelTypeContainer) {
@@ -194,10 +182,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     top = new HBox(20.0, new StyledButton("Save Level") {
       /** We begin the procedure to save the level */
       onAction = _ => saveLevel()
-    }, goBack /*new StyledButton("Exit Level") {
-      /* We go back */
-      onAction = _ => upperListener.onBackClick()
-    }*/){
+    }, goBack){
       margin = Insets(10.0)
       alignment = Pos.Center
     }
@@ -216,7 +201,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
 
   /** Save level procedure */
   private def saveLevel(): Unit = {
-    /* We show a confirmation dialog in which we ask for a name */
+    /** We show a confirmation dialog in which we ask for a name */
     val dialog: TextInputDialog = new TextInputDialog("") {
       headerText = "Insert your new level name"
     }
@@ -241,14 +226,14 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
           /** Collision rules */
           val collisionRules = collisionRule.value
 
-          /* Save the level */
+          /** Save the level */
           listener.onSaveLevel(name, level, victoryRules, collisionRules, builtEntities, {
-            /* The level has been created*/
+            /** The level has been created*/
             case true => new Alert(Alert.AlertType.Confirmation) {
               title = "Success"
               contentText.value = "The custom level has been successfully saved"
             }.showAndWait()
-            /* We show an alert */
+            /** We show an alert */
             case false =>
               new Alert(Alert.AlertType.Error) {
                 title = "Error"
@@ -261,9 +246,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     }
   }
 
-  /**
-    * The placeholder which models the circular level
-    */
+  /** The placeholder which models the circular level */
   val circularLevelPlaceholder: Circle = new Circle() {
     centerX <== circularLevelBuilder.xCenter + halfWindowWidth
     centerY <== circularLevelBuilder.yCenter + halfWindowHeight
@@ -275,9 +258,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     visible <== !instructionScreenVisible
   }
 
-  /**
-    * The placeholder which models the rectangular level
-    */
+  /** The placeholder which models the rectangular level */
   val rectangularLevelPlaceholder: Rectangle = new Rectangle() {
     width <== rectangularLevelBuilder.levelWidth
     height <== rectangularLevelBuilder.levelHeight
@@ -290,19 +271,15 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     visible <== !instructionScreenVisible
   }
 
-  /**
-    * The currently visible level placeholder
-    */
+  /** The currently visible level placeholder */
   var currentLevelPlaceholder: Shape = circularLevelPlaceholder
 
-  /**
-    * The placeholder which follows the user mouse and changes appearance on EntityType change
-    */
+  /** The placeholder which follows the user mouse and changes appearance on EntityType change */
   val entityPlaceholder: Circle = new Circle() {
     fill.value = new ImagePattern(ImageLoader.getImage(cellTexture))
     radius = getVisibleCellBuilder.radius.value
 
-    /* We set a min and max for the size */
+    /** We set a min and max for the size */
     onScroll = scroll => {
       radius = radius.value + (scroll.getDeltaY/10) min 150 max 10
       getVisibleCellBuilder.radius.value = radius.value
@@ -320,16 +297,14 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
 
   }
 
-  /* On control key pressed we hide the placeholder to let the user insert values in the panes */
+  /** On control key pressed we hide the placeholder to let the user insert values in the panes */
   onKeyPressed = key => key.getCode match {
     case KeyCode.I => changeInstructionScreenState(); entityPlaceholder.visible = false
     case KeyCode.CONTROL => if (!instructionScreenVisible.value) entityPlaceholder.visible = !entityPlaceholder.visible.value
     case _ =>
   }
 
-  /**
-    * On mouse moved, we update the builder
-    */
+  /** On mouse moved, we update the builder */
   onMouseMoved = e => {
     entityPlaceholder.centerX.value = e.getX
     entityPlaceholder.centerY.value = e.getY
@@ -338,9 +313,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     visibleBuilder.y.value = e.getY - halfWindowHeight
   }
 
-  /**
-    * On mouse clicked, we parse the placeholder values and created a new element
-    */
+  /** On mouse clicked, we parse the placeholder values and created a new element */
   onMouseClicked = _ => if (entityPlaceholder.visible.value) {
     /** Insert an element to be shown */
     editorElements += new Circle {

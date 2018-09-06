@@ -314,8 +314,12 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     case Some(lc) =>
       if (!LevelState.paused.value && LevelState.inputEnabled) {
         /** Transforming click coordinates considering window size and zoom */
+        println(canvas.getTranslateX + " - " + canvas.getScaleX)
+        println(canvas.getTranslateY + " - " + canvas.getScaleY)
         val x = mouseEvent.getX - halfWindowWidth - canvas.getTranslateX / canvas.getScaleX
         val y = mouseEvent.getY - halfWindowHeight - canvas.getTranslateY / canvas.getScaleY
+        println("x: " + x)
+        println("y: " + y)
         lc notifyMouseEvent MouseEventWrapper(Point(x, y), lc.getPlayerUUID)
       }
     case _ =>

@@ -126,7 +126,7 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
     val start = System.currentTimeMillis()
     f()
     val end = System.currentTimeMillis()
-    Logger.log(s"execution time: ${end-start}ms")(who)
+    //Logger.log(s"execution time: ${end-start}ms")(who)
   }
 }
 
