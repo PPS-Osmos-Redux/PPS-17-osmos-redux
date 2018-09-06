@@ -23,7 +23,7 @@ object LevelFileManager extends FileManager {
     */
   def getLevelsConfigResourcesPath(multiPlayer:Boolean = false) : Option[List[String]] = {
     import it.unibo.osmos.redux.utils.Constants.ResourcesPaths._
-    val configPath = (if (multiPlayer) configMultiPlayer else configSinglePlayer) + jsonExtension
+    val configPath = (if (multiPlayer) ConfigMultiPlayer else ConfigSinglePlayer) + jsonExtension
     Try(getResourcesFileText(configPath).parseJson.convertTo[List[String]]).toOption
   }
 
@@ -35,7 +35,7 @@ object LevelFileManager extends FileManager {
     */
   def getLevelFromResource(chosenLevel: String, isMultiPlayer: Boolean = false): Option[Level] = {
     import it.unibo.osmos.redux.utils.Constants.ResourcesPaths._
-    val levelsPath = (if (isMultiPlayer) multiPlayerLevelsPath else singlePlayerLevelsPath) + chosenLevel + jsonExtension
+    val levelsPath = (if (isMultiPlayer) MultiPlayerLevelsPath else SinglePlayerLevelsPath) + chosenLevel + jsonExtension
       textToLevel(getResourcesFileText(levelsPath)) match {
       case Success(level) => level.checkCellPosition()
                              Some(level)
@@ -62,7 +62,7 @@ object LevelFileManager extends FileManager {
     * @param levelName the name of the file
     * @return Try[Unit]
     */
-  def deleteCustomLevel(levelName:String): Try[Unit] = deleteFile(Paths.get(levelsDirectory + levelName + jsonExtension))
+  def deleteCustomLevel(levelName:String): Try[Unit] = deleteFile(Paths.get(LevelsDirectory + levelName + jsonExtension))
 
   /**
     * Load level from file saved into user home directory
@@ -71,7 +71,7 @@ object LevelFileManager extends FileManager {
     * @return an option with the required level if it doesn't fail
     */
   def getCustomLevel(implicit fileName: String): Option[Level] =
-    loadFile(levelsDirectory + fileName + jsonExtension) match {
+    loadFile(LevelsDirectory + fileName + jsonExtension) match {
       case Some(text) => textToLevel(text) match {
                           case Success(level) => level.checkCellPosition()
                                                  Some(level)
@@ -88,8 +88,8 @@ object LevelFileManager extends FileManager {
     */
   def getCustomLevelsInfo: Try[List[LevelInfo]] = {
     /*Create directory tree for avoid NullPointer exception later*/
-    createDirectoriesTree(new File(levelsDirectory + "rnd.txt"))
-    Try(new File(levelsDirectory).listFiles((_, name) => name.endsWith(jsonExtension))
+    createDirectoriesTree(new File(LevelsDirectory + "rnd.txt"))
+    Try(new File(LevelsDirectory).listFiles((_, name) => name.endsWith(jsonExtension))
       .map(f => loadLevelInfo(f))
       .filter(optLvl => optLvl.isDefined).map(opt => opt.get).toList)
   }
@@ -107,7 +107,7 @@ object LevelFileManager extends FileManager {
 
   private def processFilePath(fileName:String, index:Option[Int] = None): (Path, String) = {
     val uniqueName =  fileName+index.getOrElse("")
-    val path = defaultFS.getPath(levelsDirectory + uniqueName + jsonExtension)
+    val path = DefaultFS.getPath(LevelsDirectory + uniqueName + jsonExtension)
     if (Files.exists(path)) {
       processFilePath(fileName, if(index.isDefined) Some(index.get+1) else Some(1))
     } else {
@@ -116,7 +116,7 @@ object LevelFileManager extends FileManager {
   }
 
   private def loadLevelInfo(implicit fileName: String): Option[LevelInfo] =
-    loadFile(levelsDirectory + fileName + jsonExtension) match {
+    loadFile(LevelsDirectory + fileName + jsonExtension) match {
       case Some(text) => textToLevelInfo(text).toOption
       case _ => None
     }

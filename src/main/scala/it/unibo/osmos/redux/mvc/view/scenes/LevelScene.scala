@@ -89,7 +89,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
   /** DefaultBackScene goBack button configurations */
   setText("Return to Level Selection")
-  setAdditionalAction(onExit)
+  setAdditionalAction(() => onExit())
 
   /** The canvas which will draw the elements on the screen */
   private val canvas: Canvas = new Canvas {
@@ -426,8 +426,9 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
     LevelState.inputEnabled = false
 
-    setAdditionalAction(goToPreviousScene)
+    setAdditionalAction(() => goToPreviousScene())
 
+    /** Creating an end screen with a button */
     val endScreen = LevelScreen.Builder(this)
       .withText(if (levelResult) "You won!" else "You lost.", 50, Color.White)
       .withButton("Return to Level Selection", _ => goToPreviousScene())

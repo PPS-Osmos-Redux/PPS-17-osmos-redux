@@ -68,7 +68,7 @@ abstract class FileManager {
     * @return An Option with the text if the operation is terminated with success
     */
   protected def loadFile(filePath:String):Option[String] = {
-    val source: Try[BufferedSource] = Try(Source.fromFile(UserHomePaths.defaultFS.getPath(filePath).toUri))
+    val source: Try[BufferedSource] = Try(Source.fromFile(UserHomePaths.DefaultFS.getPath(filePath).toUri))
     if (source.isSuccess) {
       try {
         return Some(source.get.mkString)
@@ -80,4 +80,6 @@ abstract class FileManager {
     }
     None
   }
+
+  protected implicit def stringPathToFile(path:String): File = new File(path)
 }

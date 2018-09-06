@@ -33,7 +33,7 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
   test("CollisionSystem should not collide the entity with herself") {
     val system = CollisionSystem(levelInfo)
 
-    val entity = new CellBuilder().withPosition(70,50).withDimension(dimension).build
+    val entity = CellBuilder().withPosition(70,50).withDimension(dimension).buildCellEntity()
 
     val originalDim = entity.getDimensionComponent.copy()
     val originalAccel = entity.getAccelerationComponent.copy()
@@ -48,8 +48,8 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
   test("CollisionSystem should not consider entities that do not have CollisionProperty") {
     val system = CollisionSystem(levelInfo)
 
-    val entity = new CellBuilder().withPosition(56, 79).withDimension(dimension).build
-    val entity1 = new CellBuilder().withPosition(60, 80).withDimension(dimension1).collidable(false).build
+    val entity = CellBuilder().withPosition(56, 79).withDimension(dimension).buildCellEntity()
+    val entity1 = CellBuilder().withPosition(60, 80).withDimension(dimension1).collidable(false).buildCellEntity()
 
     val originalDim = entity.getDimensionComponent.radius
     val originalAccel = entity.getAccelerationComponent.vector
@@ -68,8 +68,8 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
   test("CollisionSystem should not collide two entities if the distance between the centers is greater than the sum of their radii") {
     val system = CollisionSystem(levelInfo)
 
-    val entity = new CellBuilder().withPosition(70, 50).withDimension(dimension).build
-    val entity1 = new CellBuilder().withPosition(60, 80).withDimension(dimension1).build
+    val entity = CellBuilder().withPosition(70, 50).withDimension(dimension).buildCellEntity()
+    val entity1 = CellBuilder().withPosition(60, 80).withDimension(dimension1).buildCellEntity()
 
     val originalDim = entity.getDimensionComponent
     val originalAccel = entity.getAccelerationComponent
@@ -88,8 +88,8 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
   test("CollisionSystem should collide two entities if the distance between the centers is less than the sum of their radii") {
     val system = CollisionSystem(levelInfo)
 
-    val entity = new CellBuilder().withPosition(60, 80).withDimension(dimension).build
-    val entity1 = new CellBuilder().withPosition(66, 80).withDimension(dimension1).build
+    val entity = CellBuilder().withPosition(60, 80).withDimension(dimension).buildCellEntity()
+    val entity1 = CellBuilder().withPosition(66, 80).withDimension(dimension1).buildCellEntity()
 
     EntityManager.add(entity)
     EntityManager.add(entity1)
@@ -105,9 +105,9 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
   test("Collision with AntiMatter entity should reduce both dimension's entity") {
     val system = CollisionSystem(levelInfo)
 
-    val entity = new CellBuilder().withPosition(60, 80).withDimension(dimension).build
-    val antiMatterEntity =  new CellBuilder().withPosition(65, 81).withDimension(dimension1)
-                                              .withEntityType(EntityType.AntiMatter).build
+    val entity = CellBuilder().withPosition(60, 80).withDimension(dimension).buildCellEntity()
+    val antiMatterEntity =  CellBuilder().withPosition(65, 81).withDimension(dimension1)
+                                              .withEntityType(EntityType.AntiMatter).buildCellEntity()
 
     val originalDim = entity.getDimensionComponent.copy()
     val originalAccel =entity.getAccelerationComponent.copy()
@@ -130,23 +130,23 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
     val lccd = DimensionComponent(2)
     val lccp = PositionComponent(Point(79, 58))
     val lccs = SpeedComponent(-4, 2)
-    val leftCollisionCellEntity = new CellBuilder().withPosition(lccp).withDimension(lccd).withSpeed(lccs).build
+    val leftCollisionCellEntity = CellBuilder().withPosition(lccp).withDimension(lccd).withSpeed(lccs).buildCellEntity()
 
 
     val rccd = DimensionComponent(7)
     val rccp = PositionComponent(Point(237, 90))
     val rccs = SpeedComponent(6, 0)
-    val rightCollisionCellEntity = new CellBuilder().withPosition(rccp).withDimension(rccd).withSpeed(rccs).build
+    val rightCollisionCellEntity = CellBuilder().withPosition(rccp).withDimension(rccd).withSpeed(rccs).buildCellEntity()
 
     val tccd = DimensionComponent(8)
     val tccp = PositionComponent(Point(166, 56))
     val tccs = SpeedComponent(6, -4)
-    val topCollisionCellEntity = new CellBuilder().withPosition(tccp).withDimension(tccd).withSpeed(tccs).build
+    val topCollisionCellEntity = CellBuilder().withPosition(tccp).withDimension(tccd).withSpeed(tccs).buildCellEntity()
 
     val bccd = DimensionComponent(5)
     val bccp = PositionComponent(Point(113, 151))
     val bccs = SpeedComponent(-2, 7)
-    val bottomCollisionCellEntity = new CellBuilder().withPosition(bccp).withDimension(bccd).withSpeed(bccs).build
+    val bottomCollisionCellEntity = CellBuilder().withPosition(bccp).withDimension(bccd).withSpeed(bccs).buildCellEntity()
 
     EntityManager.add(leftCollisionCellEntity)
     EntityManager.add(rightCollisionCellEntity)
@@ -175,22 +175,22 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
     val lccd = DimensionComponent(2)
     val lccp = PositionComponent(Point(79, 58))
     val lccs = SpeedComponent(-4, 2)
-    val leftCollisionCellEntity = new CellBuilder().withPosition(lccp).withDimension(lccd).withSpeed(lccs).build
+    val leftCollisionCellEntity = CellBuilder().withPosition(lccp).withDimension(lccd).withSpeed(lccs).buildCellEntity()
 
     val rccd = DimensionComponent(7)
     val rccp = PositionComponent(Point(237, 90))
     val rccs = SpeedComponent(6, 0)
-    val rightCollisionCellEntity = new CellBuilder().withPosition(rccp).withDimension(rccd).withSpeed(rccs).build
+    val rightCollisionCellEntity = CellBuilder().withPosition(rccp).withDimension(rccd).withSpeed(rccs).buildCellEntity()
 
     val tccd = DimensionComponent(8)
     val tccp = PositionComponent(Point(166, 56))
     val tccs = SpeedComponent(6, -4)
-    val topCollisionCellEntity = new CellBuilder().withPosition(tccp).withDimension(tccd).withSpeed(tccs).build
+    val topCollisionCellEntity = CellBuilder().withPosition(tccp).withDimension(tccd).withSpeed(tccs).buildCellEntity()
 
     val bccd = DimensionComponent(5)
     val bccp = PositionComponent(Point(113, 151))
     val bccs = SpeedComponent(-2, 7)
-    val bottomCollisionCellEntity = new CellBuilder().withPosition(bccp).withDimension(bccd).withSpeed(bccs).build
+    val bottomCollisionCellEntity = CellBuilder().withPosition(bccp).withDimension(bccd).withSpeed(bccs).buildCellEntity()
 
     EntityManager.add(leftCollisionCellEntity)
     EntityManager.add(rightCollisionCellEntity)
@@ -226,7 +226,7 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
     val cd = DimensionComponent(20)
     val cp = PositionComponent(Point(108, 280))
     val cs = SpeedComponent(-10.0, -20.0)
-    val cellEntity = new CellBuilder().withPosition(cp).withDimension(cd).withSpeed(cs).build
+    val cellEntity = CellBuilder().withPosition(cp).withDimension(cd).withSpeed(cs).buildCellEntity()
 
     EntityManager.add(cellEntity)
 
@@ -246,7 +246,7 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
     val cd = DimensionComponent(20)
     val cp = PositionComponent(Point(108, 280))
     val cs = SpeedComponent(-10.0, -20.0)
-    val cellEntity = new CellBuilder().withPosition(cp).withDimension(cd).withSpeed(cs).build
+    val cellEntity = CellBuilder().withPosition(cp).withDimension(cd).withSpeed(cs).buildCellEntity()
 
     EntityManager.add(cellEntity)
 
@@ -260,8 +260,8 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
   test("After collision between two entities, both entities remain within the map") {
     val system = CollisionSystem(levelInfo)
 
-    val entity = new CellBuilder().withPosition(61, 36).withDimension(10).build
-    val entity1 = new CellBuilder().withPosition(60, 49).withDimension(6).build
+    val entity = CellBuilder().withPosition(61, 36).withDimension(10).buildCellEntity()
+    val entity1 = CellBuilder().withPosition(60, 49).withDimension(6).buildCellEntity()
 
     EntityManager.add(entity)
     EntityManager.add(entity1)

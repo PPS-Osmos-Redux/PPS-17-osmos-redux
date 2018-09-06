@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.builders.PlayerCellBuilder
+import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 import it.unibo.osmos.redux.ecs.entities.properties.basic.Position
 import it.unibo.osmos.redux.ecs.entities.{PlayerCellEntity, _}
 import it.unibo.osmos.redux.ecs.systems.SpawnSystem
@@ -15,7 +15,7 @@ class TestSpawnSystem extends FunSuite with BeforeAndAfter {
 
   before {
     system = SpawnSystem()
-    pce = PlayerCellBuilder().withSpawner(true).build
+    pce = CellBuilder().withSpawner(true).buildPlayerEntity()
   }
 
   after{

@@ -20,7 +20,7 @@ object SentientCellEntity {
 
   def apply(cell: CellEntity, spawner: SpawnerComponent): SentientCellEntity = SentientCellEntityImpl(cell, spawner)
 
-  def apply(builder: CellBuilder, spawner: SpawnerComponent): SentientCellEntity = apply(builder.build, spawner)
+  def apply(builder: CellBuilder, spawner: SpawnerComponent): SentientCellEntity = apply(builder.buildCellEntity(), spawner)
 
 
   private case class SentientCellEntityImpl(cellEntity: CellEntity, spawner: SpawnerComponent) extends SentientCellEntity {

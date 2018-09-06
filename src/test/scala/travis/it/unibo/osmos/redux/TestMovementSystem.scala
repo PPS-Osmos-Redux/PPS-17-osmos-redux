@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.entities.EntityManager
-import it.unibo.osmos.redux.ecs.entities.builders.{CellBuilder, PlayerCellBuilder}
+import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 import it.unibo.osmos.redux.ecs.systems.MovementSystem
 import it.unibo.osmos.redux.utils.{Point, Vector}
 import org.scalactic.Tolerance._
@@ -29,9 +29,9 @@ class TestMovementSystem extends FunSuite with BeforeAndAfter {
 
   test("MovableProperty entities' acceleration, speed and position are updated correctly") {
 
-    val cellEntity = new CellBuilder().withAcceleration(1,1).withSpeed(2,0).withPosition(110,170).build
+    val cellEntity = CellBuilder().withAcceleration(1,1).withSpeed(2,0).withPosition(110,170).buildCellEntity()
 
-    val playerCellEntity = PlayerCellBuilder().withAcceleration(-4, -1).withSpeed(4,0).withPosition(130, 150).build
+    val playerCellEntity = CellBuilder().withAcceleration(-4, -1).withSpeed(4, 0).withPosition(130, 150).buildPlayerEntity()
 
     EntityManager.add(cellEntity)
     EntityManager.add(playerCellEntity)
@@ -49,7 +49,7 @@ class TestMovementSystem extends FunSuite with BeforeAndAfter {
 
   test("MovableProperty entities' speed does not exceed max speed") {
 
-    val cellEntity = new CellBuilder().withAcceleration(4,2).withSpeed(2,2).withPosition(110,170).build
+    val cellEntity = CellBuilder().withAcceleration(4,2).withSpeed(2,2).withPosition(110,170).buildCellEntity()
 
     EntityManager.add(cellEntity)
 

@@ -18,11 +18,7 @@ object CellEntity {
             visible: VisibleComponent,
             typeEntity: TypeComponent): CellEntity = CellEntityImpl(acceleration, collidable, dimension, position, speed, visible, typeEntity)
 
-  def apply(builder: CellBuilder): CellEntity = {
-    val entity = builder.build
-    CellEntityImpl(entity.getAccelerationComponent, entity.getCollidableComponent, entity.getDimensionComponent,
-      entity.getPositionComponent, entity.getSpeedComponent, entity.getVisibleComponent, entity.getTypeComponent)
-  }
+  def apply(builder: CellBuilder): CellEntity = builder.buildCellEntity()
 
   private case class CellEntityImpl(private val acceleration: AccelerationComponent,
                                     private val collidable: CollidableComponent,

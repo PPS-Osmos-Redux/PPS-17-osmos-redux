@@ -28,7 +28,7 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
       try {
         //let game progress by updating all systems
         systems foreach (s => {
-          logRunTime(s.getClass.getSimpleName, s.update)
+          logRunTime(s.getClass.getSimpleName, () => s.update())
         })
       } finally {
         tryUnlock()

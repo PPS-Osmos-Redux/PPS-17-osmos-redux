@@ -63,6 +63,10 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
   }
 
   override def onBackClick(): Unit = parentStage.scene = this
+
+  override def onStatsClick(): Unit = listener.onStatsClick()
+
+  override def onControlsClick(): Unit = listener.onControlsClick()
 }
 
 /**
@@ -84,6 +88,16 @@ trait MainSceneListener {
     * Called when the user clicks on the editor button
     */
   def onEditorClick()
+
+  /**
+    * Called when the user clicks on the stats button
+    */
+  def onStatsClick()
+
+  /**
+    * Called when the user clicks on the controls button
+    */
+  def onControlsClick()
 
   /**
     * Called when the user clicks on the settings button
