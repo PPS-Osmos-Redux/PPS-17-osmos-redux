@@ -6,7 +6,6 @@ object SoundFileManager extends FileManager {
 
   override implicit val who: String = "SoundFileManager"
 
-  val soundsPath: String = separator + "sounds" + separator
   /**
     * Gets menu music path
     * @return menu music string path
