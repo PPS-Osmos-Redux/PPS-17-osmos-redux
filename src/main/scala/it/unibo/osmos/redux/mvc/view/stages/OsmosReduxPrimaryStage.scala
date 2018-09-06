@@ -54,6 +54,10 @@ object OsmosReduxPrimaryStage {
 
     override def onEditorClick(): Unit = scene = new EditorLevelSelectionScene(this, listener, mainScene)
 
+    override def onStatsClick(): Unit = scene = new StatsScene(this, listener, mainScene)
+
+    override def onControlsClick(): Unit = ???
+
     override def onSettingsClick(): Unit = scene = new SettingsScene(this, listener, mainScene)
 
     /* Stopping the game when the user closes the window */
