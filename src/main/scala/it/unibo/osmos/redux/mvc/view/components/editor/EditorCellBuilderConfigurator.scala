@@ -1,18 +1,17 @@
 package it.unibo.osmos.redux.mvc.view.components.editor
 
-import it.unibo.osmos.redux.ecs.entities.builders.{CellBuilder, EntityBuilder}
+import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 
 /**
   * Basic CellBuilder configurator, used by the various cell editors
-  * @tparam T a subtype of CellBuilder
   */
-trait EditorCellBuilderConfigurator[T <: CellBuilder] {
+trait EditorCellBuilderConfigurator {
 
   /**
     * This method configure the EntityBuilder
-    * @param builder the EntityBuilder that must be configured
+    * @param builder the CellBuilder that must be configured
     * @param withEntityType true if the Configurator has to put the entity type in the newly created cell
     */
-  def configureBuilder[T](builder: EntityBuilder[T], withEntityType: Boolean = true): Unit
+  def configureBuilder(builder: CellBuilder, withEntityType: Boolean = true): Unit
 
 }

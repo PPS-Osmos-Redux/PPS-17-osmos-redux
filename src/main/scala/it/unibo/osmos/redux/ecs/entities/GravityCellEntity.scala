@@ -25,7 +25,7 @@ object GravityCellEntity {
     GravityCellEntityImpl(cell, MassComponent(cell.getDimensionComponent, specificWeight), specificWeight)
 
   def apply(builder: CellBuilder, specificWeight: SpecificWeightComponent): GravityCellEntity =
-    apply(builder.build, specificWeight)
+    apply(builder.buildCellEntity(), specificWeight)
 
   private case class GravityCellEntityImpl(cellEntity: CellEntity, mass: MassComponent, specificWeight: SpecificWeightComponent) extends GravityCellEntity {
 

@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.ecs.systems.sentientRule
 
-import it.unibo.osmos.redux.ecs.entities.builders.SentientCellBuilder
+import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 import it.unibo.osmos.redux.ecs.entities.properties.composed.SentientProperty
 import it.unibo.osmos.redux.ecs.systems.borderconditions.{CircularBorder, RectangularBorder}
 import it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils._
@@ -24,10 +24,10 @@ case class EscapeFromBoundaryRule(levelInfo: Level) extends SentientRule {
   private def escapeFromBoundary(sentient: SentientProperty, previousAcceleration: Vector): Vector = levelInfo.levelMap.collisionRule match {
     case CollisionRules.instantDeath =>
       val actualSpeed = sentient.getSpeedComponent.vector add previousAcceleration
-      val sentientCopy = SentientCellBuilder()
+      val sentientCopy = CellBuilder()
         .withPosition(sentient.getPositionComponent)
         .withDimension(sentient.getDimensionComponent.radius + getDesiredSeparation(actualSpeed))
-        .withSpeed(actualSpeed.x, actualSpeed.y).build
+        .withSpeed(actualSpeed.x, actualSpeed.y).buildSentientEntity()
       bounceRule.checkAndSolveCollision(sentientCopy)
       if (sentientCopy.getSpeedComponent.vector == actualSpeed) {
         Vector.zero()

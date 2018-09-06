@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.components.editor
 
-import it.unibo.osmos.redux.ecs.entities.builders.{CellBuilder, EntityBuilder}
+import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityType}
 import it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField
 import scalafx.beans.property.{DoubleProperty, ObjectProperty}
@@ -10,7 +10,7 @@ import scalafx.scene.layout.{HBox, VBox}
 /**
   * A panel showing input nodes which is also capable of providing the requested CellEntity
   */
-class CellEntityCreator extends BaseEditorCreator[CellEntity] with EditorCellBuilderConfigurator[CellBuilder] {
+class CellEntityCreator extends BaseEditorCreator[CellEntity] with EditorCellBuilderConfigurator {
 
   private[this] var _entityType: EntityType.Value = EntityType.Matter
   def entityType_=(value: EntityType.Value): Unit = {
@@ -57,7 +57,7 @@ class CellEntityCreator extends BaseEditorCreator[CellEntity] with EditorCellBui
     * Method that configures the basic cell builder. It may be overridden by other cell entity creators
     * @param builder the cell builder
     */
-  override def configureBuilder[T](builder: EntityBuilder[T], withEntityType: Boolean = true): Unit = {
+  override def configureBuilder(builder: CellBuilder, withEntityType: Boolean = true): Unit = {
     builder
       .visible(true)
       .collidable(true)
@@ -71,7 +71,7 @@ class CellEntityCreator extends BaseEditorCreator[CellEntity] with EditorCellBui
   override def create(): CellEntity = {
     val builder = CellBuilder()
     configureBuilder(builder)
-    builder.build
+    builder.buildCellEntity()
   }
 
 }

@@ -1,25 +1,21 @@
 package it.unibo.osmos.redux.mvc.view.components.editor
 
-import it.unibo.osmos.redux.ecs.entities.CellEntity
-import it.unibo.osmos.redux.ecs.entities.builders.{EntityBuilder, PlayerCellBuilder}
+import it.unibo.osmos.redux.ecs.entities.PlayerCellEntity
+import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 
 /**
   * A panel showing input nodes which is also capable of providing the requested PlayerCellEntity
   */
 class PlayerCellEntityCreator extends AbstractSpawnerCellEntityCreator {
 
-  override def configureBuilder[T](builder: EntityBuilder[T], withEntityType: Boolean = true): Unit = {
-    builder match {
-      case pce: PlayerCellBuilder =>
-        super.configureBuilder(pce, withEntityType = true)
-        pce.withSpawner(canSpawn.value)
-      case _ => throw new IllegalArgumentException("PlayerCellEntityCreator must use a PlayerCellBuilder")
-    }
+  override def configureBuilder(builder: CellBuilder, withEntityType: Boolean = true): Unit = {
+    super.configureBuilder(builder)
+    builder.withSpawner(canSpawn.value)
   }
 
-  override def create(): CellEntity = {
-    val builder = PlayerCellBuilder()
+  override def create(): PlayerCellEntity = {
+    val builder = CellBuilder()
     configureBuilder(builder)
-    builder.build
+    builder.buildPlayerEntity()
   }
 }

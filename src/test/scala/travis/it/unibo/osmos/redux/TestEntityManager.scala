@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.entities._
-import it.unibo.osmos.redux.ecs.entities.builders.{CellBuilder, PlayerCellBuilder}
+import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 import it.unibo.osmos.redux.ecs.entities.properties.composed.DeathProperty
 import it.unibo.osmos.redux.ecs.systems.AbstractSystem
 import org.scalatest.FunSuite
@@ -16,8 +16,8 @@ case class SystemSpy() extends AbstractSystem[DeathProperty] {
 }
 
 class TestEntityManager extends FunSuite {
-  val ce: CellEntity = new CellBuilder().build
-  val pce: PlayerCellEntity = PlayerCellBuilder().build
+  val ce: CellEntity = CellBuilder().buildCellEntity()
+  val pce: PlayerCellEntity = CellBuilder().buildPlayerEntity()
   test("Add and remove entity") {
     val systemSpy = SystemSpy()
     EntityManager.add(pce)

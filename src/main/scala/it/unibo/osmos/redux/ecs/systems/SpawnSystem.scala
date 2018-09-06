@@ -13,13 +13,13 @@ case class SpawnSystem() extends AbstractSystem[Spawner] {
     entities foreach(e => {
       e.getSpawnerComponent.dequeueActions() foreach (a => {
         EntityManager.add(
-          new CellBuilder()
+          CellBuilder()
             .collidable(true)
             .visible(true)
             .withSpeed(a.speed)
             .withDimension(a.dimension)
             .withPosition(a.position)
-            .build)
+            .buildCellEntity())
       })
     })
   }
