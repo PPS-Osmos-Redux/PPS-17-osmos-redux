@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.stages
 
-import it.unibo.osmos.redux.mvc.controller.FileManager
+import it.unibo.osmos.redux.mvc.controller.manager.files.{FileManager, StyleFileManager}
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
 import it.unibo.osmos.redux.mvc.view.scenes._
 import scalafx.application.JFXApp
@@ -40,7 +40,7 @@ object OsmosReduxPrimaryStage {
 
     private val mainScene = new MainScene(this, this) {
       // TODO: changing scene will ignore the imported style
-      stylesheets.addAll(FileManager.getStyle)
+      stylesheets.addAll(StyleFileManager.getStyle)
     }
 
     /**
@@ -48,19 +48,17 @@ object OsmosReduxPrimaryStage {
       */
     scene = mainScene
 
-    override def onPlayClick(): Unit = {
-      //mainScene.root = new LevelSelectionContainer(mainScene.parentStage).getContainer
-      scene = new LevelSelectionScene(this, listener)
-    }
+    override def onPlayClick(): Unit = scene = new LevelSelectionScene(this, listener, mainScene)
 
     override def onMultiPlayerClick(): Unit = scene = new MultiPlayerScene(this, listener, mainScene)
 
-    override def onEditorClick(): Unit = scene = new EditorLevelSelectionScene(this, listener)
+    override def onEditorClick(): Unit = scene = new EditorLevelSelectionScene(this, listener, mainScene)
 
-    override def onSettingsClick(container: Parent): Unit = {
-      mainScene.root = container
-      //scene = new SettingsScene(this, listener, mainScene)
-    }
+    override def onStatsClick(): Unit = scene = new StatsScene(this, listener, mainScene)
+
+    override def onControlsClick(): Unit = scene = new ControlsScene(this, listener, mainScene)
+
+    override def onSettingsClick(): Unit = scene = new SettingsScene(this, listener, mainScene)
 
     /* Stopping the game when the user closes the window */
     onCloseRequest = _ => System.exit(0)
@@ -71,12 +69,7 @@ object OsmosReduxPrimaryStage {
 /**
   * Listener that manages all the events managed by the primary scene
   */
-trait PrimaryStageListener extends LevelSelectionSceneListener with MultiPlayerSceneListener with MultiPlayerLobbySceneListener with EditorLevelSelectionSceneListener with DisplayErrorListener {
+trait PrimaryStageListener extends LevelSelectionSceneListener with EditorLevelSelectionSceneListener
+  with MultiPlayerSceneListener with MultiPlayerLobbySceneListener with MultiPlayerLevelSelectionSceneListener {
 
-}
-
-// TODO: check if it necessary elsewhere, otherwise can become a method of PrimaryStageListener
-trait DisplayErrorListener {
-
-  def onDisplayError(exception: Throwable): Unit
 }

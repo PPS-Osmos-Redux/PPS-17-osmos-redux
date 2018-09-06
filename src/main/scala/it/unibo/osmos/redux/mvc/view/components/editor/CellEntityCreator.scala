@@ -10,7 +10,7 @@ import scalafx.scene.layout.{HBox, VBox}
 /**
   * A panel showing input nodes which is also capable of providing the requested CellEntity
   */
-class CellEntityCreator extends BaseEditorCreator[CellEntity] with EditorCellBuilderConfigurator[CellBuilder] {
+class CellEntityCreator extends BaseEditorCreator[CellEntity] with EditorCellBuilderConfigurator {
 
   private[this] var _entityType: EntityType.Value = EntityType.Matter
   def entityType_=(value: EntityType.Value): Unit = {
@@ -69,9 +69,9 @@ class CellEntityCreator extends BaseEditorCreator[CellEntity] with EditorCellBui
   }
 
   override def create(): CellEntity = {
-    val builder = new CellBuilder()
+    val builder = CellBuilder()
     configureBuilder(builder)
-    builder.build
+    builder.buildCellEntity()
   }
 
 }

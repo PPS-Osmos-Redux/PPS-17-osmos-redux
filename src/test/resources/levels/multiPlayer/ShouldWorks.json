@@ -42,7 +42,7 @@
       "canSpawn": true
     },
     "typeEntity": {
-      "componentType": "Matter"
+      "componentType": "Controlled"
     },
     "position": {
       "point": {
@@ -73,7 +73,7 @@
       "canSpawn": true
     },
     "typeEntity": {
-      "componentType": "Matter"
+      "componentType": "Controlled"
     },
     "position": {
       "point": {
@@ -149,18 +149,19 @@
       "canSpawn": true
     }
   }],
-  "levelId": "ShouldWorks",
-  "isSimulation": false,
+  "name": "ShouldWorks",
   "victoryRule": {
     "victoryRule": "Become_the_biggest"
   },
   "levelMap": {
     "mapShape": {
+      "center": {
+        "x": 0.0,
+        "y": 0.0
+      },
       "mapShape": "Rectangle",
-      "height": 10.1,
-      "base": 5.6,
-      "centerX": 50.0,
-      "centerY": 50.0
+      "height": 50,
+      "base": 50
     },
     "collisionRule": "Bouncing"
   }

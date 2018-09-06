@@ -1,0 +1,12 @@
+Item,Sprint Task,Volunteer,Initial Estimate of Effort,Final Effort,Remaining Effort
+Gestione telecamera,"Creare supporto per telecamera, inizialmente fissa per le simulazioni",Marco Galassi + Giacomo Venturini,2,-,-
+,Fare in modo che la telecamera segua sempre la cellula del giocatore,Marco Galassi + Giacomo Venturini,2,-,-
+Definizione progressione giocatore tra livelli,Creazione dei livelli,Giacomo Venturini,2,-,-
+,Bilanciamento e testing valori di gioco,Giacomo Venturini,2,-,-
+Creazione animazioni,Aggiunta effetti grafici ai menù,Giacomo Venturini,1,-,-
+,Creazione di alert,Giacomo Venturini,1,-,-
+Gestione impostazioni di gioco,Salvataggio delle impostazioni scelte su file. Caricamento delle impostazioni salvate all'avvio del gioco.,Andrea Procucci,2,-,-
+,Creazione schermata per accedere alle impostazioni,Giacomo Venturini,2,-,-
+Statistiche di gioco,Refactoring gestione delle statistiche ,Andrea Procucci,3,-,-
+,Creazione schermata per visualizzare le statistiche,Giacomo Venturini,2,-,-
+Revisione finale,Refactoring + controllo di stile,Giacomo Venturini + Andrea Placuzzi,5,-,-

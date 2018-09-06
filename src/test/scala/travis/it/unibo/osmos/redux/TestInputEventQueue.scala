@@ -1,4 +1,4 @@
-package travis.it.unibo.osmos.redux
+package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
 import it.unibo.osmos.redux.utils.{InputEventQueue, Point}
@@ -6,7 +6,7 @@ import org.scalatest.FunSuite
 
 class TestInputEventQueue extends FunSuite {
 
-  val dummyEvent = MouseEventWrapper(Point(1,1))
+  val dummyEvent = MouseEventWrapper(Point(1, 1))
 
   test("InputEventQueue should be empty at launch") {
     assert(InputEventQueue.dequeue().isEmpty)

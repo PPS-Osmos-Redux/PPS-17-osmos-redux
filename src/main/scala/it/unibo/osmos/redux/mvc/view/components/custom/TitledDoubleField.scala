@@ -7,20 +7,22 @@ import scalafx.scene.control.TextFormatter.Change
 import scalafx.scene.control.{TextField, TextFormatter}
 import scalafx.util.converter.{DoubleStringConverter, NumberStringConverter}
 
-class TitledDoubleField(override val title: StringProperty, private val value: DoubleProperty) extends TitledNode[TextField](title, vertical = false) {
+/**
+  * TextField with a Title which controls the user inputs, checking that the text inserted is a Double
+  * @param title the text shown
+  * @param value the observable double property
+  * @param minValue the minimum acceptable value, set to Double.MinValue if not specified
+  * @param maxValue the maximum acceptable value, set to Double.MaxValue if not specified
+  */
+class TitledDoubleField(override val title: StringProperty, private val value: DoubleProperty, private val minValue: Double = Double.MinValue, private val maxValue: Double = Double.MaxValue)
+  extends TitledNode[TextField](title, vertical = false) {
 
-  def this(title: String,value: DoubleProperty) {
+  def this(title: String, value: DoubleProperty) {
     this(StringProperty(title), value)
   }
-
-  /**
-    * The maximum value
-    */
-  var maxValue: Double = Double.MaxValue
-  /**
-    * The minimum value
-    */
-  var minValue: Double = Double.MinValue
+  def this(title: String, value: DoubleProperty, minValue: Double, maxValue: Double) {
+    this(StringProperty(title), value, minValue, maxValue)
+  }
 
   /**
     * The node that will be shown after the text
@@ -35,7 +37,7 @@ class TitledDoubleField(override val title: StringProperty, private val value: D
       val input = c.controlNewText
       val isNumber = input.matches("^[0-9]+(\\.[0-9]+)?$")
       if (!isNumber) c.setText("")
-      if (isNumber && (maxValue < c.getControlNewText.toDouble || minValue > c.getControlNewText.toDouble)) c.setText("")
+      if (isNumber && (maxValue <= c.getControlNewText.toDouble || minValue >= c.getControlNewText.toDouble)) c.setText("")
       c
     }})
   }

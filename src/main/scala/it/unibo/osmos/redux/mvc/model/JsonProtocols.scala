@@ -1,10 +1,11 @@
 package it.unibo.osmos.redux.mvc.model
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, GravityCellEntity, PlayerCellEntity, SentientCellEntity, _}
-import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.{LevelInfo, LevelStat, UserStat}
+import it.unibo.osmos.redux.mvc.controller.levels.structure._
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
-import it.unibo.osmos.redux.utils.Point
+import it.unibo.osmos.redux.utils.{Logger, Point}
 import org.apache.commons.lang3.SerializationException
+import spray.json
 import spray.json.DefaultJsonProtocol._
 import spray.json._
 
@@ -12,6 +13,8 @@ import spray.json._
   * Json implicit stategies for: convert json to Level or convert Level to json
   */
 object JsonProtocols {
+  implicit val who:String = "JsonProtocols"
+
   implicit object AccelerationFormatter extends RootJsonFormat[AccelerationComponent] {
     def write(acceleration: AccelerationComponent) = JsObject(
       "accelerationX" -> JsNumber(acceleration.vector.x),
@@ -174,7 +177,6 @@ object JsonProtocols {
       "position" -> playerCell.getPositionComponent.toJson,
       "speed" -> playerCell.getSpeedComponent.toJson,
       "visible" -> playerCell.getVisibleComponent.toJson,
-      "typeEntity" -> playerCell.getTypeComponent.toJson,
       "spawner" -> playerCell.getSpawnerComponent.toJson)
     def read(value: JsValue): PlayerCellEntity = {
       value.asJsObject.getFields("acceleration",
@@ -183,16 +185,14 @@ object JsonProtocols {
         "position",
         "speed",
         "visible",
-        "typeEntity",
         "spawner") match {
-        case Seq(acceleration, collidable, dimension, position, speed, visible, typeEntity, spawner) =>
+        case Seq(acceleration, collidable, dimension, position, speed, visible, spawner) =>
           PlayerCellEntity(acceleration.convertTo[AccelerationComponent],
             collidable.convertTo[CollidableComponent],
             dimension.convertTo[DimensionComponent],
             position.convertTo[PositionComponent],
             speed.convertTo[SpeedComponent],
             visible.convertTo[VisibleComponent],
-            typeEntity.convertTo[TypeComponent],
             spawner.convertTo[SpawnerComponent])
         case _ => throw DeserializationException("Player cell entity expected")
       }
@@ -243,7 +243,7 @@ object JsonProtocols {
         "speed" -> cellEntity.getSpeedComponent.toJson,
         "visible" -> cellEntity.getVisibleComponent.toJson,
         "typeEntity" -> cellEntity.getTypeComponent.toJson)
-      case _ => println("Cell ", cellEntity, " currently is not managed!"); JsObject()
+      case _ => Logger.log("Cell " + cellEntity + " currently is not managed!"); JsObject()
     }
 
     def read(value: JsValue): CellEntity = {
@@ -279,13 +279,11 @@ object JsonProtocols {
 
   implicit object MapShapeFormatter extends RootJsonFormat[MapShape] {
     def write(mapShape: MapShape): JsObject = mapShape match {
-      case mapShape: MapShape.Rectangle => JsObject("centerX" -> JsNumber(mapShape.center._1),
-        "centerY" -> JsNumber(mapShape.center._2),
+      case mapShape: MapShape.Rectangle => JsObject("center" -> mapShape.center.toJson,
         "mapShape" -> JsString(mapShape.mapShape.toString),
         "height" -> JsNumber(mapShape.height),
         "base" -> JsNumber(mapShape.base))
-      case mapShape: MapShape.Circle => JsObject("centerX" -> JsNumber(mapShape.center._1),
-        "centerY" -> JsNumber(mapShape.center._2),
+      case mapShape: MapShape.Circle => JsObject("center" -> mapShape.center.toJson,
         "mapShape" -> JsString(mapShape.mapShape.toString),
         "radius" -> JsNumber(mapShape.radius))
       case _ => throw new SerializationException("Shape " + mapShape.mapShape + " not managed!")
@@ -295,17 +293,17 @@ object JsonProtocols {
       val rectangle  = MapShapeType.Rectangle.toString
       val circle  = MapShapeType.Circle.toString
 
-      value.asJsObject.getFields("centerX", "centerY", "mapShape") match {
-        case Seq(JsNumber(centerX), JsNumber(centerY), JsString(`rectangle`)) =>
+      value.asJsObject.getFields("center", "mapShape") match {
+        case Seq(center, JsString(`rectangle`)) =>
           value.asJsObject.getFields("height", "base") match {
             case Seq(JsNumber(height), JsNumber(base)) =>
-              MapShape.Rectangle((centerX.toDouble, centerY.toDouble), height.toDouble, base.toDouble)
+              MapShape.Rectangle(center.convertTo[Point], height.toDouble, base.toDouble)
             case _ => throw DeserializationException("Rectangular map expected")
           }
-        case Seq(JsNumber(centerX), JsNumber(centerY), JsString(`circle`)) =>
+        case Seq(center, JsString(`circle`)) =>
           value.asJsObject.getFields("radius") match {
             case Seq(JsNumber(radius)) =>
-              MapShape.Circle((centerX.toDouble, centerY.toDouble), radius.toDouble)
+              MapShape.Circle(center.convertTo[Point], radius.toDouble)
             case _ => throw DeserializationException("Circular map expected")
           }
         case _ => throw DeserializationException("Map shape expected")
@@ -341,10 +339,13 @@ object JsonProtocols {
     */
   implicit object LevelInfoFormatter extends RootJsonFormat[LevelInfo] {
     def write(levelInfo: LevelInfo) = JsObject(
-      "levelId" -> JsString(levelInfo.name),
-      "victoryRule" -> levelInfo.victoryRule.toJson)
+      "name" -> JsString(levelInfo.name),
+      "victoryRule" -> levelInfo.victoryRule.toJson,
+      "isAvailable" -> JsBoolean(levelInfo.isAvailable))
     def read(value: JsValue): LevelInfo = {
-      value.asJsObject.getFields("levelId","victoryRule") match {
+      value.asJsObject.getFields("name","victoryRule", "isAvailable") match {
+        case Seq(JsString(name), victoryRule, JsBoolean(isAvailable)) =>
+          LevelInfo(name, victoryRule.convertTo[VictoryRules.Value], isAvailable)
         case Seq(JsString(name), victoryRule) =>
           LevelInfo(name, victoryRule.convertTo[VictoryRules.Value])
         case _ => throw DeserializationException("Level info expected")
@@ -352,11 +353,52 @@ object JsonProtocols {
     }
   }
 
-  implicit val levelFormatter:RootJsonFormat[Level] = jsonFormat5(Level)
+  implicit object levelFormatter extends RootJsonFormat[Level] {
+    def write(level: Level): JsObject = JsObject(
+      "name" -> JsString(level.levelInfo.name),
+      "victoryRule" -> level.levelInfo.victoryRule.toJson,
+      "levelMap" -> level.levelMap.toJson,
+      "entities" -> level.entities.toJson)
+    def read(value: JsValue): Level = {
+      value.asJsObject.getFields("name", "victoryRule", "levelMap", "entities") match {
+        case Seq(JsString(levelId), victoryRule, levelMap, entities) =>
+          Level(LevelInfo(levelId, victoryRule.convertTo[VictoryRules.Value]), levelMap.convertTo[LevelMap], entities.convertTo[List[CellEntity]])
+        case _ => throw DeserializationException("Level expected")
+      }
+    }
+  }
 
   implicit val drawableWrapperFormatter:RootJsonFormat[DrawableWrapper] = jsonFormat4(DrawableWrapper)
 
-  implicit  val levelStatFormatter:RootJsonFormat[LevelStat] = jsonFormat3(LevelStat)
+  implicit val campaignLevelStatFormatter:RootJsonFormat[CampaignLevelStat] = jsonFormat2(CampaignLevelStat)
 
-  implicit val userProgressFormatter:RootJsonFormat[UserStat] = jsonFormat2(UserStat)
+  implicit val campaignLevelsFormatter:RootJsonFormat[CampaignLevel] = jsonFormat2(CampaignLevel)
+
+  implicit object volumeSettingFormatter extends RootJsonFormat[Volume] {
+    def write(vol: Volume): JsObject = JsObject("settingType" -> JsString(SettingsTypes.Volume.toString),
+                                                "vValue" -> JsNumber(vol.value))
+    def read(value: JsValue): Volume = {
+      value.asJsObject.getFields("vValue") match {
+        case Seq(JsNumber(vValue)) => Volume(vValue.toDouble)
+        case _ => throw DeserializationException("Volume expected")
+      }
+    }
+  }
+
+  implicit object settingFormatter extends RootJsonFormat[Setting] {
+    def write(setting: Setting): JsValue = setting match {
+      case vol : Volume => vol.toJson
+      case _ => Logger.log("Error i can't convert to json " + setting.settingType)
+                JsObject()
+    }
+    def read(value: JsValue): Setting = {
+      val volumeSetting  = SettingsTypes.Volume.toString
+      value.asJsObject.getFields("settingType") match {
+        case Seq(JsString(`volumeSetting`)) =>
+          value.convertTo[Volume]
+        case Seq(e) => println(e) ;throw DeserializationException("Setting expected " + e)
+      }
+    }
+  }
+
 }

@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.components.editor
 
-import it.unibo.osmos.redux.mvc.model.SinglePlayerLevels.LevelInfo
+import it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.level.{AnimatedAbstractLevelNode, LevelNodeListener}
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import scalafx.geometry.Insets
@@ -33,11 +33,10 @@ class EditorLevelNode(override val listener: EditorLevelNodeListener, override v
     color = Color.ForestGreen
   }
 
-
   /* The upper text */
   override lazy val text: Text = new Text() {
     margin = Insets(0, 0, 20, 0)
-    style = "-fx-font-size: 12pt"
+    style = "-fx-font-size: 20pt"
     text = "Level " + levelInfo.name
   }
 
@@ -60,6 +59,5 @@ class EditorLevelNode(override val listener: EditorLevelNodeListener, override v
   }
 
   children.add(deleteButton)
-
 
 }

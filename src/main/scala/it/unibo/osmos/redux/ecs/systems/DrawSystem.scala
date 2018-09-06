@@ -1,22 +1,19 @@
 package it.unibo.osmos.redux.ecs.systems
 
 import it.unibo.osmos.redux.ecs.entities._
+import it.unibo.osmos.redux.ecs.entities.properties.composed.DrawableProperty
 import it.unibo.osmos.redux.mvc.view.drawables.{DrawableWrapper, EntitiesDrawer}
 
 /**
   * System to draw all the entity
   * @param entitiesDrawer entitiesDrawer for communicate the entities to the view
   */
-case class DrawSystem(entitiesDrawer: EntitiesDrawer) extends AbstractSystemWithTwoTypeOfEntity[DrawableProperty, PlayerCellEntity] {
-
-  override def getGroupProperty: Class[DrawableProperty] = classOf[DrawableProperty]
-
-  override protected def getGroupPropertySecondType: Class[PlayerCellEntity] = classOf[PlayerCellEntity]
+case class DrawSystem(entitiesDrawer: EntitiesDrawer) extends AbstractSystem[DrawableProperty] {
 
   override def update(): Unit = entitiesDrawer.drawEntities(getPlayerEntity, getEntities)
 
   private def getPlayerEntity: Option[DrawableWrapper] =
-    entitiesSecondType find (e => e.getVisibleComponent.isVisible &&
+    entities find (e => e.getTypeComponent.typeEntity == EntityType.Controlled && e.getVisibleComponent.isVisible &&
       e.getUUID == entitiesDrawer.getPlayerUUID) map(p => drawablePropertyToDrawableWrapper(p))
 
   private def getEntities: List[DrawableWrapper] =

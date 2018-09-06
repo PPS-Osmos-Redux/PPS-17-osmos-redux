@@ -15,8 +15,8 @@
     },
     "position": {
       "point": {
-        "x": 0.0,
-        "y": 0.0
+        "x": -50.0,
+        "y": -50.0
       }
     },
     "cellType": "basicCell",
@@ -46,8 +46,8 @@
     },
     "position": {
       "point": {
-        "x": 0.0,
-        "y": 0.0
+        "x": -50.0,
+        "y": -50.0
       }
     },
     "cellType": "playerCell",
@@ -77,8 +77,8 @@
     },
     "position": {
       "point": {
-        "x": 0.0,
-        "y": 0.0
+        "x": -50.0,
+        "y": -50.0
       }
     },
     "cellType": "gravityCell",
@@ -90,15 +90,16 @@
       "speedY": 0.0
     }
   }],
-  "levelId": "3",
-  "isSimulation": false,
+  "name": "3",
   "victoryRule": {
     "victoryRule": "Become_the_biggest"
   },
   "levelMap": {
     "mapShape": {
-      "centerX": 50.1,
-      "centerY": 50.2,
+      "center": {
+        "x": 0.0,
+        "y": 0.0
+      },
       "mapShape": "Circle",
       "radius": 250
     },

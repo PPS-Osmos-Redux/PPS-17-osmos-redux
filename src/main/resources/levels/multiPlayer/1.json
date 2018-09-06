@@ -19,8 +19,8 @@
       },
       "position": {
         "point": {
-          "x": 200,
-          "y": 100
+          "x": -450,
+          "y": -250
         }
       },
       "cellType": "playerCell",
@@ -51,8 +51,8 @@
       },
       "position": {
         "point": {
-          "x": 400,
-          "y": 400
+          "x": -250,
+          "y": 50
         }
       },
       "cellType": "playerCell",
@@ -83,8 +83,8 @@
       },
       "position": {
         "point": {
-          "x": 900,
-          "y": 700
+          "x": 250,
+          "y": 250
         }
       },
       "cellType": "playerCell",
@@ -97,18 +97,19 @@
       }
     }
   ],
-  "levelId": "1",
-  "isSimulation": false,
+  "name": "1",
   "victoryRule": {
     "victoryRule": "Absorb_all_other_players"
   },
   "levelMap": {
     "mapShape": {
+      "center": {
+        "x": 0.0,
+        "y": 0.0
+      },
       "mapShape": "Rectangle",
       "height": 700,
-      "base": 1300,
-      "centerX": 650,
-      "centerY": 350
+      "base": 1300
     },
     "collisionRule": "Bouncing"
   }

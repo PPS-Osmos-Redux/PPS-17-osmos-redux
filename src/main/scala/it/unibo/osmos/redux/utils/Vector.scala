@@ -33,13 +33,6 @@ trait Vector {
     */
   def subtract(v: Vector): Vector = Vector(x - v.x, y - v.y)
 
-  /** Vector-point subtraction. Leaves this vector unchanged.
-    *
-    * @param p point to subtract
-    * @return subtraction result as a new instance
-    */
-  def subtract(p: Point): Vector = Vector(x - p.x, y - p.y)
-
   /** Vector multiplication. Leaves this vector unchanged.
     *
     * @param v vector to multiply
@@ -61,35 +54,6 @@ trait Vector {
     */
   def divide(v: Double): Vector = Vector(x / v, y / v)
 
-  /** Gets the module of the vector applying parallelogram law
-    *
-    * @return module of this vector
-    */
-  def getLength: Double = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))
-
-  /** Scales this vector module with the desired one
-    *
-    * @param newLength new length of the module
-    * @return a new vector with the specified module
-    */
-  def getNewLength(newLength: Double): Vector = {
-    val temp = newLength / getLength
-    Vector(x * temp, y * temp)
-  }
-
-  /** Limits the vector's length
-    *
-    * @param maxLength max length of the vector
-    * @return the limited vector
-    */
-  def limit(maxLength: Double): Vector = {
-    if (getLength > maxLength) {
-      getNewLength(maxLength)
-    } else {
-      Vector(x, y)
-    }
-  }
-
   /** Vector dot product
     *
     * @param v vector to use for dot product
@@ -97,14 +61,43 @@ trait Vector {
     */
   def dot(v: Vector): Double = (x * v.x) + (y * v.y)
 
+  /** Gets the magnitude (module) of the vector applying parallelogram law
+    *
+    * @return magnitude of this vector
+    */
+  def getMagnitude: Double = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))
+
+  /** Scales this vector magnitude (module) with the desired one
+    *
+    * @param desiredMagnitude desired vector magnitude
+    * @return a new vector with the specified module
+    */
+  def getNewMagnitude(desiredMagnitude: Double): Vector = {
+    val scale = desiredMagnitude / getMagnitude
+    Vector(x * scale, y * scale)
+  }
+
+  /** Limits the vector's magnitude if it is greater than the given one
+    *
+    * @param maxMagnitude the max magnitude of the vector
+    * @return a new vector
+    */
+  def limit(maxMagnitude: Double): Vector = {
+    if (getMagnitude > maxMagnitude) {
+      getNewMagnitude(maxMagnitude)
+    } else {
+      Vector(x, y)
+    }
+  }
+
   /** Gets the vector normalized
     *
-    * @return this vector normalized as a new instance
+    * @return a new normalized instance of this vector
     */
   def normalized(): Vector = {
-    val length = getLength
-    if (length != 0) {
-      this.divide(length)
+    val magnitude = getMagnitude
+    if (magnitude != 0) {
+      this.divide(magnitude)
     } else {
       Vector(x, y)
     }
@@ -116,11 +109,5 @@ object Vector {
 
   def zero(): Vector = VectorImpl(0, 0)
 
-  private case class VectorImpl(var _x: Double, var _y: Double) extends Vector {
-
-    override def x: Double = _x
-
-    override def y: Double = _y
-  }
-
+  private case class VectorImpl(override val x: Double, override val y: Double) extends Vector {}
 }

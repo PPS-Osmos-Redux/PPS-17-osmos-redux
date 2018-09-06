@@ -5,7 +5,7 @@ import it.unibo.osmos.redux.multiplayer.client.ClientActor._
 import it.unibo.osmos.redux.multiplayer.common.ClientsManager
 import it.unibo.osmos.redux.multiplayer.players.BasePlayer
 import it.unibo.osmos.redux.multiplayer.server.ServerActor.{Disconnected, _}
-import it.unibo.osmos.redux.mvc.model.MapShape
+import it.unibo.osmos.redux.mvc.controller.levels.structure.{LevelInfo, MapShape}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity
 import it.unibo.osmos.redux.utils.Logger
 
@@ -18,7 +18,7 @@ class ServerActor(private val server: Server) extends Actor {
   implicit val who: String = "ServerActor"
 
   //manager for clients handshaking
-  private val clientsManager = ClientsManager(System.currentTimeMillis())
+  private lazy val clientsManager = ClientsManager(System.currentTimeMillis())
 
   override def preStart(): Unit = {
     Logger.log("Actor starting...")
@@ -122,7 +122,7 @@ object ServerActor {
 
   final case class UpdateGame(entities: Seq[DrawableEntity]) //server send all entities to draw
 
-  final case class GameStarted(id: String, mapShape: MapShape) //Server wants to start the game, reply with Ready if all is ok (tell you who are you)
+  final case class GameStarted(id: String, levelInfo: LevelInfo, mapShape: MapShape) //Server wants to start the game, reply with Ready if all is ok (tell you who are you)
   final case class GameEnded(victory: Boolean) //Server have stopped the game (and tells you if you won or lose)
 }
 
