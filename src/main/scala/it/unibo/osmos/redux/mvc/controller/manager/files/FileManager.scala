@@ -15,17 +15,28 @@ abstract class FileManager {
   val jsonExtension = ".json"
 
   /**
-    * Delete file by name
-    * @param fileName file name
+    * Get resource file test
+    * @param resourcePath file path into resource dir
+    * @return String
     */
-  def deleteFile(fileName:String):Try[Unit] = Try(Files.delete(Paths.get(UserHomePaths.levelsDirectory + fileName + jsonExtension)))
+  protected def getResourcesFileText(resourcePath:String): String = {
+    val fileStream =  this.getClass.getResourceAsStream(resourcePath)
+    try Source.fromInputStream(fileStream).mkString
+    finally  fileStream.close()
+  }
+
+  /**
+    * Delete file by path
+    * @param filePath Path
+    */
+  protected def deleteFile(filePath:Path):Try[Unit] = Try(Files.delete(filePath))
 
   /**
     * Creates directories tree
     * @param file File object
     * @return true if no Exceptions occurs
     */
-  def createDirectoriesTree(file:File):Boolean = Try(file.getParentFile.mkdirs()) match {
+  protected def createDirectoriesTree(file:File):Boolean = Try(file.getParentFile.mkdirs()) match {
    case Success(_) =>  true
    case Failure(exception) =>
      Logger.log("Error: SecurityException directories are protected [createDirectoriesTree] " +
@@ -39,7 +50,7 @@ abstract class FileManager {
     * @param text text to write
     * @return true if the operation is terminated with success
     */
-  def saveToFile(file:File, text: String): Boolean = {
+  protected def saveToFile(file:File, text: String): Boolean = {
     val writer = new PrintWriter(file)
     try {
       writer.write(text)
@@ -56,7 +67,7 @@ abstract class FileManager {
     * @param filePath file path to String
     * @return An Option with the text if the operation is terminated with success
     */
-  def loadFile(filePath:String):Option[String] = {
+  protected def loadFile(filePath:String):Option[String] = {
     val source: Try[BufferedSource] = Try(Source.fromFile(UserHomePaths.defaultFS.getPath(filePath).toUri))
     if (source.isSuccess) {
       try {

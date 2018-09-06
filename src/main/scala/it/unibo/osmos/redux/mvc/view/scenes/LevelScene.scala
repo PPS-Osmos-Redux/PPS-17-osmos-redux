@@ -39,8 +39,9 @@ import scalafx.util.Duration
   * @param upperSceneListener the upper scene listener to manage the previously scene events
   */
 //noinspection ForwardReference
-class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val listener: LevelSceneListener, val upperSceneListener: UpperLevelSceneListener)
-  extends BaseScene(parentStage) with LevelContextListener with LevelStateBoxListener {
+class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val listener: LevelSceneListener,
+                 val upperSceneListener: BackClickListener)
+  extends DefaultBackScene(parentStage, upperSceneListener) with LevelContextListener {
 
   /** Level images */
   private object LevelDrawables {
@@ -83,7 +84,12 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   /** The level border */
   private var mapBorder: Shape = _
 
+  /** Playing level music */
   MusicPlayer.play(SoundsType.level)
+
+  /** DefaultBackScene goBack button configurations */
+  setText("Return to Level Selection")
+  setAdditionalAction(onExit)
 
   /** The canvas which will draw the elements on the screen */
   private val canvas: Canvas = new Canvas {
@@ -129,7 +135,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   private val pauseScreen = LevelScreen.Builder(this)
     .withText("Game paused", 30, Color.White)
     .withButton("Resume", _ => onResume())
-    .withButton("Return to Level Selection", _ => onExit())
+    .withNode(goBack)
     .build()
   pauseScreen.visible <== LevelState.paused
 
@@ -183,22 +189,22 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     listener.onPauseLevel()
   }
 
-  override def onResume(): Unit = {
+  protected def onResume(): Unit = {
     canvas.opacity = 1
     LevelState.paused.value = false
 
     listener.onResumeLevel()
   }
 
-  override def onExit(): Unit = {
-    goToPreviousScene()
+  private def onExit(): Unit = {
+    MusicPlayer.play(SoundsType.menu)
     listener.onStopLevel()
   }
 
   /** Called when the user has to go to the LevelSelectionScene */
   private def goToPreviousScene(): Unit = {
     MusicPlayer.play(SoundsType.menu)
-    upperSceneListener.onStopLevel()
+    upperSceneListener.onBackClick()
   }
 
   /** OnMouseClicked handler, reacting only if the game is not paused */
@@ -352,6 +358,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
         color = Color.White
         radius = 10.0
       }
+
       /** Scale binding (with canvas)*/
       mapBorder.scaleX <== canvas.scaleX
       mapBorder.scaleY <== canvas.scaleY
@@ -425,7 +432,8 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
     LevelState.inputEnabled = false
 
-    /** Creating an end screen with a button */
+    setAdditionalAction(goToPreviousScene)
+
     val endScreen = LevelScreen.Builder(this)
       .withText(if (levelResult) "You won!" else "You lost.", 50, Color.White)
       .withButton("Return to Level Selection", _ => goToPreviousScene())
@@ -521,7 +529,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 /**
   * Trait used by LevelScene to notify an event to the upper scene
   */
-trait UpperLevelSceneListener {
+trait UpperLevelSceneListener extends BackClickListener {
 
   /**
     * Called when the level gets stopped

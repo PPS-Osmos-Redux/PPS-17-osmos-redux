@@ -160,7 +160,7 @@ object GameEngine {
 
     override def resume(): Unit = {
       gameLoop match {
-        case Some(g) => g.unpause()
+        case Some(g) => g.unPause()
         case None => throw new IllegalStateException("Unable to resume game loop because it hasn't been initialized yet")
       }
     }
