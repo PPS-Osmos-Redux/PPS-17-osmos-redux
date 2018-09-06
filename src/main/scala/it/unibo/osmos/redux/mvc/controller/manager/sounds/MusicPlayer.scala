@@ -2,6 +2,7 @@ package it.unibo.osmos.redux.mvc.controller.manager.sounds
 
 import it.unibo.osmos.redux.mvc.controller.Controller
 import it.unibo.osmos.redux.mvc.controller.manager.files.{FileManager, SoundFileManager}
+import it.unibo.osmos.redux.mvc.model._
 import javafx.scene.media.MediaPlayer.Status
 import javafx.scene.media.MediaPlayer.Status._
 import javafx.util
@@ -13,13 +14,16 @@ object SoundsType extends Enumeration {
   val menu, level, button = Value
 }
 
-object MusicPlayer {
+object MusicPlayer extends Observable {
   import scalafx.scene.media.{AudioClip, Media, MediaPlayer}
+  val MinVolume = 0
+  val MaxVolume = 1
   private var controller: Option[Controller] = None
   private var mediaPlayer: Option[MediaPlayer] = None
   private var lastLoadedSound: Option[String] = None
   private var buttonAudioClip: Option[AudioClip] = None
-  private var generalVolume: Double = 1
+  private var generalVolume: Double = MaxVolume
+  private var settingObs:List[SettingsEventObserver] = List(SettingsHolder)
 
   def setController(controller: Controller): Unit = this.controller = Some(controller)
 
@@ -48,7 +52,7 @@ object MusicPlayer {
   /**
     * Pause the music
     */
-  def pause(): Unit = if (canApplyStateChange(List(Status.PLAYING))) mediaPlayer.get.pause()
+  def pause(): Unit = if (canApplyStateChange(List(Status.PLAYING))) {mediaPlayer.get.pause(); sendMusicEvent(true)}
 
   /**
     * Resume the music if it is in pause state
@@ -62,10 +66,11 @@ object MusicPlayer {
     */
   def changeVolume(volume: Double): Unit = {
     volume match {
-      case v if v <= 0 => generalVolume = 0
-      case v if v >= 1 => generalVolume = 1
+      case v if v <= MinVolume => generalVolume = MinVolume
+      case v if v >= MaxVolume => generalVolume = MaxVolume
       case _ => generalVolume = volume
     }
+    sendMusicEvent()
     updateMPVolume()
   }
 
@@ -113,5 +118,11 @@ object MusicPlayer {
     } else {
       setupAndPlayMedia(sound)
     }
+  }
+
+  override def subscribe(observer:SettingsEventObserver): Unit = settingObs = observer :: settingObs
+
+  private def sendMusicEvent(isMute:Boolean = false): Unit = {
+    settingObs.foreach(_.notify(MusicPlayerEvent(Volume(if(isMute) MinVolume else generalVolume))))
   }
 }
