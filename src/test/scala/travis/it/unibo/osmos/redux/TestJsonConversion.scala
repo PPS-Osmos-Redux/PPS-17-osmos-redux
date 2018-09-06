@@ -163,11 +163,11 @@ class TestJsonConversion extends FunSuite {
 
     assert(readLevel2.get.levelInfo.name.equals(level.levelInfo.name))
     //Delete second file SinglePlayerLevel1
-    LevelFileManager.deleteFile(level.levelInfo.name)
+    LevelFileManager.deleteCustomLevel(level.levelInfo.name)
     assert(LevelFileManager.getCustomLevel(level.levelInfo.name).isEmpty)
 
     //Delete firts file SinglePlayerLevel
-    LevelFileManager.deleteFile(firstFileName)
+    LevelFileManager.deleteCustomLevel(firstFileName)
     assert(LevelFileManager.getCustomLevel(firstFileName).isEmpty)
   }
 }
