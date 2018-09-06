@@ -15,6 +15,17 @@ abstract class FileManager {
   val jsonExtension = ".json"
 
   /**
+    * Get resource file test
+    * @param resourcePath file path into resource dir
+    * @return String
+    */
+  protected def getResourcesFileText(resourcePath:String): String = {
+    val fileStream =  this.getClass.getResourceAsStream(resourcePath)
+    try Source.fromInputStream(fileStream).mkString
+    finally  fileStream.close()
+  }
+
+  /**
     * Delete file by path
     * @param filePath Path
     */

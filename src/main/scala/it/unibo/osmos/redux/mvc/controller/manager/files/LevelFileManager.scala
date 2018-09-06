@@ -5,24 +5,26 @@ import java.nio.file.{Files, Path, Paths}
 
 import it.unibo.osmos.redux.mvc.controller.levels.structure.{Level, LevelInfo}
 import it.unibo.osmos.redux.mvc.model.JsonProtocols._
-import it.unibo.osmos.redux.utils.Logger
-import spray.json._
-import spray.json.DefaultJsonProtocol._
 import it.unibo.osmos.redux.utils.Constants.UserHomePaths._
-import scala.io.Source
+import it.unibo.osmos.redux.utils.Logger
+import spray.json.DefaultJsonProtocol._
+import spray.json._
+
 import scala.util.{Failure, Success, Try}
 
 object LevelFileManager extends FileManager {
 
   implicit val who: String = "LevelFileManager"
 
-  def getLevelsConfigResourcesPath(multiplayer:Boolean = false) : Option[List[String]] = {
+  /**
+    * Get a list of file names who contain single player or multiPlayer levels
+    * @param multiPlayer if is required multiPlayer level files
+    * @return
+    */
+  def getLevelsConfigResourcesPath(multiPlayer:Boolean = false) : Option[List[String]] = {
     import it.unibo.osmos.redux.utils.Constants.ResourcesPaths._
-    val levelsPath = if (multiplayer) configMultiPlayer else configSinglePlayer
-    val fileStream =  this.getClass.getResourceAsStream(levelsPath + jsonExtension)
-    val fileContent = Source.fromInputStream(fileStream).mkString
-    fileStream.close()
-    Try(fileContent.parseJson.convertTo[List[String]]).toOption
+    val configPath = (if (multiPlayer) configMultiPlayer else configSinglePlayer) + jsonExtension
+    Try(getResourcesFileText(configPath).parseJson.convertTo[List[String]]).toOption
   }
 
   /**
@@ -33,11 +35,8 @@ object LevelFileManager extends FileManager {
     */
   def getLevelFromResource(chosenLevel: String, isMultiPlayer: Boolean = false): Option[Level] = {
     import it.unibo.osmos.redux.utils.Constants.ResourcesPaths._
-    val levelsPath = if (isMultiPlayer) multiPlayerLevelsPath else singlePlayerLevelsPath
-    val fileStream = this.getClass.getResourceAsStream(levelsPath + chosenLevel + jsonExtension)
-    val fileContent = Source.fromInputStream(fileStream).mkString
-    fileStream.close()
-    textToLevel(fileContent) match {
+    val levelsPath = (if (isMultiPlayer) multiPlayerLevelsPath else singlePlayerLevelsPath) + chosenLevel + jsonExtension
+      textToLevel(getResourcesFileText(levelsPath)) match {
       case Success(result) => Some(result)
       case Failure(e: Throwable) => Logger.log(e.printStackTrace().toString); None
     }
@@ -90,10 +89,7 @@ object LevelFileManager extends FileManager {
   }
 
   def getResourceLevelInfo(filePath:String):Option[LevelInfo] = {
-    val fileStream =  this.getClass.getResourceAsStream(filePath)
-    val fileContent = Source.fromInputStream(fileStream).mkString
-    fileStream.close()
-    Try(fileContent.parseJson.convertTo[LevelInfo]) match {
+   Try(getResourcesFileText(filePath).parseJson.convertTo[LevelInfo]) match {
       case Success(value) => Some(value)
       case Failure(_) => Logger.log("File not found into resources: " + filePath)
         None
