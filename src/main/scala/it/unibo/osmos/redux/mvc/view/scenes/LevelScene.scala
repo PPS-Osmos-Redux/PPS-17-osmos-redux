@@ -213,8 +213,6 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
     /* Sending the event */
     sendMouseEvent(mouseEvent)
-  } else {
-    println(inputEnabled)
   }
 
   onScroll = scrollEvent => if (!paused.value && inputEnabled) {
@@ -257,7 +255,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     *  - the up and right keys speed up the game
     *  - the down and left keys slow down the game
     */
-  onKeyPressed = keyEvent => keyEvent.getCode match {
+  onKeyPressed = keyEvent => if(inputEnabled) keyEvent.getCode match {
     case KeyCode.ESCAPE =>
       if (paused.value) {
         onResume()
