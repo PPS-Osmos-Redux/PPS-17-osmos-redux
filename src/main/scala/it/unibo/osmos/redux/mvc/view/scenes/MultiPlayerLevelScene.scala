@@ -21,7 +21,4 @@ class MultiPlayerLevelScene(override val parentStage: Stage, override val levelI
     case _ => throw new IllegalArgumentException("MultiPLayerLevelScene must use a MultiPlayerLevelContext")
   }
 
-  /** Pause button should be disabled in multiplayer mode */
-  override def onPause(): Unit = throw new UnsupportedOperationException("Users cannot pause the game in multiplayer mode")
-  override def onResume(): Unit = throw new UnsupportedOperationException("Users cannot resume the game in multiplayer mode")
 }
