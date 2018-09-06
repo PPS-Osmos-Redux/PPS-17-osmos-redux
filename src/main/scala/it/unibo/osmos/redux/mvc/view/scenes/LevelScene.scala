@@ -39,9 +39,9 @@ import scalafx.util.Duration
   * @param upperSceneListener the upper scene listener to manage the previously scene events
   */
 class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val listener: LevelSceneListener,
-                 val upperSceneListener: UpperLevelSceneListener)
-  extends BaseScene(parentStage) with LevelContextListener with LevelStateBoxListener {
-//DefaultBackScene(parentStage, upperSceneListener, "Return to Level Selection") with LevelContextListener with LevelStateBoxListener {
+                 val upperSceneListener: BackClickListener)
+//extends BaseScene(parentStage) with LevelContextListener with LevelStateBoxListener {
+  extends DefaultBackScene(parentStage, upperSceneListener) with LevelContextListener with LevelStateBoxListener {
 
   MusicPlayer.play(SoundsType.level)
 
@@ -79,6 +79,10 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     //effect = lighting
   }
 
+  /* goBack button configurations */
+  setText("Return to Level Selection")
+  setAdditionalAction(onExit2)
+
   /**
     * The screen showed when the game is paused (with a bound property)
     */
@@ -86,8 +90,8 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     .withText("Game paused", 30, Color.White)
     .withButton("Resume", _ => onResume())
     // TODO:
-    //.withNode(goBack)
-    .withButton("Return to Level Selection", _ => onExit())
+    .withNode(goBack)
+    //.withButton("Return to Level Selection", _ => onExit())
     .build()
   pauseScreen.visible <== paused
 
@@ -192,12 +196,18 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     listener.onStopLevel()
   }
 
+  private def onExit2(): Unit = {
+    MusicPlayer.play(SoundsType.menu)
+    listener.onStopLevel()
+  }
+
   /**
     * Called when the user has to go to the LevelSelectionScene
     */
   private def goToPreviousScene(): Unit = {
     MusicPlayer.play(SoundsType.menu)
-    upperSceneListener.onStopLevel()
+    upperSceneListener.onBackClick()
+    //upperSceneListener.onStopLevel()
   }
 
   /**
@@ -258,7 +268,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     *  - the up and right keys speed up the game
     *  - the down and left keys slow down the game
     */
-  onKeyPressed = keyEvent => if(inputEnabled) keyEvent.getCode match {
+  onKeyPressed = keyEvent => if (inputEnabled) keyEvent.getCode match {
     case KeyCode.ESCAPE =>
       if (paused.value) {
         onResume()
@@ -343,8 +353,8 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
       mapBorder.get.scaleX <== canvas.scaleX
       mapBorder.get.scaleY <== canvas.scaleY
       /* Translate binding (with canvas)*/
-      mapBorder.get.translateX <== (- canvas.scaleX * playerPosX)
-      mapBorder.get.translateY <== (- canvas.scaleY * playerPosY)
+      mapBorder.get.translateX <== (-canvas.scaleX * playerPosX)
+      mapBorder.get.translateY <== (-canvas.scaleY * playerPosY)
 
       Platform.runLater({
         /* Starting the level */
@@ -352,8 +362,8 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
       })
   }
 
-  val playerPosX : DoubleProperty = DoubleProperty(0.0)
-  val playerPosY : DoubleProperty = DoubleProperty(0.0)
+  val playerPosX: DoubleProperty = DoubleProperty(0.0)
+  val playerPosY: DoubleProperty = DoubleProperty(0.0)
 
   override def onDrawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = {
 
@@ -514,7 +524,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 /**
   * Trait used by LevelScene to notify an event to the upper scene
   */
-trait UpperLevelSceneListener /*extends BackClickListener*/ {
+trait UpperLevelSceneListener extends BackClickListener {
 
   /**
     * Called when the level gets stopped

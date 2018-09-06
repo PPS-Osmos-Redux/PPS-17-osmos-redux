@@ -88,7 +88,8 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
     */
   def onLevelPlayClick(levelInfo: LevelInfo, simulation: Boolean, custom: Boolean = false): Unit = {
     /* Creating a listener on the run*/
-    val upperLevelSceneListener: UpperLevelSceneListener = () => {parentStage.scene = this; reloadLevels()}
+    val upperLevelSceneListener: BackClickListener = () => {parentStage.scene = this; reloadLevels()}
+
     /* Creating a new level scene */
     val levelScene = new LevelScene(parentStage, levelInfo, listener, upperLevelSceneListener)
     /* Creating the level context */
@@ -100,7 +101,6 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
     /* Notify the view the new context */
     listener.onLevelContextCreated(levelContext, levelInfo.name, custom)
   }
-
 }
 
 /**
