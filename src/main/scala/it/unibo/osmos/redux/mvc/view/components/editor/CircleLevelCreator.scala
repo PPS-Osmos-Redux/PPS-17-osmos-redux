@@ -1,6 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.components.editor
 
 import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape
+import it.unibo.osmos.redux.mvc.view.ViewConstants
 import it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField
 import it.unibo.osmos.redux.utils.Point
 import scalafx.beans.property.DoubleProperty
@@ -22,8 +23,9 @@ class CircleLevelCreator extends BaseEditorCreator[MapShape.Circle] {
 
   /* Radius node*/
   val radius: DoubleProperty = DoubleProperty(0.0)
-  private val radiusNode = new VBox(2.0, new Label("Radius"),
-    new TitledDoubleField("radius: ", radius, 1.0, Double.MaxValue).innerNode,
+  val maxRadius: Double = ViewConstants.Editor.maxLevelRadius
+  private val radiusNode = new VBox(2.0, new Label(s"Radius (max: ${maxRadius})"),
+    new TitledDoubleField("radius: ", radius, 1.0, maxRadius).innerNode,
   )
 
   children = Seq(centerNode, radiusNode)
