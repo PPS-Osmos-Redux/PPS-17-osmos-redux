@@ -69,7 +69,7 @@ class SettingsScene(override val parentStage: Stage, listener: PrimaryStageListe
   }
 
   /**
-    * The central level container
+    * The central container
     */
   protected val container: VBox = new VBox(15) {
     alignment = Pos.Center

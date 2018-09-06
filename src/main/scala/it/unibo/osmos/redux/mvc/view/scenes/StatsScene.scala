@@ -15,7 +15,7 @@ class StatsScene(override val parentStage: Stage, listener: PrimaryStageListener
   }
 
   /**
-    * The central level container
+    * The central container
     */
   protected val container: VBox = new VBox(15) {
     alignment = Pos.Center
