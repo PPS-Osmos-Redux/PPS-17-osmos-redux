@@ -80,4 +80,6 @@ abstract class FileManager {
     }
     None
   }
+
+  protected implicit def stringPathToFile(path:String): File = new File(path)
 }

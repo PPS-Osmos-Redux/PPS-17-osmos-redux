@@ -52,8 +52,9 @@ object Constants {
     val UserHome: String = System.getProperty("user.home")
     val GameDirectory:String = "Osmos-Redux" + SystemSeparator
     val LevelsDirectory: String = UserHome + SystemSeparator + GameDirectory + "CustomLevels" + SystemSeparator
-     val UserProgressDirectory:String = UserHome + SystemSeparator + GameDirectory +
+    val UserProgressDirectory:String = UserHome + SystemSeparator + GameDirectory +
        "UserProgress" + SystemSeparator
     val UserProgressFileName: String = UserProgressDirectory + "UserProgress"
+    val SettingFilePath:String = UserHome + SystemSeparator + GameDirectory + "Settings" + SystemSeparator + "GeneralSettings"
   }
 }
