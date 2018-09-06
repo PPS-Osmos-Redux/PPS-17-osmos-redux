@@ -37,7 +37,8 @@ object LevelFileManager extends FileManager {
     import it.unibo.osmos.redux.utils.Constants.ResourcesPaths._
     val levelsPath = (if (isMultiPlayer) multiPlayerLevelsPath else singlePlayerLevelsPath) + chosenLevel + jsonExtension
       textToLevel(getResourcesFileText(levelsPath)) match {
-      case Success(result) => Some(result)
+      case Success(level) => level.checkCellPosition()
+                             Some(level)
       case Failure(e: Throwable) => Logger.log(e.printStackTrace().toString); None
     }
   }
@@ -71,7 +72,12 @@ object LevelFileManager extends FileManager {
     */
   def getCustomLevel(implicit fileName: String): Option[Level] =
     loadFile(levelsDirectory + fileName + jsonExtension) match {
-      case Some(text) => textToLevel(text).toOption
+      case Some(text) => textToLevel(text) match {
+                          case Success(level) => level.checkCellPosition()
+                                                 Some(level)
+                          case Failure(_) => Logger.log("Error: convertion of custom level " + fileName + " is failed")(who)
+                                                     None
+                        }
       case _ => None
     }
 
