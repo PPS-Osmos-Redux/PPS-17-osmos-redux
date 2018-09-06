@@ -102,14 +102,9 @@ class TestSentientSystem extends FunSuite with BeforeAndAfter {
   }
 
   test("If collision rule with boundary is bouncing, SentientCellEntity should not change it's acceleration to avoid boundary") {
-<<<<<<< HEAD
-    setupLevelInfo(Rectangle((100, 150), 300, 200), CollisionRules.bouncing)
+    setupLevelInfo(Rectangle(Point(100, 150), 300, 200), CollisionRules.bouncing)
     val sentientCellEntity = CellBuilder().withPosition(24, 14).withDimension(5)
       .withSpeed(-2, 3).buildSentientEntity()
-=======
-    setupLevelInfo(Rectangle(Point(100, 150), 300, 200), CollisionRules.bouncing)
-    val sentientCellEntity = SentientCellBuilder().withPosition(24, 14).withDimension(5).withSpeed(-2, 3).build
->>>>>>> develop
     val originalAcceleration = sentientCellEntity.getAccelerationComponent.copy()
     val system = SentientSystem(levelInfo)
     EntityManager.add(sentientCellEntity)
