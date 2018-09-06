@@ -28,7 +28,7 @@ class TestMapBoundariesCheck extends FunSuite with BeforeAndAfter {
     sc = SentientCellBuilder().withPosition(p3).withDimension(d).build
   }
 
-  val levelId: String = 1.toString
+  val levelName: String = "1"
 
   test("Rectangular map boundaries") {
 
@@ -37,7 +37,7 @@ class TestMapBoundariesCheck extends FunSuite with BeforeAndAfter {
     val rectangle: MapShape = Rectangle(Point(0, 0), 10, 10)
     val levelMap: LevelMap = LevelMap(rectangle, CollisionRules.bouncing)
     //Level
-    var level: Level = Level(LevelInfo(levelId, VictoryRules.becomeTheBiggest),
+    var level: Level = Level(LevelInfo(levelName, VictoryRules.becomeTheBiggest),
       levelMap,
       listCells)
     level.checkCellPosition()
@@ -47,7 +47,7 @@ class TestMapBoundariesCheck extends FunSuite with BeforeAndAfter {
     pce.getPositionComponent.point_(Point(5, -5))
     gc.getPositionComponent.point_(Point(0, 12))
     sc.getPositionComponent.point_(Point(12, 0))
-    level = Level(LevelInfo(levelId, VictoryRules.becomeTheBiggest), levelMap, List(ce, pce, gc, sc))
+    level = Level(LevelInfo(levelName, VictoryRules.becomeTheBiggest), levelMap, List(ce, pce, gc, sc))
     level.checkCellPosition()
     assert(level.entities.isEmpty)
   }
@@ -58,7 +58,7 @@ class TestMapBoundariesCheck extends FunSuite with BeforeAndAfter {
     val circle: MapShape = Circle(Point(0, 0), 5)
     val levelMap: LevelMap = LevelMap(circle, CollisionRules.bouncing)
     //Level
-    var level: Level = Level(LevelInfo(levelId, VictoryRules.becomeTheBiggest),
+    var level: Level = Level(LevelInfo(levelName, VictoryRules.becomeTheBiggest),
       levelMap,
       listCells)
     level.checkCellPosition()
@@ -68,7 +68,7 @@ class TestMapBoundariesCheck extends FunSuite with BeforeAndAfter {
     pce.getPositionComponent.point_(Point(2, 2))
     gc.getPositionComponent.point_(Point(2, -2))
     sc.getPositionComponent.point_(Point(-2, -2))
-    level = Level(LevelInfo(levelId, VictoryRules.becomeTheBiggest), levelMap, List(ce, pce, gc, sc))
+    level = Level(LevelInfo(levelName, VictoryRules.becomeTheBiggest), levelMap, List(ce, pce, gc, sc))
     level.checkCellPosition()
     assert(level.entities.size.equals(listCells.size))
   }
