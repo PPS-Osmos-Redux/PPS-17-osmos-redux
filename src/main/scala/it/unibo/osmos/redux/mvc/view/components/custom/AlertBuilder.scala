@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.components.custom
 
-import it.unibo.osmos.redux.mvc.controller.FileManager
+import it.unibo.osmos.redux.mvc.controller.manager.files.StyleFileManager
 import scalafx.scene.control.Alert
 import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.layout.Region
@@ -48,7 +48,7 @@ class AlertBuilder {
       contentText = alertContentText
     }
     alert.getDialogPane.setMinHeight(Region.USE_PREF_SIZE)
-    alert.getDialogPane.getStylesheets.addAll(FileManager.getStyle)
+    alert.getDialogPane.getStylesheets.addAll(StyleFileManager.getStyle)
     alert.getDialogPane.getStyleClass.add("dialog-style")
     alert
   }
