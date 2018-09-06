@@ -1,10 +1,10 @@
 package it.unibo.osmos.redux.mvc.controller
 
-import it.unibo.osmos.redux.ecs.engine.GameEngine
+import it.unibo.osmos.redux.ecs.engine.{GameEngine, GameStatus}
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, PlayerCellEntity}
 import it.unibo.osmos.redux.multiplayer.client.Client
 import it.unibo.osmos.redux.multiplayer.common.{ActorSystemHolder, MultiPlayerMode}
-import it.unibo.osmos.redux.multiplayer.server.Server
+import it.unibo.osmos.redux.multiplayer.server.{Server, ServerState}
 import it.unibo.osmos.redux.mvc.controller.levels.{MultiPlayerLevels, SinglePlayerLevels}
 import it.unibo.osmos.redux.mvc.controller.levels.structure._
 import it.unibo.osmos.redux.mvc.controller.manager.files.{LevelFileManager, SoundFileManager, UserProgressFileManager}
@@ -279,7 +279,8 @@ case class ControllerImpl() extends Controller {
       case Some(MultiPlayerMode.Client) =>
         if (client.isDefined) client.get.leaveGame()
       case _ =>
-        if (server.isDefined) server.get.stopGame()
+
+        if (server.isDefined && server.get.getState == ServerState.Game) server.get.stopGame()
         if (engine.isDefined) engine.get.stop()
 
         saveProgress(if (victory) GameWon else GameLost)
