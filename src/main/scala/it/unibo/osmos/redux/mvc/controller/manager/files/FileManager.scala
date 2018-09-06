@@ -15,10 +15,10 @@ abstract class FileManager {
   val jsonExtension = ".json"
 
   /**
-    * Delete file by name
-    * @param fileName file name
+    * Delete file by path
+    * @param filePath Path
     */
-  def deleteFile(fileName:String):Try[Unit] = Try(Files.delete(Paths.get(UserHomePaths.levelsDirectory + fileName + jsonExtension)))
+  def deleteFile(filePath:Path):Try[Unit] = Try(Files.delete(filePath))
 
   /**
     * Creates directories tree

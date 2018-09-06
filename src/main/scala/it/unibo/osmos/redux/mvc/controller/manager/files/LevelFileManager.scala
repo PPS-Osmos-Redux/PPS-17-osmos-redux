@@ -1,10 +1,11 @@
 package it.unibo.osmos.redux.mvc.controller.manager.files
 
 import java.io.File
-import java.nio.file.{Files, Path}
+import java.nio.file.{Files, Path, Paths}
 
 import it.unibo.osmos.redux.mvc.controller.levels.structure.{Level, LevelInfo}
 import it.unibo.osmos.redux.mvc.model.JsonProtocols._
+import it.unibo.osmos.redux.utils.Constants.UserHomePaths
 import it.unibo.osmos.redux.utils.Logger
 import spray.json._
 
@@ -47,6 +48,8 @@ object LevelFileManager extends FileManager {
     createDirectoriesTree(levelFile)
     saveToFile(levelFile, level.toJson.prettyPrint)
   }
+
+  def deleteCustomLevel(levelName:String): Try[Unit] = deleteFile(Paths.get(UserHomePaths.levelsDirectory + levelName + jsonExtension))
 
   /**
     * Load level from file saved into user home directory

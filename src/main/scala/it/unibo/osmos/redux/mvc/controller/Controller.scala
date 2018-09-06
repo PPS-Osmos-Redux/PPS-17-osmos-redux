@@ -324,7 +324,7 @@ case class ControllerImpl() extends Controller {
     LevelFileManager.saveCustomLevel(lv)
   }
 
-  override def removeLevel(name: String): Boolean = LevelFileManager.deleteFile(name) match {
+  override def removeLevel(name: String): Boolean = LevelFileManager.deleteCustomLevel(name) match {
     case Success(_) => true
     case Failure(exception) => Logger.log("Error occurred removing custom level file" + exception.getMessage)
                                false
