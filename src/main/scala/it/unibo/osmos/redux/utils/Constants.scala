@@ -36,24 +36,24 @@ object Constants {
   }
 
   object ResourcesPaths {
-    val separator: String = "/"
-    val levelStartPath: String = separator + "levels"
-    val singlePlayerLevelsPath: String = levelStartPath + separator + "singlePlayer" + separator
-    val multiPlayerLevelsPath: String = levelStartPath + separator + "multiPlayer" + separator
-    val configSinglePlayer:String = levelStartPath + separator + "config" + separator + "SinglePlayerLevels"
-    val configMultiPlayer:String = levelStartPath + separator + "config" + separator + "MultiPlayerLevels"
-    val soundsPath: String = separator + "sounds" + separator
-    val stylePath: String = separator + "style" + separator + "style.css"
+    val Separator: String = "/"
+    val LevelStartPath: String = Separator + "levels"
+    val SinglePlayerLevelsPath: String = LevelStartPath + Separator + "singlePlayer" + Separator
+    val MultiPlayerLevelsPath: String = LevelStartPath + Separator + "multiPlayer" + Separator
+    val ConfigSinglePlayer:String = LevelStartPath + Separator + "config" + Separator + "SinglePlayerLevels"
+    val ConfigMultiPlayer:String = LevelStartPath + Separator + "config" + Separator + "MultiPlayerLevels"
+    val SoundsPath: String = Separator + "sounds" + Separator
+    val StylePath: String = Separator + "style" + Separator + "style.css"
   }
 
   object UserHomePaths {
-    val defaultFS: FileSystem = FileSystems.getDefault
-    val systemSeparator: String = defaultFS.getSeparator
-    val userHome: String = System.getProperty("user.home")
-    val gameDirectory:String = "Osmos-Redux" + systemSeparator
-    val levelsDirectory: String = userHome + systemSeparator + gameDirectory + "CustomLevels" + systemSeparator
-     val userProgressDirectory:String = userHome + systemSeparator + gameDirectory +
-       "UserProgress" + systemSeparator
-    val userProgressFileName: String = userProgressDirectory + "UserProgress"
+    val DefaultFS: FileSystem = FileSystems.getDefault
+    val SystemSeparator: String = DefaultFS.getSeparator
+    val UserHome: String = System.getProperty("user.home")
+    val GameDirectory:String = "Osmos-Redux" + SystemSeparator
+    val LevelsDirectory: String = UserHome + SystemSeparator + GameDirectory + "CustomLevels" + SystemSeparator
+     val UserProgressDirectory:String = UserHome + SystemSeparator + GameDirectory +
+       "UserProgress" + SystemSeparator
+    val UserProgressFileName: String = UserProgressDirectory + "UserProgress"
   }
 }

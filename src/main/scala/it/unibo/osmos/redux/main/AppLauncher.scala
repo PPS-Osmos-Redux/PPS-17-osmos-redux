@@ -11,8 +11,11 @@ import scalafx.application.JFXApp
   * Application entry point.
   */
 object AppLauncher extends JFXApp {
-  SinglePlayerLevels.init(LevelFileManager.getLevelsConfigResourcesPath().getOrElse(List()).map(fileName => LevelFileManager.getResourceLevelInfo(fileName)))
-  MultiPlayerLevels.init(LevelFileManager.getLevelsConfigResourcesPath(true).getOrElse(List()).map(fileName => LevelFileManager.getResourceLevelInfo(fileName)))
+  SinglePlayerLevels.init(LevelFileManager.getLevelsConfigResourcesPath().getOrElse(List())
+    .map(fileName => LevelFileManager.getResourceLevelInfo(fileName)))
+  MultiPlayerLevels.init(LevelFileManager.getLevelsConfigResourcesPath(true).getOrElse(List())
+    .map(fileName => LevelFileManager.getResourceLevelInfo(fileName)))
+  
   SinglePlayerLevels.updateUserStat(UserProgressFileManager.loadUserProgress())
   val controller: Controller = new ControllerImpl
   MusicPlayer.setController(controller)
