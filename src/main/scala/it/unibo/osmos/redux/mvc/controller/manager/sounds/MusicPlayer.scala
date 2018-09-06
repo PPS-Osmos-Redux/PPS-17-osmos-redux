@@ -57,7 +57,7 @@ object MusicPlayer extends Observable {
   /**
     * Resume the music if it is in pause state
     */
-  def resume(): Unit = if (canApplyStateChange(List(Status.PAUSED))) {mediaPlayer.get.play(); sendMusicEvent()}
+  def resume(): Unit = if (canApplyStateChange(List(Status.PAUSED))) mediaPlayer.get.play()
 
   /**
     * Change music and audio effects volume
@@ -110,7 +110,6 @@ object MusicPlayer extends Observable {
     lastLoadedSound = Some(sound)
     updateMPVolume()
     mediaPlayer.get.play()
-    sendMusicEvent()
   }
 
   private def checkMediaPlayerStatus(sound: String): Unit = {
@@ -124,6 +123,6 @@ object MusicPlayer extends Observable {
   override def subscribe(observer:SettingsEventObserver): Unit = settingObs = observer :: settingObs
 
   private def sendMusicEvent(isMute:Boolean = false): Unit = {
-    settingObs.foreach(_.notify(MusicPlayerEvent(Volume(generalVolume, isMute))))
+    settingObs.foreach(_.notify(MusicPlayerEvent(Volume(if(isMute) MinVolume else generalVolume))))
   }
 }

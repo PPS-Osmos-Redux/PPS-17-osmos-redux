@@ -376,11 +376,10 @@ object JsonProtocols {
 
   implicit object volumeSettingFormatter extends RootJsonFormat[Volume] {
     def write(vol: Volume): JsObject = JsObject("settingType" -> JsString(SettingsTypes.Volume.toString),
-                                                "vValue" -> JsNumber(vol.value),
-                                                "isMute" -> JsBoolean(vol.isMute))
+                                                "vValue" -> JsNumber(vol.value))
     def read(value: JsValue): Volume = {
-      value.asJsObject.getFields("vValue", "isMute") match {
-        case Seq(JsNumber(vValue), JsBoolean(isMute)) => Volume(vValue.toDouble, isMute)
+      value.asJsObject.getFields("vValue") match {
+        case Seq(JsNumber(vValue)) => Volume(vValue.toDouble)
         case _ => throw DeserializationException("Volume expected")
       }
     }

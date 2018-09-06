@@ -12,8 +12,7 @@ object SettingsHolder extends SettingsEventObserver {
   def init(loadedSettings: List[Setting]): Unit = loadedSettings.foreach(setting => sendSettingToDestination(setting))
 
   private def sendSettingToDestination(setting:Setting): Unit = setting match {
-    case vol:Volume =>if(vol.isMute) MusicPlayer.pause()
-                      MusicPlayer.changeVolume(vol.value)
+    case vol:Volume => MusicPlayer.changeVolume(vol.value)
     case _ => Logger.log("Error setting not managed " + setting)
   }
 
@@ -80,6 +79,6 @@ sealed trait Setting {
   * Volume setting
   * @param value volume values
   */
-case class Volume(var value:Double, val isMute:Boolean) extends Setting {
+case class Volume(var value:Double) extends Setting {
   override val settingType: SettingsTypes.Value = SettingsTypes.Volume
 }
