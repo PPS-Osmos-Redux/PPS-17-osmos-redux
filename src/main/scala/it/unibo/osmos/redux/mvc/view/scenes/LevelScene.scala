@@ -39,8 +39,7 @@ import scalafx.util.Duration
   * @param upperSceneListener the upper scene listener to manage the previously scene events
   */
 //noinspection ForwardReference
-class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val listener: LevelSceneListener,
-                 val upperSceneListener: BackClickListener)
+class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val listener: LevelSceneListener, val upperSceneListener: BackClickListener)
   extends DefaultBackScene(parentStage, upperSceneListener) with LevelContextListener {
 
   /** Level images */
@@ -52,6 +51,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     val antiMatterDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(antiMatterTexture), canvas.graphicsContext2D)
     val sentientDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(sentientTexture), canvas.graphicsContext2D)
     val controlledDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(controllerTexture), canvas.graphicsContext2D)
+    val backgroundImage: Image = ImageLoader.getImage(backgroundTexture)
   }
 
   /** Level state variables */
@@ -63,7 +63,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     /** Scrolling delta */
     val delta = 1.1
     /** Max zoom out scale */
-    val maxZoomOutScale = 0.5
+    val maxZoomOutScale = 1.0
     /** Max zoom in scale */
     val maxZoomInScale = 2.0
   }
@@ -100,11 +100,11 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
     val light: Spot = new Spot()
     light.color = Color.White
-    light.x <== width / 2
-    light.y <== height / 2
-    light.z = 210
-    light.pointsAtX <== width / 2
-    light.pointsAtY <== height / 2
+    light.x <== (LevelPlayer.playerPosX + halfWindowWidth) * this.scaleX
+    light.y <== (LevelPlayer.playerPosY + halfWindowHeight) * this.scaleY
+    light.z = 200
+    light.pointsAtX <== (LevelPlayer.playerPosX + halfWindowWidth) * this.scaleX
+    light.pointsAtY <== (LevelPlayer.playerPosY + halfWindowHeight) * this.scaleY
     light.pointsAtZ = -10
     light.specularExponent = 2.0
 
@@ -115,14 +115,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
     pickOnBounds = false
 
-    //effect = lighting
-  }
-
-  /** The level background */
-  private val backgroundView: ImageView = new ImageView(ImageLoader.getImage(backgroundTexture)) {
-    fitWidth <== canvas.width
-    fitHeight <== canvas.height
-    opacity <== canvas.opacity
+    effect = lighting
   }
 
   /** The splash screen showed when the game is paused */
@@ -155,7 +148,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
   /** The content of the whole scene, using a stack pane as the main container */
   content = new StackPane() {
-    children = Seq(backgroundView, canvas, speedChangeScreen, splashScreen, pauseScreen)
+    children = Seq(canvas, speedChangeScreen, splashScreen, pauseScreen)
   }
 
   /** Method to start the level */
@@ -387,6 +380,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     Platform.runLater({
       /** Clear the screen */
       canvas.graphicsContext2D.clearRect(0, 0, width.value, height.value)
+      canvas.graphicsContext2D.drawImage(LevelDrawables.backgroundImage, 0, 0, width.value, height.value)
 
       /** Draw the entities */
       playerEntity match {
