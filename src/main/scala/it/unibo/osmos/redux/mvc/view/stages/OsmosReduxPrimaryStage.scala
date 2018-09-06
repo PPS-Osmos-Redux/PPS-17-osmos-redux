@@ -56,7 +56,7 @@ object OsmosReduxPrimaryStage {
 
     override def onStatsClick(): Unit = scene = new StatsScene(this, listener, mainScene)
 
-    override def onControlsClick(): Unit = ???
+    override def onControlsClick(): Unit = scene = new ControlsScene(this, listener, mainScene)
 
     override def onSettingsClick(): Unit = scene = new SettingsScene(this, listener, mainScene)
 
