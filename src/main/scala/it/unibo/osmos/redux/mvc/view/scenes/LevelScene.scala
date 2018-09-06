@@ -81,7 +81,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
   /* DefaultBackScene goBack button configurations */
   setText("Return to Level Selection")
-  setAdditionalAction(onExit)
+  setAdditionalAction(() => onExit())
 
   /**
     * The screen showed when the game is paused (with a bound property)
@@ -419,8 +419,6 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     listener.onStopLevel(levelResult)
 
     inputEnabled = false
-
-    setAdditionalAction(goToPreviousScene)
 
     /* Creating an end screen with a button */
     val endScreen = LevelScreen.Builder(this)
