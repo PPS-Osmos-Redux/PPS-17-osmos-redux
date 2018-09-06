@@ -1,12 +1,21 @@
 package it.unibo.osmos.redux.mvc.model
 
 import it.unibo.osmos.redux.mvc.controller.manager.files.SettingsFileManger
+import it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer
 import it.unibo.osmos.redux.utils.Logger
 
 object SettingsHolder extends SettingsEventObserver {
   implicit val who:String = "Settings"
 
   var settings:List[Setting] = List()
+
+  def init(loadedSettings: List[Setting]): Unit = loadedSettings.foreach(setting => sendSettingToDestination(setting))
+
+  private def sendSettingToDestination(setting:Setting): Unit = setting match {
+    case vol:Volume =>if(vol.isMute) MusicPlayer.pause()
+                      MusicPlayer.changeVolume(vol.value)
+    case _ => Logger.log("Error setting not managed " + setting)
+  }
 
   override def notify(settingsEvent: SettingsEvent): Unit = settingsEvent match {
     case mpEvent: MusicPlayerEvent =>
@@ -16,15 +25,11 @@ object SettingsHolder extends SettingsEventObserver {
   }
 
   private def createOrUpdateSetting(setting:Setting, settingType:SettingsTypes.Value): Unit =
-    if(exists(settingType)) {
+    if(settings.map(_.settingType).contains(settingType)) {
       settings = settings.updated(indexOf(settingType), setting)
     } else {
       settings = setting :: settings
     }
-
-
-  private def exists(settingType:SettingsTypes.Value) =
-    settings.map(_.settingType).contains(settingType)
 
   private def indexOf(settingType:SettingsTypes.Value):Int =  settings.map(st => st.settingType).indexOf(settingType)
 }

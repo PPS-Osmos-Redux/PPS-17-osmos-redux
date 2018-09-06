@@ -6,6 +6,8 @@ import it.unibo.osmos.redux.utils.Constants.UserHomePaths.SettingFilePath
 import spray.json.DefaultJsonProtocol._
 import spray.json._
 
+import scala.util.{Failure, Success, Try}
+
 object SettingsFileManger extends FileManager {
   override implicit val who: String = "SettingsFileManger"
 
@@ -23,7 +25,10 @@ object SettingsFileManger extends FileManager {
     * @return List[Setting]
     */
   def loadSettings():List[Setting] = loadFile(SettingFilePath + jsonExtension) match {
-    case Some(settings) => settings.parseJson.convertTo[List[Setting]]
+    case Some(settings) => Try(settings.parseJson.convertTo[List[Setting]]) match {
+      case Success(value) => value
+      case Failure(_) => List()
+    }
     case None => List()
   }
 }
