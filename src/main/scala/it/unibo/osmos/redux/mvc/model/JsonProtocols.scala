@@ -1,8 +1,7 @@
 package it.unibo.osmos.redux.mvc.model
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, GravityCellEntity, PlayerCellEntity, SentientCellEntity, _}
-import it.unibo.osmos.redux.mvc.controller.LevelInfo
-import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
+import it.unibo.osmos.redux.mvc.controller.levels.structure._
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
 import it.unibo.osmos.redux.utils.Point
 import org.apache.commons.lang3.SerializationException
@@ -277,13 +276,11 @@ object JsonProtocols {
 
   implicit object MapShapeFormatter extends RootJsonFormat[MapShape] {
     def write(mapShape: MapShape): JsObject = mapShape match {
-      case mapShape: MapShape.Rectangle => JsObject("centerX" -> JsNumber(mapShape.center._1),
-        "centerY" -> JsNumber(mapShape.center._2),
+      case mapShape: MapShape.Rectangle => JsObject("center" -> mapShape.center.toJson,
         "mapShape" -> JsString(mapShape.mapShape.toString),
         "height" -> JsNumber(mapShape.height),
         "base" -> JsNumber(mapShape.base))
-      case mapShape: MapShape.Circle => JsObject("centerX" -> JsNumber(mapShape.center._1),
-        "centerY" -> JsNumber(mapShape.center._2),
+      case mapShape: MapShape.Circle => JsObject("center" -> mapShape.center.toJson,
         "mapShape" -> JsString(mapShape.mapShape.toString),
         "radius" -> JsNumber(mapShape.radius))
       case _ => throw new SerializationException("Shape " + mapShape.mapShape + " not managed!")
@@ -293,17 +290,17 @@ object JsonProtocols {
       val rectangle  = MapShapeType.Rectangle.toString
       val circle  = MapShapeType.Circle.toString
 
-      value.asJsObject.getFields("centerX", "centerY", "mapShape") match {
-        case Seq(JsNumber(centerX), JsNumber(centerY), JsString(`rectangle`)) =>
+      value.asJsObject.getFields("center", "mapShape") match {
+        case Seq(center, JsString(`rectangle`)) =>
           value.asJsObject.getFields("height", "base") match {
             case Seq(JsNumber(height), JsNumber(base)) =>
-              MapShape.Rectangle((centerX.toDouble, centerY.toDouble), height.toDouble, base.toDouble)
+              MapShape.Rectangle(center.convertTo[Point], height.toDouble, base.toDouble)
             case _ => throw DeserializationException("Rectangular map expected")
           }
-        case Seq(JsNumber(centerX), JsNumber(centerY), JsString(`circle`)) =>
+        case Seq(center, JsString(`circle`)) =>
           value.asJsObject.getFields("radius") match {
             case Seq(JsNumber(radius)) =>
-              MapShape.Circle((centerX.toDouble, centerY.toDouble), radius.toDouble)
+              MapShape.Circle(center.convertTo[Point], radius.toDouble)
             case _ => throw DeserializationException("Circular map expected")
           }
         case _ => throw DeserializationException("Map shape expected")
@@ -340,9 +337,12 @@ object JsonProtocols {
   implicit object LevelInfoFormatter extends RootJsonFormat[LevelInfo] {
     def write(levelInfo: LevelInfo) = JsObject(
       "name" -> JsString(levelInfo.name),
-      "victoryRule" -> levelInfo.victoryRule.toJson)
+      "victoryRule" -> levelInfo.victoryRule.toJson,
+      "isAvailable" -> JsBoolean(levelInfo.isAvailable))
     def read(value: JsValue): LevelInfo = {
-      value.asJsObject.getFields("name","victoryRule") match {
+      value.asJsObject.getFields("name","victoryRule", "isAvailable") match {
+        case Seq(JsString(name), victoryRule, JsBoolean(isAvailable)) =>
+          LevelInfo(name, victoryRule.convertTo[VictoryRules.Value], isAvailable)
         case Seq(JsString(name), victoryRule) =>
           LevelInfo(name, victoryRule.convertTo[VictoryRules.Value])
         case _ => throw DeserializationException("Level info expected")
@@ -367,7 +367,7 @@ object JsonProtocols {
 
   implicit val drawableWrapperFormatter:RootJsonFormat[DrawableWrapper] = jsonFormat4(DrawableWrapper)
 
-  implicit  val levelStatFormatter:RootJsonFormat[LevelStat] = jsonFormat3(LevelStat)
+  implicit  val levelStatFormatter:RootJsonFormat[CampaignLevelStat] = jsonFormat2(CampaignLevelStat)
 
-  implicit val userProgressFormatter:RootJsonFormat[UserStat] = jsonFormat2(UserStat)
+  implicit  val campaignLevelsFormatter:RootJsonFormat[CampaignLevel] = jsonFormat2(CampaignLevel)
 }

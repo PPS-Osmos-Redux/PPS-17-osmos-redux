@@ -1,5 +1,7 @@
 package it.unibo.osmos.redux.utils
 
+import java.nio.file.{FileSystem, FileSystems}
+
 object Constants {
 
   object General {
@@ -31,5 +33,23 @@ object Constants {
     final val MIN_RADIUS_FOR_LOST_RADIUS_BEHAVIOUR = 15
     final val WEIGHT_OF_ESCAPE_ACCELERATION_FROM_ENEMIES: Double = 2
     final val WEIGHT_OF_ESCAPE_ACCELERATION_FROM_BOUNDARY: Double = WEIGHT_OF_ESCAPE_ACCELERATION_FROM_ENEMIES * 1.5
+  }
+
+  object ResourcesPaths {
+    val separator: String = "/"
+    val levelStartPath: String = separator + "levels"
+    val singlePlayerLevelsPath: String = levelStartPath + separator + "singlePlayer" + separator
+    val multiPlayerLevelsPath: String = levelStartPath + separator + "multiPlayer" + separator
+  }
+
+  object UserHomePaths {
+    val defaultFS: FileSystem = FileSystems.getDefault
+    val systemSeparator: String = defaultFS.getSeparator
+    val userHome: String = System.getProperty("user.home")
+    val gameDirectory:String = "Osmos-Redux" + systemSeparator
+    val levelsDirectory: String = userHome + systemSeparator + gameDirectory + "CustomLevels" + systemSeparator
+    val userProgressFileName = "UserProgress"
+    val userProgressDirectory:String = userHome + systemSeparator + gameDirectory +
+      userProgressFileName + systemSeparator
   }
 }

@@ -1,9 +1,9 @@
 package it.unibo.osmos.redux.ecs.systems
 
-import it.unibo.osmos.redux.ecs.entities.{EntityType, PlayerCellEntity}
 import it.unibo.osmos.redux.ecs.entities.properties.composed.DeathProperty
+import it.unibo.osmos.redux.ecs.entities.{EntityType, PlayerCellEntity}
 import it.unibo.osmos.redux.ecs.systems.victoryconditions.{AbsorbCellsWithTypeVictoryCondition, BecomeHugeVictoryCondition, BecomeTheBiggestVictoryCondition}
-import it.unibo.osmos.redux.mvc.model.VictoryRules
+import it.unibo.osmos.redux.mvc.controller.levels.structure.VictoryRules
 import it.unibo.osmos.redux.mvc.view.context.GameStateHolder
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GamePending, GameWon}
 

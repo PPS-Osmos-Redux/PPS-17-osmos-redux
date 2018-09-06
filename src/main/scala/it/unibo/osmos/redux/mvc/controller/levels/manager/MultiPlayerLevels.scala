@@ -1,6 +1,6 @@
-package it.unibo.osmos.redux.mvc.model
+package it.unibo.osmos.redux.mvc.controller.levels.manager
 
-import it.unibo.osmos.redux.mvc.controller.LevelInfo
+import it.unibo.osmos.redux.mvc.controller.levels.structure.{LevelInfo, VictoryRules}
 
 import scala.collection.mutable
 

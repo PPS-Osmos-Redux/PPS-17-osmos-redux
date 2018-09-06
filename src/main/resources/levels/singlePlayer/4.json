@@ -13,8 +13,8 @@
       },
       "position": {
         "point": {
-          "x": 100.0,
-          "y": 300.0
+          "x": -500.0,
+          "y": -200.0
         }
       },
       "cellType": "sentientCell",
@@ -24,6 +24,9 @@
       "speed": {
         "speedX": 0,
         "speedY": 0
+      },
+      "spawner": {
+        "canSpawn": true
       }
     },
     {
@@ -39,8 +42,8 @@
       },
       "position": {
         "point": {
-          "x": 800.0,
-          "y": 800.0
+          "x": 200.0,
+          "y": 300.0
         }
       },
       "cellType": "sentientCell",
@@ -50,6 +53,40 @@
       "speed": {
         "speedX": 0,
         "speedY": 0
+      },
+      "spawner": {
+        "canSpawn": true
+      }
+    }, {
+      "acceleration": {
+        "accelerationX": 1.0,
+        "accelerationY": 1.0
+      },
+      "visible": {
+        "visible": true
+      },
+      "collidable": {
+        "collidable": true
+      },
+      "spawner": {
+        "canSpawn": true
+      },
+      "typeEntity": {
+        "componentType": "Controlled"
+      },
+      "position": {
+        "point": {
+          "x": 300.0,
+          "y": -100.0
+        }
+      },
+      "cellType": "playerCell",
+      "dimension": {
+        "radius": 50.0
+      },
+      "speed": {
+        "speedX": 4.0,
+        "speedY": 0.0
       }
     }],
   "name": "4",
@@ -58,11 +95,13 @@
   },
   "levelMap": {
     "mapShape": {
+      "center": {
+        "x": 0.0,
+        "y": 0.0
+      },
       "mapShape": "Rectangle",
       "height": 900,
-      "base": 1000,
-      "centerX": 600.0,
-      "centerY": 500.0
+      "base": 1000
     },
     "collisionRule": "Bouncing"
   }

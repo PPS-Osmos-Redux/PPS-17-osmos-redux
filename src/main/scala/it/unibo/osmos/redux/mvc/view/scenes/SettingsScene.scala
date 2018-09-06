@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
-import it.unibo.osmos.redux.mvc.controller.MusicPlayer
+import it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer
 import it.unibo.osmos.redux.mvc.view.components.custom.StyledButton
 import it.unibo.osmos.redux.mvc.view.context.LevelContext
 import it.unibo.osmos.redux.mvc.view.stages.PrimaryStageListener

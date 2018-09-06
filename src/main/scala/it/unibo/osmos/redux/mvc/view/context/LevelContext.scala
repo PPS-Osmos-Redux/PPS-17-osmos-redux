@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.context
 
-import it.unibo.osmos.redux.mvc.model.MapShape
+import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape
 import it.unibo.osmos.redux.mvc.view.drawables.{DrawableWrapper, EntitiesDrawer}
 import it.unibo.osmos.redux.mvc.view.events._
 import it.unibo.osmos.redux.utils.Logger

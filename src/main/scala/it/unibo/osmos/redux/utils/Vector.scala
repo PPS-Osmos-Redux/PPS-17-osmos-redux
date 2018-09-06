@@ -109,11 +109,5 @@ object Vector {
 
   def zero(): Vector = VectorImpl(0, 0)
 
-  private case class VectorImpl(var _x: Double, var _y: Double) extends Vector {
-
-    override def x: Double = _x
-
-    override def y: Double = _y
-  }
-
+  private case class VectorImpl(override val x: Double, override val y: Double) extends Vector {}
 }

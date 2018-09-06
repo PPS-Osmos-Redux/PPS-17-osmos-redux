@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.ecs.systems
 import it.unibo.osmos.redux.ecs.components.{DimensionComponent, PositionComponent, SpawnAction, SpeedComponent}
 import it.unibo.osmos.redux.ecs.entities.properties.composed.{SentientEnemyProperty, SentientProperty}
 import it.unibo.osmos.redux.ecs.systems.sentientRule._
-import it.unibo.osmos.redux.mvc.model.Level
+import it.unibo.osmos.redux.mvc.controller.levels.structure.Level
 import it.unibo.osmos.redux.utils.{Point, Vector}
 
 case class SentientSystem(levelInfo: Level) extends AbstractSystem2[SentientProperty, SentientEnemyProperty] {

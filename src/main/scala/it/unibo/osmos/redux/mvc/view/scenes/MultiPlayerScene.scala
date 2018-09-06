@@ -1,15 +1,14 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.multiplayer.common.NetworkUtils
-import it.unibo.osmos.redux.mvc.controller.LevelInfo
-import it.unibo.osmos.redux.mvc.view.components.custom.{StyledButton, TitledComboBox, TitledIntegerField, TitledTextField}
+import it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo
+import it.unibo.osmos.redux.mvc.view.components.custom._
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.LobbyContext
 import it.unibo.osmos.redux.utils.GenericResponse
 import scalafx.application.Platform
 import scalafx.beans.property.{BooleanProperty, IntegerProperty, StringProperty}
 import scalafx.geometry.{Insets, Pos}
-import scalafx.scene.control.Alert
 import scalafx.scene.layout.{BorderPane, HBox, VBox}
 import scalafx.stage.Stage
 
@@ -81,11 +80,7 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
           parentStage.scene = multiPlayerLobbyScene
         case GenericResponse(false, message) =>
           /* If an error occurred */
-          val alert = new Alert(Alert.AlertType.Error) {
-            title = "Error"
-            contentText.value = message
-          }
-          alert.showAndWait()
+          AlertFactory.createErrorAlert("Error", message).showAndWait()
       }
     })
   }
@@ -100,7 +95,7 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
       if (mode.value) {
         /* If we are the server, we must choose the level first. We ask for the lobby when the level is chosen */
         //TODO: change methods to get the level info
-        parentStage.scene = new MultiPlayerLevelSelectionScene(parentStage, listener, levelInfo => goToLobby(user, Option(levelInfo)), user,???)
+        parentStage.scene = new MultiPlayerLevelSelectionScene(parentStage, listener, levelInfo => goToLobby(user, Option(levelInfo)), user, () => parentStage.scene = MultiPlayerScene.this)
       } else {
         /* If we are the client */
         goToLobby(user, Option.empty)
@@ -111,7 +106,8 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
 
   /**
     * This method sends a request to enter the lobby
-    * @param user the user
+    *
+    * @param user      the user
     * @param levelInfo the level info, which may be not present if the user is a client
     */
   private def goToLobby(user: User, levelInfo: Option[LevelInfo]): Unit = {
@@ -171,7 +167,7 @@ trait MultiPlayerSceneListener extends MultiPlayerLobbySceneListener with MultiP
     * Called when the user wants to go to the lobby
     *
     * @param user         the user requesting to enter the lobby
-    * @param levelInfo         the chosen level
+    * @param levelInfo    the chosen level
     * @param lobbyContext the lobby context, which may be used by the server to configure existing lobby users
     * @param callback     the callback
     */

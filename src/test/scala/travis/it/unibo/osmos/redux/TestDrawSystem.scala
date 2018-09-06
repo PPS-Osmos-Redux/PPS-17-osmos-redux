@@ -4,7 +4,7 @@ import it.unibo.osmos.redux.ecs.entities._
 import it.unibo.osmos.redux.ecs.entities.builders.{CellBuilder, PlayerCellBuilder}
 import it.unibo.osmos.redux.ecs.entities.properties.composed.DrawableProperty
 import it.unibo.osmos.redux.ecs.systems.DrawSystem
-import it.unibo.osmos.redux.mvc.model.MapShape
+import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape
 import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextListener, LevelContextType}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
 import it.unibo.osmos.redux.mvc.view.events.{EventWrapperObserver, GameStateEventWrapper, MouseEventWrapper}
