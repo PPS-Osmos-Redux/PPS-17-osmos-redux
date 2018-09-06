@@ -24,7 +24,7 @@ import scalafx.stage.Stage
 class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: MultiPlayerLobbySceneListener,
                             val upperSceneListener: UpperMultiPlayerLobbySceneListener, val user: User)
   extends BaseScene(parentStage) with LobbyContextListener {
-
+  
   /**
     * The lobby context, created with the MultiPlayerLobbyScene. It still needs to be properly setup
     */

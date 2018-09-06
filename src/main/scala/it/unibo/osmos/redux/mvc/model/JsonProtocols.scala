@@ -3,8 +3,9 @@ import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, GravityCellEntity, PlayerCellEntity, SentientCellEntity, _}
 import it.unibo.osmos.redux.mvc.controller.levels.structure._
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
-import it.unibo.osmos.redux.utils.Point
+import it.unibo.osmos.redux.utils.{Logger, Point}
 import org.apache.commons.lang3.SerializationException
+import spray.json
 import spray.json.DefaultJsonProtocol._
 import spray.json._
 
@@ -12,6 +13,8 @@ import spray.json._
   * Json implicit stategies for: convert json to Level or convert Level to json
   */
 object JsonProtocols {
+  implicit val who:String = "JsonProtocols"
+
   implicit object AccelerationFormatter extends RootJsonFormat[AccelerationComponent] {
     def write(acceleration: AccelerationComponent) = JsObject(
       "accelerationX" -> JsNumber(acceleration.vector.x),
@@ -240,7 +243,7 @@ object JsonProtocols {
         "speed" -> cellEntity.getSpeedComponent.toJson,
         "visible" -> cellEntity.getVisibleComponent.toJson,
         "typeEntity" -> cellEntity.getTypeComponent.toJson)
-      case _ => println("Cell ", cellEntity, " currently is not managed!"); JsObject()
+      case _ => Logger.log("Cell " + cellEntity + " currently is not managed!"); JsObject()
     }
 
     def read(value: JsValue): CellEntity = {
@@ -367,7 +370,35 @@ object JsonProtocols {
 
   implicit val drawableWrapperFormatter:RootJsonFormat[DrawableWrapper] = jsonFormat4(DrawableWrapper)
 
-  implicit  val campaignLevelStatFormatter:RootJsonFormat[CampaignLevelStat] = jsonFormat2(CampaignLevelStat)
+  implicit val campaignLevelStatFormatter:RootJsonFormat[CampaignLevelStat] = jsonFormat2(CampaignLevelStat)
 
-  implicit  val campaignLevelsFormatter:RootJsonFormat[CampaignLevel] = jsonFormat2(CampaignLevel)
+  implicit val campaignLevelsFormatter:RootJsonFormat[CampaignLevel] = jsonFormat2(CampaignLevel)
+
+  implicit object volumeSettingFormatter extends RootJsonFormat[Volume] {
+    def write(vol: Volume): JsObject = JsObject("settingType" -> JsString(SettingsTypes.Volume.toString),
+                                                "vValue" -> JsNumber(vol.value))
+    def read(value: JsValue): Volume = {
+      value.asJsObject.getFields("vValue") match {
+        case Seq(JsNumber(vValue)) => Volume(vValue.toDouble)
+        case _ => throw DeserializationException("Volume expected")
+      }
+    }
+  }
+
+  implicit object settingFormatter extends RootJsonFormat[Setting] {
+    def write(setting: Setting): JsValue = setting match {
+      case vol : Volume => vol.toJson
+      case _ => Logger.log("Error i can't convert to json " + setting.settingType)
+                JsObject()
+    }
+    def read(value: JsValue): Setting = {
+      val volumeSetting  = SettingsTypes.Volume.toString
+      value.asJsObject.getFields("settingType") match {
+        case Seq(JsString(`volumeSetting`)) =>
+          value.convertTo[Volume]
+        case Seq(e) => println(e) ;throw DeserializationException("Setting expected " + e)
+      }
+    }
+  }
+
 }

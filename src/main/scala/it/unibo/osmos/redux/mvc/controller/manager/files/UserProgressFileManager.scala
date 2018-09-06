@@ -22,7 +22,7 @@ object UserProgressFileManager extends FileManager {
     * @return Option with file path of user progress file
     */
   def saveUserProgress(userProgress: List[CampaignLevel]): Boolean = {
-    val upFile = new File(defaultFS.getPath(userProgressFileName + jsonExtension).toUri)
+    val upFile = new File(DefaultFS.getPath(UserProgressFileName + jsonExtension).toUri)
     createDirectoriesTree(upFile)
     saveToFile(upFile, userProgress.toJson.prettyPrint)
   }
@@ -32,11 +32,11 @@ object UserProgressFileManager extends FileManager {
     * @return UserStat
     */
   def loadUserProgress(): List[CampaignLevel] =
-    loadFile(userProgressFileName + jsonExtension) match {
+    loadFile(UserProgressFileName + jsonExtension) match {
       case Some(text) => Try(text.parseJson.convertTo[List[CampaignLevel]]) match {
                             case Success(value) => value
                             case Failure(_) => Logger.log("Error: failed user progress convertion to json")
-                                                       deleteFile(Paths.get(userProgressFileName + jsonExtension))
+                                                       deleteFile(Paths.get(UserProgressFileName + jsonExtension))
                                                        loadUserProgress()
                           }
       case _ => saveUserProgress(SinglePlayerLevels.getCampaignLevels)
@@ -47,5 +47,5 @@ object UserProgressFileManager extends FileManager {
     * Delete user progress file
     * @return Try[Unit]
     */
-  def deleteUserProgress(): Try[Unit] = deleteFile(defaultFS.getPath(userProgressFileName + jsonExtension).toAbsolutePath)
+  def deleteUserProgress(): Try[Unit] = deleteFile(DefaultFS.getPath(UserProgressFileName + jsonExtension).toAbsolutePath)
 }
