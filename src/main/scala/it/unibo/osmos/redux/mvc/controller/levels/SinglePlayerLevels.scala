@@ -1,6 +1,6 @@
-package it.unibo.osmos.redux.mvc.controller.levels.manager
+package it.unibo.osmos.redux.mvc.controller.levels
 
-import it.unibo.osmos.redux.mvc.controller.levels.structure.{CampaignLevel, CampaignLevelStat, LevelInfo, VictoryRules}
+import it.unibo.osmos.redux.mvc.controller.levels.structure.{CampaignLevel, CampaignLevelStat, LevelInfo}
 import it.unibo.osmos.redux.mvc.controller.manager.files.UserProgressFileManager
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GameStateEventWrapper, GameWon}
 import it.unibo.osmos.redux.utils.Logger
@@ -14,8 +14,11 @@ object SinglePlayerLevels {
     * @param levelsInfo List[LevelInfo]
     */
   def init(levelsInfo:List[Option[LevelInfo]]): Unit = {
-    levelsInfo.filter(lv => lv isDefined).foreach(lvInfo => levels = CampaignLevel(lvInfo.get, CampaignLevelStat())::levels)
-    reset()
+    levelsInfo.flatten.foreach(lvInfo => {
+      lvInfo.isAvailable = false
+      levels = CampaignLevel(lvInfo, CampaignLevelStat())::levels
+    })
+    levels.head.levelInfo.isAvailable = true
   }
 
   /**

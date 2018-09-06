@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux
 
-import it.unibo.osmos.redux.mvc.controller.levels.manager.SinglePlayerLevels
+import it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GameWon}
 import org.scalatest.{BeforeAndAfter, FunSuite}
 

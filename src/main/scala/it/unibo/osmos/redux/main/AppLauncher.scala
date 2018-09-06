@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.main
 
 import it.unibo.osmos.redux.mvc.controller._
-import it.unibo.osmos.redux.mvc.controller.levels.manager.{MultiPlayerLevels, SinglePlayerLevels}
+import it.unibo.osmos.redux.mvc.controller.levels.{MultiPlayerLevels, SinglePlayerLevels}
 import it.unibo.osmos.redux.mvc.controller.manager.files.{LevelFileManager, UserProgressFileManager}
 import it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer
 import it.unibo.osmos.redux.mvc.view.View

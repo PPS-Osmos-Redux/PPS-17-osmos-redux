@@ -1,8 +1,6 @@
-package it.unibo.osmos.redux.mvc.controller.levels.manager
+package it.unibo.osmos.redux.mvc.controller.levels
 
-import it.unibo.osmos.redux.mvc.controller.levels.structure.{LevelInfo, VictoryRules}
-
-import scala.collection.mutable
+import it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo
 
 object MultiPlayerLevels {
   private var levels:List[LevelInfo] = List()

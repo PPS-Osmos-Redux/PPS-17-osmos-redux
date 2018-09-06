@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.mvc.controller.manager.files
 import java.io.File
 import java.nio.file.Paths
 
-import it.unibo.osmos.redux.mvc.controller.levels.manager.SinglePlayerLevels
+import it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels
 import it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel
 import it.unibo.osmos.redux.mvc.model.JsonProtocols._
 import spray.json.DefaultJsonProtocol._
