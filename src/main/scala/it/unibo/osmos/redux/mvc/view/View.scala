@@ -1,8 +1,8 @@
 package it.unibo.osmos.redux.mvc.view
 
 import it.unibo.osmos.redux.ecs.entities.CellEntity
-import it.unibo.osmos.redux.mvc.controller.{Controller, LevelInfo}
-import it.unibo.osmos.redux.mvc.model.{CollisionRules, MapShape, VictoryRules}
+import it.unibo.osmos.redux.mvc.controller.Controller
+import it.unibo.osmos.redux.mvc.controller.levels.structure.{CollisionRules, LevelInfo, MapShape, VictoryRules}
 import it.unibo.osmos.redux.mvc.view.components.custom.AlertFactory
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LobbyContext}
@@ -88,7 +88,9 @@ object View {
 
     override def onResumeLevel(): Unit = checkController(() => controller.get.resumeLevel())
 
-    override def onStopLevel(): Unit = checkController(() => controller.get.stopLevel())
+    override def onStopLevel(victory: Boolean): Unit = checkController(() => controller.get.stopLevel(victory))
+
+    override def onLevelSpeedChanged(increment: Boolean): Unit = checkController(() => controller.get.changeLevelSpeed(increment))
 
     def onDisplayError(message: String): Unit = {
       Platform.runLater {

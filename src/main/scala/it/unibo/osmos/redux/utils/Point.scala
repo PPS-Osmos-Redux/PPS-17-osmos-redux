@@ -18,26 +18,26 @@ trait Point {
   /** Point-vector addition.
     *
     * @param v vector to add
-    * @return addition result as a new instance of Point
+    * @return the addition result as a new Point instance
     */
   def add(v: Vector): Point = Point(x + v.x, y + v.y)
-
-  /** Point-point subtraction.
-    *
-    * @param p point to subtract
-    * @return subtraction result as a new instance
-    */
-  def subtract(p: Point): Vector = Vector(x - p.x, y - p.y)
 
   /** Point-vector subtraction.
     *
     * @param v vector to subtract
-    * @return subtraction result as a new instance
+    * @return the subtraction result as a new Point instance
     */
-  def subtract(v: Vector): Vector = Vector(x - v.x, y - v.y)
+  def subtract(v: Vector): Point = Point(x - v.x, y - v.y)
 
+  /** Point-point subtraction.
+    *
+    * @param p point to subtract
+    * @return the subtraction result as a new Vector instance
+    */
+  def subtract(p: Point): Vector = Vector(x - p.x, y - p.y)
 
-  def multiply(value: Double): Vector = Vector(x * value, y * value)
+  // TODO: remove
+  //def multiply(value: Double): Vector = Vector(x * value, y * value)
 
 }
 

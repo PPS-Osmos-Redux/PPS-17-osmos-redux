@@ -2,11 +2,10 @@ package it.unibo.osmos.redux.ecs.engine
 
 import it.unibo.osmos.redux.ecs.entities.{EntityManager, PlayerCellEntity}
 import it.unibo.osmos.redux.ecs.systems._
-import it.unibo.osmos.redux.ecs.systems.sentient.SentientSystem
 import it.unibo.osmos.redux.multiplayer.server.Server
-import it.unibo.osmos.redux.mvc.model.Level
-import it.unibo.osmos.redux.mvc.view.context.{LevelContext, MultiPlayerLevelContext}
-import it.unibo.osmos.redux.utils.InputEventQueue
+import it.unibo.osmos.redux.mvc.controller.levels.structure.Level
+import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextType, MultiPlayerLevelContext}
+import it.unibo.osmos.redux.utils.{Constants, InputEventQueue, Logger}
 
 import scala.collection.mutable.ListBuffer
 
@@ -69,6 +68,12 @@ trait GameEngine {
     * @return The frame rate.
     */
   def getFps: Int
+
+  /**
+    * Changes the game loop speed by updating the current frame rate.
+    * @param increment Whether the game loop speed needs to be increased or decreased.
+    */
+  def changeSpeed(increment: Boolean = false): Unit
 }
 
 /**
@@ -82,7 +87,7 @@ object GameEngine {
     * The Game engine class implementation.
     * @param frameRate The frame rate of the game.
     */
-  private case class GameEngineImpl(private val frameRate: Int = 30) extends GameEngine {
+  private case class GameEngineImpl(private var frameRate: Int = Constants.Game.defaultSpeed) extends GameEngine {
 
     private var gameLoop: Option[GameLoop] = _
 
@@ -96,9 +101,9 @@ object GameEngine {
 
       //create systems, add to list, the order in this collection is the final system order in the game loop
       val systems = ListBuffer[System]()
-      if (!level.isSimulation) systems += InputSystem()
+      if (!(levelContext.levelContextType == LevelContextType.simulation)) systems += InputSystem()
       systems ++= initMainSystems(level, levelContext)
-      if (!level.isSimulation) systems += EndGameSystem(levelContext, level.levelInfo.victoryRule)
+      if (!(levelContext.levelContextType == LevelContextType.simulation)) systems += EndGameSystem(levelContext, level.levelInfo.victoryRule)
 
 
       //add all entities in the entity manager (systems are subscribed to EntityManager event when created)
@@ -190,6 +195,15 @@ object GameEngine {
     }
 
     override def getFps: Int = frameRate
+
+    override def changeSpeed(increment: Boolean): Unit = {
+      if (increment && frameRate < Constants.Game.maximumSpeed) {
+        frameRate += Constants.Game.speedChangeStep
+      } else if (!increment && frameRate > Constants.Game.minimumSpeed) {
+        frameRate -= Constants.Game.speedChangeStep
+      }
+      Logger.log(s"changedSpeed: $frameRate")("GameEngine")
+    }
 
     /**
       * Initializes the main game systems

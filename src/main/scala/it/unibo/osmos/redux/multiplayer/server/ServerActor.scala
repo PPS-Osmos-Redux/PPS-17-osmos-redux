@@ -5,8 +5,7 @@ import it.unibo.osmos.redux.multiplayer.client.ClientActor._
 import it.unibo.osmos.redux.multiplayer.common.ClientsManager
 import it.unibo.osmos.redux.multiplayer.players.BasePlayer
 import it.unibo.osmos.redux.multiplayer.server.ServerActor.{Disconnected, _}
-import it.unibo.osmos.redux.mvc.controller.LevelInfo
-import it.unibo.osmos.redux.mvc.model.MapShape
+import it.unibo.osmos.redux.mvc.controller.levels.structure.{LevelInfo, MapShape}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity
 import it.unibo.osmos.redux.utils.Logger
 

@@ -4,10 +4,10 @@ import it.unibo.osmos.redux.mvc.view.components.custom.StyledButton
 import scalafx.scene.control.Button
 import scalafx.stage.Stage
 
-class DefaultBackScene(override val parentStage: Stage, previousSceneListener: BackClickListener) extends BaseScene(parentStage) {
+class DefaultBackScene(override val parentStage: Stage, upperSceneListener: BackClickListener, val backText: String = "Back") extends BaseScene(parentStage) {
 
-  protected val goBack: Button = new StyledButton("Back to menu") {
-    onAction = _ => previousSceneListener.onBackClick()
+  protected val goBack: Button = new StyledButton(backText) {
+    onAction = _ => upperSceneListener.onBackClick()
   }
 }
 

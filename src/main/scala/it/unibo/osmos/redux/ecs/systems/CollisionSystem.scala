@@ -1,8 +1,10 @@
 package it.unibo.osmos.redux.ecs.systems
 
-import it.unibo.osmos.redux.ecs.entities.{CollidableProperty, EntityType}
-import it.unibo.osmos.redux.mvc.model.Level
-import it.unibo.osmos.redux.mvc.model.MapShape.{Circle, Rectangle}
+import it.unibo.osmos.redux.ecs.entities.EntityType
+import it.unibo.osmos.redux.ecs.entities.properties.composed.CollidableProperty
+import it.unibo.osmos.redux.ecs.systems.borderconditions.{CircularBorder, RectangularBorder}
+import it.unibo.osmos.redux.mvc.controller.levels.structure.Level
+import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.utils.{MathUtils, Point, Vector}
 
 case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidableProperty] {
@@ -18,12 +20,10 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
 
   private val collisionRule = levelInfo.levelMap.collisionRule
   private val bounceRule = levelInfo.levelMap.mapShape match {
-    case shape: Rectangle => RectangularBorder(Point(shape.center._1, shape.center._2), collisionRule, shape.base, shape.height)
-    case shape: Circle => CircularBorder(Point(shape.center._1, shape.center._2), collisionRule, shape.radius)
+    case shape: Rectangle => RectangularBorder(Point(shape.center.x, shape.center.y), collisionRule, shape.base, shape.height)
+    case shape: Circle => CircularBorder(Point(shape.center.x, shape.center.y), collisionRule, shape.radius)
     case _ => throw new IllegalArgumentException
   }
-
-  override def getGroupProperty: Class[CollidableProperty] = classOf[CollidableProperty]
 
   override def update(): Unit = {
     //check collision with boundary
@@ -130,10 +130,7 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
     if (accel.vector.x == 0) {
       entity.getAccelerationComponent.vector_(initialAccelerationVector.multiply(percentage))
     } else {
-      val temp = accel.vector.multiply(percentage)
-      entity.getAccelerationComponent.vector_(accel.vector.subtract(temp))
-      //entity.getAccelerationComponent.vector.x_(accel.vector.x - accel.vector.x * percentage)
-      //entity.getAccelerationComponent.vector.y_(accel.vector.y - accel.vector.y * percentage)
+      accel.vector_(accel.vector subtract(accel.vector multiply percentage))
     }
   }
 }
