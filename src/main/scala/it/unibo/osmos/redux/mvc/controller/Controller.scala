@@ -235,7 +235,7 @@ case class ControllerImpl() extends Controller {
         server.get.initGame(loadedLevel).future onComplete {
           case Success(_) =>
             //create the engine
-            if (engine.isEmpty) engine = Some(GameEngine())
+            if (engine.isEmpty) engine = Some(GameEngine(Constants.MultiPlayer.defaultMultiPlayerFps))
             //initialize the engine and let him create the levelContext
             val levelContext = engine.get.init(loadedLevel, server.get)
 
@@ -273,7 +273,7 @@ case class ControllerImpl() extends Controller {
   }
 
   override def stopLevel(victory: Boolean = false): Unit = {
-    Logger.log("stopLevel")
+    Logger.log(s"stopLevel - victory: $victory")
 
     multiPlayerMode match {
       case Some(MultiPlayerMode.Client) =>
