@@ -1,22 +1,20 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
-import scalafx.Includes._
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityType}
-import it.unibo.osmos.redux.mvc.model.{CollisionRules, MapShape, MapShapeType, VictoryRules}
-import it.unibo.osmos.redux.mvc.view.ViewConstants
-import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
+import it.unibo.osmos.redux.mvc.controller.levels.structure.{CollisionRules, MapShape, MapShapeType, VictoryRules}
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
+import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
 import it.unibo.osmos.redux.mvc.view.components.custom.{StyledButton, TitledComboBox}
 import it.unibo.osmos.redux.mvc.view.components.editor._
 import it.unibo.osmos.redux.mvc.view.components.level.LevelScreen
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
+import javafx.scene.input.KeyCode
 import javafx.scene.paint.ImagePattern
-import scalafx.beans.property.{BooleanProperty, DoubleProperty, ObjectProperty}
+import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.{Alert, TextInputDialog}
 import scalafx.scene.effect.DropShadow
 import scalafx.scene.image.ImageView
-import javafx.scene.input.KeyCode
 import scalafx.scene.layout._
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.{Circle, Rectangle, Shape}
@@ -30,7 +28,7 @@ import scala.collection.mutable.ListBuffer
   * @param parentStage the parent stage
   * @param listener the EditorSceneListener
   */
-class EditorScene (override val parentStage: Stage, val listener: EditorSceneListener, val upperListener: UpperEditorSceneListener) extends BaseScene(parentStage) {
+class EditorScene (override val parentStage: Stage, val listener: EditorSceneListener, val upperListener: BackClickListener) extends DefaultBackScene(parentStage, upperListener, "Exit Level") {
 
   /* Entities currently built */
   var builtEntities: ListBuffer[CellEntity] = ListBuffer()
@@ -196,10 +194,10 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     top = new HBox(20.0, new StyledButton("Save Level") {
       /** We begin the procedure to save the level */
       onAction = _ => saveLevel()
-    }, new StyledButton("Exit Level") {
+    }, goBack /*new StyledButton("Exit Level") {
       /* We go back */
-      onAction = _ => upperListener.onExitEditor()
-    }){
+      onAction = _ => upperListener.onBackClick()
+    }*/){
       margin = Insets(10.0)
       alignment = Pos.Center
     }

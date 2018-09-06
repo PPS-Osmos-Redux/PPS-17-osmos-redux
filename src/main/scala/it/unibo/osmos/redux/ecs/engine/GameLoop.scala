@@ -3,6 +3,7 @@ package it.unibo.osmos.redux.ecs.engine
 import java.util.concurrent.locks.ReentrantLock
 
 import it.unibo.osmos.redux.ecs.systems._
+import it.unibo.osmos.redux.utils.Logger
 
 /**
   * Implementation of the game loop.
@@ -24,10 +25,11 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
       lock.lock() //blocked if paused
 
       val startTick = System.currentTimeMillis()
-
       try {
         //let game progress by updating all systems
-        systems foreach (_.update())
+        systems foreach (s => {
+          logRunTime(s.getClass.getSimpleName, s.update)
+        })
       } finally {
         tryUnlock()
       }
@@ -35,7 +37,7 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
       //game loop iteration must last exactly tickTime, so sleep if the tickTime hasn't been reached yet
       val execTime = System.currentTimeMillis() - startTick
 
-      //println(s"Execution time: $execTime ms")
+      //Logger.log(s"Execution time: ${execTime}ms")("GameLoop")
 
       if (!stopFlag) {
         val tickTime = getTickTime
@@ -53,7 +55,7 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
             throw ExceededTickTimeException("[Game loop] overrun tick time of " + tickTime +
               "ms (" + engine.getFps + " fps) by " + math.abs(tickTime - execTime) + "ms.")
           } catch {
-            case t: Throwable => println(t.getMessage)
+            case t: Throwable => Logger.log(t.getMessage)("GameLoop")
           }
         }
       }
@@ -76,7 +78,7 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
   /**
     * Resumes the execution.
     */
-  def unpause(): Unit = {
+  def unPause(): Unit = {
 
     if (status != GameStatus.Paused) throw new IllegalStateException("Cannot unpause the game if it's not paused.")
 
@@ -113,6 +115,18 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
     } catch {
       case _: Throwable => //do nothing
     }
+  }
+
+  /**
+    * Logs the runtime of a function.
+    * @param who Who represents the function to log.
+    * @param f The function
+    */
+  private def logRunTime(who: String, f: () => Unit): Unit = {
+    val start = System.currentTimeMillis()
+    f()
+    val end = System.currentTimeMillis()
+    Logger.log(s"execution time: ${end-start}ms")(who)
   }
 }
 

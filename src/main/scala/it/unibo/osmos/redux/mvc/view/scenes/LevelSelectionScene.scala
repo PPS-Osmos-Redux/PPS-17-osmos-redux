@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
-import it.unibo.osmos.redux.mvc.controller.LevelInfo
+import it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.level.{LevelNode, LevelNodeListener}
 import it.unibo.osmos.redux.mvc.view.components.menu.MainMenuBarListener
 import it.unibo.osmos.redux.mvc.view.context.LevelContext
@@ -88,7 +88,8 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
     */
   def onLevelPlayClick(levelInfo: LevelInfo, simulation: Boolean, custom: Boolean = false): Unit = {
     /* Creating a listener on the run*/
-    val upperLevelSceneListener: UpperLevelSceneListener = () => {parentStage.scene = this; reloadLevels()}
+    val upperLevelSceneListener: BackClickListener = () => {parentStage.scene = this; reloadLevels()}
+
     /* Creating a new level scene */
     val levelScene = new LevelScene(parentStage, levelInfo, listener, upperLevelSceneListener)
     /* Creating the level context */
@@ -100,7 +101,6 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
     /* Notify the view the new context */
     listener.onLevelContextCreated(levelContext, levelInfo.name, custom)
   }
-
 }
 
 /**

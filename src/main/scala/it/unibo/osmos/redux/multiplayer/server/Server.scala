@@ -8,8 +8,7 @@ import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.multiplayer.lobby.GameLobby
 import it.unibo.osmos.redux.multiplayer.players.{BasePlayer, ReferablePlayer}
 import it.unibo.osmos.redux.multiplayer.server.ServerActor._
-import it.unibo.osmos.redux.mvc.controller.LevelInfo
-import it.unibo.osmos.redux.mvc.model.Level
+import it.unibo.osmos.redux.mvc.controller.levels.structure.{Level, LevelInfo}
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, MultiPlayerLevelContext}
 import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper

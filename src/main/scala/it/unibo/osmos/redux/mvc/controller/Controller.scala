@@ -5,7 +5,10 @@ import it.unibo.osmos.redux.ecs.entities.{CellEntity, PlayerCellEntity}
 import it.unibo.osmos.redux.multiplayer.client.Client
 import it.unibo.osmos.redux.multiplayer.common.{ActorSystemHolder, MultiPlayerMode}
 import it.unibo.osmos.redux.multiplayer.server.Server
-import it.unibo.osmos.redux.mvc.model.{VictoryRules, _}
+import it.unibo.osmos.redux.mvc.controller.levels.{MultiPlayerLevels, SinglePlayerLevels}
+import it.unibo.osmos.redux.mvc.controller.levels.structure._
+import it.unibo.osmos.redux.mvc.controller.manager.files.{LevelFileManager, SoundFileManager, UserProgressFileManager}
+import it.unibo.osmos.redux.mvc.controller.manager.sounds.SoundsType
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context._
 import it.unibo.osmos.redux.mvc.view.events.{AbortLobby, _}
@@ -52,7 +55,7 @@ trait Controller {
 
   /**
     * Stops the level.
-    * @param If the level have been won or lost.
+    * @param victory the level have been won or lost.
     */
   def stopLevel(victory: Boolean = false): Unit
 
@@ -224,7 +227,7 @@ case class ControllerImpl() extends Controller {
     //End game result of the multiplayer levels doesn't influence campaign statistics
     lastLoadedLevel = None
     //load level definition
-    val loadedLevel = FileManager.loadResource(levelInfo.name, isMultiPlayer = true).get
+    val loadedLevel = LevelFileManager.getLevelFromResource(levelInfo.name, isMultiPlayer = true).get
 
     multiPlayerMode.get match {
       case MultiPlayerMode.Server =>
@@ -302,14 +305,14 @@ case class ControllerImpl() extends Controller {
   }
 
   override def getSoundPath(soundType: SoundsType.Value): Option[String] = soundType match {
-    case SoundsType.menu => Some(FileManager.loadMenuMusic())
-    case SoundsType.level => Some(FileManager.loadLevelMusic())
-    case SoundsType.button => Some(FileManager.loadButtonsSound())
+    case SoundsType.menu => Some(SoundFileManager.loadMenuMusic())
+    case SoundsType.level => Some(SoundFileManager.loadLevelMusic())
+    case SoundsType.button => Some(SoundFileManager.loadButtonsSound())
     case _ => Logger.log("Sound type not managed!! [getSoundPath]")
               None
   }
 
-  override def getCustomLevels: List[LevelInfo] = FileManager.customLevelsFilesName match {
+  override def getCustomLevels: List[LevelInfo] = LevelFileManager.getCustomLevelsInfo match {
     case Success(customLevels) => customLevels
     case Failure(_) => Logger.log("[Info] User doesn't have any saved custom level or custom level directory doesn't exists")
                                List()
@@ -318,10 +321,10 @@ case class ControllerImpl() extends Controller {
   override def saveLevel(name: String, map: MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value, entities: Seq[CellEntity]): Boolean = {
     val lv: Level = Level(LevelInfo(name, victoryRules) , LevelMap(map, collisionRules), entities.toList)
     lv.checkCellPosition()
-    FileManager.saveLevel(lv).isDefined
+    LevelFileManager.saveCustomLevel(lv)
   }
 
-  override def removeLevel(name: String): Boolean = FileManager.deleteLevel(name) match {
+  override def removeLevel(name: String): Boolean = LevelFileManager.deleteCustomLevel(name) match {
     case Success(_) => true
     case Failure(exception) => Logger.log("Error occurred removing custom level file" + exception.getMessage)
                                false
@@ -329,16 +332,16 @@ case class ControllerImpl() extends Controller {
 
   private def saveProgress(event: GameStateEventWrapper): Unit = lastLoadedLevel match {
     case Some(lastLevel:String) => SinglePlayerLevels.newEndGameEvent(event, lastLevel)
-      FileManager.saveUserProgress(SinglePlayerLevels.getCampaignLevels)
+      UserProgressFileManager.saveUserProgress(SinglePlayerLevels.getCampaignLevels)
     case _ =>
   }
 
   private def loadLevel(chosenLevel:String, isCustom:Boolean, isSimulation:Boolean): Option[Level] = if (isCustom) {
     /*Because user campaign stats are not influenced by end game results of the custom levels*/
     lastLoadedLevel = None
-    FileManager.loadCustomLevel(chosenLevel)
+    LevelFileManager.getCustomLevel(chosenLevel)
   } else {
-    val loadedLevel = FileManager.loadResource(chosenLevel)
+    val loadedLevel = LevelFileManager.getLevelFromResource(chosenLevel)
     if (isSimulation) lastLoadedLevel = None else lastLoadedLevel = Some(chosenLevel)
     loadedLevel
   }

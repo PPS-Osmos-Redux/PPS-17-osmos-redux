@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.stages
 
-import it.unibo.osmos.redux.mvc.controller.FileManager
+import it.unibo.osmos.redux.mvc.controller.manager.files.{FileManager, StyleFileManager}
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
 import it.unibo.osmos.redux.mvc.view.scenes._
 import scalafx.application.JFXApp
@@ -40,7 +40,7 @@ object OsmosReduxPrimaryStage {
 
     private val mainScene = new MainScene(this, this) {
       // TODO: changing scene will ignore the imported style
-      stylesheets.addAll(FileManager.getStyle)
+      stylesheets.addAll(StyleFileManager.getStyle)
     }
 
     /**
@@ -66,13 +66,6 @@ object OsmosReduxPrimaryStage {
   * Listener that manages all the events managed by the primary scene
   */
 trait PrimaryStageListener extends LevelSelectionSceneListener with EditorLevelSelectionSceneListener
-  with MultiPlayerSceneListener with MultiPlayerLobbySceneListener with MultiPlayerLevelSelectionSceneListener
-  with DisplayErrorListener {
+  with MultiPlayerSceneListener with MultiPlayerLobbySceneListener with MultiPlayerLevelSelectionSceneListener {
 
-}
-
-// TODO: check if it necessary elsewhere, otherwise can become a method of PrimaryStageListener
-trait DisplayErrorListener {
-
-  def onDisplayError(exception: Throwable): Unit
 }

@@ -4,9 +4,8 @@ import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 import it.unibo.osmos.redux.ecs.entities.{EntityManager, EntityType}
 import it.unibo.osmos.redux.ecs.systems.SentientSystem
-import it.unibo.osmos.redux.mvc.controller.LevelInfo
-import it.unibo.osmos.redux.mvc.model.MapShape.Rectangle
-import it.unibo.osmos.redux.mvc.model._
+import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.Rectangle
+import it.unibo.osmos.redux.mvc.controller.levels.structure._
 import it.unibo.osmos.redux.utils._
 import org.scalactic.Tolerance._
 import org.scalatest.{BeforeAndAfter, FunSuite}
@@ -32,7 +31,7 @@ class TestSentientSystem extends FunSuite with BeforeAndAfter {
 
   before {
     //rectangle with vertices (0,0) and (200,300)
-    setupLevelInfo(Rectangle((100, 150), 300, 200), CollisionRules.instantDeath)
+    setupLevelInfo(Rectangle(Point(100, 150), 300, 200), CollisionRules.instantDeath)
   }
 
   after {
@@ -103,9 +102,14 @@ class TestSentientSystem extends FunSuite with BeforeAndAfter {
   }
 
   test("If collision rule with boundary is bouncing, SentientCellEntity should not change it's acceleration to avoid boundary") {
+<<<<<<< HEAD
     setupLevelInfo(Rectangle((100, 150), 300, 200), CollisionRules.bouncing)
     val sentientCellEntity = CellBuilder().withPosition(24, 14).withDimension(5)
       .withSpeed(-2, 3).buildSentientEntity()
+=======
+    setupLevelInfo(Rectangle(Point(100, 150), 300, 200), CollisionRules.bouncing)
+    val sentientCellEntity = SentientCellBuilder().withPosition(24, 14).withDimension(5).withSpeed(-2, 3).build
+>>>>>>> develop
     val originalAcceleration = sentientCellEntity.getAccelerationComponent.copy()
     val system = SentientSystem(levelInfo)
     EntityManager.add(sentientCellEntity)
@@ -145,7 +149,7 @@ class TestSentientSystem extends FunSuite with BeforeAndAfter {
   }
 
   test("If a SentientCellEntity have a acceleration and a radius is greater than the min to lose radius, the radius is decreased") {
-    setupLevelInfo(Rectangle((100, 150), 300, 200), CollisionRules.bouncing)
+    setupLevelInfo(Rectangle(Point(100, 150), 300, 200), CollisionRules.bouncing)
     val cellEntity =  CellBuilder().withDimension(dimension2).withPosition(17, 100).buildCellEntity()
     val cellEntity1 = CellBuilder().withDimension(dimension2).withPosition(40, 40).buildCellEntity()
     val sentientCellEntity = CellBuilder().withPosition(17, 21).withSpeed(0, 1)
