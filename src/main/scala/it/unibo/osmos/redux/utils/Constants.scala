@@ -40,6 +40,8 @@ object Constants {
     val levelStartPath: String = separator + "levels"
     val singlePlayerLevelsPath: String = levelStartPath + separator + "singlePlayer" + separator
     val multiPlayerLevelsPath: String = levelStartPath + separator + "multiPlayer" + separator
+    val configSinglePlayer:String = levelStartPath + separator + "config" + separator + "SinglePlayerLevels"
+    val configMultiPlayer:String = levelStartPath + separator + "config" + separator + "MultiPlayerLevels"
   }
 
   object UserHomePaths {
@@ -48,8 +50,8 @@ object Constants {
     val userHome: String = System.getProperty("user.home")
     val gameDirectory:String = "Osmos-Redux" + systemSeparator
     val levelsDirectory: String = userHome + systemSeparator + gameDirectory + "CustomLevels" + systemSeparator
-    val userProgressFileName = "UserProgress"
-    val userProgressDirectory:String = userHome + systemSeparator + gameDirectory +
-      userProgressFileName + systemSeparator
+     val userProgressDirectory:String = userHome + systemSeparator + gameDirectory +
+       "UserProgress" + systemSeparator
+    val userProgressFileName: String = userProgressDirectory + "UserProgress"
   }
 }

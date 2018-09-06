@@ -1,27 +1,25 @@
-package it.unibo.osmos.redux.mvc.controller.levels.manager
+package it.unibo.osmos.redux.mvc.controller.levels
 
-import it.unibo.osmos.redux.mvc.controller.levels.structure.{CampaignLevel, CampaignLevelStat, LevelInfo, VictoryRules}
+import it.unibo.osmos.redux.mvc.controller.levels.structure.{CampaignLevel, CampaignLevelStat, LevelInfo}
 import it.unibo.osmos.redux.mvc.controller.manager.files.UserProgressFileManager
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GameStateEventWrapper, GameWon}
 import it.unibo.osmos.redux.utils.Logger
 
 object SinglePlayerLevels {
   implicit val who:String = "SinglePlayerLevels"
-  private var levels:List[CampaignLevel] = List(
-    CampaignLevel(LevelInfo("1", VictoryRules.becomeTheBiggest), CampaignLevelStat()),
-    CampaignLevel(LevelInfo("2", VictoryRules.becomeTheBiggest, isAvailable = false), CampaignLevelStat()),
-    CampaignLevel(LevelInfo("3", VictoryRules.becomeTheBiggest, isAvailable = false), CampaignLevelStat()),
-    CampaignLevel(LevelInfo("4", VictoryRules.becomeTheBiggest, isAvailable = false), CampaignLevelStat()),
-    CampaignLevel(LevelInfo("5", VictoryRules.becomeTheBiggest, isAvailable = false), CampaignLevelStat()))
-
-  private var spLevels:List[CampaignLevel] = List()
+  private var levels:List[CampaignLevel] = List()
 
   /**
-    * Load campaign levels, this method use default values for stats
-    * @param campaignLevels loaded from resources campaign levels info
+    * Initialize levels
+    * @param levelsInfo List[LevelInfo]
     */
-  def loadCampaignLevels(campaignLevels:List[LevelInfo]): Unit =
-    campaignLevels.foreach(lvInfo => spLevels = CampaignLevel(lvInfo)::spLevels)
+  def init(levelsInfo:List[Option[LevelInfo]]): Unit = {
+    levelsInfo.flatten.foreach(lvInfo => {
+      lvInfo.isAvailable = false
+      levels = CampaignLevel(lvInfo, CampaignLevelStat())::levels
+    })
+    levels.head.levelInfo.isAvailable = true
+  }
 
   /**
     * Return the last unlocked level.

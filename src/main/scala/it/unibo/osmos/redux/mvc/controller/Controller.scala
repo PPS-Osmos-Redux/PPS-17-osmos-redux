@@ -5,9 +5,9 @@ import it.unibo.osmos.redux.ecs.entities.{CellEntity, PlayerCellEntity}
 import it.unibo.osmos.redux.multiplayer.client.Client
 import it.unibo.osmos.redux.multiplayer.common.{ActorSystemHolder, MultiPlayerMode}
 import it.unibo.osmos.redux.multiplayer.server.Server
-import it.unibo.osmos.redux.mvc.controller.levels.manager.{MultiPlayerLevels, SinglePlayerLevels}
+import it.unibo.osmos.redux.mvc.controller.levels.{MultiPlayerLevels, SinglePlayerLevels}
 import it.unibo.osmos.redux.mvc.controller.levels.structure._
-import it.unibo.osmos.redux.mvc.controller.manager.files.{SoundFileManager, LevelFileManager, UserProgressFileManager}
+import it.unibo.osmos.redux.mvc.controller.manager.files.{LevelFileManager, SoundFileManager, UserProgressFileManager}
 import it.unibo.osmos.redux.mvc.controller.manager.sounds.SoundsType
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context._
@@ -324,7 +324,7 @@ case class ControllerImpl() extends Controller {
     LevelFileManager.saveCustomLevel(lv)
   }
 
-  override def removeLevel(name: String): Boolean = LevelFileManager.deleteFile(name) match {
+  override def removeLevel(name: String): Boolean = LevelFileManager.deleteCustomLevel(name) match {
     case Success(_) => true
     case Failure(exception) => Logger.log("Error occurred removing custom level file" + exception.getMessage)
                                false

@@ -29,8 +29,8 @@ class TestJsonConversion extends FunSuite {
   val sc = SentientCellEntity(a, c, d, p, s, v, spawner)
   val listCell: List[CellEntity] = List(ce, pce, gc, sc)
   //LevelMap
-  val rectangle: MapShape = Rectangle(Point(50, 50), 10.1, 5.6)
-  val circle: MapShape = Circle(Point(50.1, 50.2), 5.7)
+  val rectangle: MapShape = Rectangle(Point(0, 0), 50, 50)
+  val circle: MapShape = Circle(Point(0, 0), 50)
   val listShape: List[MapShape] = List(rectangle, circle)
   val levelMap: LevelMap = LevelMap(rectangle, CollisionRules.bouncing)
   //Level
@@ -163,11 +163,11 @@ class TestJsonConversion extends FunSuite {
 
     assert(readLevel2.get.levelInfo.name.equals(level.levelInfo.name))
     //Delete second file SinglePlayerLevel1
-    LevelFileManager.deleteFile(level.levelInfo.name)
+    LevelFileManager.deleteCustomLevel(level.levelInfo.name)
     assert(LevelFileManager.getCustomLevel(level.levelInfo.name).isEmpty)
 
     //Delete firts file SinglePlayerLevel
-    LevelFileManager.deleteFile(firstFileName)
+    LevelFileManager.deleteCustomLevel(firstFileName)
     assert(LevelFileManager.getCustomLevel(firstFileName).isEmpty)
   }
 }
