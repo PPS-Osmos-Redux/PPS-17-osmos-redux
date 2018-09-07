@@ -33,7 +33,7 @@ case class EscapeFromBoundaryRule(levelInfo: Level) extends SentientRule {
         Vector.zero()
       } else {
         val steer = computeSteer(actualSpeed, sentientCopy.getSpeedComponent.vector normalized())
-        steer multiply WEIGHT_OF_ESCAPE_ACCELERATION_FROM_BOUNDARY
+        steer multiply WeightOfEscapeAccelerationFromBoundary
       }
     case _ => Vector.zero()
   }

@@ -42,7 +42,7 @@ case class EscapeFromEnemiesRule(enemies: ListBuffer[SentientEnemyProperty]) ext
       .foldLeft((Vector.zero(), 1))((acc, i) => (acc._1 add ((i subtract acc._1) divide acc._2), acc._2 + 1))._1 normalized() match {
       case unitVectorDesiredVelocity if unitVectorDesiredVelocity == Vector(0, 0) => Vector.zero()
       case unitVectorDesiredVelocity =>
-        computeSteer(actualSpeed, unitVectorDesiredVelocity) multiply WEIGHT_OF_ESCAPE_ACCELERATION_FROM_ENEMIES
+        computeSteer(actualSpeed, unitVectorDesiredVelocity) multiply WeightOfEscapeAccelerationFromEnemies
     }
   }
 

@@ -63,7 +63,7 @@ case class FollowTargetRule(enemies: ListBuffer[SentientEnemyProperty]) extends 
     val nextPositionTarget = enemy.getPositionComponent.point.add(enemy.getSpeedComponent.vector)
     val unitVectorDesiredVelocity = MathUtils.unitVector(nextPositionTarget, sentient.getPositionComponent.point)
     val magnitudeOfRotation = computeUnlimitedSteer(escapeVelocity, unitVectorDesiredVelocity).getMagnitude
-    val lostRadiusPercentage = magnitudeOfRotation * PERCENTAGE_OF_LOST_RADIUS_FOR_MAGNITUDE_ACCELERATION
+    val lostRadiusPercentage = magnitudeOfRotation * PercentageOfLostRadiusForMagnitudeAcceleration
     enemy.getDimensionComponent.radius - (sentient.getDimensionComponent.radius * lostRadiusPercentage)
   }
 

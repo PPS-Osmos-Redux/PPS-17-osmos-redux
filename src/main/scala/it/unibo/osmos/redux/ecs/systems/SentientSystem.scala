@@ -5,20 +5,19 @@ import it.unibo.osmos.redux.ecs.entities.properties.composed.{SentientEnemyPrope
 import it.unibo.osmos.redux.ecs.systems.sentientRule._
 import it.unibo.osmos.redux.mvc.controller.levels.structure.Level
 import it.unibo.osmos.redux.utils.{Point, Vector}
+import it.unibo.osmos.redux.utils.Constants.Sentient._
 
 case class SentientSystem(levelInfo: Level) extends AbstractSystem2[SentientProperty, SentientEnemyProperty] {
 
-  private val MAX_ACCELERATION = 0.1
-  private val PERCENTAGE_OF_LOST_RADIUS_FOR_MAGNITUDE_ACCELERATION = 0.02
   /**
     * The lost mass spawn point offset (starting from the perimeter of the entity, where to spawn lost mass due to movement)
     */
-  private val lostMassSpawnOffset: Double = 0.1
+  private val LostMassSpawnOffset: Double = 0.1
 
   /**
     * The initial velocity of the lost mass
     */
-  private val lostMassInitialVelocity: Double = 4.0
+  private val LostMassInitialVelocity: Double = 4.0
 
   private var radiusAmount = 0.0
 
@@ -38,13 +37,13 @@ case class SentientSystem(levelInfo: Level) extends AbstractSystem2[SentientProp
     })
 
   private def applyAcceleration(sentient: SentientProperty, acceleration: Vector, accelerations: Vector*): Unit = {
-    val totalAcceleration = acceleration limit MAX_ACCELERATION
+    val totalAcceleration = acceleration limit MaxAcceleration
     val accelerationSentient = sentient.getAccelerationComponent
     accelerationSentient.vector_(accelerationSentient.vector add totalAcceleration)
 
     if (SentientUtils.hasLostRadiusBehaviour(sentient) && totalAcceleration.getMagnitude > 0) {
       val radiusSentient = sentient.getDimensionComponent
-      val lostRadiusAmount = radiusSentient.radius * totalAcceleration.getMagnitude * PERCENTAGE_OF_LOST_RADIUS_FOR_MAGNITUDE_ACCELERATION
+      val lostRadiusAmount = radiusSentient.radius * totalAcceleration.getMagnitude * PercentageOfLostRadiusForMagnitudeAcceleration
 
       radiusSentient.radius_(radiusSentient.radius - lostRadiusAmount)
       radiusAmount = radiusAmount + lostRadiusAmount
@@ -53,12 +52,12 @@ case class SentientSystem(levelInfo: Level) extends AbstractSystem2[SentientProp
         val sentientPosition = sentient.getPositionComponent.point
         val directionVector = totalAcceleration multiply -1 normalized()
 
-        val spawnPoint = sentientPosition add (directionVector multiply (radiusSentient.radius + lostMassSpawnOffset + radiusAmount))
+        val spawnPoint = sentientPosition add (directionVector multiply (radiusSentient.radius + LostMassSpawnOffset + radiusAmount))
 
         sentient.getSpawnerComponent.enqueueActions(SpawnAction(
           PositionComponent(Point(spawnPoint.x, spawnPoint.y)),
           DimensionComponent(radiusAmount),
-          SpeedComponent(directionVector multiply lostMassInitialVelocity)))
+          SpeedComponent(directionVector multiply LostMassInitialVelocity)))
         radiusAmount = 0.0
       }
     }
