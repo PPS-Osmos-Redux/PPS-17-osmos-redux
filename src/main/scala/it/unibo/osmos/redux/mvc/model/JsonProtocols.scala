@@ -5,16 +5,14 @@ import it.unibo.osmos.redux.mvc.controller.levels.structure._
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
 import it.unibo.osmos.redux.utils.{Logger, Point}
 import org.apache.commons.lang3.SerializationException
-import spray.json
 import spray.json.DefaultJsonProtocol._
 import spray.json._
 
-/**
-  * Json implicit stategies for: convert json to Level or convert Level to json
-  */
+/**Json implicit stategies for: convert json to Level or convert Level to json*/
 object JsonProtocols {
   implicit val who:String = "JsonProtocols"
 
+  /**Convert acceleration component to/from json*/
   implicit object AccelerationFormatter extends RootJsonFormat[AccelerationComponent] {
     def write(acceleration: AccelerationComponent) = JsObject(
       "accelerationX" -> JsNumber(acceleration.vector.x),
@@ -29,6 +27,7 @@ object JsonProtocols {
     }
   }
 
+  /**Convert collidable component to/from json*/
   implicit object CollidableFormatter extends RootJsonFormat[CollidableComponent] {
     def write(collidable: CollidableComponent) =
       JsObject("collidable" -> JsBoolean(collidable.isCollidable))
@@ -40,6 +39,7 @@ object JsonProtocols {
     }
   }
 
+  /**Convert visible component to/from json*/
   implicit object VisibleFormatter extends RootJsonFormat[VisibleComponent] {
     def write(visible: VisibleComponent) = JsObject("visible" -> JsBoolean(visible.isVisible))
     def read(value: JsValue): VisibleComponent = {
@@ -50,6 +50,7 @@ object JsonProtocols {
     }
   }
 
+  /**Convert dimension component to/from json*/
   implicit object DimensionFormatter extends RootJsonFormat[DimensionComponent] {
     def write(dimension: DimensionComponent) = JsObject("radius" -> JsNumber(dimension.radius))
     def read(value: JsValue): DimensionComponent = {
@@ -60,6 +61,7 @@ object JsonProtocols {
     }
   }
 
+  /**Convert point to/from json*/
   implicit object PointFormatter extends RootJsonFormat[Point] {
     def write(point: Point) = JsObject("x" -> JsNumber(point.x), "y" -> JsNumber(point.y))
     def read(value: JsValue): Point = {
@@ -70,6 +72,7 @@ object JsonProtocols {
     }
   }
 
+  /**Convert position component to/from json*/
   implicit object PositionFormatter extends RootJsonFormat[PositionComponent] {
     def write(position: PositionComponent) = JsObject("point" -> position.point.toJson)
     def read(value: JsValue): PositionComponent = {
@@ -80,6 +83,7 @@ object JsonProtocols {
     }
   }
 
+  /**Convert speed component to/from json*/
   implicit object SpeedFormatter extends RootJsonFormat[SpeedComponent] {
     def write(speed: SpeedComponent) =
       JsObject("speedX" -> JsNumber(speed.vector.x), "speedY" -> JsNumber(speed.vector.y))
@@ -92,6 +96,7 @@ object JsonProtocols {
     }
   }
 
+  /**Convert entity type to/from json*/
   implicit object EntityTypeFormatter extends RootJsonFormat[EntityType.Value] {
     def write(entityType: EntityType.Value) =
       JsObject("entityType" -> JsString(entityType.toString))
@@ -103,6 +108,7 @@ object JsonProtocols {
     }
   }
 
+  /**Convert type component to/from json*/
   implicit object ComponentTypeFormatter extends RootJsonFormat[TypeComponent] {
     def write(entityType: TypeComponent) =
       JsObject("componentType" ->  JsString(entityType.typeEntity.toString))
@@ -114,6 +120,7 @@ object JsonProtocols {
     }
   }
 
+  /**Convert spawner component to/from json*/
   implicit object SpawnerFormatter extends RootJsonFormat[SpawnerComponent] {
     def write(spawner: SpawnerComponent) = JsObject("canSpawn" -> JsBoolean(spawner.canSpawn))
     def read(value: JsValue): SpawnerComponent = {
@@ -124,6 +131,7 @@ object JsonProtocols {
     }
   }
 
+  /**Convert specific weight component to/from json*/
   implicit object SpecificWeightFormatter extends RootJsonFormat[SpecificWeightComponent] {
     def write(specificWeight: SpecificWeightComponent) = JsObject("specificWeight" -> JsNumber(specificWeight.specificWeight))
     def read(value: JsValue): SpecificWeightComponent = {
@@ -134,6 +142,7 @@ object JsonProtocols {
     }
   }
 
+  /**Convert gravity cell to/from json*/
   implicit object GravityCellEntityFormatter extends RootJsonFormat[GravityCellEntity] {
     def write(gravityCell: GravityCellEntity) = JsObject(
       "cellType" -> JsString(CellType.gravityCell),
@@ -168,6 +177,7 @@ object JsonProtocols {
     }
   }
 
+  /**Convert player cell to/from json*/
   implicit object PlayerCellEntityFormatter extends RootJsonFormat[PlayerCellEntity] {
     def write(playerCell: PlayerCellEntity) = JsObject(
       "cellType" -> JsString(CellType.playerCell),
@@ -199,6 +209,7 @@ object JsonProtocols {
     }
   }
 
+  /**Convert sentient cell to/from json*/
   implicit object SentientCellEntityFormatter extends RootJsonFormat[SentientCellEntity] {
     def write(sentientCell: SentientCellEntity) = JsObject(
       "cellType" -> JsString(CellType.sentientCell),
@@ -230,6 +241,7 @@ object JsonProtocols {
     }
   }
 
+  /**Convert basic cell to/from json*/
   implicit object CellEntityFormatter extends RootJsonFormat[CellEntity] {
     def write(cellEntity: CellEntity): JsValue = cellEntity match {
       case sc : SentientCellEntity => sc.toJson
@@ -277,6 +289,7 @@ object JsonProtocols {
     }
   }
 
+  /**Convert map shape to/from json*/
   implicit object MapShapeFormatter extends RootJsonFormat[MapShape] {
     def write(mapShape: MapShape): JsObject = mapShape match {
       case mapShape: MapShape.Rectangle => JsObject("center" -> mapShape.center.toJson,
@@ -311,6 +324,7 @@ object JsonProtocols {
     }
   }
 
+  /**Convert level map to/from json*/
   implicit object LevelMapFormatter extends RootJsonFormat[LevelMap] {
     def write(levelMap: LevelMap) = JsObject(
       "mapShape" -> levelMap.mapShape.toJson,
@@ -324,6 +338,7 @@ object JsonProtocols {
     }
   }
 
+  /**Convert victory rule to/from json*/
   implicit object VictoryRuleFormatter extends RootJsonFormat[VictoryRules.Value] {
     def write(vicRule: VictoryRules.Value) = JsObject("victoryRule" -> JsString(vicRule.toString))
     def read(value: JsValue): VictoryRules.Value = {
@@ -334,8 +349,9 @@ object JsonProtocols {
     }
   }
 
-  /**
-    * Take from levels only name and victoryRule
+  /** Convert LevelInfo to/from json
+    *
+    * Takes from levels only name, victoryRule and if present isAvailable
     */
   implicit object LevelInfoFormatter extends RootJsonFormat[LevelInfo] {
     def write(levelInfo: LevelInfo) = JsObject(
@@ -353,6 +369,7 @@ object JsonProtocols {
     }
   }
 
+  /**Convert Level to/from json*/
   implicit object levelFormatter extends RootJsonFormat[Level] {
     def write(level: Level): JsObject = JsObject(
       "name" -> JsString(level.levelInfo.name),
@@ -368,12 +385,16 @@ object JsonProtocols {
     }
   }
 
+  /**Convert drawable wrapper to/from json*/
   implicit val drawableWrapperFormatter:RootJsonFormat[DrawableWrapper] = jsonFormat4(DrawableWrapper)
 
+  /**Convert campaign level stat to/from json*/
   implicit val campaignLevelStatFormatter:RootJsonFormat[CampaignLevelStat] = jsonFormat2(CampaignLevelStat)
 
+  /**Convert campaign level to/from json*/
   implicit val campaignLevelsFormatter:RootJsonFormat[CampaignLevel] = jsonFormat2(CampaignLevel)
 
+  /**Convert volume setting to/from json*/
   implicit object volumeSettingFormatter extends RootJsonFormat[Volume] {
     def write(vol: Volume): JsObject = JsObject("settingType" -> JsString(SettingsTypes.Volume.toString),
                                                 "vValue" -> JsNumber(vol.value))
@@ -385,6 +406,7 @@ object JsonProtocols {
     }
   }
 
+  /**Convert setting to/from json*/
   implicit object settingFormatter extends RootJsonFormat[Setting] {
     def write(setting: Setting): JsValue = setting match {
       case vol : Volume => vol.toJson
@@ -396,7 +418,7 @@ object JsonProtocols {
       value.asJsObject.getFields("settingType") match {
         case Seq(JsString(`volumeSetting`)) =>
           value.convertTo[Volume]
-        case Seq(e) => println(e) ;throw DeserializationException("Setting expected " + e)
+        case Seq(e) => throw DeserializationException("Setting expected " + e)
       }
     }
   }
