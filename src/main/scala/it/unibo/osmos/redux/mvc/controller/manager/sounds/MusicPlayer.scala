@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.controller.manager.sounds
 
-import it.unibo.osmos.redux.mvc.controller.Controller
+import it.unibo.osmos.redux.mvc.controller._
 import it.unibo.osmos.redux.mvc.controller.manager.files.SoundFileManager
 import it.unibo.osmos.redux.mvc.model._
 import it.unibo.osmos.redux.utils.Logger

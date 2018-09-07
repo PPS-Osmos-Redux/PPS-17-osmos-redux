@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.mvc.controller.manager.files
 
+import it.unibo.osmos.redux.mvc.controller.Setting
 import it.unibo.osmos.redux.mvc.model.JsonProtocols._
-import it.unibo.osmos.redux.mvc.model.{Setting, Volume}
 import it.unibo.osmos.redux.utils.Constants.UserHomePaths.SettingFilePath
 import spray.json.DefaultJsonProtocol._
 import spray.json._

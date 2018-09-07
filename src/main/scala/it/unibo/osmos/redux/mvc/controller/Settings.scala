@@ -1,4 +1,4 @@
-package it.unibo.osmos.redux.mvc.model
+package it.unibo.osmos.redux.mvc.controller
 
 import it.unibo.osmos.redux.mvc.controller.manager.files.SettingsFileManger
 import it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer
