@@ -9,6 +9,10 @@ import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.{Circle, Re
 import it.unibo.osmos.redux.utils.Constants.Sentient._
 import it.unibo.osmos.redux.utils.{Point, Vector}
 
+/** compute the acceleration to avoid the boundary in according with boundary collision rule
+  *
+  * @param levelInfo level that contain collision rule
+  */
 case class EscapeFromBoundaryRule(levelInfo: Level) extends SentientRule {
 
   private val bounceRule = levelInfo.levelMap.mapShape match {
@@ -21,6 +25,7 @@ case class EscapeFromBoundaryRule(levelInfo: Level) extends SentientRule {
     escapeFromBoundary(sentient, previousAcceleration)
   }
 
+  //compute the acceleration to avoid the boundary in according with boundary collision rule
   private def escapeFromBoundary(sentient: SentientProperty, previousAcceleration: Vector): Vector = levelInfo.levelMap.collisionRule match {
     case CollisionRules.instantDeath =>
       val actualSpeed = sentient.getSpeedComponent.vector add previousAcceleration

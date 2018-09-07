@@ -8,14 +8,17 @@ import it.unibo.osmos.redux.utils.{MathUtils, Vector}
 
 import scala.collection.mutable.ListBuffer
 
+/** Rule to compute the acceleration to run away from enemies
+  *
+  * @param enemies list of possible enemies
+  */
 case class EscapeFromEnemiesRule(enemies: ListBuffer[SentientEnemyProperty]) extends RuleWithEnemies(enemies) {
 
   override def computeRule(sentient: SentientProperty, previousAcceleration: Vector): Vector = {
     escapeFromEnemies(sentient, findEnemies(sentient, enemies), previousAcceleration)
   }
 
-  /**
-    * search sentient enemies
+  /** search sentient enemies
     *
     * @param sentient sentient entity
     * @param enemies  list of all entities
@@ -26,8 +29,7 @@ case class EscapeFromEnemiesRule(enemies: ListBuffer[SentientEnemyProperty]) ext
       (e.getTypeComponent.typeEntity == EntityType.AntiMatter ||
         sentient.getDimensionComponent.radius < e.getDimensionComponent.radius)) toList
 
-  /**
-    * apply acceleration to run away from all enemies
+  /** compute acceleration to run away from all enemies
     *
     * @param sentient sentient entity
     * @param enemies  list of enemies

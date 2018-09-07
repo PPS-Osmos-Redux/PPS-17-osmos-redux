@@ -2,25 +2,23 @@ package it.unibo.osmos.redux.ecs.components
 
 import it.unibo.osmos.redux.utils.Point
 
-/**
-  * Component Position (coordinates of the sphere's center)
-  */
+/** Component Position (coordinates of the sphere's center) */
 trait PositionComponent extends Component {
 
-  /**
-    * Getter. Return the center of the sphere
+  /** Getter. Return the center of the sphere
+    *
     * @return the center
     */
   def point: Point
 
-  /**
-    * Setter. Set the new center of the speed
+  /** Setter. Set the new center of the speed
+    *
     * @param point the new center
     */
   def point_(point: Point): Unit
 
-  /**
-    * Makes a defensive copy of this instance.
+  /** Makes a defensive copy of this instance.
+    *
     * @return The new instance.
     */
   override def copy(): PositionComponent = PositionComponent(point)
@@ -37,4 +35,5 @@ object PositionComponent {
 
     override def point_(point: Point): Unit = _point = point
   }
+
 }

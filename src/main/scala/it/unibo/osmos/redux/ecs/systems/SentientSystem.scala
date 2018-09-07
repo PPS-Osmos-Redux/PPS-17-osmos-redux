@@ -7,16 +7,13 @@ import it.unibo.osmos.redux.mvc.controller.levels.structure.Level
 import it.unibo.osmos.redux.utils.{Point, Vector}
 import it.unibo.osmos.redux.utils.Constants.Sentient._
 
+/**System that apply sentient rule to each sentient cell*/
 case class SentientSystem(levelInfo: Level) extends AbstractSystem2[SentientProperty, SentientEnemyProperty] {
 
-  /**
-    * The lost mass spawn point offset (starting from the perimeter of the entity, where to spawn lost mass due to movement)
-    */
+  // The lost mass spawn point offset (starting from the perimeter of the entity, where to spawn lost mass due to movement)
   private val LostMassSpawnOffset: Double = 0.1
 
-  /**
-    * The initial velocity of the lost mass
-    */
+  // The initial velocity of the lost mass
   private val LostMassInitialVelocity: Double = 4.0
 
   private var radiusAmount = 0.0
