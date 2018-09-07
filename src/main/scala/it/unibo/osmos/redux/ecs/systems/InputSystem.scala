@@ -8,15 +8,15 @@ import it.unibo.osmos.redux.utils.{InputEventQueue, MathUtils, Point}
 case class InputSystem() extends AbstractSystem[InputProperty] {
 
   /** Acceleration coefficient to apply to each input movement */
-  private val accelCoefficient: Double = 0.8
+  val accelCoefficient: Double = 0.8
   /** The lost mass spawn point offset (starting from the
     * entity's perimeter, where to spawn lost mass due to movement)
     */
-  private val lostMassSpawnOffset: Double = 0.1
+  val lostMassSpawnOffset: Double = 0.1
   /** The amount of lost mass for each movement */
-  private val lostMassPercentage: Double = 0.05
+  val lostMassPercentage: Double = 0.05
   /** The initial velocity of the lost mass */
-  private val lostMassInitialVelocity: Double = 4.0
+  val lostMassInitialVelocity: Double = 4.0
 
   override def update(): Unit = {
 
