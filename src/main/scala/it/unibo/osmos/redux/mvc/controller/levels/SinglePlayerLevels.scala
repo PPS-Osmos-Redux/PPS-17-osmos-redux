@@ -5,24 +5,22 @@ import it.unibo.osmos.redux.mvc.controller.manager.files.UserProgressFileManager
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GameStateEventWrapper, GameWon}
 import it.unibo.osmos.redux.utils.Logger
 
+/**Manages singlePlayer levels*/
 object SinglePlayerLevels {
   implicit val who:String = "SinglePlayerLevels"
   private var levels:List[CampaignLevel] = List()
 
-  /**
-    * Initialize levels
-    * @param levelsInfo List[LevelInfo]
+  /** Initialize singleton with single player levels
+    *
+    * @param levelsInfo List of Option[LevelInfo]
     */
   def init(levelsInfo:List[Option[LevelInfo]]): Unit = {
-    levelsInfo.flatten.foreach(lvInfo => {
-      lvInfo.isAvailable = false
-      levels = CampaignLevel(lvInfo, CampaignLevelStat())::levels
-    })
+    levels = levelsInfo.flatten.map(lvI => CampaignLevel(lvI.changeAvailability(), CampaignLevelStat()))
     levels.head.levelInfo.isAvailable = true
   }
 
-  /**
-    * Return the last unlocked level.
+  /** Return the last unlocked level.
+    *
     * @return the last unlocked level
     */
   def toDoLevel(campaignLevels:List[CampaignLevel] = levels):String = searchLastAvailableLevel() match {
@@ -31,57 +29,53 @@ object SinglePlayerLevels {
               ""
   }
 
-  /**
-    * Unlock the next level
-    */
+  /**Unlock the next level*/
   private def unlockNextLevel():Unit =  levels.map(cLv => cLv.levelInfo).find(lv => !lv.isAvailable) match {
     case Some(nextLevel) => nextLevel.isAvailable = true
     case _ => Logger.log("All levels are unlocked")
   }
 
-  /**
-    * get the campaign levels info
+  /** Get the campaign levels info
+    *
     * @return List[LevelInfo]
     */
   def getLevelsInfo:List[LevelInfo] = levels.map(lv => lv.levelInfo)
 
-  /**
-    * get the campaign levels
+  /** Get the campaign levels.
+    *
     * @return List[CampaignLevel]
     */
   def getCampaignLevels:List[CampaignLevel] = levels
 
-  /**
-    * Should be called when user win or lose a campaign level
+  /** Should be called when user win or lose a campaign level.
+    *
     * @param endGame end game result GameWon or GameLost
-    * @param levelName name of the played lavel
+    * @param levelName name of the played level
     */
   def newEndGameEvent(endGame:GameStateEventWrapper, levelName:String): Unit = endGame match {
     case GameWon => increaseVictories(levelName)
                     if(toDoLevel().equals(levelName)) unlockNextLevel()
     case GameLost => increaseDefeats(levelName)
-    case _ =>
+    case _ => Logger.log("End game state not managed!")
   }
 
-  /**
-    * Method for update campaign progress, should be  called once when the game starts
+  /** Update campaign progress, should be called once when the game starts
+    *
     * @param campaignProgress campaign progress List[CampaignLevels]
     */
   def updateUserStat(campaignProgress: List[CampaignLevel]): Unit =
   /* if my values are less updated than the file ones */
     if(isMostRecent(toDoLevel(campaignProgress))) levels = campaignProgress
 
-  /**
-    * reset the user progress
-    */
+  /**reset the user progress*/
   def reset():Unit ={
-    println("reset done")
     levels.head.levelStat = CampaignLevelStat()
     levels.filter(lv => !lv.levelInfo.name.equals(levels.head.levelInfo.name)).foreach(lv => {
       lv.levelInfo.isAvailable = false
       lv.levelStat = CampaignLevelStat()
     })
     UserProgressFileManager.saveUserProgress(levels)
+    Logger.log("reset done")
   }
 
   private def isMostRecent(loadedToDoLevelName:String) =

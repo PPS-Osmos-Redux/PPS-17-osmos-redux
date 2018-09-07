@@ -118,6 +118,11 @@ trait Controller {
     */
   def getSoundPath(soundType: SoundsType.Value): Option[String]
 
+  /** Get campaign levels.
+    *
+    * @return List[CampaignLevel].
+    */
+  def getCampaignLevels:List[CampaignLevel] = SinglePlayerLevels.getCampaignLevels
 }
 
 case class ControllerImpl() extends Controller {
