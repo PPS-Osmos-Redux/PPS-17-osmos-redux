@@ -84,4 +84,6 @@ abstract class FileManager {
   }
 
   protected implicit def stringPathToFile(path:String): File = new File(path)
+
+  protected implicit def stringPathToPath(path:String): Path = Paths.get(path)
 }
