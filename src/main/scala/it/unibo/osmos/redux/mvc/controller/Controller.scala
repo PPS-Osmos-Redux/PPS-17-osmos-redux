@@ -16,7 +16,7 @@ import it.unibo.osmos.redux.utils.{Constants, GenericResponse, Logger}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Promise
-import scala.util.{Failure, Success}
+import scala.util.{Failure, Success, Try}
 
 /**
   * Controller base trait
@@ -31,7 +31,7 @@ trait Controller {
     * @param chosenLevel The name of the chosen level.
     * @param isCustom True if the level is a custom one, false otherwise
     */
-  def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): Unit
+  def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): Try[Unit]
 
   /**
     * Initializes the multi-player lobby and the server or client.
@@ -132,23 +132,34 @@ case class ControllerImpl() extends Controller {
   private var server: Option[Server] = None
   private var client: Option[Client] = None
 
-  override def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): Unit = {
+  override def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): Try[Unit] = {
     Logger.log("initLevel")
 
-    val loadedLevel:Option[Level] = loadLevel(chosenLevel, isCustom, levelContext.levelContextType == LevelContextType.simulation)
+    val isSimulation = levelContext.levelContextType == LevelContextType.simulation
+    val loadedLevel:Option[Level] = loadLevel(chosenLevel, isCustom, isSimulation)
 
-    if (loadedLevel.isDefined) {
-      val player = loadedLevel.get.entities.find(_.isInstanceOf[PlayerCellEntity])
-      //assign current player uuid to the
-      if(player.isDefined) levelContext.setPlayerUUID(player.get.getUUID)
+    Try(loadedLevel match {
+      case Some(level) =>
+        //first available player cell is assigned to the user
+        level.entities.find(_.isInstanceOf[PlayerCellEntity]) match {
+          case Some(player) =>
+            //assign current player uuid to the
+            levelContext.setPlayerUUID(player.getUUID)
+            //clear all extra player cells
+            level.entities = level.entities.filterNot(e => e.isInstanceOf[PlayerCellEntity] && e.getUUID != player.getUUID)
+          case None =>
+            if (!isSimulation) throw new IllegalStateException("Cannot start a non-simulation level where no player cell is defined.")
+        }
 
-      //create and initialize the game engine
-      if(engine.isEmpty) engine = Some(GameEngine())
-      engine.get.init(loadedLevel.get, levelContext)
-      levelContext.setupLevel(loadedLevel.get.levelMap.mapShape)
-    } else {
-      Logger.log( "Error: level " + chosenLevel + " not found! The level " + (if(isCustom) "is" else "isn't") + "custom level")
-    }
+        //create the game engine if needed
+        if (engine.isEmpty) engine = Some(GameEngine())
+        //initialize the engine with the chosen level data and the level context
+        engine.get.init(level, levelContext)
+        //signal ui to start the game
+        levelContext.setupLevel(level.levelMap.mapShape)
+      case None =>
+        throw new IllegalArgumentException(s"Unable to load level '$chosenLevel', because its definition was not found.")
+    })
   }
 
   override def initLobby(user: User, lobbyContext: LobbyContext): Promise[GenericResponse[Boolean]] = {
