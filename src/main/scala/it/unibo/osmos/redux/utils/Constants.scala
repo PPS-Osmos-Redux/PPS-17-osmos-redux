@@ -9,10 +9,10 @@ object Constants {
   }
 
   object Game {
-    final val defaultSpeed: Int = 60
-    final val speedChangeStep: Int = 30
-    final val maximumSpeed: Int = 240
-    final val minimumSpeed: Int = 30
+    final val defaultFps: Int = 60
+    final val minimumFps: Int = 30
+    final val maximumFps: Int = 240
+    final val fpsChangeStep: Int = 30
   }
 
   object MultiPlayer {
@@ -22,6 +22,7 @@ object Constants {
     final val defaultClientActorName: String = "ClientActor"
     final val defaultClientUUID: String = "<unavailable>"
     final val defaultMaximumLobbyPlayers: Int = 8
+    final val defaultMultiPlayerFps: Int = 30
   }
 
   object Sentient {
