@@ -8,11 +8,12 @@ import spray.json._
 
 import scala.util.{Failure, Success, Try}
 
+/**Defines operation on settings file*/
 object SettingsFileManger extends FileManager {
   override implicit val who: String = "SettingsFileManger"
 
-  /**
-    * Save setting on file
+  /** Save setting on file
+    *
     * @param settings List[Setting]
     */
   def saveSettings(settings:List[Setting]): Unit = {
@@ -20,8 +21,8 @@ object SettingsFileManger extends FileManager {
     saveToFile(SettingFilePath + jsonExtension, settings.toJson.prettyPrint)
   }
 
-  /**
-    * Load settings from file
+  /** Load settings from file
+    *
     * @return List[Setting]
     */
   def loadSettings():List[Setting] = loadFile(SettingFilePath + jsonExtension) match {

@@ -13,13 +13,14 @@ import it.unibo.osmos.redux.utils.Logger
 
 import scala.util.{Failure, Success, Try}
 
+/**Defines operation on user progress files.*/
 object UserProgressFileManager extends FileManager {
   override implicit val who: String = "UserProgressFileManager"
 
-  /**
-    * Saves user progress
-    * @param userProgress current user progress
-    * @return Option with file path of user progress file
+  /** Saves user progress.
+    *
+    * @param userProgress  List[CampaignLevel]
+    * @return true if the function is completed with success
     */
   def saveUserProgress(userProgress: List[CampaignLevel]): Boolean = {
     val upFile = new File(DefaultFS.getPath(UserProgressFileName + jsonExtension).toUri)
@@ -27,9 +28,9 @@ object UserProgressFileManager extends FileManager {
     saveToFile(upFile, userProgress.toJson.prettyPrint)
   }
 
-  /**
-    * Loads user progress from file
-    * @return UserStat
+  /** Loads user progress from file.
+    *
+    * @return List[CampaignLevel]
     */
   def loadUserProgress(): List[CampaignLevel] =
     loadFile(UserProgressFileName + jsonExtension) match {
@@ -43,8 +44,8 @@ object UserProgressFileManager extends FileManager {
         loadUserProgress()
     }
 
-  /**
-    * Delete user progress file
+  /** Delete user progress file
+    *
     * @return Try[Unit]
     */
   def deleteUserProgress(): Try[Unit] = deleteFile(DefaultFS.getPath(UserProgressFileName + jsonExtension).toAbsolutePath)

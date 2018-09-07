@@ -64,8 +64,8 @@ abstract class FileManager {
     false
   }
 
-  /**
-    * Get the file content
+  /** Get the file content.
+    *
     * @param filePath file path to String
     * @return An Option with the text if the operation is terminated with success
     */
