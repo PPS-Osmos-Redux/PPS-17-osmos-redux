@@ -4,9 +4,7 @@ import it.unibo.osmos.redux.ecs.entities.CellEntity
 import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.utils.{Logger, MathUtils, Point}
 
-/**
-  * List of cell types
-  */
+/**List of cell types.*/
 object CellType {
   val sentientCell = "sentientCell"
   val gravityCell = "gravityCell"
@@ -14,27 +12,26 @@ object CellType {
   val basicCell = "basicCell"
 }
 
-/**
-  * Level configuratoin
+/** Level configuratoin
+  *
   * @param levelInfo LevelInfo
-  * @param levelMap level map
-  * @param entities list of level entities
+  * @param levelMap LevelMap
+  * @param entities List[CellEntity]
   */
 case class Level(var levelInfo:LevelInfo,
                  levelMap:LevelMap,
                  var entities:List[CellEntity]) {
 
+  implicit val who:String = "Level"
+
+  /**Check if the cells are into the map boundaries*/
   def checkCellPosition():Unit = levelMap.mapShape match {
     case rectangle:Rectangle => rectangularMapCheck(rectangle)
     case circle:Circle => circularMapCheck(circle)
-    case _ => Logger.log("Map shape not managed [checkCellPosition]")("Level")
+    case _ => Logger.log("Map shape not managed [checkCellPosition]")
   }
 
-  /**
-    * Remove all entities who aren't into map boundary
-    * @param rectangle map shape
-    */
-  def rectangularMapCheck(rectangle:Rectangle): Unit = {
+  private def rectangularMapCheck(rectangle:Rectangle): Unit = {
     /*calculate map bound*/
     var westMiddlePointX = rectangle.center.x - (rectangle.base/2)
     var northMiddlePointY = rectangle.center.y - (rectangle.height/2)
@@ -58,7 +55,7 @@ case class Level(var levelInfo:LevelInfo,
     })
   }
 
-  def circularMapCheck(circle:Circle): Unit =
+  private def circularMapCheck(circle:Circle): Unit =
     entities = entities.map(ent => (ent, MathUtils.euclideanDistance(ent.getPositionComponent.point,
                                                                       Point(circle.center.x, circle.center.y)) +
                                                                       ent.getDimensionComponent.radius))
