@@ -2,13 +2,10 @@ package it.unibo.osmos.redux.utils
 
 import it.unibo.osmos.redux.ecs.components.PositionComponent
 
-/**
-  * Utility class that offers math related useful methods
-  */
+/** Utility class that offers math related useful methods */
 object MathUtils {
 
-  /**
-    * Returns the normalized value of a number between a min and a max
+  /** Returns the normalized value of a number between a min and a max
     *
     * @param number the number
     * @param min    the min number
@@ -17,20 +14,16 @@ object MathUtils {
     */
   def normalize(number: Double, min: Double, max: Double): Double = (number - min) / (max - min)
 
-  /**
-    * unitVector from point2 to point1
+  /** unitVector from point2 to point1
     * @param point1
     * @param point2
     * @return unitVector
     */
   def unitVector(point1: Point, point2: Point): Vector = {
-    val unitVector = point1.subtract(point2)
-    val mod = math.sqrt(math.pow(unitVector.x, 2) + math.pow(unitVector.y, 2))
-    unitVector.divide(mod)
+    point1 subtract point2 normalized()
   }
 
-  /**
-    * Returns the Euclidean distance in 2D space
+  /** Returns the Euclidean distance in 2D space
     *
     * @param point1 first point
     * @param point2 second point
@@ -39,8 +32,7 @@ object MathUtils {
   def euclideanDistance(point1: Point, point2: Point): Double =
     Math.sqrt(Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2))
 
-  /**
-    * Returns the square of Euclidean distance in 2D space
+  /** Returns the square of Euclidean distance in 2D space
     *
     * @param point1 first point
     * @param point2 second point
@@ -49,8 +41,7 @@ object MathUtils {
   def euclideanDistanceSq(point1: Point, point2: Point): Double =
     Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2)
 
-  /**
-    * Returns the Euclidean distance in 2D space
+  /** Returns the Euclidean distance in 2D space
     *
     * @param position1 first position
     * @param position2 second position
@@ -59,8 +50,7 @@ object MathUtils {
   def euclideanDistance(position1: PositionComponent, position2: PositionComponent): Double =
     euclideanDistance(position1.point, position2.point)
 
-  /**
-    * Returns the area of a circle of a given radius
+  /** Returns the area of a circle of a given radius
     *
     * @param radius the radius
     * @return area
