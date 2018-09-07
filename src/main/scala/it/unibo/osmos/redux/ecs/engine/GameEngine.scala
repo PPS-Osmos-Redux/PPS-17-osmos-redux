@@ -83,11 +83,13 @@ object GameEngine {
 
   def apply(): GameEngine = GameEngineImpl()
 
+  def apply(frameRate: Int): GameEngine = GameEngineImpl(frameRate)
+
   /**
     * The Game engine class implementation.
     * @param frameRate The frame rate of the game.
     */
-  private case class GameEngineImpl(private var frameRate: Int = Constants.Game.defaultSpeed) extends GameEngine {
+  private case class GameEngineImpl(private var frameRate: Int = Constants.Game.defaultFps) extends GameEngine {
 
     private var gameLoop: Option[GameLoop] = _
 
@@ -197,10 +199,10 @@ object GameEngine {
     override def getFps: Int = frameRate
 
     override def changeSpeed(increment: Boolean): Unit = {
-      if (increment && frameRate < Constants.Game.maximumSpeed) {
-        frameRate += Constants.Game.speedChangeStep
-      } else if (!increment && frameRate > Constants.Game.minimumSpeed) {
-        frameRate -= Constants.Game.speedChangeStep
+      if (increment && frameRate < Constants.Game.maximumFps) {
+        frameRate += Constants.Game.fpsChangeStep
+      } else if (!increment && frameRate > Constants.Game.minimumFps) {
+        frameRate -= Constants.Game.fpsChangeStep
       }
       Logger.log(s"changedSpeed: $frameRate")("GameEngine")
     }

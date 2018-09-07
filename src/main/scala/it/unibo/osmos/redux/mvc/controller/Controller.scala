@@ -1,10 +1,10 @@
 package it.unibo.osmos.redux.mvc.controller
 
-import it.unibo.osmos.redux.ecs.engine.GameEngine
+import it.unibo.osmos.redux.ecs.engine.{GameEngine, GameStatus}
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, PlayerCellEntity}
 import it.unibo.osmos.redux.multiplayer.client.Client
 import it.unibo.osmos.redux.multiplayer.common.{ActorSystemHolder, MultiPlayerMode}
-import it.unibo.osmos.redux.multiplayer.server.Server
+import it.unibo.osmos.redux.multiplayer.server.{Server, ServerState}
 import it.unibo.osmos.redux.mvc.controller.levels.{MultiPlayerLevels, SinglePlayerLevels}
 import it.unibo.osmos.redux.mvc.controller.levels.structure._
 import it.unibo.osmos.redux.mvc.controller.manager.files.{LevelFileManager, SoundFileManager, UserProgressFileManager}
@@ -16,7 +16,7 @@ import it.unibo.osmos.redux.utils.{Constants, GenericResponse, Logger}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Promise
-import scala.util.{Failure, Success}
+import scala.util.{Failure, Success, Try}
 
 /**
   * Controller base trait
@@ -31,7 +31,7 @@ trait Controller {
     * @param chosenLevel The name of the chosen level.
     * @param isCustom True if the level is a custom one, false otherwise
     */
-  def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): Unit
+  def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): Try[Unit]
 
   /**
     * Initializes the multi-player lobby and the server or client.
@@ -118,6 +118,11 @@ trait Controller {
     */
   def getSoundPath(soundType: SoundsType.Value): Option[String]
 
+  /** Get campaign levels.
+    *
+    * @return List[CampaignLevel].
+    */
+  def getCampaignLevels:List[CampaignLevel] = SinglePlayerLevels.getCampaignLevels
 }
 
 case class ControllerImpl() extends Controller {
@@ -132,23 +137,34 @@ case class ControllerImpl() extends Controller {
   private var server: Option[Server] = None
   private var client: Option[Client] = None
 
-  override def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): Unit = {
+  override def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): Try[Unit] = {
     Logger.log("initLevel")
 
-    val loadedLevel:Option[Level] = loadLevel(chosenLevel, isCustom, levelContext.levelContextType == LevelContextType.simulation)
+    val isSimulation = levelContext.levelContextType == LevelContextType.simulation
+    val loadedLevel:Option[Level] = loadLevel(chosenLevel, isCustom, isSimulation)
 
-    if (loadedLevel.isDefined) {
-      val player = loadedLevel.get.entities.find(_.isInstanceOf[PlayerCellEntity])
-      //assign current player uuid to the
-      if(player.isDefined) levelContext.setPlayerUUID(player.get.getUUID)
+    Try(loadedLevel match {
+      case Some(level) =>
+        //first available player cell is assigned to the user
+        level.entities.find(_.isInstanceOf[PlayerCellEntity]) match {
+          case Some(player) =>
+            //assign current player uuid to the
+            levelContext.setPlayerUUID(player.getUUID)
+            //clear all extra player cells
+            level.entities = level.entities.filterNot(e => e.isInstanceOf[PlayerCellEntity] && e.getUUID != player.getUUID)
+          case None =>
+            if (!isSimulation) throw new IllegalStateException("Cannot start a non-simulation level where no player cell is defined.")
+        }
 
-      //create and initialize the game engine
-      if(engine.isEmpty) engine = Some(GameEngine())
-      engine.get.init(loadedLevel.get, levelContext)
-      levelContext.setupLevel(loadedLevel.get.levelMap.mapShape)
-    } else {
-      Logger.log( "Error: level " + chosenLevel + " not found! The level " + (if(isCustom) "is" else "isn't") + "custom level")
-    }
+        //create the game engine if needed
+        if (engine.isEmpty) engine = Some(GameEngine())
+        //initialize the engine with the chosen level data and the level context
+        engine.get.init(level, levelContext)
+        //signal ui to start the game
+        levelContext.setupLevel(level.levelMap.mapShape)
+      case None =>
+        throw new IllegalArgumentException(s"Unable to load level '$chosenLevel', because its definition was not found.")
+    })
   }
 
   override def initLobby(user: User, lobbyContext: LobbyContext): Promise[GenericResponse[Boolean]] = {
@@ -235,7 +251,7 @@ case class ControllerImpl() extends Controller {
         server.get.initGame(loadedLevel).future onComplete {
           case Success(_) =>
             //create the engine
-            if (engine.isEmpty) engine = Some(GameEngine())
+            if (engine.isEmpty) engine = Some(GameEngine(Constants.MultiPlayer.defaultMultiPlayerFps))
             //initialize the engine and let him create the levelContext
             val levelContext = engine.get.init(loadedLevel, server.get)
 
@@ -273,13 +289,14 @@ case class ControllerImpl() extends Controller {
   }
 
   override def stopLevel(victory: Boolean = false): Unit = {
-    Logger.log("stopLevel")
+    Logger.log(s"stopLevel - victory: $victory")
 
     multiPlayerMode match {
       case Some(MultiPlayerMode.Client) =>
         if (client.isDefined) client.get.leaveGame()
       case _ =>
-        if (server.isDefined) server.get.stopGame()
+
+        if (server.isDefined && server.get.getState == ServerState.Game) server.get.stopGame()
         if (engine.isDefined) engine.get.stop()
 
         saveProgress(if (victory) GameWon else GameLost)

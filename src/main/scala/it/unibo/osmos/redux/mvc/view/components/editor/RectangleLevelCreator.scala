@@ -1,6 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.components.editor
 
 import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape
+import it.unibo.osmos.redux.mvc.view.ViewConstants
 import it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField
 import it.unibo.osmos.redux.utils.Point
 import scalafx.beans.property.DoubleProperty
@@ -22,14 +23,16 @@ class RectangleLevelCreator extends BaseEditorCreator[MapShape.Rectangle] {
 
   /* Level width node*/
   val levelWidth: DoubleProperty = DoubleProperty(0.0)
-  private val widthNode = new VBox(2.0, new Label("Width"),
-    new TitledDoubleField("Width: ", levelWidth, 1.0, Double.MaxValue).innerNode,
+  val maxLevelWidth: Double = ViewConstants.Editor.maxLevelWidth
+  private val widthNode = new VBox(2.0, new Label(s"Width (max ${maxLevelWidth})"),
+    new TitledDoubleField("Width: ", levelWidth, 1.0, maxLevelWidth).innerNode,
   )
 
   /* Level height node*/
   val levelHeight: DoubleProperty = DoubleProperty(0.0)
-  private val heightNode = new VBox(2.0, new Label("Height"),
-    new TitledDoubleField("Height: ", levelHeight, 1.0, Double.MaxValue).innerNode,
+  val maxLevelHeight: Double = ViewConstants.Editor.maxLevelHeight
+  private val heightNode = new VBox(2.0, new Label(s"Height (max ${maxLevelHeight})"),
+    new TitledDoubleField("Height: ", levelHeight, 1.0, maxLevelHeight).innerNode,
   )
 
   children = Seq(centerNode, widthNode, heightNode)
