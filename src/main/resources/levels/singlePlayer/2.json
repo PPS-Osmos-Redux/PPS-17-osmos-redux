@@ -130,8 +130,8 @@
     },
     "position": {
       "point": {
-        "x": 500.0,
-        "y": 200.0
+        "x": 0.0,
+        "y": 0.0
       }
     },
     "cellType": "playerCell",

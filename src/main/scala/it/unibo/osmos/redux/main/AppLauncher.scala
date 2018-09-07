@@ -4,7 +4,6 @@ import it.unibo.osmos.redux.mvc.controller._
 import it.unibo.osmos.redux.mvc.controller.levels.{MultiPlayerLevels, SinglePlayerLevels}
 import it.unibo.osmos.redux.mvc.controller.manager.files.{LevelFileManager, SettingsFileManger, UserProgressFileManager}
 import it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer
-import it.unibo.osmos.redux.mvc.model.SettingsHolder
 import it.unibo.osmos.redux.mvc.view.View
 import scalafx.application.JFXApp
 

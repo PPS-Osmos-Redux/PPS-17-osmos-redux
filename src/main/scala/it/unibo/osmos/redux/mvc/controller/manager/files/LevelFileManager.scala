@@ -12,14 +12,15 @@ import spray.json._
 
 import scala.util.{Failure, Success, Try}
 
+/**Defines operation on levels files*/
 object LevelFileManager extends FileManager {
 
   implicit val who: String = "LevelFileManager"
 
-  /**
-    * Get a list of file names who contain single player or multiPlayer levels
-    * @param multiPlayer if is required multiPlayer level files
-    * @return
+  /** Get a list of file names who contain single player or multiPlayer levels
+    *
+    * @param multiPlayer true if is required multiPlayer level files name
+    * @return an Option of List[String]
     */
   def getLevelsConfigResourcesPath(multiPlayer:Boolean = false) : Option[List[String]] = {
     import it.unibo.osmos.redux.utils.Constants.ResourcesPaths._
@@ -27,11 +28,10 @@ object LevelFileManager extends FileManager {
     Try(getResourcesFileText(configPath).parseJson.convertTo[List[String]]).toOption
   }
 
-  /**
-    * Reads a file from the resources folder
+  /** Reads a file from the resources folder.
     *
-    * @param chosenLevel levels id
-    * @return content of file wrapped into a Option
+    * @param chosenLevel levels name
+    * @return content of file as Level wrapped into an Option
     */
   def getLevelFromResource(chosenLevel: String, isMultiPlayer: Boolean = false): Option[Level] = {
     import it.unibo.osmos.redux.utils.Constants.ResourcesPaths._
@@ -43,10 +43,9 @@ object LevelFileManager extends FileManager {
     }
   }
 
-  /**
-    * Save a custom level into user home
+  /** Save a custom level into user home.
     *
-    * @param level the level to save
+    * @param level Level
     * @return true if the operation is completed with success
     */
   def saveCustomLevel(level: Level): Boolean = {
@@ -57,18 +56,17 @@ object LevelFileManager extends FileManager {
     saveToFile(levelFile, level.toJson.prettyPrint)
   }
 
-  /**
-    * Delete a custom level file
+  /** Delete a custom level file.
+    *
     * @param levelName the name of the file
     * @return Try[Unit]
     */
   def deleteCustomLevel(levelName:String): Try[Unit] = deleteFile(Paths.get(LevelsDirectory + levelName + jsonExtension))
 
-  /**
-    * Load level from file saved into user home directory
+  /** Load level from file saved into user home directory
     *
-    * @param fileName the name of file
-    * @return an option with the required level if it doesn't fail
+    * @param fileName the name of the file
+    * @return an Option with the required Level if it doesn't fail
     */
   def getCustomLevel(implicit fileName: String): Option[Level] =
     loadFile(LevelsDirectory + fileName + jsonExtension) match {
@@ -81,8 +79,7 @@ object LevelFileManager extends FileManager {
       case _ => None
     }
 
-  /**
-    * Read from file the custom levels and if exists return their info
+  /** Read from file the custom levels info
     *
     * @return if exists a list of LevelInfo
     */
@@ -94,6 +91,10 @@ object LevelFileManager extends FileManager {
       .filter(optLvl => optLvl.isDefined).map(opt => opt.get).toList)
   }
 
+  /** Read from file into resources the levels info
+    *
+    * @return Option[LevelInfo]
+    */
   def getResourceLevelInfo(filePath:String):Option[LevelInfo] = {
    Try(getResourcesFileText(filePath).parseJson.convertTo[LevelInfo]) match {
       case Success(value) => Some(value)
@@ -121,10 +122,5 @@ object LevelFileManager extends FileManager {
       case _ => None
     }
 
-  /**
-    * Return file name without json extension
-    * @param file file object
-    * @return file name
-    */
   private implicit def getFileNameWithoutJsonExtension(file:File):String = file.getName.substring(0,file.getName.length-jsonExtension.length)
 }
