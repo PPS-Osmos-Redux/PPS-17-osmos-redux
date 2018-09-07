@@ -10,13 +10,14 @@ import scala.io.{BufferedSource, Source}
 import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}
 
+/** Abstract class with basics files management functions*/
 abstract class FileManager {
   implicit val who: String
   val jsonExtension = ".json"
 
-  /**
-    * Get resource file test
-    * @param resourcePath file path into resource dir
+  /** Get resource file content as text.
+    *
+    * @param resourcePath file path referred to resource dir
     * @return String
     */
   protected def getResourcesFileText(resourcePath:String): String = {
@@ -25,15 +26,16 @@ abstract class FileManager {
     finally  fileStream.close()
   }
 
-  /**
-    * Delete file by path
+  /** Delete file by path.
+    *
     * @param filePath Path
+    * @return Try[Unit]
     */
   protected def deleteFile(filePath:Path):Try[Unit] = Try(Files.delete(filePath))
 
-  /**
-    * Creates directories tree
-    * @param file File object
+  /** Creates directories tree for a new file.
+    *
+    * @param file File
     * @return true if no Exceptions occurs
     */
   protected def createDirectoriesTree(file:File):Boolean = Try(file.getParentFile.mkdirs()) match {
@@ -44,10 +46,10 @@ abstract class FileManager {
      false
   }
 
-  /**
-    * Create a new file or overwrite its content if it exists
+  /** Create a new file or overwrite its content if exists.
+    *
     * @param file File
-    * @param text text to write
+    * @param text text to write into file
     * @return true if the operation is terminated with success
     */
   protected def saveToFile(file:File, text: String): Boolean = {
