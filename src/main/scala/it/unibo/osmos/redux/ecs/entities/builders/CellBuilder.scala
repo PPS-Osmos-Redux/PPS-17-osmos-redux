@@ -4,11 +4,10 @@ import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities._
 import it.unibo.osmos.redux.utils.{Point, Vector}
 
+/**Base builder for all type of cell*/
 case class CellBuilder() {
 
-  /**
-    * Flag to detect multiple builds
-    */
+  // Flag to detect multiple builds
   private var multipleBuildFlag = false
 
   private var acceleration = AccelerationComponent(0,0)
@@ -21,8 +20,7 @@ case class CellBuilder() {
   private var specificWeight: SpecificWeightComponent = SpecificWeightComponent(1)
   private var spawner = SpawnerComponent(false)
 
-  /**
-    * Sets the collidability.
+  /** Sets the collidability.
     * @param collidable If the entity can collide or not.
     * @return The entity builder.
     */
@@ -31,8 +29,7 @@ case class CellBuilder() {
     this
   }
 
-  /**
-    * Sets the visibility.
+  /** Sets the visibility.
     * @param visible If the entity is visible or not.
     * @return The entity builder.
     */
@@ -41,8 +38,7 @@ case class CellBuilder() {
     this
   }
 
-  /**
-    * Sets the acceleration.
+  /** Sets the acceleration.
     * @param x The acceleration x coordinate.
     * @param y The acceleration y coordinate.
     * @return The entity builder.
@@ -52,8 +48,7 @@ case class CellBuilder() {
     this
   }
 
-  /**
-    * Sets the acceleration.
+  /** Sets the acceleration.
     * @param acceleration The acceleration vector.
     * @return The entity builder.
     */
@@ -62,8 +57,7 @@ case class CellBuilder() {
     this
   }
 
-  /**
-    * Sets the acceleration.
+  /** Sets the acceleration.
     * @param acceleration The Acceleration component.
     * @return The entity builder.
     */
@@ -72,8 +66,7 @@ case class CellBuilder() {
     this
   }
 
-  /**
-    * Sets the dimension.
+  /** Sets the dimension.
     * @param dimension The radius of the entity.
     * @return The entity builder.
     */
@@ -82,8 +75,7 @@ case class CellBuilder() {
     this
   }
 
-  /**
-    * Sets the dimension.
+  /** Sets the dimension.
     * @param dimension The dimension component.
     * @return The entity builder.
     */
@@ -92,8 +84,7 @@ case class CellBuilder() {
     this
   }
 
-  /**
-    * Sets the position.
+  /** Sets the position.
     * @param x The position x coordinate.
     * @param y The position y coordinate.
     * @return The entity builder.
@@ -103,8 +94,7 @@ case class CellBuilder() {
     this
   }
 
-  /**
-    * Sets the position.
+  /** Sets the position.
     * @param position The position point.
     * @return The entity builder.
     */
@@ -113,8 +103,7 @@ case class CellBuilder() {
     this
   }
 
-  /**
-    * Sets the position.
+  /** Sets the position.
     * @param position The position component.
     * @return The entity builder.
     */
@@ -123,8 +112,7 @@ case class CellBuilder() {
     this
   }
 
-  /**
-    * Sets the speed.
+  /** Sets the speed.
     * @param x The speed x coordinate.
     * @param y The speed y coordinate.
     * @return The entity builder.
@@ -134,8 +122,7 @@ case class CellBuilder() {
     this
   }
 
-  /**
-    * Sets the speed.
+  /** Sets the speed.
     * @param speed The speed component.
     * @return The entity builder.
     */
@@ -144,8 +131,7 @@ case class CellBuilder() {
     this
   }
 
-  /**
-    * Sets the speed.
+  /** Sets the speed.
     * @param speed The speed component.
     * @return The entity builder.
     */
@@ -154,8 +140,7 @@ case class CellBuilder() {
     this
   }
 
-  /**
-    *  Sets the entity type.
+  /** Sets the entity type.
     * @param entityType The entity type.
     * @return The entity builder.
     */
@@ -164,8 +149,7 @@ case class CellBuilder() {
     this
   }
 
-  /**
-    * Sets the specific weight.
+  /** Sets the specific weight.
     * @param weight The weight.
     * @return The entity builder.
     */
@@ -174,8 +158,7 @@ case class CellBuilder() {
     this
   }
 
-  /**
-    * Sets the specific weight.
+  /** Sets the specific weight.
     * @param weight The specific weight component.
     * @return The entity builder.
     */
@@ -184,8 +167,7 @@ case class CellBuilder() {
     this
   }
 
-  /**
-    * Sets the spawner.
+  /** Sets the spawner.
     * @param canSpawn If the entity spawner can spawn or not.
     * @return The entity builder.
     */
@@ -194,8 +176,7 @@ case class CellBuilder() {
     this
   }
 
-  /**
-    * Sets the spawner.
+  /** Sets the spawner.
     * @param spawner The spawner component.
     * @return The entity builder.
     */
@@ -204,9 +185,7 @@ case class CellBuilder() {
     this
   }
 
-  /**
-    * Checks if the build method is called multiple times.
-    */
+  //checks if the build method is called multiple times.
   private def checkMultipleBuild(): Unit = {
     if (multipleBuildFlag) {
       throw new UnsupportedOperationException("The builder cannot build multiple times.")
@@ -215,8 +194,7 @@ case class CellBuilder() {
     }
   }
 
-  /**
-    * Builds the base cell entity, checks for multiple builds.
+  /** Builds the base cell entity, checks for multiple builds.
     * @return The base cell entity.
     */
   private def buildBaseCell(): CellEntity = {
@@ -224,14 +202,12 @@ case class CellBuilder() {
     CellEntity(acceleration, collidable, dimension, position, speed, visible, entityType)
   }
 
-  /**
-    * Builds a CellEntity.
+  /** Builds a CellEntity.
     * @return The CellEntity.
     */
   def buildCellEntity(): CellEntity = buildBaseCell()
 
-  /**
-    * Builds a GravityCellEntity.
+  /** Builds a GravityCellEntity.
     * @return The GravityCellEntity.
     */
   def buildGravityEntity(): GravityCellEntity = {
@@ -241,8 +217,7 @@ case class CellBuilder() {
     GravityCellEntity(buildBaseCell(), specificWeight)
   }
 
-  /**
-    * Builds a PlayerCellEntity.
+  /** Builds a PlayerCellEntity.
     * @return The PlayerCellEntity.
     */
   def buildPlayerEntity(): PlayerCellEntity = {
@@ -250,8 +225,7 @@ case class CellBuilder() {
     PlayerCellEntity(buildBaseCell(), spawner)
   }
 
-  /**
-    * Builds a SentientCellEntity.
+  /** Builds a SentientCellEntity.
     * @return The SentientCellEntity.
     */
   def buildSentientEntity(): SentientCellEntity = {

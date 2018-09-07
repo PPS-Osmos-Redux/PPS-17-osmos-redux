@@ -3,9 +3,8 @@ package it.unibo.osmos.redux
 import it.unibo.osmos.redux.ecs.entities._
 import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 import it.unibo.osmos.redux.ecs.systems.EndGameSystem
-import it.unibo.osmos.redux.mvc.controller.levels.structure.{MapShape, VictoryRules}
-import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextListener}
-import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
+import it.unibo.osmos.redux.mvc.controller.levels.structure.VictoryRules
+import it.unibo.osmos.redux.mvc.view.context.LevelContext
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GamePending, GameWon}
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
@@ -13,13 +12,6 @@ import scala.collection.mutable.ListBuffer
 
 class TestEndGameSystem extends FunSuite with BeforeAndAfter {
 
-  private val levelContextListener = new LevelContextListener {
-    override def onDrawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = {}
-
-    override def onLevelSetup(mapShape: MapShape): Unit = {}
-
-    override def onLevelEnd(levelResult: Boolean): Unit = {}
-  }
   private var levelContext: LevelContext = _
 
   before {
