@@ -5,7 +5,10 @@ import it.unibo.osmos.redux.ecs.entities.properties.composed.DeathProperty
 
 import scala.collection.mutable.ListBuffer
 
-/** class implementing absorb all other players */
+/** class implementing absorb all other players
+  *
+  * victory is fulfilled when there are no more players to absorb left
+  */
 case class AbsorbAllOtherPlayersCondition() extends AbstractVictoryCondition {
 
   override def check(playerCellEntity: DeathProperty, entityList: ListBuffer[DeathProperty]): Boolean = {

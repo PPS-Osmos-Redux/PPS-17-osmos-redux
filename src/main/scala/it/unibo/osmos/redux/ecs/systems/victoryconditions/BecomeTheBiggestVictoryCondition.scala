@@ -5,7 +5,11 @@ import it.unibo.osmos.redux.ecs.entities.properties.composed.DeathProperty
 
 import scala.collection.mutable.ListBuffer
 
-/** class implementing become the biggest victory condition */
+/** class implementing become the biggest victory condition
+  *
+  * victory is fulfilled when the player's radius is
+  * greater than the other matter cells radius
+  */
 case class BecomeTheBiggestVictoryCondition() extends AbstractVictoryCondition {
 
   override def check(playerCellEntity: DeathProperty, entityList: ListBuffer[DeathProperty]): Boolean = {

@@ -5,7 +5,10 @@ import it.unibo.osmos.redux.ecs.entities.properties.composed.DeathProperty
 
 import scala.collection.mutable.ListBuffer
 
-/** class implementing absorb cells that share a common type victory condition */
+/** class implementing absorb cells that share a common type victory condition
+  *
+  * victory is fulfilled when there are no more cells with the specified type
+  */
 case class AbsorbCellsWithTypeVictoryCondition(entityType: EntityType.Value) extends AbstractVictoryCondition {
 
   override def check(playerCellEntity: DeathProperty, entityList: ListBuffer[DeathProperty]): Boolean = {
