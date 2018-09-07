@@ -24,7 +24,7 @@ object SentientUtils {
     * @return the acceleration
     */
   def computeUnlimitedSteer(actualVelocity: Vector, desiredVelocity: Vector): Vector =
-    desiredVelocity multiply maxSpeed subtract actualVelocity
+    desiredVelocity multiply MaxSpeed subtract actualVelocity
 
   /** Return the desired acceleration from a sentient to other enemies
     *

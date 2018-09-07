@@ -4,10 +4,10 @@ import it.unibo.osmos.redux.ecs.components.{DimensionComponent, PositionComponen
 import it.unibo.osmos.redux.ecs.entities.properties.composed.{SentientEnemyProperty, SentientProperty}
 import it.unibo.osmos.redux.ecs.systems.sentientRule._
 import it.unibo.osmos.redux.mvc.controller.levels.structure.Level
-import it.unibo.osmos.redux.utils.{Point, Vector}
 import it.unibo.osmos.redux.utils.Constants.Sentient._
+import it.unibo.osmos.redux.utils.{Point, Vector}
 
-/**System that apply sentient rule to each sentient cell*/
+/** System that apply sentient rule to each sentient cell */
 case class SentientSystem(levelInfo: Level) extends AbstractSystem2[SentientProperty, SentientEnemyProperty] {
 
   // The lost mass spawn point offset (starting from the perimeter of the entity, where to spawn lost mass due to movement)

@@ -26,7 +26,7 @@ object Constants {
   }
 
   object Sentient {
-    final val maxSpeed: Double = 2
+    final val MaxSpeed: Double = 2
     final val MaxAcceleration: Double = 0.1
     final val CoefficientDesiredSeparation: Double = 50
     final val MIN_VALUE: Double = 1

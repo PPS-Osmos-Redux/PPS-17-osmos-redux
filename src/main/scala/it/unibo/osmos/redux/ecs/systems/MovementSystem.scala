@@ -3,6 +3,7 @@ package it.unibo.osmos.redux.ecs.systems
 import it.unibo.osmos.redux.ecs.entities.properties.composed.MovableProperty
 import it.unibo.osmos.redux.utils.Constants
 
+/** System manging cell movement based on their acceleration and speed */
 case class MovementSystem() extends AbstractSystem[MovableProperty] {
 
   override def update(): Unit = {

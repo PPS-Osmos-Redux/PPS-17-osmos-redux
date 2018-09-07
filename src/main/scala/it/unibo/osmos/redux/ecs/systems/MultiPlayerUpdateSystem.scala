@@ -5,6 +5,11 @@ import it.unibo.osmos.redux.multiplayer.server.{Server, ServerState}
 import it.unibo.osmos.redux.multiplayer.server.ServerActor.UpdateGame
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity
 
+// TODO: scaladoc
+/**
+  *
+  * @param server
+  */
 case class MultiPlayerUpdateSystem(server: Server) extends AbstractSystem[DrawableProperty] {
 
   override def update(): Unit = if (server.getState == ServerState.Game) server.broadcastMessage(UpdateGame(getEntities))

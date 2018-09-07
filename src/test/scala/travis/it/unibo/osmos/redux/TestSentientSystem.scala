@@ -73,7 +73,7 @@ class TestSentientSystem extends FunSuite with BeforeAndAfter {
   test("Acceleration of SentientCellEntity should choose the correct target and change its acceleration accordingly") {
     val cellEntity = CellBuilder().withPosition(79, 79).withDimension(4).buildCellEntity()
     val cellEntity1 = CellBuilder().withPosition(83, 91).withDimension(2).buildCellEntity()
-    val speed = Vector(-2, 3) limit Constants.Sentient.maxSpeed
+    val speed = Vector(-2, 3) limit Constants.Sentient.MaxSpeed
     val sentientCellEntity = CellBuilder().withPosition(89, 82).withDimension(5)
       .withSpeed(speed).buildSentientEntity()
     val system = SentientSystem(levelInfo)
@@ -113,7 +113,7 @@ class TestSentientSystem extends FunSuite with BeforeAndAfter {
   }
 
   test("If collision rule with boundary is instantDeath, SentientCellEntity should change it's acceleration to avoid boundary") {
-    val speed = Vector(-2, -3) limit Constants.Sentient.maxSpeed
+    val speed = Vector(-2, -3) limit Constants.Sentient.MaxSpeed
     val sentientCellEntity = CellBuilder().withPosition(84, 74).withDimension(5)
       .withSpeed(speed).buildSentientEntity()
     val originalAcceleration = sentientCellEntity.getAccelerationComponent.copy()
