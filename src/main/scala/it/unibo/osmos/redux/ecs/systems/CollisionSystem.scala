@@ -96,8 +96,11 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
         bigEntity.getDimensionComponent.radius_(bigRadius - overlap*massExchangeRate)
         (overlap * (1 - massExchangeRate*2)) / 2
       case _ =>
-        bigEntity.getDimensionComponent.radius_(bigRadius + overlap*massExchangeRate)
-        overlap/2
+        val oldSmallArea = MathUtils.circleArea(tinyRadius)
+        val newSmallArea = MathUtils.circleArea(smallEntity.getDimensionComponent.radius)
+        val newBigArea = MathUtils.circleArea(bigEntity.getDimensionComponent.radius) + oldSmallArea - newSmallArea
+        bigEntity.getDimensionComponent.radius_(MathUtils.areaToRadius(newBigArea))
+        (overlap - overlap*massExchangeRate + (bigEntity.getDimensionComponent.radius-bigRadius))/2
     }
 
     moveEntitiesAfterCollision(bigEntity, smallEntity, quantityToMove)

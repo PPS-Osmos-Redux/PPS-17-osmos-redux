@@ -66,4 +66,10 @@ object MathUtils {
     * @return area
     */
   def circleArea(radius: Double): Double = Math.pow(radius, 2) * Math.PI
+
+  /** Return the radius of a circle of a given area
+    * @param area the area
+    * @return the radius
+    */
+  def areaToRadius(area: Double): Double = Math.sqrt(area / Math.PI)
 }
