@@ -20,9 +20,7 @@ object MathUtils {
     * @return unitVector
     */
   def unitVector(point1: Point, point2: Point): Vector = {
-    val unitVector = point1.subtract(point2) normalized()
-    val mod = math.sqrt(math.pow(unitVector.x, 2) + math.pow(unitVector.y, 2))
-    unitVector.divide(mod)
+    point1 subtract point2 normalized()
   }
 
   /** Returns the Euclidean distance in 2D space
