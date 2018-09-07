@@ -3,7 +3,7 @@
 Revisiting of Osmos game using Scala
 
 ## Doc reference
- * [Scaladoc](/Osmos-Redux/docs/scaladoc)
+ * [Scaladoc](/Osmos-Redux/docs/scaladoc/it/unibo/osmos/redux/index.html)
 
 
 ## Getting Started
