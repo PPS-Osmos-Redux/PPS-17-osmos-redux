@@ -7,9 +7,7 @@ import it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer
 import it.unibo.osmos.redux.mvc.view.View
 import scalafx.application.JFXApp
 
-/**
-  * Application entry point.
-  */
+/**Application entry point.*/
 object AppLauncher extends JFXApp {
   SettingsHolder.init(SettingsFileManger.loadSettings())
 
