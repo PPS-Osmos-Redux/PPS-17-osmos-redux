@@ -31,6 +31,7 @@ object OsmosReduxPrimaryStage {
     with MainSceneListener {
 
     title = defaultWindowTitle
+    resizable = false
     width = windowWidth
     height = windowHeight
 
