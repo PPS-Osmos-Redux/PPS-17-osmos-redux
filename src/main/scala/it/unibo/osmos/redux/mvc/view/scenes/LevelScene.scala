@@ -55,7 +55,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   }
 
   /** Level state variables */
-  private object LevelState {
+  protected object LevelState {
     /** The current game pending state: true if the game is paused */
     var paused: BooleanProperty = BooleanProperty(false)
     /** Value indicating when the user can execute actions like pausing the game or moving around */
@@ -65,7 +65,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     /** Max zoom out scale */
     val maxZoomOutScale = 1.0
     /** Max zoom in scale */
-    val maxZoomInScale = 2.0
+    val maxZoomInScale = 1.2
   }
 
   /** Level player variables */
@@ -92,13 +92,13 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   setAdditionalAction(() => onExit())
 
   /** The canvas which will draw the elements on the screen */
-  private val canvas: Canvas = new Canvas {
+  protected val canvas: Canvas = new Canvas {
     width <== parentStage.width
     height <== parentStage.height
     cache = true
     opacity = 0.0
 
-    val light: Spot = new Spot()
+    /*val light: Spot = new Spot()
     light.color = Color.White
     light.x <== (LevelPlayer.playerPosX + halfWindowWidth) * this.scaleX
     light.y <== (LevelPlayer.playerPosY + halfWindowHeight) * this.scaleY
@@ -115,7 +115,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
     pickOnBounds = false
 
-    effect = lighting
+    effect = lighting*/
   }
 
   /** The splash screen showed when the game is paused */
@@ -236,21 +236,6 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
     scrollEvent.consume()
   }
-
-  /**
-    * Method which limits a value between a minimum and a maximum ones
-    * @param value the value
-    * @param min the minimum value
-    * @param max the maximum value
-    * @return the clamped value
-    */
-  /*private def clamp(value: Double, min: Double, max: Double): Double = {
-    value match {
-      case v if v < min => min
-      case v if v > max => max
-      case _ => value
-    }
-  }*/
 
   /**
     * This method updates the camera position

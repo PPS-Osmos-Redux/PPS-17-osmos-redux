@@ -6,7 +6,7 @@ import it.unibo.osmos.redux.ecs.systems.victoryconditions.{AbsorbAllOtherPlayers
 import it.unibo.osmos.redux.multiplayer.server.Server
 import it.unibo.osmos.redux.mvc.controller.levels.structure.VictoryRules
 import it.unibo.osmos.redux.mvc.view.context.GameStateHolder
-import it.unibo.osmos.redux.mvc.view.events.{GameLost, GamePending, GameWon}
+import it.unibo.osmos.redux.mvc.view.events.{GameLost, GameLostAsServer, GamePending, GameWon}
 import it.unibo.osmos.redux.utils.Logger
 
 /** System managing the level's ending rules
@@ -51,7 +51,7 @@ case class MultiPlayerEndGameSystem(server: Server, levelContext: GameStateHolde
           //remove player from game and notify it (only if it's not the server itself)
           server.removePlayerFromGame(p.getUsername, !isServer)
           //if the server lost show the alternate UI
-          if (isServer) levelContext.notify(???)
+          if (isServer) levelContext.notify(GameLostAsServer)
         })
       }
     }
