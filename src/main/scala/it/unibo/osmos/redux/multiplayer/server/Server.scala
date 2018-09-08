@@ -199,7 +199,7 @@ object Server {
     override def broadcastMessage(message: Any, clientsToExclude: String*): Unit = {
       if (ref.isEmpty) throw new IllegalStateException("Unable to broadcast the message, server is not bind to an actor.")
       val usernameToExclude = clientsToExclude :+ this.username
-      val actors = lobby.get.getPlayers.filterNot(p => usernameToExclude contains p.getUsername).map(_.getActorRef)
+      val actors = lobby.get.getPlayers.filterNot(p => (usernameToExclude contains p.getUsername) || !p.isAlive).map(_.getActorRef)
       actors.foreach(a => a ! message)
     }
 
@@ -243,6 +243,8 @@ object Server {
         broadcastMessage(GameEnded(false), winner)
       }
 
+      lobby.get.getPlayers.foreach(_.setLiveness(true))
+
       status = ServerState.Lobby
     }
 
@@ -270,7 +272,7 @@ object Server {
       if (playerEntity.isEmpty) throw new IllegalArgumentException("Cannot remove player cell from game because it was not found.")
 
       EntityManager.delete(playerEntity.get)
-      lobby.get.removePlayer(username)
+      player.get.setLiveness(false)
     }
 
     //LOBBY MANAGEMENT
