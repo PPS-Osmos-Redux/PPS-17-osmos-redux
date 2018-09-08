@@ -15,6 +15,7 @@ object MathUtils {
   def normalize(number: Double, min: Double, max: Double): Double = (number - min) / (max - min)
 
   /** unitVector from point2 to point1
+    *
     * @param point1
     * @param point2
     * @return unitVector
@@ -58,8 +59,24 @@ object MathUtils {
   def circleArea(radius: Double): Double = Math.pow(radius, 2) * Math.PI
 
   /** Return the radius of a circle of a given area
+    *
     * @param area the area
     * @return the radius
     */
   def areaToRadius(area: Double): Double = Math.sqrt(area / Math.PI)
+
+  /** Method which limits a value between a minimum and a maximum ones
+    *
+    * @param value the value
+    * @param min   the minimum value
+    * @param max   the maximum value
+    * @return the clamped value
+    */
+  def clamp(value: Double, min: Double, max: Double): Double = {
+    value match {
+      case v if v < min => min
+      case v if v > max => max
+      case _ => value
+    }
+  }
 }

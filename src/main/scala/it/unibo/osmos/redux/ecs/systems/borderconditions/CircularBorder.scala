@@ -8,12 +8,12 @@ import it.unibo.osmos.redux.utils.{MathUtils, Point, Vector}
 /** Collision implementation for a playing field with circular shape */
 case class CircularBorder(levelCenter: Point, collisionRule: CollisionRules.Value, levelRadius: Double) extends AbstractBorder(levelCenter, collisionRule) {
 
-  var positionComponent: PositionComponent = _
-  var currentPosition: Point = _
-  var dimensionComponent: DimensionComponent = _
-  var entityRadius: Double = _
-  var maxReachableDistance: Double = _
-  var currentDistanceFromCenter: Double = _
+  private var positionComponent: PositionComponent = _
+  private var currentPosition: Point = _
+  private var dimensionComponent: DimensionComponent = _
+  private var entityRadius: Double = _
+  private var maxReachableDistance: Double = _
+  private var currentDistanceFromCenter: Double = _
 
   override def checkAndSolveCollision(entity: CollidableProperty): Unit = {
     if (checkCollision(entity)) {
@@ -29,6 +29,19 @@ case class CircularBorder(levelCenter: Point, collisionRule: CollisionRules.Valu
         case CollisionRules.instantDeath =>
           dimensionComponent.radius_(entityRadius - (currentDistanceFromCenter - maxReachableDistance))
         case _ => throw new IllegalArgumentException
+      }
+    }
+  }
+
+
+  override def repositionIfOutsideMap(entity: CollidableProperty): Unit = {
+    if (checkCollision(entity)) {
+      collisionRule match {
+        case CollisionRules.bouncing =>
+          val vector = MathUtils.unitVector(levelCenter, currentPosition)
+          val back = currentDistanceFromCenter - levelRadius + entityRadius
+          positionComponent.point_(currentPosition.add(vector.multiply(back)))
+        case _ =>
       }
     }
   }
@@ -99,17 +112,5 @@ case class CircularBorder(levelCenter: Point, collisionRule: CollisionRules.Valu
     val vAfter = w.subtract(u)
     val reflection = vAfter.subtract(v).multiply(restitution)
     v.add(reflection)
-  }
-
-  override def repositionIfOutsideMap(entity: CollidableProperty): Unit = {
-    if (checkCollision(entity)) {
-      collisionRule match {
-        case CollisionRules.bouncing =>
-          val vector = MathUtils.unitVector(levelCenter, currentPosition)
-          val back = currentDistanceFromCenter - levelRadius + entityRadius
-          positionComponent.point_(currentPosition.add(vector.multiply(back)))
-        case _ =>
-      }
-    }
   }
 }

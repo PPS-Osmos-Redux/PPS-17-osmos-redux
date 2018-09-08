@@ -15,7 +15,7 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
   //constants that controls how much deceleration is applied to an entity when colliding with another one
   private val DecelerationAmount = 0.1
   //the initial acceleration vector of a steady entity when a collision occurs
-  private val InitialAccelerationVector = Vector(0.01, 0.01)
+  private val InitialAccelerationVector = Vector(0.1, 0.1)
   //the bouncing rule
   private val bounceRule = levelInfo.levelMap.mapShape match {
     case shape: Rectangle =>
@@ -101,10 +101,30 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
         val newSmallArea = MathUtils.circleArea(smallEntity.getDimensionComponent.radius)
         val newBigArea = MathUtils.circleArea(bigEntity.getDimensionComponent.radius) + oldSmallArea - newSmallArea
         bigEntity.getDimensionComponent.radius_(MathUtils.areaToRadius(newBigArea))
+        limitMaxRadius(bigEntity)
         (overlap - overlap * MassExchangeRate + (bigEntity.getDimensionComponent.radius - bigRadius)) / 2
     }
 
     moveEntitiesAfterCollision(bigEntity, smallEntity, quantityToMove)
+  }
+
+  /** Limit the radius of the entity to the min dimension of the map
+    *
+    * @param entity the entity
+    */
+  private def limitMaxRadius(entity: CollidableProperty): Unit = {
+    val level = levelInfo.levelMap.mapShape
+    val dimension = entity.getDimensionComponent
+    level match {
+      case map: Rectangle =>
+        if(dimension.radius > map.base/2) {
+          dimension.radius_(map.base/2)
+        }
+        if(dimension.radius > map.height/2) {
+          dimension.radius_(map.height/2)
+        }
+      case _ =>
+    }
   }
 
   /** move each entity in the opposite direction to the other of quantity to move, and check collision with boundary

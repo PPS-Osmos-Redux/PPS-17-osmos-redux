@@ -13,7 +13,7 @@ import it.unibo.osmos.redux.mvc.view.drawables._
 import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import it.unibo.osmos.redux.utils.MathUtils._
-import it.unibo.osmos.redux.utils.Point
+import it.unibo.osmos.redux.utils.{MathUtils, Point}
 import javafx.scene.input.{KeyCode, MouseEvent}
 import scalafx.animation.FadeTransition
 import scalafx.application.Platform
@@ -228,7 +228,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     }
 
     /** Limiting the scale */
-    scale = clamp(scale, LevelState.maxZoomOutScale, LevelState.maxZoomInScale)
+    scale = MathUtils.clamp(scale, LevelState.maxZoomOutScale, LevelState.maxZoomInScale)
 
     /** Updating the canvas scale */
     canvas.scaleX = scale
@@ -244,13 +244,13 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     * @param max the maximum value
     * @return the clamped value
     */
-  private def clamp(value: Double, min: Double, max: Double): Double = {
+  /*private def clamp(value: Double, min: Double, max: Double): Double = {
     value match {
       case v if v < min => min
       case v if v > max => max
       case _ => value
     }
-  }
+  }*/
 
   /**
     * This method updates the camera position
