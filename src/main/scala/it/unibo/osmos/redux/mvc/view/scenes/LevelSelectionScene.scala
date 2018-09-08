@@ -2,7 +2,6 @@ package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.level.{LevelNode, LevelNodeListener}
-import it.unibo.osmos.redux.mvc.view.components.menu.MainMenuBarListener
 import it.unibo.osmos.redux.mvc.view.context.LevelContext
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.layout.{TilePane, VBox}
@@ -17,7 +16,7 @@ import scala.collection.mutable
   * @param listener    the listener
   */
 class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSelectionSceneListener, previousSceneListener: BackClickListener) extends DefaultBackScene(parentStage, previousSceneListener)
-  with MainMenuBarListener with LevelNodeListener {
+  with LevelNodeListener {
 
   /**
     * The levels shown
@@ -74,10 +73,6 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
 
   /* Setting the root container*/
   root = container
-
-  override def onFullScreenSettingClick(): Unit = {
-    parentStage.fullScreen = !parentStage.fullScreen.get()
-  }
 
   /**
     * Called when the user want to play a level

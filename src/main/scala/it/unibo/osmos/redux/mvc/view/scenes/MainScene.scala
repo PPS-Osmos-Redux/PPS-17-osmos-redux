@@ -10,14 +10,13 @@ import scalafx.stage.Stage
   * Opening scene, showing the menu and the menu bar
   */
 class MainScene(override val parentStage: Stage, val listener: MainSceneListener) extends BaseScene(parentStage)
-  with MainMenuCenterBoxListener with MainMenuBarListener with UpperMultiPlayerSceneListener with BackClickListener {
+  with MainMenuCenterBoxListener with UpperMultiPlayerSceneListener with BackClickListener {
 
   MusicPlayer.play(SoundsType.menu)
 
   /* Requesting a structured layout */
   private val rootLayout: BorderPane = new BorderPane {
     /* Setting the upper MenuBar */
-    top = new MainMenuBar(MainScene.this)
     center = new MainMenuCenterBox(MainScene.this)
     styleClass.add("default-background")
   }
@@ -51,10 +50,6 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
 
   override def onExitClick(): Unit = {
     System.exit(0)
-  }
-
-  override def onFullScreenSettingClick(): Unit = {
-    parentStage.fullScreen = !parentStage.fullScreen.get()
   }
 
   override def onMultiPlayerSceneBackClick(): Unit = {
