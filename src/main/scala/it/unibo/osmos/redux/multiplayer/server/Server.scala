@@ -243,7 +243,7 @@ object Server {
         broadcastMessage(GameEnded(false), winner)
       }
 
-      lobby.get.getPlayers.foreach(_.setLiveness(true))
+      resetLobbyPlayersDeathStatus()
 
       status = ServerState.Lobby
     }
@@ -272,7 +272,7 @@ object Server {
       if (playerEntity.isEmpty) throw new IllegalArgumentException("Cannot remove player cell from game because it was not found.")
 
       EntityManager.delete(playerEntity.get)
-      player.get.setLiveness(false)
+      setLobbyPlayerAsDead(username)
     }
 
     //LOBBY MANAGEMENT
@@ -382,7 +382,25 @@ object Server {
     private def getPlayerFromLobby(username: String): Option[ReferablePlayer] = {
       Logger.log("getPlayerFromLobby")
 
+      if (lobby.isEmpty) throw new UnsupportedOperationException("Cannot get lobby player if the server doesn't have created any lobby.")
+
       lobby.get.getPlayers.find(_.getUsername == username)
+    }
+
+    private def setLobbyPlayerAsDead(username: String): Unit = {
+      Logger.log("setLobbyPlayerDeath")
+
+      if (lobby.isEmpty) throw new UnsupportedOperationException("Cannot set lobby player as dead if the server doesn't have created any lobby.")
+
+      lobby.get.getPlayers.filter(_.getUsername == username).foreach(_ setLiveness false)
+    }
+
+    private def resetLobbyPlayersDeathStatus(): Unit = {
+      Logger.log("resetLobbyPlayersDeathStatus")
+
+      if (lobby.isEmpty) throw new UnsupportedOperationException("Cannot reset lobby players death status if the server doesn't have created any lobby.")
+
+      lobby.get.getPlayers.foreach(_ setLiveness true)
     }
   }
 }
