@@ -261,17 +261,21 @@ object Server {
 
       if (status != ServerState.Game) throw new UnsupportedOperationException(s"Cannot remove player from game because it's in the state: $status")
 
+      //detect if the dead player is the server itself
+      val isServer = username == this.username
+
       //remove entity cell relative to the player that has left
       val player = getPlayerFromLobby(username)
       if (player.isEmpty) throw new IllegalArgumentException("Cannot remove player from game because it was not found.")
 
-      //notify player that he has lost
-      if (notify) player.get.getActorRef ! GameEnded(false)
+      //notify player that he has lost (just clients)
+      if (notify && !isServer) player.get.getActorRef ! GameEnded(false)
 
       val playerEntity = EntityManager.filterEntities(classOf[PlayerCellEntity]).find(_.getUUID == player.get.getUUID)
       if (playerEntity.isEmpty) throw new IllegalArgumentException("Cannot remove player cell from game because it was not found.")
 
       EntityManager.delete(playerEntity.get)
+      //set the player as dead only if it's not the server itself
       setLobbyPlayerAsDead(username)
     }
 

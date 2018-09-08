@@ -1,13 +1,13 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
+import it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel
 import it.unibo.osmos.redux.mvc.view.ViewConstants
-import it.unibo.osmos.redux.mvc.view.stages.PrimaryStageListener
 import scalafx.geometry.Pos
 import scalafx.scene.control.TableView
 import scalafx.scene.layout.VBox
 import scalafx.stage.Stage
 
-class StatsScene(override val parentStage: Stage, listener: PrimaryStageListener, previousSceneListener: BackClickListener) extends DefaultBackScene(parentStage, previousSceneListener) {
+class StatsScene(override val parentStage: Stage, listener: StatsSceneListener, previousSceneListener: BackClickListener) extends DefaultBackScene(parentStage, previousSceneListener) {
 
   private val statsTable = new TableView[String]() {
     maxWidth = ViewConstants.Window.halfWindowWidth
@@ -25,4 +25,13 @@ class StatsScene(override val parentStage: Stage, listener: PrimaryStageListener
 
   /* Setting the root container*/
   root = container
+}
+
+trait StatsSceneListener {
+
+  /** This method retrieve the campaign level info
+    *
+    * @return a list of CampaignLevel
+    */
+  def getCampaignLevels: List[CampaignLevel]
 }
