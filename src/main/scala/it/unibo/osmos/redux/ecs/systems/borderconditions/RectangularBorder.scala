@@ -43,8 +43,8 @@ case class RectangularBorder(levelCenter: Point, collisionRule: CollisionRules.V
 
   private def computeNewSpeedAndPosition(speed: Double, position: Double, minReachablePosition: Double, maxReachablePosition: Double): (Double, Double) = {
     position match {
-      case p if p < minReachablePosition => (-speed, minReachablePosition - (p - minReachablePosition))
-      case p if p > maxReachablePosition => (-speed, maxReachablePosition - (p - maxReachablePosition))
+      case p if p < minReachablePosition => (-speed, minReachablePosition)
+      case p if p > maxReachablePosition => (-speed, maxReachablePosition)
       case _ => (speed, position)
     }
   }
@@ -58,6 +58,28 @@ case class RectangularBorder(levelCenter: Point, collisionRule: CollisionRules.V
     }
   }
 
-  override def repositionIfOutsideMap(entity: CollidableProperty): Unit = {}
+  override def repositionIfOutsideMap(entity: CollidableProperty): Unit = {
+    val dimensionComponent = entity.getDimensionComponent
+    val entityRadius = dimensionComponent.radius
+    val minHorizontalPoint = getLowerBoundary(entityRadius, levelCenter.x, base)
+    val maxHorizontalPoint = getUpperBoundary(entityRadius, levelCenter.x, base)
+    val minVerticalPoint = getLowerBoundary(entityRadius, levelCenter.y, height)
+    val maxVerticalPoint = getUpperBoundary(entityRadius, levelCenter.y, height)
+    val positionComponent = entity.getPositionComponent
+    val position = positionComponent.point
+
+    if (position.x  > maxHorizontalPoint) {
+      positionComponent.point_(Point(maxHorizontalPoint,position.y))
+    }
+    if (position.x  < minHorizontalPoint) {
+      positionComponent.point_(Point(minHorizontalPoint,position.y))
+    }
+    if (position.y  > maxVerticalPoint) {
+      positionComponent.point_(Point(positionComponent.point.x, maxVerticalPoint))
+    }
+    if (position.y  < minVerticalPoint) {
+      positionComponent.point_(Point(positionComponent.point.x, minVerticalPoint))
+    }
+  }
 
 }
