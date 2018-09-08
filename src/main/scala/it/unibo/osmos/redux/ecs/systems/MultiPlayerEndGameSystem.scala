@@ -31,7 +31,7 @@ case class MultiPlayerEndGameSystem(server: Server, levelContext: GameStateHolde
         (player, cell, isServer) <- alivePlayers
           .map(i => (i, entities.find(_.getUUID == i.getUUID), i.getUUID == server.getUUID)) //get player, cell and isServer
           .filter(i => i._2.nonEmpty && victoryCondition.check(i._2.get, aliveCells)) //filter only players that have won
-        if levelContext.gameCurrentState == GamePending //when a winner is found do not check other players
+        if isGameRunning //when a winner is found do not check other players
       ) yield {
         Logger.log(s"Victory detected for: ${player.getUsername} - ${player.getUUID} (server: $isServer)")("MultiPlayerEndGameSystem")
         if (isServer) {
@@ -57,6 +57,6 @@ case class MultiPlayerEndGameSystem(server: Server, levelContext: GameStateHolde
     }
   }
 
-  private def isGameRunning: Boolean = levelContext.gameCurrentState == GamePending
+  private def isGameRunning: Boolean = levelContext.gameCurrentState == GamePending || levelContext.gameCurrentState == GameLostAsServer
 }
 

@@ -1,9 +1,9 @@
 package it.unibo.osmos.redux.multiplayer.common
 
-import java.io.File
-
 import com.typesafe.config.{Config, ConfigFactory}
 import it.unibo.osmos.redux.utils.Constants
+
+import scala.io.Source
 
 object ActorSystemConfigFactory {
 
@@ -31,7 +31,7 @@ object ActorSystemConfigFactory {
   /**
     * Creates and returns a config with the specified address and port.
     * @param address The user object that contains declared port
-    * @return
+    * @return The default config with custom port and address.
     */
   def create(address: String, port: String): Config = {
     val configString = s"""
@@ -53,10 +53,19 @@ object ActorSystemConfigFactory {
 
   /**
     * Loads and returns the config declared in the default.conf file in the resources.
-    * @return
+    * @return The config.
     */
   def load(): Config = {
-    val configFile = getClass.getClassLoader.getResource(Constants.MultiPlayer.defaultSystemConfig).getFile
-    ConfigFactory.parseFile(new File(configFile))
+    ConfigFactory.parseString(readConfigFile)
+  }
+
+  /**
+    * Reads from the default system conf file.
+    * @return The file content.
+    */
+  private def readConfigFile: String = {
+    val fileStream = getClass.getClassLoader.getResourceAsStream(Constants.MultiPlayer.defaultSystemConfig)
+    try Source.fromInputStream(fileStream).mkString
+    finally fileStream.close()
   }
 }
