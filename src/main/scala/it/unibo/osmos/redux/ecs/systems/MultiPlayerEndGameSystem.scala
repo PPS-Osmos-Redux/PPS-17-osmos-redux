@@ -44,7 +44,16 @@ case class MultiPlayerEndGameSystem(server: Server, levelContext: GameStateHolde
       }
 
       //notify all dead players and remove them
-      if (isGameRunning) deadPlayers.foreach(p => server.removePlayerFromGame(p.getUsername, notify = true))
+      if (isGameRunning) {
+        deadPlayers.foreach(p => {
+          //check if the server died
+          val isServer = p.getUsername == server.getUsername
+          //remove player from game and notify it (only if it's not the server itself)
+          server.removePlayerFromGame(p.getUsername, !isServer)
+          //if the server lost show the alternate UI
+          if (isServer) levelContext.notify(???)
+        })
+      }
     }
   }
 
