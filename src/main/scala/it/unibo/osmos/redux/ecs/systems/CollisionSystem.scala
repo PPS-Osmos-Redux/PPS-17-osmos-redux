@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.ecs.systems
 import it.unibo.osmos.redux.ecs.entities.EntityType
 import it.unibo.osmos.redux.ecs.entities.properties.composed.CollidableProperty
 import it.unibo.osmos.redux.ecs.systems.borderconditions.{CircularBorder, RectangularBorder}
-import it.unibo.osmos.redux.mvc.controller.levels.structure.Level
+import it.unibo.osmos.redux.mvc.controller.levels.structure.{Level, MapShape, MapShapeType}
 import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.utils.{MathUtils, Point, Vector}
 
@@ -101,10 +101,30 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
         val newSmallArea = MathUtils.circleArea(smallEntity.getDimensionComponent.radius)
         val newBigArea = MathUtils.circleArea(bigEntity.getDimensionComponent.radius) + oldSmallArea - newSmallArea
         bigEntity.getDimensionComponent.radius_(MathUtils.areaToRadius(newBigArea))
+        limitMaxRadius(bigEntity)
         (overlap - overlap * MassExchangeRate + (bigEntity.getDimensionComponent.radius - bigRadius)) / 2
     }
 
     moveEntitiesAfterCollision(bigEntity, smallEntity, quantityToMove)
+  }
+
+  /** Limit the radius of the entity to the min dimension of the map
+    *
+    * @param entity the entity
+    */
+  private def limitMaxRadius(entity: CollidableProperty): Unit = {
+    val level = levelInfo.levelMap.mapShape
+    val dimension = entity.getDimensionComponent
+    level match {
+      case map: Rectangle =>
+        if(dimension.radius > map.base/2) {
+          dimension.radius_(map.base/2)
+        }
+        if(dimension.radius > map.height/2) {
+          dimension.radius_(map.height/2)
+        }
+      case _ =>
+    }
   }
 
   /** move each entity in the opposite direction to the other of quantity to move, and check collision with boundary
