@@ -1,8 +1,23 @@
 {
+  "name": "3",
+  "victoryRule": {
+    "victoryRule": "Absorb all other players"
+  },
+  "levelMap": {
+    "mapShape": {
+      "center": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "mapShape": "Circle",
+      "radius": 350.0
+    },
+    "collisionRule": "Bouncing"
+  },
   "entities": [{
     "acceleration": {
-      "accelerationX": 1.0,
-      "accelerationY": 1.0
+      "accelerationX": 0.0,
+      "accelerationY": 0.0
     },
     "visible": {
       "visible": true
@@ -11,26 +26,138 @@
       "collidable": true
     },
     "typeEntity": {
-      "entity_type": "Matter"
+      "componentType": "Matter"
     },
     "position": {
       "point": {
-        "x": 0.0,
-        "y": 0.0
+        "x": -16.0,
+        "y": -7.0
       }
     },
     "cellType": "basicCell",
     "dimension": {
-      "radius": 5.0
+      "radius": 26.0
     },
     "speed": {
-      "speedX": 4.0,
+      "speedX": 0.0,
       "speedY": 0.0
     }
   }, {
     "acceleration": {
-      "accelerationX": 1.0,
-      "accelerationY": 1.0
+      "accelerationX": 0.0,
+      "accelerationY": 0.0
+    },
+    "visible": {
+      "visible": true
+    },
+    "collidable": {
+      "collidable": true
+    },
+    "typeEntity": {
+      "componentType": "Matter"
+    },
+    "position": {
+      "point": {
+        "x": -22.0,
+        "y": -67.0
+      }
+    },
+    "cellType": "basicCell",
+    "dimension": {
+      "radius": 26.0
+    },
+    "speed": {
+      "speedX": 0.0,
+      "speedY": 0.0
+    }
+  }, {
+    "acceleration": {
+      "accelerationX": 0.0,
+      "accelerationY": 0.0
+    },
+    "visible": {
+      "visible": true
+    },
+    "collidable": {
+      "collidable": true
+    },
+    "typeEntity": {
+      "componentType": "Matter"
+    },
+    "position": {
+      "point": {
+        "x": 46.0,
+        "y": -11.0
+      }
+    },
+    "cellType": "basicCell",
+    "dimension": {
+      "radius": 26.0
+    },
+    "speed": {
+      "speedX": 0.0,
+      "speedY": 0.0
+    }
+  }, {
+    "acceleration": {
+      "accelerationX": 0.0,
+      "accelerationY": 0.0
+    },
+    "visible": {
+      "visible": true
+    },
+    "collidable": {
+      "collidable": true
+    },
+    "typeEntity": {
+      "componentType": "Matter"
+    },
+    "position": {
+      "point": {
+        "x": -96.0,
+        "y": -7.0
+      }
+    },
+    "cellType": "basicCell",
+    "dimension": {
+      "radius": 26.0
+    },
+    "speed": {
+      "speedX": 0.0,
+      "speedY": 0.0
+    }
+  }, {
+    "acceleration": {
+      "accelerationX": 0.0,
+      "accelerationY": 0.0
+    },
+    "visible": {
+      "visible": true
+    },
+    "collidable": {
+      "collidable": true
+    },
+    "typeEntity": {
+      "componentType": "Matter"
+    },
+    "position": {
+      "point": {
+        "x": -17.0,
+        "y": 63.0
+      }
+    },
+    "cellType": "basicCell",
+    "dimension": {
+      "radius": 26.0
+    },
+    "speed": {
+      "speedX": 0.0,
+      "speedY": 0.0
+    }
+  }, {
+    "acceleration": {
+      "accelerationX": 0.0,
+      "accelerationY": 0.0
     },
     "visible": {
       "visible": true
@@ -41,30 +168,24 @@
     "spawner": {
       "canSpawn": true
     },
-    "typeEntity": {
-      "componentType": "Matter"
-    },
     "position": {
       "point": {
-        "x": 0.0,
-        "y": 0.0
+        "x": -300.0,
+        "y": -11.0
       }
     },
     "cellType": "playerCell",
     "dimension": {
-      "radius": 5.0
+      "radius": 38.0
     },
     "speed": {
-      "speedX": 4.0,
+      "speedX": 0.0,
       "speedY": 0.0
     }
   }, {
     "acceleration": {
-      "accelerationX": 1.0,
-      "accelerationY": 1.0
-    },
-    "specificWeight": {
-      "specificWeight": 1.0
+      "accelerationX": 0.0,
+      "accelerationY": 0.0
     },
     "visible": {
       "visible": true
@@ -72,35 +193,162 @@
     "collidable": {
       "collidable": true
     },
-    "typeEntity": {
-      "entity_type": "Attractive"
+    "spawner": {
+      "canSpawn": true
     },
     "position": {
       "point": {
-        "x": 0.0,
-        "y": 0.0
+        "x": 3.0,
+        "y": -303.0
       }
     },
-    "cellType": "gravityCell",
+    "cellType": "playerCell",
     "dimension": {
-      "radius": 5.0
+      "radius": 38.0
     },
     "speed": {
-      "speedX": 4.0,
+      "speedX": 0.0,
       "speedY": 0.0
     }
-  }],
-  "name": "3",
-  "victoryRule": {
-    "victoryRule": "Become_the_biggest"
-  },
-  "levelMap": {
-    "mapShape": {
-      "centerX": 50.1,
-      "centerY": 50.2,
-      "mapShape": "Circle",
-      "radius": 250
+  }, {
+    "acceleration": {
+      "accelerationX": 0.0,
+      "accelerationY": 0.0
     },
-    "collisionRule": "Bouncing"
-  }
+    "visible": {
+      "visible": true
+    },
+    "collidable": {
+      "collidable": true
+    },
+    "spawner": {
+      "canSpawn": true
+    },
+    "position": {
+      "point": {
+        "x": -204.0,
+        "y": -215.0
+      }
+    },
+    "cellType": "playerCell",
+    "dimension": {
+      "radius": 38.0
+    },
+    "speed": {
+      "speedX": 0.0,
+      "speedY": 0.0
+    }
+  }, {
+    "acceleration": {
+      "accelerationX": 0.0,
+      "accelerationY": 0.0
+    },
+    "visible": {
+      "visible": true
+    },
+    "collidable": {
+      "collidable": true
+    },
+    "spawner": {
+      "canSpawn": true
+    },
+    "position": {
+      "point": {
+        "x": -163.0,
+        "y": 249.0
+      }
+    },
+    "cellType": "playerCell",
+    "dimension": {
+      "radius": 38.0
+    },
+    "speed": {
+      "speedX": 0.0,
+      "speedY": 0.0
+    }
+  }, {
+    "acceleration": {
+      "accelerationX": 0.0,
+      "accelerationY": 0.0
+    },
+    "visible": {
+      "visible": true
+    },
+    "collidable": {
+      "collidable": true
+    },
+    "spawner": {
+      "canSpawn": true
+    },
+    "position": {
+      "point": {
+        "x": 104.0,
+        "y": 270.0
+      }
+    },
+    "cellType": "playerCell",
+    "dimension": {
+      "radius": 38.0
+    },
+    "speed": {
+      "speedX": 0.0,
+      "speedY": 0.0
+    }
+  }, {
+    "acceleration": {
+      "accelerationX": 0.0,
+      "accelerationY": 0.0
+    },
+    "visible": {
+      "visible": true
+    },
+    "collidable": {
+      "collidable": true
+    },
+    "spawner": {
+      "canSpawn": true
+    },
+    "position": {
+      "point": {
+        "x": 270.0,
+        "y": 97.0
+      }
+    },
+    "cellType": "playerCell",
+    "dimension": {
+      "radius": 38.0
+    },
+    "speed": {
+      "speedX": 0.0,
+      "speedY": 0.0
+    }
+  }, {
+    "acceleration": {
+      "accelerationX": 0.0,
+      "accelerationY": 0.0
+    },
+    "visible": {
+      "visible": true
+    },
+    "collidable": {
+      "collidable": true
+    },
+    "spawner": {
+      "canSpawn": true
+    },
+    "position": {
+      "point": {
+        "x": 226.0,
+        "y": -174.0
+      }
+    },
+    "cellType": "playerCell",
+    "dimension": {
+      "radius": 38.0
+    },
+    "speed": {
+      "speedX": 0.0,
+      "speedY": 0.0
+    }
+  }]
 }

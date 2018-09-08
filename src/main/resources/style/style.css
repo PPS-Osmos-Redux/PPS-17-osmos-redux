@@ -56,3 +56,17 @@
   -fx-background-image: null;
   -fx-font: 20 arial;
 }
+
+.slider .axis {
+  -fx-tick-label-fill: white;
+}
+
+.settings-vbox {
+  -fx-font-size: 20px;
+  -fx-background-color: white;
+}
+
+.controls-hbox {
+  -fx-font-size: 22px;
+  -fx-background-color: white;
+}

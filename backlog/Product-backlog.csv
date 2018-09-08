@@ -3,7 +3,7 @@ Priority,Item,Initial Size Estimated,1,2,3,4
 1,Design e creazione architettura di base del sistema,44,0,0,0,0
 2,Interfaccia menù principale,6,1,1,0,0
 3,Visualizzazione cellule del livello,13,0,0,0,0
-4,Gestione movimento cellule del livello,11,6,3,0,-
+4,Gestione movimento cellule del livello,11,6,3,0,0
 5,Cellule devono reagire a input utente,8,0,0,0,0
 6,Caricamento definizione livello e cellule da file,8,4,0,0,0
 7,Gestione collisioni tra cellule,10,10,0,0,0
@@ -13,12 +13,12 @@ Priority,Item,Initial Size Estimated,1,2,3,4
 11,Gestione gravità,16,16,0,0,0
 12,Design texture livello e cellule,6,6,2,0,0
 13,Schermata selezione livelli,3,3,1,0,0
-14,Definizione progressione giocatore tra livelli,2,2,1,1,-
+14,Definizione progressione giocatore tra livelli,2,2,1,1,1
 15,Modalità Simulazione,2,2,0,0,0
-16,Implementazione Intelligenza Artificiale,40,40,40,15,-
-17,Implementazione Multigiocatore,50,50,50,13,-
-18,Creazione animazioni,4,4,2,2,-
-19,Gestione effetti sonori,6,6,6,6,-
-20,Gestione impostazioni di gioco,8,8,8,8,-
-21,Editor Livelli,12,12,12,18,-
-22,Statistiche di gioco,6,6,6,6,-
+16,Implementazione Intelligenza Artificiale,40,40,40,15,0
+17,Implementazione Multigiocatore,50,50,50,13,0
+18,Creazione animazioni,4,4,2,2,1
+19,Gestione effetti sonori,6,6,6,6,2
+20,Gestione impostazioni di gioco,8,8,8,8,8
+21,Editor Livelli,12,12,12,18,2
+22,Statistiche di gioco,6,6,6,6,6

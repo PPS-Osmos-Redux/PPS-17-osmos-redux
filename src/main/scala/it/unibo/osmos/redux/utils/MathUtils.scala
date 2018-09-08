@@ -2,13 +2,10 @@ package it.unibo.osmos.redux.utils
 
 import it.unibo.osmos.redux.ecs.components.PositionComponent
 
-/**
-  * Utility class that offers math related useful methods
-  */
+/** Utility class that offers math related useful methods */
 object MathUtils {
 
-  /**
-    * Returns the normalized value of a number between a min and a max
+  /** Returns the normalized value of a number between a min and a max
     *
     * @param number the number
     * @param min    the min number
@@ -17,34 +14,17 @@ object MathUtils {
     */
   def normalize(number: Double, min: Double, max: Double): Double = (number - min) / (max - min)
 
-  /**
-    * Returns the normalized point.
+  /** unitVector from point2 to point1
     *
-    * @param point The point to normalize
-    * @return The normalized point
-    */
-  // TODO: code duplication, this is the same as the vector one
-  def normalizePoint(point: Point): Point = {
-    val mod = math.sqrt(math.pow(point.x, 2) + math.pow(point.y, 2))
-    Point(point.x / mod, point.y / mod)
-  }
-
-  /**
-    * unitVector from point2 to point1
     * @param point1
     * @param point2
     * @return unitVector
     */
   def unitVector(point1: Point, point2: Point): Vector = {
-    val unitVector = point1.subtract(point2)
-    val mod = math.sqrt(math.pow(unitVector.x, 2) + math.pow(unitVector.y, 2))
-    //unitVector.x_(unitVector.x / mod)
-    //unitVector.y_(unitVector.y / mod)
-    unitVector.divide(mod)
+    point1 subtract point2 normalized()
   }
 
-  /**
-    * Returns the Euclidean distance in 2D space
+  /** Returns the Euclidean distance in 2D space
     *
     * @param point1 first point
     * @param point2 second point
@@ -53,8 +33,16 @@ object MathUtils {
   def euclideanDistance(point1: Point, point2: Point): Double =
     Math.sqrt(Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2))
 
-  /**
-    * Returns the Euclidean distance in 2D space
+  /** Returns the square of Euclidean distance in 2D space
+    *
+    * @param point1 first point
+    * @param point2 second point
+    * @return square of Euclidean distance
+    */
+  def euclideanDistanceSq(point1: Point, point2: Point): Double =
+    Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2)
+
+  /** Returns the Euclidean distance in 2D space
     *
     * @param position1 first position
     * @param position2 second position
@@ -63,25 +51,32 @@ object MathUtils {
   def euclideanDistance(position1: PositionComponent, position2: PositionComponent): Double =
     euclideanDistance(position1.point, position2.point)
 
-  /**
-    * Returns the area of a circle of a given radius
+  /** Returns the area of a circle of a given radius
     *
     * @param radius the radius
     * @return area
     */
   def circleArea(radius: Double): Double = Math.pow(radius, 2) * Math.PI
 
-  /**
-    * Checks if a point is between other two points and it is
-    * on the straight line passing through these two points
+  /** Return the radius of a circle of a given area
     *
-    * @param p the point to be verified
-    * @param p1 one of the boundary points
-    * @param p2 the other one
-    * @return result of the evaluation
+    * @param area the area
+    * @return the radius
     */
-  def isPointBetweenPoints(p: Point, p1: Point, p2: Point): Boolean = {
-    val distance = MathUtils.euclideanDistance(p1, p2)
-    MathUtils.euclideanDistance(p, p1) < distance && MathUtils.euclideanDistance(p, p2) < distance
+  def areaToRadius(area: Double): Double = Math.sqrt(area / Math.PI)
+
+  /** Method which limits a value between a minimum and a maximum ones
+    *
+    * @param value the value
+    * @param min   the minimum value
+    * @param max   the maximum value
+    * @return the clamped value
+    */
+  def clamp(value: Double, min: Double, max: Double): Double = {
+    value match {
+      case v if v < min => min
+      case v if v > max => max
+      case _ => value
+    }
   }
 }

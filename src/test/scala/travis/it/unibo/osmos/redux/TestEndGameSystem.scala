@@ -1,26 +1,17 @@
 package it.unibo.osmos.redux
 
-import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities._
+import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 import it.unibo.osmos.redux.ecs.systems.EndGameSystem
-import it.unibo.osmos.redux.mvc.model.{MapShape, VictoryRules}
-import it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper
+import it.unibo.osmos.redux.mvc.controller.levels.structure.VictoryRules
+import it.unibo.osmos.redux.mvc.view.context.LevelContext
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GamePending, GameWon}
-import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextListener}
-import it.unibo.osmos.redux.utils.Point
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 import scala.collection.mutable.ListBuffer
 
 class TestEndGameSystem extends FunSuite with BeforeAndAfter {
 
-  private val levelContextListener = new LevelContextListener {
-    override def onDrawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = {}
-
-    override def onLevelSetup(mapShape: MapShape): Unit = {}
-
-    override def onLevelEnd(levelResult: Boolean): Unit = {}
-  }
   private var levelContext: LevelContext = _
 
   before {
@@ -34,24 +25,9 @@ class TestEndGameSystem extends FunSuite with BeforeAndAfter {
   test("Become the biggest victory rule: the player wins having his entity radius greater than the other entities radius") {
     val endGameSystem = EndGameSystem(levelContext, VictoryRules.becomeTheBiggest)
 
-    val sca = AccelerationComponent(0, 0)
-    val scc = CollidableComponent(true)
-    val scd = DimensionComponent(4)
-    val scp = PositionComponent(Point(60, 64))
-    val scs = SpeedComponent(0, 0)
-    val scv = VisibleComponent(true)
-    val sct = TypeComponent(EntityType.Matter)
-    val smallerCellEntity = CellEntity(sca, scc, scd, scp, scs, scv, sct)
+    val smallerCellEntity = CellBuilder().withDimension(4).withPosition(60, 64).buildCellEntity()
 
-    val pca = AccelerationComponent(0, 0)
-    val pcc = CollidableComponent(true)
-    val pcd = DimensionComponent(6)
-    val pcp = PositionComponent(Point(50, 64))
-    val pcs = SpeedComponent(4, 0)
-    val pcv = VisibleComponent(true)
-    val pct = TypeComponent(EntityType.Matter)
-    val spw = SpawnerComponent(false)
-    val playerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv, pct, spw)
+    val playerCellEntity = CellBuilder().withDimension(6).withPosition(50, 64).buildPlayerEntity()
 
     EntityManager.add(smallerCellEntity)
     EntityManager.add(playerCellEntity)
@@ -66,33 +42,12 @@ class TestEndGameSystem extends FunSuite with BeforeAndAfter {
   test("Become the biggest victory rule: antimatter entities radius is ignored for the player victory") {
     val endGameSystem = EndGameSystem(levelContext, VictoryRules.becomeTheBiggest)
 
-    val sca = AccelerationComponent(0, 0)
-    val scc = CollidableComponent(true)
-    val scd = DimensionComponent(4)
-    val scp = PositionComponent(Point(60, 64))
-    val scs = SpeedComponent(0, 0)
-    val scv = VisibleComponent(true)
-    val sct = TypeComponent(EntityType.Matter)
-    val smallerCellEntity = CellEntity(sca, scc, scd, scp, scs, scv, sct)
+    val smallerCellEntity = CellBuilder().withDimension(4).withPosition(60, 64).buildCellEntity()
 
-    val aca = AccelerationComponent(0, 0)
-    val acc = CollidableComponent(true)
-    val acd = DimensionComponent(10)
-    val acp = PositionComponent(Point(80, 84))
-    val acs = SpeedComponent(0, 0)
-    val acv = VisibleComponent(true)
-    val act = TypeComponent(EntityType.AntiMatter)
-    val antimatterCellEntity = CellEntity(aca, acc, acd, acp, acs, acv, act)
+    val antimatterCellEntity = CellBuilder().withDimension(10).withPosition(80, 84)
+      .withEntityType(EntityType.AntiMatter).buildCellEntity()
 
-    val pca = AccelerationComponent(0, 0)
-    val pcc = CollidableComponent(true)
-    val pcd = DimensionComponent(6)
-    val pcp = PositionComponent(Point(50, 64))
-    val pcs = SpeedComponent(4, 0)
-    val pcv = VisibleComponent(true)
-    val pct = TypeComponent(EntityType.Matter)
-    val spw = SpawnerComponent(false)
-    val playerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv, pct, spw)
+    val playerCellEntity = CellBuilder().withDimension(6).withPosition(50, 64).buildPlayerEntity()
 
     EntityManager.add(smallerCellEntity)
     EntityManager.add(antimatterCellEntity)
@@ -110,24 +65,9 @@ class TestEndGameSystem extends FunSuite with BeforeAndAfter {
 
     val entityList: ListBuffer[CellEntity] = ListBuffer()
 
-    val ca = AccelerationComponent(0, 0)
-    val cc = CollidableComponent(true)
-    val cd = DimensionComponent(40)
-    val cp = PositionComponent(Point(160, 64))
-    val cs = SpeedComponent(0, 0)
-    val cv = VisibleComponent(true)
-    val ct = TypeComponent(EntityType.Matter)
-    val cellEntity = CellEntity(ca, cc, cd, cp, cs, cv, ct)
+    val cellEntity = CellBuilder().withDimension(40).withPosition(160, 64).buildCellEntity()
 
-    val pca = AccelerationComponent(0, 0)
-    val pcc = CollidableComponent(true)
-    val pcd = DimensionComponent(60)
-    val pcp = PositionComponent(Point(50, 64))
-    val pcs = SpeedComponent(0, 0)
-    val pcv = VisibleComponent(true)
-    val pct = TypeComponent(EntityType.Matter)
-    val spw = SpawnerComponent(false)
-    val playerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv, pct, spw)
+    val playerCellEntity = CellBuilder().withDimension(60).withPosition(50, 64).buildPlayerEntity()
 
     entityList += cellEntity
     entityList += playerCellEntity
@@ -153,32 +93,11 @@ class TestEndGameSystem extends FunSuite with BeforeAndAfter {
   test("Absorb hostile cells victory rule: the player wins after no more sentient entities are alive") {
     val endGameSystem = EndGameSystem(levelContext, VictoryRules.absorbTheHostileCells)
 
-    val pca = AccelerationComponent(0, 0)
-    val pcc = CollidableComponent(true)
-    val pcd = DimensionComponent(6)
-    val pcp = PositionComponent(Point(50, 64))
-    val pcs = SpeedComponent(4, 0)
-    val pcv = VisibleComponent(true)
-    val pct = TypeComponent(EntityType.Matter)
-    val spw = SpawnerComponent(false)
-    val playerCellEntity = PlayerCellEntity(pca, pcc, pcd, pcp, pcs, pcv, pct, spw)
+    val playerCellEntity = CellBuilder().withDimension(6).withPosition(50, 64).buildPlayerEntity()
 
-    val spawner = SpawnerComponent(false)
-    val sca1 = AccelerationComponent(0, 0)
-    val scc1 = CollidableComponent(true)
-    val scd1 = DimensionComponent(7)
-    val scp1 = PositionComponent(Point(65, 64))
-    val scs1 = SpeedComponent(0, 0)
-    val scv1 = VisibleComponent(true)
-    val sentientCellEntity1 = SentientCellEntity(sca1, scc1, scd1, scp1, scs1, scv1, spawner)
+    val sentientCellEntity1 = CellBuilder().withDimension(7).withPosition(65, 64).buildSentientEntity()
 
-    val sca2 = AccelerationComponent(0, 0)
-    val scc2 = CollidableComponent(true)
-    val scd2 = DimensionComponent(4)
-    val scp2 = PositionComponent(Point(80, 90))
-    val scs2 = SpeedComponent(0, 0)
-    val scv2 = VisibleComponent(true)
-    val sentientCellEntity2 = SentientCellEntity(sca2, scc2, scd2, scp2, scs2, scv2, spawner)
+   val sentientCellEntity2 = CellBuilder().withDimension(4).withPosition(80, 90).buildSentientEntity()
 
     EntityManager.add(playerCellEntity)
     EntityManager.add(sentientCellEntity1)
@@ -198,14 +117,7 @@ class TestEndGameSystem extends FunSuite with BeforeAndAfter {
   test("The game is lost after the player's entity is not alive") {
     val endGameSystem = EndGameSystem(levelContext, VictoryRules.becomeTheBiggest)
 
-    val bca = AccelerationComponent(0, 0)
-    val bcc = CollidableComponent(true)
-    val bcd = DimensionComponent(7)
-    val bcp = PositionComponent(Point(65, 64))
-    val bcs = SpeedComponent(0, 0)
-    val bcv = VisibleComponent(true)
-    val bct = TypeComponent(EntityType.Matter)
-    val biggerCellEntity = CellEntity(bca, bcc, bcd, bcp, bcs, bcv, bct)
+    val biggerCellEntity = CellBuilder().withDimension(7).withPosition(65, 64).buildCellEntity()
 
     EntityManager.add(biggerCellEntity)
 

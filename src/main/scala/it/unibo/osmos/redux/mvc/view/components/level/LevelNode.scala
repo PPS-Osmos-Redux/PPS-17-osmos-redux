@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.components.level
 
-import it.unibo.osmos.redux.mvc.controller.LevelInfo
+import it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import scalafx.Includes._
 import scalafx.animation.{FadeTransition, Transition}

@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.mvc.view.components.editor
 
-import it.unibo.osmos.redux.ecs.entities.builders.{CellBuilder, GravityCellBuilder}
-import it.unibo.osmos.redux.ecs.entities.{CellEntity, GravityCellEntity}
+import it.unibo.osmos.redux.ecs.entities.GravityCellEntity
+import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 import it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField
 import scalafx.beans.property.DoubleProperty
 import scalafx.scene.control.Label
@@ -10,29 +10,23 @@ import scalafx.scene.layout.VBox
 /**
   * A panel showing input nodes which is also capable of providing the requested GravityCellEntity
   *
-  * @param isAttractive true if the gravity cell is an attractive one, false if it is repulsive
   */
-class GravityCellEntityCreator(var isAttractive: Boolean) extends CellEntityCreator {
+class GravityCellEntityCreator extends CellEntityCreator {
 
   /* Specific weight node*/
-  val weight: DoubleProperty = DoubleProperty(0.0)
-  val weightNode = new VBox(2.0, new Label("Weight"), new TitledDoubleField("Weight: ", weight).innerNode)
+  val weight: DoubleProperty = DoubleProperty(1.0)
+  val weightNode = new VBox(2.0, new Label("Weight"), new TitledDoubleField("Weight: ", weight, 0.0, Double.MaxValue).innerNode)
 
   children.add(weightNode)
 
   override def configureBuilder(builder: CellBuilder, withEntityType: Boolean = true): Unit = {
-    builder match {
-      case gcb: GravityCellBuilder =>
-        super.configureBuilder(gcb)
-        gcb.withSpecificWeight(weight.value)
-      case _ => throw new IllegalArgumentException("GravityCellEntityCreator must use a GravityCellBuilder")
-    }
+    super.configureBuilder(builder)
+    builder.withSpecificWeight(weight.value)
   }
 
-  override def create(): CellEntity = {
-    val builder = GravityCellBuilder()
+  override def create(): GravityCellEntity = {
+    val builder = CellBuilder()
     configureBuilder(builder)
-    builder.build
+    builder.buildGravityEntity()
   }
-
 }

@@ -8,8 +8,7 @@ import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.multiplayer.lobby.GameLobby
 import it.unibo.osmos.redux.multiplayer.players.{BasePlayer, ReferablePlayer}
 import it.unibo.osmos.redux.multiplayer.server.ServerActor._
-import it.unibo.osmos.redux.mvc.controller.LevelInfo
-import it.unibo.osmos.redux.mvc.model.Level
+import it.unibo.osmos.redux.mvc.controller.levels.structure.{Level, LevelInfo}
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, MultiPlayerLevelContext}
 import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
@@ -59,10 +58,9 @@ trait Server {
   /**
     * Signals all clients that the game needs to be started and checks that they all reply.
     * @param level The level.
-    * @param levelInfo The level info.
     * @return Promise that completes with true if all clients replied before the timeout; otherwise false.
     */
-  def initGame(level: Level, levelInfo: LevelInfo): Promise[Boolean]
+  def initGame(level: Level): Promise[Boolean]
 
   /**
     * Starts the game by notifying the interface and passing the level context to use.
@@ -201,13 +199,13 @@ object Server {
     override def broadcastMessage(message: Any, clientsToExclude: String*): Unit = {
       if (ref.isEmpty) throw new IllegalStateException("Unable to broadcast the message, server is not bind to an actor.")
       val usernameToExclude = clientsToExclude :+ this.username
-      val actors = lobby.get.getPlayers.filterNot(p => usernameToExclude contains p.getUsername).map(_.getActorRef)
+      val actors = lobby.get.getPlayers.filterNot(p => (usernameToExclude contains p.getUsername) || !p.isAlive).map(_.getActorRef)
       actors.foreach(a => a ! message)
     }
 
     //GAME MANAGEMENT
 
-    override def initGame(level: Level, levelInfo: LevelInfo): Promise[Boolean] = {
+    override def initGame(level: Level): Promise[Boolean] = {
       Logger.log("initGame")
 
       if (status != ServerState.Lobby) throw new UnsupportedOperationException(s"Cannot init the game because the server is in the state: $status")
@@ -215,7 +213,7 @@ object Server {
       val promise = Promise[Boolean]()
 
       //assign player cells to lobby players
-      val futures = setupClients(level, levelInfo)
+      val futures = setupClients(level)
       Future.sequence(futures) onComplete {
         case Success(_) => promise success true
         case Failure(t) => promise failure t
@@ -245,6 +243,8 @@ object Server {
         broadcastMessage(GameEnded(false), winner)
       }
 
+      resetLobbyPlayersDeathStatus()
+
       status = ServerState.Lobby
     }
 
@@ -272,7 +272,7 @@ object Server {
       if (playerEntity.isEmpty) throw new IllegalArgumentException("Cannot remove player cell from game because it was not found.")
 
       EntityManager.delete(playerEntity.get)
-      lobby.get.removePlayer(username)
+      setLobbyPlayerAsDead(username)
     }
 
     //LOBBY MANAGEMENT
@@ -335,7 +335,7 @@ object Server {
       Logger.log("removePlayerFromLobby")
 
       status match {
-        case ServerState.Lobby =>
+        case ServerState.Lobby | ServerState.Game =>
           lobby.get.removePlayer(username)
           broadcastMessage(PlayerLeftLobby(username))
         case _ =>
@@ -344,7 +344,7 @@ object Server {
 
     //HELPER METHODS
 
-    private def setupClients(level: Level, levelInfo: LevelInfo): Seq[Future[Any]] = {
+    private def setupClients(level: Level): Seq[Future[Any]] = {
       Logger.log("assignCellsToPlayers")
 
       val availablePlayerCells = level.entities.filter(_.isInstanceOf[PlayerCellEntity]).map(p => Some(p.getUUID))
@@ -373,7 +373,7 @@ object Server {
       ) yield e
 
       otherPlayers.map(Some(_)).zipAll(availablePlayerCells.tail, None, None).map {
-        case (Some(p), Some(id)) => p.setUUID(id); Some(p.getActorRef ? GameStarted(id, levelInfo, mapShape))
+        case (Some(p), Some(id)) => p.setUUID(id); Some(p.getActorRef ? GameStarted(id, level.levelInfo, mapShape))
         case (None, _) => None
         case _ => throw new IllegalStateException("Not enough player cells for all the clients.")
       }.filter(_.nonEmpty).map(_.get)
@@ -382,7 +382,25 @@ object Server {
     private def getPlayerFromLobby(username: String): Option[ReferablePlayer] = {
       Logger.log("getPlayerFromLobby")
 
+      if (lobby.isEmpty) throw new UnsupportedOperationException("Cannot get lobby player if the server doesn't have created any lobby.")
+
       lobby.get.getPlayers.find(_.getUsername == username)
+    }
+
+    private def setLobbyPlayerAsDead(username: String): Unit = {
+      Logger.log("setLobbyPlayerAsDead")
+
+      if (lobby.isEmpty) throw new UnsupportedOperationException("Cannot set lobby player as dead if the server doesn't have created any lobby.")
+
+      lobby.get.getPlayers.filter(_.getUsername == username).foreach(_ setLiveness false)
+    }
+
+    private def resetLobbyPlayersDeathStatus(): Unit = {
+      Logger.log("resetLobbyPlayersDeathStatus")
+
+      if (lobby.isEmpty) throw new UnsupportedOperationException("Cannot reset lobby players death status if the server doesn't have created any lobby.")
+
+      lobby.get.getPlayers.foreach(_ setLiveness true)
     }
   }
 }

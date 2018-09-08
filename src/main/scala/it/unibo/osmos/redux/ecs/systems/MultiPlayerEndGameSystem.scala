@@ -1,8 +1,10 @@
 package it.unibo.osmos.redux.ecs.systems
 
-import it.unibo.osmos.redux.ecs.entities.{DeathProperty, EntityType, PlayerCellEntity}
+import it.unibo.osmos.redux.ecs.entities.properties.composed.DeathProperty
+import it.unibo.osmos.redux.ecs.entities.{EntityType, PlayerCellEntity}
+import it.unibo.osmos.redux.ecs.systems.victoryconditions.{AbsorbAllOtherPlayersCondition, AbsorbCellsWithTypeVictoryCondition, BecomeHugeVictoryCondition, BecomeTheBiggestVictoryCondition}
 import it.unibo.osmos.redux.multiplayer.server.Server
-import it.unibo.osmos.redux.mvc.model.VictoryRules
+import it.unibo.osmos.redux.mvc.controller.levels.structure.VictoryRules
 import it.unibo.osmos.redux.mvc.view.context.GameStateHolder
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GamePending, GameWon}
 import it.unibo.osmos.redux.utils.Logger
@@ -12,24 +14,16 @@ import it.unibo.osmos.redux.utils.Logger
   * @param levelContext object to notify the view of the end game result
   * @param victoryRules enumeration representing the level's victory rules
   */
-case class MultiPlayerEndGameSystem(server: Server, levelContext: GameStateHolder, victoryRules: VictoryRules.Value) extends AbstractSystemWithTwoTypeOfEntity[PlayerCellEntity, DeathProperty] {
+case class MultiPlayerEndGameSystem(server: Server, levelContext: GameStateHolder, victoryRules: VictoryRules.Value) extends AbstractSystem2[PlayerCellEntity, DeathProperty] {
 
   private val victoryCondition = victoryRules match {
-    case VictoryRules.becomeTheBiggest => BecomeTheBiggestVictoryCondition()
-    case VictoryRules.becomeHuge => BecomeHugeVictoryCondition()
-    case VictoryRules.absorbTheRepulsors => AbsorbCellsWithTypeVictoryCondition(EntityType.Repulsive)
-    case VictoryRules.absorbTheHostileCells => AbsorbCellsWithTypeVictoryCondition(EntityType.Sentient)
     case VictoryRules.absorbAllOtherPlayers => AbsorbAllOtherPlayersCondition()
     case _ => throw new NotImplementedError()
   }
 
-  override protected def getGroupProperty: Class[PlayerCellEntity] = classOf[PlayerCellEntity]
-
-  override protected def getGroupPropertySecondType: Class[DeathProperty] = classOf[DeathProperty]
-
   override def update(): Unit = {
     if (isGameRunning) {
-      val (deadPlayers, alivePlayers) = server.getLobbyPlayers partition(p => entities.map(_.getUUID) contains p.getUsername)
+      val (alivePlayers, deadPlayers) = server.getLobbyPlayers.filter(_.isAlive) partition (p => entities.map(_.getUUID) contains p.getUUID)
       val aliveCells = entitiesSecondType.filterNot(c => deadPlayers.map(_.getUUID) contains c.getUUID)
 
       //check
@@ -50,7 +44,16 @@ case class MultiPlayerEndGameSystem(server: Server, levelContext: GameStateHolde
       }
 
       //notify all dead players and remove them
-      if (isGameRunning) deadPlayers.foreach(p => server.removePlayerFromGame(p.getUsername, notify = true))
+      if (isGameRunning) {
+        deadPlayers.foreach(p => {
+          //check if the server died
+          val isServer = p.getUsername == server.getUsername
+          //remove player from game and notify it (only if it's not the server itself)
+          server.removePlayerFromGame(p.getUsername, !isServer)
+          //if the server lost show the alternate UI
+          if (isServer) levelContext.notify(???)
+        })
+      }
     }
   }
 

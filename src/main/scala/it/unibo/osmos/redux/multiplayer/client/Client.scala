@@ -8,8 +8,7 @@ import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.multiplayer.lobby.GameLobby
 import it.unibo.osmos.redux.multiplayer.players.BasePlayer
 import it.unibo.osmos.redux.multiplayer.server.ServerActor._
-import it.unibo.osmos.redux.mvc.controller.LevelInfo
-import it.unibo.osmos.redux.mvc.model.MapShape
+import it.unibo.osmos.redux.mvc.controller.levels.structure.{LevelInfo, MapShape}
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, MultiPlayerLevelContext}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity
@@ -227,7 +226,7 @@ object Client {
     }
 
     override def stopGame(victorious: Boolean): Unit = {
-      Logger.log("notifyGameStatusChanged")
+      Logger.log(s"notifyGameStatusChanged - victorious: $victorious")
 
       //game is won or lost
       levelContext.get.notify(if (victorious) GameWon else GameLost)
