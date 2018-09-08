@@ -1,7 +1,9 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
+import it.unibo.osmos.redux.mvc.controller.SettingsHolder
+import it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels
 import it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer
-import it.unibo.osmos.redux.mvc.view.components.custom.StyledButton
+import it.unibo.osmos.redux.mvc.view.components.custom.{AlertFactory, StyledButton}
 import it.unibo.osmos.redux.mvc.view.context.LevelContext
 import it.unibo.osmos.redux.mvc.view.stages.PrimaryStageListener
 import javafx.scene.media.MediaPlayer.Status._
@@ -64,18 +66,19 @@ class SettingsScene(override val parentStage: Stage, listener: PrimaryStageListe
   }
 
   private val resetGameData = new StyledButton("Reset game data") {
-    // TODO: add reset game data action
-    // onAction = _
+    onAction = _ => AlertFactory.showConfirmationAlert(text.value + "?", "Your progresses will be lost", SinglePlayerLevels.reset(), {})
   }
 
+  /** adds save settings to goBack button */
+  setAdditionalAction(() => SettingsHolder.saveSettings())
+
   /**
-    * The central level container
+    * The central container
     */
   protected val container: VBox = new VBox(15) {
     alignment = Pos.Center
     children = Seq(volumeContainer, volumeSlider, resetGameData, goBack)
     styleClass.add("settings-vbox")
-
   }
 
   /* Setting the root container*/

@@ -88,7 +88,8 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
     */
   def onLevelPlayClick(levelInfo: LevelInfo, simulation: Boolean, custom: Boolean = false): Unit = {
     /* Creating a listener on the run*/
-    val upperLevelSceneListener: UpperLevelSceneListener = () => {parentStage.scene = this; reloadLevels()}
+    val upperLevelSceneListener: BackClickListener = () => {parentStage.scene = this; reloadLevels()}
+
     /* Creating a new level scene */
     val levelScene = new LevelScene(parentStage, levelInfo, listener, upperLevelSceneListener)
     /* Creating the level context */
@@ -97,10 +98,9 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
     levelScene.levelContext = levelContext
     /* Changing scene scene */
     parentStage.scene = levelScene
-    /* Notify the view the new context */
-    listener.onLevelContextCreated(levelContext, levelInfo.name, custom)
+    /* Notify the view the new context, if something goes bad, stay in this scene */
+    if (!listener.onLevelContextCreated(levelContext, levelInfo.name, custom)) parentStage.scene = this
   }
-
 }
 
 /**
@@ -114,8 +114,10 @@ trait LevelSelectionSceneListener extends LevelSceneListener {
     * @param levelContext the new level context
     * @param level        the new level name
     * @param isCustom     true if the level is custom, false otherwise
+    *
+    * @return true if the controller level initialization goes fine; otherwise false
     */
-  def onLevelContextCreated(levelContext: LevelContext, level: String, isCustom: Boolean = false)
+  def onLevelContextCreated(levelContext: LevelContext, level: String, isCustom: Boolean = false): Boolean
 
   /**
     * This method retrieves the levels that must be shown as node

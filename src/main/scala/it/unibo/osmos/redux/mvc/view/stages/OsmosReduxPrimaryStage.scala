@@ -54,6 +54,10 @@ object OsmosReduxPrimaryStage {
 
     override def onEditorClick(): Unit = scene = new EditorLevelSelectionScene(this, listener, mainScene)
 
+    override def onStatsClick(): Unit = scene = new StatsScene(this, listener, mainScene)
+
+    override def onControlsClick(): Unit = scene = new ControlsScene(this, listener, mainScene)
+
     override def onSettingsClick(): Unit = scene = new SettingsScene(this, listener, mainScene)
 
     /* Stopping the game when the user closes the window */
@@ -66,13 +70,6 @@ object OsmosReduxPrimaryStage {
   * Listener that manages all the events managed by the primary scene
   */
 trait PrimaryStageListener extends LevelSelectionSceneListener with EditorLevelSelectionSceneListener
-  with MultiPlayerSceneListener with MultiPlayerLobbySceneListener with MultiPlayerLevelSelectionSceneListener
-  with DisplayErrorListener {
+  with MultiPlayerSceneListener with MultiPlayerLobbySceneListener with MultiPlayerLevelSelectionSceneListener {
 
-}
-
-// TODO: check if it necessary elsewhere, otherwise can become a method of PrimaryStageListener
-trait DisplayErrorListener {
-
-  def onDisplayError(exception: Throwable): Unit
 }

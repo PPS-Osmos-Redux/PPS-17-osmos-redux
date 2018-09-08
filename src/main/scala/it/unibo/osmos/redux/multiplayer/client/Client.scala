@@ -226,7 +226,7 @@ object Client {
     }
 
     override def stopGame(victorious: Boolean): Unit = {
-      Logger.log("notifyGameStatusChanged")
+      Logger.log(s"notifyGameStatusChanged - victorious: $victorious")
 
       //game is won or lost
       levelContext.get.notify(if (victorious) GameWon else GameLost)
