@@ -335,7 +335,7 @@ object Server {
       Logger.log("removePlayerFromLobby")
 
       status match {
-        case ServerState.Lobby =>
+        case ServerState.Lobby | ServerState.Game =>
           lobby.get.removePlayer(username)
           broadcastMessage(PlayerLeftLobby(username))
         case _ =>
@@ -388,7 +388,7 @@ object Server {
     }
 
     private def setLobbyPlayerAsDead(username: String): Unit = {
-      Logger.log("setLobbyPlayerDeath")
+      Logger.log("setLobbyPlayerAsDead")
 
       if (lobby.isEmpty) throw new UnsupportedOperationException("Cannot set lobby player as dead if the server doesn't have created any lobby.")
 
