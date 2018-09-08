@@ -15,7 +15,7 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
   //constants that controls how much deceleration is applied to an entity when colliding with another one
   private val DecelerationAmount = 0.1
   //the initial acceleration vector of a steady entity when a collision occurs
-  private val InitialAccelerationVector = Vector(0.01, 0.01)
+  private val InitialAccelerationVector = Vector(0.1, 0.1)
   //the bouncing rule
   private val bounceRule = levelInfo.levelMap.mapShape match {
     case shape: Rectangle =>
