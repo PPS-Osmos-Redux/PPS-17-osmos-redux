@@ -5,7 +5,7 @@ import it.unibo.osmos.redux.ecs.entities.properties.composed.CollidableProperty
 import it.unibo.osmos.redux.mvc.controller.levels.structure.CollisionRules
 import it.unibo.osmos.redux.utils.{Point, Vector}
 
-/** Implementation of a playing field with rectangular shape */
+/** Collision implementation for a playing field with rectangular shape */
 case class RectangularBorder(levelCenter: Point, collisionRule: CollisionRules.Value, base: Double, height: Double) extends AbstractBorder(levelCenter, collisionRule) {
 
   override def checkAndSolveCollision(entity: CollidableProperty): Unit = {

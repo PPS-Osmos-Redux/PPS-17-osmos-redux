@@ -2,9 +2,10 @@ package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities.{PlayerCellEntity, _}
+import it.unibo.osmos.redux.mvc.controller.{Setting, Volume}
 import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.mvc.controller.levels.structure._
-import it.unibo.osmos.redux.mvc.controller.manager.files.{FileManager, LevelFileManager}
+import it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.FunSuite
 
@@ -29,8 +30,8 @@ class TestJsonConversion extends FunSuite {
   val sc = SentientCellEntity(a, c, d, p, s, v, spawner)
   val listCell: List[CellEntity] = List(ce, pce, gc, sc)
   //LevelMap
-  val rectangle: MapShape = Rectangle(Point(50, 50), 10.1, 5.6)
-  val circle: MapShape = Circle(Point(50.1, 50.2), 5.7)
+  val rectangle: MapShape = Rectangle(Point(0, 0), 50, 50)
+  val circle: MapShape = Circle(Point(0, 0), 50)
   val listShape: List[MapShape] = List(rectangle, circle)
   val levelMap: LevelMap = LevelMap(rectangle, CollisionRules.bouncing)
   //Level
@@ -41,6 +42,16 @@ class TestJsonConversion extends FunSuite {
   import spray.json._
   import DefaultJsonProtocol._
   import it.unibo.osmos.redux.mvc.model.JsonProtocols._
+
+  test("Settings conversion") {
+    val vol = Volume(1)
+    val jVol = vol.toJson
+    assert(jVol.convertTo[Volume].equals(vol))
+
+    val settings:List[Setting] = List(vol)
+    val jSettings = settings.toJson
+    assert(jSettings.convertTo[List[Setting]].equals(settings))
+  }
 
   test("Components conversion") {
     val jsAcceleration = a.toJson
@@ -57,6 +68,8 @@ class TestJsonConversion extends FunSuite {
     assert(jsVisible.convertTo[VisibleComponent].equals(v))
     val jsEntityType = et.toJson
     assert(jsEntityType.convertTo[TypeComponent].equals(et))
+    val jsSpawner = sp.toJson
+    assert(jsSpawner.convertTo[SpawnerComponent].equals(sp))
     val jsSpecificWeight = sw.toJson
     assert(jsSpecificWeight.convertTo[SpecificWeightComponent].equals(sw))
   }
@@ -102,8 +115,8 @@ class TestJsonConversion extends FunSuite {
     assert(jsRectangle.convertTo[MapShape].asInstanceOf[Rectangle].equals(rectangle))
     val jsCircle = circle.toJson
     assert(jsCircle.convertTo[MapShape].asInstanceOf[Circle].equals(circle))
-    val jsListOfShape = listShape.toJson
-    assert(jsListOfShape.convertTo[List[MapShape]].equals(listShape))
+    val jsListOfShapes = listShape.toJson
+    assert(jsListOfShapes.convertTo[List[MapShape]].equals(listShape))
     val jsLevelMap = levelMap.toJson
     assert(jsLevelMap.convertTo[LevelMap].equals(levelMap))
   }
@@ -116,7 +129,6 @@ class TestJsonConversion extends FunSuite {
     assert(convertedLevel.levelInfo.victoryRule.equals(level.levelInfo.victoryRule))
     assert(convertedLevel.entities.size.equals(level.entities.size))
   }
-
 
   test("File reading and conversion (SinglePlayer + MultiPlayer)") {
     val spConvertedLevel = LevelFileManager.getLevelFromResource("SinglePlayerLevel") match {
@@ -142,32 +154,5 @@ class TestJsonConversion extends FunSuite {
     }
     assert(mpRightLevel != null)
     assert(mpRightLevel.entities.count(cell => cell.isInstanceOf[PlayerCellEntity]) >= 2)
-  }
-
-  test("Writing and reading custom level") {
-    val saveResult = LevelFileManager.saveCustomLevel(level)
-    assert(saveResult)
-    val readLevel = LevelFileManager.getCustomLevel(level.levelInfo.name)
-    assert(readLevel.isDefined)
-    assert(readLevel.get.levelInfo.name.equals(level.levelInfo.name))
-    assert(readLevel.get.levelMap.equals(level.levelMap))
-    assert(readLevel.get.levelInfo.victoryRule.equals(level.levelInfo.victoryRule))
-    assert(readLevel.get.entities.size.equals(level.entities.size))
-
-    val firstFileName = level.levelInfo.name
-    //A file with the same name exists so it changes level name adding 1 at the end
-    LevelFileManager.saveCustomLevel(level)
-    //Reading the second saved level
-    val readLevel2 = LevelFileManager.getCustomLevel(level.levelInfo.name)
-    assert(readLevel2.isDefined)
-
-    assert(readLevel2.get.levelInfo.name.equals(level.levelInfo.name))
-    //Delete second file SinglePlayerLevel1
-    LevelFileManager.deleteFile(level.levelInfo.name)
-    assert(LevelFileManager.getCustomLevel(level.levelInfo.name).isEmpty)
-
-    //Delete firts file SinglePlayerLevel
-    LevelFileManager.deleteFile(firstFileName)
-    assert(LevelFileManager.getCustomLevel(firstFileName).isEmpty)
   }
 }

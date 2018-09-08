@@ -10,22 +10,35 @@ import scala.io.{BufferedSource, Source}
 import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}
 
+/** Abstract class with basics files management functions*/
 abstract class FileManager {
   implicit val who: String
   val jsonExtension = ".json"
 
-  /**
-    * Delete file by name
-    * @param fileName file name
+  /** Get resource file content as text.
+    *
+    * @param resourcePath file path referred to resource dir
+    * @return String
     */
-  def deleteFile(fileName:String):Try[Unit] = Try(Files.delete(Paths.get(UserHomePaths.levelsDirectory + fileName + jsonExtension)))
+  protected def getResourcesFileText(resourcePath:String): String = {
+    val fileStream =  this.getClass.getResourceAsStream(resourcePath)
+    try Source.fromInputStream(fileStream).mkString
+    finally  fileStream.close()
+  }
 
-  /**
-    * Creates directories tree
-    * @param file File object
+  /** Delete file by path.
+    *
+    * @param filePath Path
+    * @return Try[Unit]
+    */
+  protected def deleteFile(filePath:Path):Try[Unit] = Try(Files.delete(filePath))
+
+  /** Creates directories tree for a new file.
+    *
+    * @param file File
     * @return true if no Exceptions occurs
     */
-  def createDirectoriesTree(file:File):Boolean = Try(file.getParentFile.mkdirs()) match {
+  protected def createDirectoriesTree(file:File):Boolean = Try(file.getParentFile.mkdirs()) match {
    case Success(_) =>  true
    case Failure(exception) =>
      Logger.log("Error: SecurityException directories are protected [createDirectoriesTree] " +
@@ -33,13 +46,13 @@ abstract class FileManager {
      false
   }
 
-  /**
-    * Create a new file or overwrite its content if it exists
+  /** Create a new file or overwrite its content if exists.
+    *
     * @param file File
-    * @param text text to write
+    * @param text text to write into file
     * @return true if the operation is terminated with success
     */
-  def saveToFile(file:File, text: String): Boolean = {
+  protected def saveToFile(file:File, text: String): Boolean = {
     val writer = new PrintWriter(file)
     try {
       writer.write(text)
@@ -51,13 +64,13 @@ abstract class FileManager {
     false
   }
 
-  /**
-    * Get the file content
+  /** Get the file content.
+    *
     * @param filePath file path to String
     * @return An Option with the text if the operation is terminated with success
     */
-  def loadFile(filePath:String):Option[String] = {
-    val source: Try[BufferedSource] = Try(Source.fromFile(UserHomePaths.defaultFS.getPath(filePath).toUri))
+  protected def loadFile(filePath:String):Option[String] = {
+    val source: Try[BufferedSource] = Try(Source.fromFile(UserHomePaths.DefaultFS.getPath(filePath).toUri))
     if (source.isSuccess) {
       try {
         return Some(source.get.mkString)
@@ -69,4 +82,8 @@ abstract class FileManager {
     }
     None
   }
+
+  protected implicit def stringPathToFile(path:String): File = new File(path)
+
+  protected implicit def stringPathToPath(path:String): Path = Paths.get(path)
 }

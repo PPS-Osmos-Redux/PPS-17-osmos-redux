@@ -125,12 +125,12 @@
   "levelMap": {
     "mapShape": {
       "center": {
-        "x": 50.0,
-        "y": 50.0
+        "x": 0.0,
+        "y": 0.0
       },
       "mapShape": "Rectangle",
-      "height": 10.1,
-      "base": 5.6
+      "height": 50,
+      "base": 50
     },
     "collisionRule": "Bouncing"
   }

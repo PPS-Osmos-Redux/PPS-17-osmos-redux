@@ -24,7 +24,7 @@ import scalafx.stage.Stage
 class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: MultiPlayerLobbySceneListener,
                             val upperSceneListener: UpperMultiPlayerLobbySceneListener, val user: User)
   extends BaseScene(parentStage) with LobbyContextListener {
-
+  
   /**
     * The lobby context, created with the MultiPlayerLobbyScene. It still needs to be properly setup
     */
@@ -111,7 +111,7 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
       disable <== isStartGameDisabled
       onAction = _ => {
         if (_levelInfo.isDefined) {
-          listener.onStartMultiplayerGameClick(_levelInfo.get)
+          listener.onStartMultiPlayerGameClick(_levelInfo.get)
         } else throw new IllegalArgumentException("LevelInfo was empty in MultiPlayerLobbyScene, so the server cannot start the game")
       }
     } else {
@@ -184,6 +184,6 @@ trait MultiPlayerLobbySceneListener extends LevelSceneListener {
     * Called once per lobby. This will eventually lead to the server init. The server will eventually respond using the previously passed lobby context
     * @param levelInfo the level info requested by the controller
     */
-  def onStartMultiplayerGameClick(levelInfo: LevelInfo)
+  def onStartMultiPlayerGameClick(levelInfo: LevelInfo)
 
 }

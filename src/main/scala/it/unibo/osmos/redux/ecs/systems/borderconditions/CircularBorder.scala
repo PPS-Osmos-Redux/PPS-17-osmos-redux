@@ -5,7 +5,7 @@ import it.unibo.osmos.redux.ecs.entities.properties.composed.CollidableProperty
 import it.unibo.osmos.redux.mvc.controller.levels.structure.CollisionRules
 import it.unibo.osmos.redux.utils.{MathUtils, Point, Vector}
 
-/** Implementation of a playing field with circular shape */
+/** Collision implementation for a playing field with circular shape */
 case class CircularBorder(levelCenter: Point, collisionRule: CollisionRules.Value, levelRadius: Double) extends AbstractBorder(levelCenter, collisionRule) {
 
   var positionComponent: PositionComponent = _
