@@ -9,47 +9,37 @@ import scalafx.stage.Stage
 
 import scala.collection.mutable
 
-/**
-  * This scene lets the players choose which level they want to play
+/** This scene lets the players choose which level they want to play
   *
   * @param parentStage the parent stage
   * @param listener    the listener
   */
-class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSelectionSceneListener, previousSceneListener: BackClickListener) extends DefaultBackScene(parentStage, previousSceneListener)
-  with LevelNodeListener {
+class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSelectionSceneListener, previousSceneListener: BackClickListener)
+  extends DefaultBackScene(parentStage, previousSceneListener) with LevelNodeListener {
 
-  /**
-    * The levels shown
+  /** The levels shown
     *
     * @return the list of levels as LevelInfo
     */
   lazy val levels: mutable.Buffer[LevelInfo] = listener.getSingleLevels.toBuffer
 
-  /**
-    * This method loads the level into the level container, thus letting the player choose them
-    */
+  /** This method loads the level into the level container, thus letting the player choose them */
   def loadLevels(): Unit = levels foreach (level => levelsContainer.children.add(new LevelNode(LevelSelectionScene.this, level, levels.indexOf(level))))
 
-  /**
-    * This method refreshes the level list to acquire the new LevelInfos
-    */
+  /** This method refreshes the level list to acquire the new LevelInfos */
   protected def refreshLevels() : Unit = {
     levels.clear()
     levels.appendAll(listener.getSingleLevels)
   }
 
-  /**
-    * This method refreshes the level list and reload the nodes
-    */
+  /** This method refreshes the level list and reload the nodes */
   private def reloadLevels() : Unit = {
     refreshLevels()
     levelsContainer.children.clear()
     loadLevels()
   }
 
-  /**
-    * The central level container
-    */
+  /** The central level container */
   protected val levelsContainer: TilePane = new TilePane() {
     alignmentInParent = Pos.Center
     alignment = Pos.Center
@@ -71,29 +61,27 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
     children = Seq(levelsContainer, buttonsContainer)
   }
 
-  /* Setting the root container*/
+  /** Setting the root container*/
   root = container
 
-  /**
-    * Called when the user want to play a level
+  /** Called when the user want to play a level
     *
     * @param levelInfo  the level info
     * @param simulation true if the level must be started as a simulation, false otherwise
     * @param custom     true if the level is a custom one, false otherwise
     */
   def onLevelPlayClick(levelInfo: LevelInfo, simulation: Boolean, custom: Boolean = false): Unit = {
-    /* Creating a listener on the run*/
+    /** Creating a listener on the run*/
     val upperLevelSceneListener: BackClickListener = () => {parentStage.scene = this; reloadLevels()}
-
-    /* Creating a new level scene */
+    /** Creating a new level scene */
     val levelScene = new LevelScene(parentStage, levelInfo, listener, upperLevelSceneListener)
-    /* Creating the level context */
+    /** Creating the level context */
     val levelContext = LevelContext(simulation)
     levelContext.setListener(levelScene)
     levelScene.levelContext = levelContext
-    /* Changing scene scene */
+    /** Changing scene scene */
     parentStage.scene = levelScene
-    /* Notify the view the new context, if something goes bad, stay in this scene */
+    /** Notify the view the new context, if something goes bad, stay in this scene */
     if (!listener.onLevelContextCreated(levelContext, levelInfo.name, custom)) parentStage.scene = this
   }
 }
@@ -103,8 +91,7 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
   */
 trait LevelSelectionSceneListener extends LevelSceneListener {
 
-  /**
-    * This method called when the level context has been created
+  /** This method called when the level context has been created
     *
     * @param levelContext the new level context
     * @param level        the new level name
@@ -114,8 +101,7 @@ trait LevelSelectionSceneListener extends LevelSceneListener {
     */
   def onLevelContextCreated(levelContext: LevelContext, level: String, isCustom: Boolean = false): Boolean
 
-  /**
-    * This method retrieves the levels that must be shown as node
+  /** This method retrieves the levels that must be shown as node
     *
     * @return a list of LevelInfo
     */
