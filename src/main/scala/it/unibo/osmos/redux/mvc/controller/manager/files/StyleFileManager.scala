@@ -2,6 +2,8 @@ package it.unibo.osmos.redux.mvc.controller.manager.files
 
 import it.unibo.osmos.redux.utils.Logger
 import it.unibo.osmos.redux.utils.Constants.ResourcesPaths.StylePath
+
+/**Defines operation on styles file*/
 object StyleFileManager extends FileManager {
 
   override implicit val who: String = "StyleFileManager"

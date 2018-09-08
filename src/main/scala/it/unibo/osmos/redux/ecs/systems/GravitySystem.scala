@@ -4,6 +4,7 @@ import it.unibo.osmos.redux.ecs.entities.EntityType
 import it.unibo.osmos.redux.ecs.entities.properties.composed.{GravityProperty, MovableProperty}
 import it.unibo.osmos.redux.utils.MathUtils
 
+/** System managing the gravity cell */
 case class GravitySystem() extends AbstractSystem2[MovableProperty, GravityProperty]() {
 
   override def update(): Unit = for (

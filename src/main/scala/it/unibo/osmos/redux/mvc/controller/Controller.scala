@@ -16,67 +16,59 @@ import it.unibo.osmos.redux.utils.{Constants, GenericResponse, Logger}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Promise
-import scala.util.{Failure, Success}
+import scala.util.{Failure, Success, Try}
 
-/**
-  * Controller base trait
-  */
+/**Controller base trait*/
 trait Controller {
   type MultiPlayerMode = MultiPlayerMode.Value
   type LevelContextType = LevelContextType.Value
 
-  /**
-    * Initializes the level and the game engine.
+  /** Initializes the level and the game engine.
+    *
     * @param levelContext The level context.
     * @param chosenLevel The name of the chosen level.
     * @param isCustom True if the level is a custom one, false otherwise
     */
-  def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): Unit
+  def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): Try[Unit]
 
-  /**
-    * Initializes the multi-player lobby and the server or client.
+  /** Initializes the multi-player lobby and the server or client.
+    *
     * @param user The user config
     * @param lobbyContext The lobby context
     * @return Promise that completes with true if the lobby is initialized successfully; otherwise false.
     */
   def initLobby(user: User, lobbyContext: LobbyContext): Promise[GenericResponse[Boolean]]
 
-  /**
-    * Initializes the multi-player level and the game engine.
+  /** Initializes the multi-player level and the game engine.
+    *
     * @param levelInfo The level info
     * @return Promise that completes with true if the level is initialized successfully; otherwise false.
     */
   def initMultiPlayerLevel(levelInfo: LevelInfo): Promise[GenericResponse[Boolean]]
 
-  /**
-    * Starts the level.
-    */
+  /**Starts the level.*/
   def startLevel(): Unit
 
-  /**
-    * Stops the level.
+  /** Stops the level.
+    *
     * @param victory the level have been won or lost.
     */
   def stopLevel(victory: Boolean = false): Unit
 
-  /**
-    * Pauses the level.
-    */
+  /**Pauses the level.*/
   def pauseLevel(): Unit
 
-  /**
-    * Resumes the level.
-    */
+  /**Resumes the level.*/
   def resumeLevel(): Unit
 
-  /**
-    * Changes the level speed by speeding up or slowing down depending on the input.
+  /** Changes the level speed by speeding up or slowing down depending on the input.
+    *
     * @param increment Determines whether the level speed needs to be increased or decreased.
     */
   def changeLevelSpeed(increment: Boolean = false): Unit
 
-  /**
-    * Saves a level.
+  /** Saves a level.
+    *
     * @param name level name
     * @param map level map shape MapShape
     * @param victoryRules level victory rule VictoryRule.Value
@@ -86,38 +78,43 @@ trait Controller {
     **/
   def saveLevel(name: String, map:MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value, entities: Seq[CellEntity]): Boolean
 
-  /**
-    * Delete from file a custom level
+  /** Delete from file a custom level
+    *
     * @param name custom level name
     * @return true, if remove file is completed with success
     */
   def removeLevel(name:String): Boolean
 
-  /**
-    * Gets all the levels in the campaign.
+  /** Gets all the levels in the campaign.
+    *
     * @return The list of LevelInfo.
     */
   def getSinglePlayerLevels:List[LevelInfo] = SinglePlayerLevels.getLevelsInfo
 
-  /**
-    * Gets all multi-player levels.
+  /** Gets all multi-player levels.
+    *
     * @return The list of multi-player levels.
     */
   def getMultiPlayerLevels: List[LevelInfo] = MultiPlayerLevels.getLevels
 
-  /**
-    * Gets all custom levels filename.
+  /** Gets all custom levels filename.
+    *
     * @return The list of custom levels filename.
     */
   def getCustomLevels: List[LevelInfo]
 
-  /**
-    * Get requested sound path
+  /** Get requested sound path
+    *
     * @param soundType SoundsType.Value
     * @return Some(String) if path exists
     */
   def getSoundPath(soundType: SoundsType.Value): Option[String]
 
+  /** Get campaign levels.
+    *
+    * @return List[CampaignLevel].
+    */
+  def getCampaignLevels:List[CampaignLevel] = SinglePlayerLevels.getCampaignLevels
 }
 
 case class ControllerImpl() extends Controller {
@@ -132,23 +129,34 @@ case class ControllerImpl() extends Controller {
   private var server: Option[Server] = None
   private var client: Option[Client] = None
 
-  override def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): Unit = {
+  override def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): Try[Unit] = {
     Logger.log("initLevel")
 
-    val loadedLevel:Option[Level] = loadLevel(chosenLevel, isCustom, levelContext.levelContextType == LevelContextType.simulation)
+    val isSimulation = levelContext.levelContextType == LevelContextType.simulation
+    val loadedLevel:Option[Level] = loadLevel(chosenLevel, isCustom, isSimulation)
 
-    if (loadedLevel.isDefined) {
-      val player = loadedLevel.get.entities.find(_.isInstanceOf[PlayerCellEntity])
-      //assign current player uuid to the
-      if(player.isDefined) levelContext.setPlayerUUID(player.get.getUUID)
+    Try(loadedLevel match {
+      case Some(level) =>
+        //first available player cell is assigned to the user
+        level.entities.find(_.isInstanceOf[PlayerCellEntity]) match {
+          case Some(player) =>
+            //assign current player uuid to the
+            levelContext.setPlayerUUID(player.getUUID)
+            //clear all extra player cells
+            level.entities = level.entities.filterNot(e => e.isInstanceOf[PlayerCellEntity] && e.getUUID != player.getUUID)
+          case None =>
+            if (!isSimulation) throw new IllegalStateException("Cannot start a non-simulation level where no player cell is defined.")
+        }
 
-      //create and initialize the game engine
-      if(engine.isEmpty) engine = Some(GameEngine())
-      engine.get.init(loadedLevel.get, levelContext)
-      levelContext.setupLevel(loadedLevel.get.levelMap.mapShape)
-    } else {
-      Logger.log( "Error: level " + chosenLevel + " not found! The level " + (if(isCustom) "is" else "isn't") + "custom level")
-    }
+        //create the game engine if needed
+        if (engine.isEmpty) engine = Some(GameEngine())
+        //initialize the engine with the chosen level data and the level context
+        engine.get.init(level, levelContext)
+        //signal ui to start the game
+        levelContext.setupLevel(level.levelMap.mapShape)
+      case None =>
+        throw new IllegalArgumentException(s"Unable to load level '$chosenLevel', because its definition was not found.")
+    })
   }
 
   override def initLobby(user: User, lobbyContext: LobbyContext): Promise[GenericResponse[Boolean]] = {
@@ -337,14 +345,15 @@ case class ControllerImpl() extends Controller {
     case _ =>
   }
 
-  private def loadLevel(chosenLevel:String, isCustom:Boolean, isSimulation:Boolean): Option[Level] = if (isCustom) {
-    /*Because user campaign stats are not influenced by end game results of the custom levels*/
-    lastLoadedLevel = None
-    LevelFileManager.getCustomLevel(chosenLevel)
-  } else {
-    val loadedLevel = LevelFileManager.getLevelFromResource(chosenLevel)
-    if (isSimulation) lastLoadedLevel = None else lastLoadedLevel = Some(chosenLevel)
-    loadedLevel
-  }
+  private def loadLevel(chosenLevel:String, isCustom:Boolean, isSimulation:Boolean): Option[Level] =
+    if (isCustom) {
+      /*Because user campaign stats are not influenced by end game results of the custom levels*/
+      lastLoadedLevel = None
+      LevelFileManager.getCustomLevel(chosenLevel)
+    } else {
+      val loadedLevel = LevelFileManager.getLevelFromResource(chosenLevel)
+      if (isSimulation) lastLoadedLevel = None else lastLoadedLevel = Some(chosenLevel)
+      loadedLevel
+    }
 }
 

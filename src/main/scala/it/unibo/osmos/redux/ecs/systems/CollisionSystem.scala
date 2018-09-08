@@ -7,14 +7,15 @@ import it.unibo.osmos.redux.mvc.controller.levels.structure.Level
 import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.utils.{MathUtils, Point, Vector}
 
+/** System that managing the collision with boundary and between cell */
 case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidableProperty] {
 
   //the percentage of mass that an entity can acquire from another during a collision in a tick
-  private val massExchangeRate = 0.2
+  private val MassExchangeRate = 0.2
   //constants that controls how much deceleration is applied to an entity when colliding with another one
-  private val decelerationAmount = 0.1
+  private val DecelerationAmount = 0.1
   //the initial acceleration vector of a steady entity when a collision occurs
-  private val initialAccelerationVector = Vector(0.01, 0.01)
+  private val InitialAccelerationVector = Vector(0.01, 0.01)
   //the bouncing rule
   private val bounceRule = levelInfo.levelMap.mapShape match {
     case shape: Rectangle =>
@@ -26,7 +27,7 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
 
   override def update(): Unit = {
     //check collision with boundary
-    entities foreach(e => bounceRule.checkAndSolveCollision(e))
+    entities foreach (e => bounceRule.checkAndSolveCollision(e))
     //check collision other entities
     for {
       (e1, xIndex) <- entities.zipWithIndex
@@ -38,8 +39,8 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
     } yield applyCollisionEffects(e1, e2, overlap)
   }
 
-  /**
-    * Computes the overlap between two entities.
+  /** Computes the overlap between two entities.
+    *
     * @param e1 The first entity
     * @param e2 The second entity
     * @return The overlap amount.
@@ -58,10 +59,10 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
     }
   }
 
-  /**
-    * Applies collision effects to two entities that collide with each other.
-    * @param e1 The first entity
-    * @param e2 The second entity
+  /** Applies collision effects to two entities that collide with each other.
+    *
+    * @param e1      The first entity
+    * @param e2      The second entity
     * @param overlap The overlap amount
     */
   private def applyCollisionEffects(e1: CollidableProperty, e2: CollidableProperty, overlap: Double): Unit = {
@@ -74,42 +75,42 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
     val dir = MathUtils.unitVector(bigEntity.getPositionComponent.point, smallEntity.getPositionComponent.point)
 
     //apply deceleration to both entities, proportionally to their size
-    accelerateEntity(smallEntity, dir multiply -decelerationAmount)
-    accelerateEntity(bigEntity, dir multiply decelerationAmount)
+    accelerateEntity(smallEntity, dir multiply -DecelerationAmount)
+    accelerateEntity(bigEntity, dir multiply DecelerationAmount)
   }
 
-  /**
-    * Exchanges mass from the small entity to the big one (modify entity radius).
-    * @param bigEntity The big entity
+  /** Exchanges mass from the small entity to the big one (modify entity radius).
+    *
+    * @param bigEntity   The big entity
     * @param smallEntity The small entity
-    * @param overlap The overlap amount
+    * @param overlap     The overlap amount
     */
   private def exchangeMass(bigEntity: CollidableProperty, smallEntity: CollidableProperty, overlap: Double): Unit = {
     val bigRadius = bigEntity.getDimensionComponent.radius
     val tinyRadius = smallEntity.getDimensionComponent.radius
     //reduce radius of the small entity
-    smallEntity.getDimensionComponent.radius_(tinyRadius - overlap*massExchangeRate)
+    smallEntity.getDimensionComponent.radius_(tinyRadius - overlap * MassExchangeRate)
 
     //change radius of the big entity and compute the quantity to move the two entity
     val quantityToMove = (bigEntity.getTypeComponent.typeEntity, smallEntity.getTypeComponent.typeEntity) match {
       case (EntityType.AntiMatter, _) | (_, EntityType.AntiMatter) =>
-        bigEntity.getDimensionComponent.radius_(bigRadius - overlap*massExchangeRate)
-        (overlap * (1 - massExchangeRate*2)) / 2
+        bigEntity.getDimensionComponent.radius_(bigRadius - overlap * MassExchangeRate)
+        (overlap * (1 - MassExchangeRate * 2)) / 2
       case _ =>
         val oldSmallArea = MathUtils.circleArea(tinyRadius)
         val newSmallArea = MathUtils.circleArea(smallEntity.getDimensionComponent.radius)
         val newBigArea = MathUtils.circleArea(bigEntity.getDimensionComponent.radius) + oldSmallArea - newSmallArea
         bigEntity.getDimensionComponent.radius_(MathUtils.areaToRadius(newBigArea))
-        (overlap - overlap*massExchangeRate + (bigEntity.getDimensionComponent.radius-bigRadius))/2
+        (overlap - overlap * MassExchangeRate + (bigEntity.getDimensionComponent.radius - bigRadius)) / 2
     }
 
     moveEntitiesAfterCollision(bigEntity, smallEntity, quantityToMove)
   }
 
-  /**
-    * move each entity in the opposite direction to the other of quantity to move, and check collision with boundary
-    * @param entity1 first entity
-    * @param entity2 second entity
+  /** move each entity in the opposite direction to the other of quantity to move, and check collision with boundary
+    *
+    * @param entity1        first entity
+    * @param entity2        second entity
     * @param quantityToMove shift of each entity
     */
   private def moveEntitiesAfterCollision(entity1: CollidableProperty, entity2: CollidableProperty, quantityToMove: Double): Unit = {
@@ -122,17 +123,17 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
     bounceRule.repositionIfOutsideMap(entity2)
   }
 
-  /**
-    * Applies acceleration to the input entity.
-    * @param entity The entity.
+  /** Applies acceleration to the input entity.
+    *
+    * @param entity    The entity.
     * @param direction The vector to apply to the acceleration.
     */
   private def accelerateEntity(entity: CollidableProperty, direction: Vector): Unit = {
     val accel = entity.getAccelerationComponent
 
     //gain acceleration even if the entity is still
-    if (accel.vector == Vector(0,0)) {
-      entity.getAccelerationComponent.vector_(direction multiply initialAccelerationVector)
+    if (accel.vector == Vector(0, 0)) {
+      entity.getAccelerationComponent.vector_(direction multiply InitialAccelerationVector)
     } else {
       accel.vector_(accel.vector add direction)
     }

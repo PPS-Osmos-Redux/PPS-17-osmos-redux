@@ -7,7 +7,7 @@ import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 import it.unibo.osmos.redux.ecs.entities.properties.composed._
 
 /** Trait representing a CellEntity */
-trait CellEntity extends AbstractEntity with MovableProperty with CollidableProperty with DrawableProperty with DeathProperty with SentientEnemyProperty {}
+trait CellEntity extends MovableProperty with CollidableProperty with DrawableProperty with DeathProperty with SentientEnemyProperty {}
 
 object CellEntity {
   def apply(acceleration: AccelerationComponent,

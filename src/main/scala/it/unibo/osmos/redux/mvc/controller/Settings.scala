@@ -1,26 +1,31 @@
-package it.unibo.osmos.redux.mvc.model
+package it.unibo.osmos.redux.mvc.controller
 
 import it.unibo.osmos.redux.mvc.controller.manager.files.SettingsFileManger
 import it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer
 import it.unibo.osmos.redux.utils.Logger
 
+/**Manages settings*/
 object SettingsHolder extends SettingsEventObserver {
   implicit val who:String = "Settings"
 
   var settings:List[Setting] = List()
 
+  /** Initialize settings list
+    *
+    * @param loadedSettings List[Setting]
+    */
   def init(loadedSettings: List[Setting]): Unit = loadedSettings.foreach(setting => sendSettingToDestination(setting))
-
-  private def sendSettingToDestination(setting:Setting): Unit = setting match {
-    case vol:Volume => MusicPlayer.changeVolume(vol.value)
-    case _ => Logger.log("Error setting not managed " + setting)
-  }
 
   override def notify(settingsEvent: SettingsEvent): Unit = settingsEvent match {
     case mpEvent: MusicPlayerEvent =>
       createOrUpdateSetting(mpEvent.volume, mpEvent.volume.settingType)
       SettingsFileManger.saveSettings(settings)
     case _ => Logger.log("Error settings event not managed " + settingsEvent)
+  }
+
+  private def sendSettingToDestination(setting:Setting): Unit = setting match {
+    case vol:Volume => MusicPlayer.changeVolume(vol.value)
+    case _ => Logger.log("Error setting not managed " + setting)
   }
 
   private def createOrUpdateSetting(setting:Setting, settingType:SettingsTypes.Value): Unit =
@@ -34,50 +39,43 @@ object SettingsHolder extends SettingsEventObserver {
 }
 
 
-/**
-  * Trait extended by settings events
-  */
+/**Trait extended by settings events*/
 sealed trait SettingsEvent
 
-/**
-  * Music player event
+/** Music player event
+  *
   * @param volume Double
   */
 case class MusicPlayerEvent(volume:Volume) extends SettingsEvent
 
-/**
-  * Trait extends by a settings event generator
-  */
+/**Trait extends by a settings event generator*/
 trait Observable {
   def subscribe(observer:SettingsEventObserver)
 }
-/**
-  * Trait extended by settings event handler
-  */
+/**Trait extended by settings event handler*/
 trait SettingsEventObserver {
-  /**
-    * Setting event
+  /** Setting event
+    *
     * @param settingsEvent SettingsEvent
     */
   def notify(settingsEvent:SettingsEvent)
 }
 
+/**Defines settings types*/
 object SettingsTypes extends Enumeration {
   val Volume: SettingsTypes.Value = Value
 }
 
 
-/**
-  * Trait extended by setting
-  */
+/**Trait extended by setting*/
 sealed trait Setting {
-  /*Setting name*/
+  /* Setting type */
   val settingType:SettingsTypes.Value
 }
 
-/**
-  * Volume setting
-  * @param value volume values
+/**Defines volume setting
+  *
+  * @param value volume value
   */
 case class Volume(var value:Double) extends Setting {
   override val settingType: SettingsTypes.Value = SettingsTypes.Volume
