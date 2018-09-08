@@ -37,6 +37,8 @@ trait Referable {
   */
 class ReferablePlayer(private val username: String, private val address: String, private val port: Int, private val actorRef: ActorRef) extends BasePlayer(username, address, port) with Referable {
 
+  private var alive: Boolean = true
+
   /**
     * Secondary constructor.
     * @param basicPlayer The BasicPlayer.
@@ -52,4 +54,16 @@ class ReferablePlayer(private val username: String, private val address: String,
     * @return The basic player object
     */
   def toBasicPlayer: BasePlayer = BasePlayer(username, address, port)
+
+  /**
+    * Sets the liveness of the player.
+    * @param isAlive If the player is alive or not.
+    */
+  def setLiveness(isAlive: Boolean): Unit = alive = isAlive
+
+  /**
+    * Determines whether the player is alive or not.
+    * @return If the player is alive or not.
+    */
+  def isAlive: Boolean = alive
 }

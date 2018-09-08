@@ -1,5 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
+import it.unibo.osmos.redux.mvc.controller.SettingsHolder
 import it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels
 import it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer
 import it.unibo.osmos.redux.mvc.view.components.custom.{AlertFactory, StyledButton}
@@ -67,6 +68,9 @@ class SettingsScene(override val parentStage: Stage, listener: PrimaryStageListe
   private val resetGameData = new StyledButton("Reset game data") {
     onAction = _ => AlertFactory.showConfirmationAlert(text.value + "?", "Your progresses will be lost", SinglePlayerLevels.reset(), {})
   }
+
+  /** adds save settings to goBack button */
+  setAdditionalAction(() => SettingsHolder.saveSettings())
 
   /**
     * The central container

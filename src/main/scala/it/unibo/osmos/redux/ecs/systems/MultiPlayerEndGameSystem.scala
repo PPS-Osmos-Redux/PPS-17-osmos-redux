@@ -17,17 +17,13 @@ import it.unibo.osmos.redux.utils.Logger
 case class MultiPlayerEndGameSystem(server: Server, levelContext: GameStateHolder, victoryRules: VictoryRules.Value) extends AbstractSystem2[PlayerCellEntity, DeathProperty] {
 
   private val victoryCondition = victoryRules match {
-    case VictoryRules.becomeTheBiggest => BecomeTheBiggestVictoryCondition()
-    case VictoryRules.becomeHuge => BecomeHugeVictoryCondition()
-    case VictoryRules.absorbTheRepulsors => AbsorbCellsWithTypeVictoryCondition(EntityType.Repulsive)
-    case VictoryRules.absorbTheHostileCells => AbsorbCellsWithTypeVictoryCondition(EntityType.Sentient)
     case VictoryRules.absorbAllOtherPlayers => AbsorbAllOtherPlayersCondition()
     case _ => throw new NotImplementedError()
   }
 
   override def update(): Unit = {
     if (isGameRunning) {
-      val (deadPlayers, alivePlayers) = server.getLobbyPlayers partition (p => entities.map(_.getUUID) contains p.getUsername)
+      val (alivePlayers, deadPlayers) = server.getLobbyPlayers partition (p => entities.map(_.getUUID) contains p.getUUID)
       val aliveCells = entitiesSecondType.filterNot(c => deadPlayers.map(_.getUUID) contains c.getUUID)
 
       //check
