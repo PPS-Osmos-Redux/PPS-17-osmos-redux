@@ -199,7 +199,7 @@ object Server {
     override def broadcastMessage(message: Any, clientsToExclude: String*): Unit = {
       if (ref.isEmpty) throw new IllegalStateException("Unable to broadcast the message, server is not bind to an actor.")
       val usernameToExclude = clientsToExclude :+ this.username
-      val actors = lobby.get.getPlayers.filterNot(p => usernameToExclude contains p.getUsername).map(_.getActorRef)
+      val actors = lobby.get.getPlayers.filterNot(p => (usernameToExclude contains p.getUsername) || !p.isAlive).map(_.getActorRef)
       actors.foreach(a => a ! message)
     }
 
@@ -243,6 +243,8 @@ object Server {
         broadcastMessage(GameEnded(false), winner)
       }
 
+      resetLobbyPlayersDeathStatus()
+
       status = ServerState.Lobby
     }
 
@@ -270,7 +272,7 @@ object Server {
       if (playerEntity.isEmpty) throw new IllegalArgumentException("Cannot remove player cell from game because it was not found.")
 
       EntityManager.delete(playerEntity.get)
-      lobby.get.removePlayer(username)
+      setLobbyPlayerAsDead(username)
     }
 
     //LOBBY MANAGEMENT
@@ -333,7 +335,7 @@ object Server {
       Logger.log("removePlayerFromLobby")
 
       status match {
-        case ServerState.Lobby =>
+        case ServerState.Lobby | ServerState.Game =>
           lobby.get.removePlayer(username)
           broadcastMessage(PlayerLeftLobby(username))
         case _ =>
@@ -380,7 +382,25 @@ object Server {
     private def getPlayerFromLobby(username: String): Option[ReferablePlayer] = {
       Logger.log("getPlayerFromLobby")
 
+      if (lobby.isEmpty) throw new UnsupportedOperationException("Cannot get lobby player if the server doesn't have created any lobby.")
+
       lobby.get.getPlayers.find(_.getUsername == username)
+    }
+
+    private def setLobbyPlayerAsDead(username: String): Unit = {
+      Logger.log("setLobbyPlayerAsDead")
+
+      if (lobby.isEmpty) throw new UnsupportedOperationException("Cannot set lobby player as dead if the server doesn't have created any lobby.")
+
+      lobby.get.getPlayers.filter(_.getUsername == username).foreach(_ setLiveness false)
+    }
+
+    private def resetLobbyPlayersDeathStatus(): Unit = {
+      Logger.log("resetLobbyPlayersDeathStatus")
+
+      if (lobby.isEmpty) throw new UnsupportedOperationException("Cannot reset lobby players death status if the server doesn't have created any lobby.")
+
+      lobby.get.getPlayers.foreach(_ setLiveness true)
     }
   }
 }
