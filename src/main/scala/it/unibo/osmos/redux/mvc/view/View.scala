@@ -2,7 +2,7 @@ package it.unibo.osmos.redux.mvc.view
 
 import it.unibo.osmos.redux.ecs.entities.CellEntity
 import it.unibo.osmos.redux.mvc.controller.Controller
-import it.unibo.osmos.redux.mvc.controller.levels.structure.{CollisionRules, LevelInfo, MapShape, VictoryRules}
+import it.unibo.osmos.redux.mvc.controller.levels.structure._
 import it.unibo.osmos.redux.mvc.view.components.custom.AlertFactory
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LobbyContext}
@@ -83,6 +83,11 @@ object View {
 
     override def getMultiPlayerLevels: List[LevelInfo] = controller match {
       case Some(c) => c.getMultiPlayerLevels
+      case _ => List()
+    }
+
+    override def getCampaignLevels: List[CampaignLevel] = controller match {
+      case Some(c) => c.getCampaignLevels
       case _ => List()
     }
 
