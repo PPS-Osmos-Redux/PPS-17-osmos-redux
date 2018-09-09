@@ -28,6 +28,8 @@ class TestMapBoundariesCheck extends FunSuite with BeforeAndAfter {
     sc = CellBuilder().withPosition(p3).withDimension(d).buildSentientEntity()
   }
 
+  after(EntityManager.clear())
+
   val levelName: String = "1"
 
   test("Rectangular map boundaries") {

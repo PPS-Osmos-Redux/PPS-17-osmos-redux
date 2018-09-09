@@ -277,9 +277,6 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
     val boundaryTop = map.center.y + map.height / 2
     val boundaryBottom = map.center.y - map.height / 2
 
-    println(entity.getPositionComponent.point + " " + entity.getDimensionComponent.radius)
-    println(entity1.getPositionComponent.point + " " + entity1.getDimensionComponent.radius)
-
     assert(entity.getPositionComponent.point.x >= boundaryLeft + entity.getDimensionComponent.radius)
     assert(entity.getPositionComponent.point.x <= boundaryRight - entity.getDimensionComponent.radius)
     assert(entity.getPositionComponent.point.y >= boundaryBottom + entity.getDimensionComponent.radius)
