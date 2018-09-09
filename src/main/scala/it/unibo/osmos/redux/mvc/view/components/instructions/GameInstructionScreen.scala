@@ -10,7 +10,7 @@ import it.unibo.osmos.redux.mvc.view.scenes.BaseScene
   */
 class GameInstructionScreen(val scene: BaseScene) {
 
-  /** The instruction screen*/
+  /** The instruction screen */
   private val _instructionScreen = LevelScreen.Builder(scene)
     .withText("Game Controls & Instruction", 50)
     .withText("Click on the screen to eject mass and move in the opposite click direction")
