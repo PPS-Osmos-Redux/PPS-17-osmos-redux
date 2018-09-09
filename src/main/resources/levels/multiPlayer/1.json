@@ -1,7 +1,7 @@
 {
   "name": "1",
   "victoryRule": {
-    "victoryRule": "Absorb_all_other_players"
+    "victoryRule": "Absorb all other players"
   },
   "levelMap": {
     "mapShape": {

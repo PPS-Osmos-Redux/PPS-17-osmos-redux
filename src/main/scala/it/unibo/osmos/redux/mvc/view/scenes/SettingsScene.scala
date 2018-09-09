@@ -1,10 +1,9 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
+import it.unibo.osmos.redux.mvc.controller.SettingsHolder
 import it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels
 import it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer
 import it.unibo.osmos.redux.mvc.view.components.custom.{AlertFactory, StyledButton}
-import it.unibo.osmos.redux.mvc.view.context.LevelContext
-import it.unibo.osmos.redux.mvc.view.stages.PrimaryStageListener
 import javafx.scene.media.MediaPlayer.Status._
 import scalafx.geometry.Pos
 import scalafx.scene.control.{CheckBox, Label, Slider}
@@ -12,7 +11,7 @@ import scalafx.scene.layout._
 import scalafx.scene.paint.Color
 import scalafx.stage.Stage
 
-class SettingsScene(override val parentStage: Stage, listener: PrimaryStageListener, previousSceneListener: BackClickListener) extends DefaultBackScene(parentStage, previousSceneListener) {
+class SettingsScene(override val parentStage: Stage, listener: SettingsSceneListener, previousSceneListener: BackClickListener) extends DefaultBackScene(parentStage, previousSceneListener) {
 
   implicit def toDouble(number: Number): Double = number.doubleValue()
 
@@ -68,6 +67,9 @@ class SettingsScene(override val parentStage: Stage, listener: PrimaryStageListe
     onAction = _ => AlertFactory.showConfirmationAlert(text.value + "?", "Your progresses will be lost", SinglePlayerLevels.reset(), {})
   }
 
+  /** adds save settings to goBack button */
+  setAdditionalAction(() => SettingsHolder.saveSettings())
+
   /**
     * The central container
     */
@@ -86,11 +88,5 @@ class SettingsScene(override val parentStage: Stage, listener: PrimaryStageListe
   */
 trait SettingsSceneListener {
 
-  /**
-    * This method called when the level context has been created
-    *
-    * @param levelContext the new level context
-    * @param level        the new level index
-    */
-  def onLevelContextCreated(levelContext: LevelContext, level: Int)
+  //TODO: insert method that will be overridden/implmented in View, if needed
 }

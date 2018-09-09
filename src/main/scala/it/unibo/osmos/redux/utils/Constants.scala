@@ -5,7 +5,7 @@ import java.nio.file.{FileSystem, FileSystems}
 object Constants {
 
   object General {
-    final val CELL_MAX_SPEED: Double = 4
+    final val CellMaxSpeed: Double = 4
   }
 
   object Game {
@@ -26,14 +26,14 @@ object Constants {
   }
 
   object Sentient {
-    final val MAX_SPEED: Double = 2
-    final val MAX_ACCELERATION: Double = 0.1
-    final val COEFFICIENT_DESIRED_SEPARATION: Double = 50
+    final val MaxSpeed: Double = 2
+    final val MaxAcceleration: Double = 0.1
+    final val CoefficientDesiredSeparation: Double = 50
     final val MIN_VALUE: Double = 1
-    final val PERCENTAGE_OF_LOST_RADIUS_FOR_MAGNITUDE_ACCELERATION: Double = 0.02
-    final val MIN_RADIUS_FOR_LOST_RADIUS_BEHAVIOUR = 15
-    final val WEIGHT_OF_ESCAPE_ACCELERATION_FROM_ENEMIES: Double = 2
-    final val WEIGHT_OF_ESCAPE_ACCELERATION_FROM_BOUNDARY: Double = WEIGHT_OF_ESCAPE_ACCELERATION_FROM_ENEMIES * 1.5
+    final val PercentageOfLostRadiusForMagnitudeAcceleration: Double = 0.02
+    final val MinRadiusForLostRadiusBehaviour: Double = 15
+    final val WeightOfEscapeAccelerationFromEnemies: Double = 2
+    final val WeightOfEscapeAccelerationFromBoundary: Double = WeightOfEscapeAccelerationFromEnemies * 1.5
   }
 
   object ResourcesPaths {

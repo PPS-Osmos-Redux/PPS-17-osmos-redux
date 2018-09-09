@@ -160,16 +160,16 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
     system.update()
 
     assert(leftCollisionCellEntity.getSpeedComponent == SpeedComponent(4.0, 2.0))
-    assert(leftCollisionCellEntity.getPositionComponent.point == Point(85.0, 58.0))
+    assert(leftCollisionCellEntity.getPositionComponent.point == Point(82.0, 58.0))
 
     assert(rightCollisionCellEntity.getSpeedComponent == SpeedComponent(-6.0, 0.0))
-    assert(rightCollisionCellEntity.getPositionComponent.point == Point(229.0, 90.0))
+    assert(rightCollisionCellEntity.getPositionComponent.point == Point(233.0, 90.0))
 
     assert(topCollisionCellEntity.getSpeedComponent == SpeedComponent(6.0, 4.0))
-    assert(topCollisionCellEntity.getPositionComponent.point == Point(166.0, 60.0))
+    assert(topCollisionCellEntity.getPositionComponent.point == Point(166.0, 58.0))
 
     assert(bottomCollisionCellEntity.getSpeedComponent == SpeedComponent(-2.0, -7.0))
-    assert(bottomCollisionCellEntity.getPositionComponent.point == Point(113.0, 139.0))
+    assert(bottomCollisionCellEntity.getPositionComponent.point == Point(113.0, 145.0))
   }
 
   test("Collision with rectangular shape border, using instant death collision rule, reduces entities' radius") {
@@ -276,6 +276,9 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
     val boundaryRight = map.center.x + map.base / 2
     val boundaryTop = map.center.y + map.height / 2
     val boundaryBottom = map.center.y - map.height / 2
+
+    println(entity.getPositionComponent.point + " " + entity.getDimensionComponent.radius)
+    println(entity1.getPositionComponent.point + " " + entity1.getDimensionComponent.radius)
 
     assert(entity.getPositionComponent.point.x >= boundaryLeft + entity.getDimensionComponent.radius)
     assert(entity.getPositionComponent.point.x <= boundaryRight - entity.getDimensionComponent.radius)

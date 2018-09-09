@@ -18,65 +18,57 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Promise
 import scala.util.{Failure, Success, Try}
 
-/**
-  * Controller base trait
-  */
+/**Controller base trait*/
 trait Controller {
   type MultiPlayerMode = MultiPlayerMode.Value
   type LevelContextType = LevelContextType.Value
 
-  /**
-    * Initializes the level and the game engine.
+  /** Initializes the level and the game engine.
+    *
     * @param levelContext The level context.
     * @param chosenLevel The name of the chosen level.
     * @param isCustom True if the level is a custom one, false otherwise
     */
   def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): Try[Unit]
 
-  /**
-    * Initializes the multi-player lobby and the server or client.
+  /** Initializes the multi-player lobby and the server or client.
+    *
     * @param user The user config
     * @param lobbyContext The lobby context
     * @return Promise that completes with true if the lobby is initialized successfully; otherwise false.
     */
   def initLobby(user: User, lobbyContext: LobbyContext): Promise[GenericResponse[Boolean]]
 
-  /**
-    * Initializes the multi-player level and the game engine.
+  /** Initializes the multi-player level and the game engine.
+    *
     * @param levelInfo The level info
     * @return Promise that completes with true if the level is initialized successfully; otherwise false.
     */
   def initMultiPlayerLevel(levelInfo: LevelInfo): Promise[GenericResponse[Boolean]]
 
-  /**
-    * Starts the level.
-    */
+  /**Starts the level.*/
   def startLevel(): Unit
 
-  /**
-    * Stops the level.
+  /** Stops the level.
+    *
     * @param victory the level have been won or lost.
     */
   def stopLevel(victory: Boolean = false): Unit
 
-  /**
-    * Pauses the level.
-    */
+  /**Pauses the level.*/
   def pauseLevel(): Unit
 
-  /**
-    * Resumes the level.
-    */
+  /**Resumes the level.*/
   def resumeLevel(): Unit
 
-  /**
-    * Changes the level speed by speeding up or slowing down depending on the input.
+  /** Changes the level speed by speeding up or slowing down depending on the input.
+    *
     * @param increment Determines whether the level speed needs to be increased or decreased.
     */
   def changeLevelSpeed(increment: Boolean = false): Unit
 
-  /**
-    * Saves a level.
+  /** Saves a level.
+    *
     * @param name level name
     * @param map level map shape MapShape
     * @param victoryRules level victory rule VictoryRule.Value
@@ -86,33 +78,33 @@ trait Controller {
     **/
   def saveLevel(name: String, map:MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value, entities: Seq[CellEntity]): Boolean
 
-  /**
-    * Delete from file a custom level
+  /** Delete from file a custom level
+    *
     * @param name custom level name
     * @return true, if remove file is completed with success
     */
   def removeLevel(name:String): Boolean
 
-  /**
-    * Gets all the levels in the campaign.
+  /** Gets all the levels in the campaign.
+    *
     * @return The list of LevelInfo.
     */
   def getSinglePlayerLevels:List[LevelInfo] = SinglePlayerLevels.getLevelsInfo
 
-  /**
-    * Gets all multi-player levels.
+  /** Gets all multi-player levels.
+    *
     * @return The list of multi-player levels.
     */
   def getMultiPlayerLevels: List[LevelInfo] = MultiPlayerLevels.getLevels
 
-  /**
-    * Gets all custom levels filename.
+  /** Gets all custom levels filename.
+    *
     * @return The list of custom levels filename.
     */
   def getCustomLevels: List[LevelInfo]
 
-  /**
-    * Get requested sound path
+  /** Get requested sound path
+    *
     * @param soundType SoundsType.Value
     * @return Some(String) if path exists
     */
@@ -334,7 +326,7 @@ case class ControllerImpl() extends Controller {
     case Failure(_) => Logger.log("[Info] User doesn't have any saved custom level or custom level directory doesn't exists")
                                List()
   }
-
+  
   override def saveLevel(name: String, map: MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value, entities: Seq[CellEntity]): Boolean = {
     val lv: Level = Level(LevelInfo(name, victoryRules) , LevelMap(map, collisionRules), entities.toList)
     lv.checkCellPosition()
@@ -353,14 +345,15 @@ case class ControllerImpl() extends Controller {
     case _ =>
   }
 
-  private def loadLevel(chosenLevel:String, isCustom:Boolean, isSimulation:Boolean): Option[Level] = if (isCustom) {
-    /*Because user campaign stats are not influenced by end game results of the custom levels*/
-    lastLoadedLevel = None
-    LevelFileManager.getCustomLevel(chosenLevel)
-  } else {
-    val loadedLevel = LevelFileManager.getLevelFromResource(chosenLevel)
-    if (isSimulation) lastLoadedLevel = None else lastLoadedLevel = Some(chosenLevel)
-    loadedLevel
-  }
+  private def loadLevel(chosenLevel:String, isCustom:Boolean, isSimulation:Boolean): Option[Level] =
+    if (isCustom) {
+      /*Because user campaign stats are not influenced by end game results of the custom levels*/
+      lastLoadedLevel = None
+      LevelFileManager.getCustomLevel(chosenLevel)
+    } else {
+      val loadedLevel = LevelFileManager.getLevelFromResource(chosenLevel)
+      if (isSimulation) lastLoadedLevel = None else lastLoadedLevel = Some(chosenLevel)
+      loadedLevel
+    }
 }
 

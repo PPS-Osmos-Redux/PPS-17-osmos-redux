@@ -5,7 +5,11 @@ import it.unibo.osmos.redux.ecs.entities.properties.composed.DeathProperty
 
 import scala.collection.mutable.ListBuffer
 
-/** class implementing become huge victory condition */
+/** class implementing become huge victory condition
+  *
+  * victory is fulfilled when the player's radius is greater
+  * than the other matter cells radius by a certain percentage
+  */
 case class BecomeHugeVictoryCondition() extends AbstractVictoryCondition {
 
   // TODO: adjust the value

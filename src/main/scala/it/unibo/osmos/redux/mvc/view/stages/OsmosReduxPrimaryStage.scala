@@ -1,10 +1,9 @@
 package it.unibo.osmos.redux.mvc.view.stages
 
-import it.unibo.osmos.redux.mvc.controller.manager.files.{FileManager, StyleFileManager}
+import it.unibo.osmos.redux.mvc.controller.manager.files.StyleFileManager
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
 import it.unibo.osmos.redux.mvc.view.scenes._
 import scalafx.application.JFXApp
-import scalafx.scene.Parent
 
 /**
   * Primary stage which holds and manages all the different game scenes
@@ -70,6 +69,7 @@ object OsmosReduxPrimaryStage {
   * Listener that manages all the events managed by the primary scene
   */
 trait PrimaryStageListener extends LevelSelectionSceneListener with EditorLevelSelectionSceneListener
-  with MultiPlayerSceneListener with MultiPlayerLobbySceneListener with MultiPlayerLevelSelectionSceneListener {
+  with MultiPlayerSceneListener with MultiPlayerLobbySceneListener with MultiPlayerLevelSelectionSceneListener
+  with SettingsSceneListener with StatsSceneListener {
 
 }
