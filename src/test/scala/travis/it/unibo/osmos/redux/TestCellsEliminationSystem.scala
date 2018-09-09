@@ -36,5 +36,7 @@ class TestCellsEliminationSystem extends FunSuite {
     pce.getDimensionComponent.radius_(system.radiusThreshold - 1)
     system.update()
     assert(system.entitiesSize == 0)
+
+    EntityManager.clear()
   }
 }

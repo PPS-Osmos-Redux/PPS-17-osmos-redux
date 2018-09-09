@@ -17,23 +17,21 @@ trait OsmosReduxPrimaryStage extends JFXApp.PrimaryStage {
   */
 object OsmosReduxPrimaryStage {
   def apply(listener: PrimaryStageListener,
-            fullScreenEnabled: Boolean = false,
             windowWidth: Double = defaultWindowWidth,
-            windowHeight: Double = defaultWindowHeight): OsmosReduxPrimaryStageImpl = new OsmosReduxPrimaryStageImpl(listener, fullScreenEnabled, windowWidth, windowHeight)
+            windowHeight: Double = defaultWindowHeight): OsmosReduxPrimaryStageImpl = new OsmosReduxPrimaryStageImpl(listener, windowWidth, windowHeight)
 
   /**
     * Primary stage implementation
     *
     * @param listener          the primary stage listener
-    * @param fullScreenEnabled true if we want the stage to be shown fullscreen, false otherwise
     * @param windowWidth       the window width
     * @param windowHeight      the window height
     */
-  class OsmosReduxPrimaryStageImpl(val listener: PrimaryStageListener, val fullScreenEnabled: Boolean, val windowWidth: Double, val windowHeight: Double) extends OsmosReduxPrimaryStage
+  class OsmosReduxPrimaryStageImpl(val listener: PrimaryStageListener, val windowWidth: Double, val windowHeight: Double) extends OsmosReduxPrimaryStage
     with MainSceneListener {
 
     title = defaultWindowTitle
-    fullScreen = fullScreenEnabled
+    resizable = false
     width = windowWidth
     height = windowHeight
 
