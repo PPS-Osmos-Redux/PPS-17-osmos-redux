@@ -48,14 +48,14 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
       portTitle.setValue("Server port:")
       if (addressValue.getValue.equals(NetworkUtils.getLocalIPAddress)) addressValue.setValue("")
       portTextField.innerNode.setText("0")
+      portTextField.root.visible = true
       startButtonText.setValue("Go to lobby")
     case "Server" =>
       mode.value = true
       addressTitle.setValue("Address:")
-      portTitle.setValue("Port:")
       startButtonText.setValue("Select level")
       if (addressValue.isEmpty.get()) addressValue.setValue(NetworkUtils.getLocalIPAddress)
-      if (!portTextField.innerNode.getText.equals("0")) portTextField.innerNode.setText("0")
+      portTextField.root.visible = false
   }, vertical = false)
 
   /** Result parsing function.
@@ -66,17 +66,22 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
     Platform.runLater({
       result match {
         case GenericResponse(true, _) =>
+
           /** Creating an abstract listener on the run */
           val lobbySceneListener: UpperMultiPlayerLobbySceneListener = () => parentStage.scene = MultiPlayerScene.this
           /** If the lobby was successfully created, we link the resulting lobby context and go to the next scene */
           val multiPlayerLobbyScene = new MultiPlayerLobbyScene(parentStage, listener, lobbySceneListener, user)
+
           /** We link the lobby context */
           multiPlayerLobbyScene.lobbyContext_=(lobbyContext)
+
           /** We link the level info */
           multiPlayerLobbyScene.levelInfo_=(levelInfo)
+
           /** We go to the next scene */
           parentStage.scene = multiPlayerLobbyScene
         case GenericResponse(false, message) =>
+
           /** If an error occurred */
           AlertFactory.createErrorAlert("Error", message).showAndWait()
       }
@@ -111,6 +116,7 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
   private def goToLobby(user: User, levelInfo: Option[LevelInfo]): Unit = {
     /** We create the lobby context */
     val lobbyContext = LobbyContext()
+
     /** We ask to enter in the lobby */
     listener.onLobbyRequest(user, levelInfo, lobbyContext, onLobbyEnterResult)
   }
@@ -122,11 +128,9 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
 
     alignment = Pos.Center
 
-    val elements = Seq(usernameTextField.root, modeComboBox.root, addressTextField.root, portTextField.root)
-    elements.foreach(e => e.children.get(0).getStyleClass.add("multi-player-scene-label-style"))
     children = Seq(usernameTextField.root, modeComboBox.root, addressTextField.root, portTextField.root)
 
-    styleClass.addAll("default-font-size", "multi-player-scene-VBox-style")
+    styleClass.addAll("default-font-size", "multi-player-scene-label-style")
   }
 
   /** Requesting a structured layout */
