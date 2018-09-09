@@ -38,5 +38,6 @@ class TestEntityManager extends FunSuite {
     EntityManager.clear()
     EntityManager.add(ce)
     assert(systemSpy.entitiesNumber == 0)
+    EntityManager.clear()
   }
 }

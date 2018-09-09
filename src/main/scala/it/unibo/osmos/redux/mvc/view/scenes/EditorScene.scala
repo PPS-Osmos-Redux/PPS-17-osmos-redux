@@ -2,10 +2,10 @@ package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityType}
 import it.unibo.osmos.redux.mvc.controller.levels.structure.{CollisionRules, MapShape, MapShapeType, VictoryRules}
+import it.unibo.osmos.redux.mvc.view.ViewConstants.Editor._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
-import it.unibo.osmos.redux.mvc.view.ViewConstants.Editor._
-import it.unibo.osmos.redux.mvc.view.components.custom.{StyledButton, TitledComboBox}
+import it.unibo.osmos.redux.mvc.view.components.custom.{AlertFactory, StyledButton, TitledComboBox}
 import it.unibo.osmos.redux.mvc.view.components.editor._
 import it.unibo.osmos.redux.mvc.view.components.level.LevelScreen
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
@@ -24,12 +24,12 @@ import scalafx.stage.Stage
 
 import scala.collection.mutable.ListBuffer
 
-/**
-  * A scene representing a level editor
+/** A scene representing a level editor
+  *
   * @param parentStage the parent stage
-  * @param listener the EditorSceneListener
+  * @param listener    the EditorSceneListener
   */
-class EditorScene (override val parentStage: Stage, val listener: EditorSceneListener, val upperListener: BackClickListener) extends DefaultBackScene(parentStage, upperListener, "Exit Level") {
+class EditorScene(override val parentStage: Stage, val listener: EditorSceneListener, val upperListener: BackClickListener) extends DefaultBackScene(parentStage, upperListener, "Exit Level") {
 
   /** Entities currently built */
   var builtEntities: ListBuffer[CellEntity] = ListBuffer()
@@ -42,13 +42,13 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
 
   /** Boolean binding with the instructionScreen */
   private val instructionScreenVisible: BooleanProperty = BooleanProperty(false)
-  /** The instruction screen*/
+  /** The instruction screen */
   private val instructionScreen = LevelScreen.Builder(this)
     .withText("Instructions", 50, Color.White)
-    .withText("Press [Ctrl] to toggle the placeholder visibility", 30, Color.White)
-    .withText("Configure the desired entities on the left panel", 30, Color.White)
-    .withText("Configure the desired level, vistory rule and collision rule on the right panel", 30, Color.White)
-    .withText("When the placeholder is visible, click to insert a new entity on the level", 30, Color.White)
+    .withText("Press [Ctrl] to toggle the placeholder visibility")
+    .withText("Configure the desired entities on the left panel")
+    .withText("Configure the desired level, victory rule and collision rule on the right panel")
+    .withText("When the placeholder is visible, click to insert a new entity on the level")
     .withText("Press [i] to show/hide the instructions screen", 20, Color.White)
     .build()
   instructionScreen.visible <== instructionScreenVisible
@@ -92,18 +92,18 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     entityType.value = et
   })
 
-  /** Pane containing the field to configure the entities*/
+  /** Pane containing the field to configure the entities */
   private val cellEntityCreator: CellEntityCreator = new CellEntityCreator
-  /** Pane containing the field to configure the gravity entities*/
+  /** Pane containing the field to configure the gravity entities */
   private val gravityCellEntityCreator: GravityCellEntityCreator = new GravityCellEntityCreator {
     weight.value = 1.0
     visible = false
   }
-  /** Pane containing the field to configure the sentient entities*/
+  /** Pane containing the field to configure the sentient entities */
   private val sentientCellEntityCreator: CellEntityCreator = new SentientCellEntityCreator {
     visible = false
   }
-  /** Pane containing the field to configure the player entities*/
+  /** Pane containing the field to configure the player entities */
   private val playerCellEntityCreator: CellEntityCreator = new PlayerCellEntityCreator {
     visible = false
   }
@@ -111,13 +111,13 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   /** The entity builders */
   private val entityBuilders = Seq(cellEntityCreator, gravityCellEntityCreator, sentientCellEntityCreator, playerCellEntityCreator)
 
-  /**
-    * Returns the currently visible cell entity creator
+  /** Returns the currently visible cell entity creator
+    *
     * @return the currently visible cell entity creator
     */
   private def getVisibleCellBuilder: CellEntityCreator = entityBuilders.filter((b) => b.visible.value).head
 
-  /** The entity container*/
+  /** The entity container */
   private val entityContainer: VBox = new VBox(1.0) {
     margin = Insets(10.0)
 
@@ -168,11 +168,11 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     children = List(levelTypeBox.root, verticalStackPane)
   }
 
-  /** The main container, wrapping the other panes*/
+  /** The main container, wrapping the other panes */
   private val mainContainer: BorderPane = new BorderPane() {
     prefWidth <== parentStage.width
     prefHeight <== parentStage.height
-    /** We don't show the container if the instructions are visible*/
+    /** We don't show the container if the instructions are visible */
     visible <== !instructionScreenVisible
     left = entityContainer
     right = new VBox(5.0, victoryRuleBox.root, collisionRuleBox.root, levelTypeContainer) {
@@ -182,12 +182,12 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     top = new HBox(20.0, new StyledButton("Save Level") {
       /** We begin the procedure to save the level */
       onAction = _ => saveLevel()
-    }, goBack){
+    }, goBack) {
       margin = Insets(10.0)
       alignment = Pos.Center
     }
     center = null
-    bottom = new HBox(0.0, new Text("Press [i] to show/hide the the instructions") {
+    bottom = new HBox(0.0, new Text("Press [i] to show/hide the instructions") {
       style = "-fx-font-size: 20pt"
       fill = Color.White
       effect = new DropShadow {
@@ -208,12 +208,10 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     val levelName = dialog.showAndWait()
     levelName match {
       case Some(name) =>
+
         /** Check if the name is empty */
         if (name isEmpty) {
-          new Alert(Alert.AlertType.Error) {
-            title = "Error"
-            contentText.value = "The level name cannot be empty"
-          }.showAndWait()
+          AlertFactory.createErrorAlert("Error", "The level name cannot be empty").showAndWait()
         } else {
           /** The name is valid, we have to retrieve the elements */
           /** Level */
@@ -228,17 +226,10 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
 
           /** Save the level */
           listener.onSaveLevel(name, level, victoryRules, collisionRules, builtEntities, {
-            /** The level has been created*/
-            case true => new Alert(Alert.AlertType.Confirmation) {
-              title = "Success"
-              contentText.value = "The custom level has been successfully saved"
-            }.showAndWait()
+            /** The level has been created */
+            case true => AlertFactory.createConfirmationAlert("Success", "The custom level has been successfully saved").showAndWait()
             /** We show an alert */
-            case false =>
-              new Alert(Alert.AlertType.Error) {
-                title = "Error"
-                contentText.value = "The custom level could not be made"
-              }.showAndWait()
+            case false => AlertFactory.createErrorAlert("Error", "The custom level could not be made").showAndWait()
           })
         }
 
@@ -262,8 +253,8 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
   val rectangularLevelPlaceholder: Rectangle = new Rectangle() {
     width <== rectangularLevelBuilder.levelWidth
     height <== rectangularLevelBuilder.levelHeight
-    x <== rectangularLevelBuilder.xCenter - rectangularLevelBuilder.levelWidth /2 + halfWindowWidth
-    y <== rectangularLevelBuilder.yCenter - rectangularLevelBuilder.levelHeight /2 + halfWindowHeight
+    x <== rectangularLevelBuilder.xCenter - rectangularLevelBuilder.levelWidth / 2 + halfWindowWidth
+    y <== rectangularLevelBuilder.yCenter - rectangularLevelBuilder.levelHeight / 2 + halfWindowHeight
     stroke = Color.White
     strokeWidth = 2.0
     fill = Color.Transparent
@@ -281,7 +272,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
 
     /** We set a min and max for the size */
     onScroll = scroll => {
-      radius = radius.value + (scroll.getDeltaY/10) min 150 max 10
+      radius = radius.value + (scroll.getDeltaY / 10) min 150 max 10
       getVisibleCellBuilder.radius.value = radius.value
     }
 
@@ -326,9 +317,7 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
     content = editorElements
 
     /** Insert an entity to the built entities list */
-    val n = getVisibleCellBuilder create()
-    println(n)
-    builtEntities += n
+    builtEntities += getVisibleCellBuilder create()
   }
 
   /** The main editor elements */
@@ -337,30 +326,24 @@ class EditorScene (override val parentStage: Stage, val listener: EditorSceneLis
 
 }
 
-/**
-  * Trait used by EditorScene to notify an event to the upper scene
-  */
+/** Trait used by EditorScene to notify an event to the upper scene */
 trait UpperEditorSceneListener {
 
-  /**
-    * Called once when the user quits the editor
-    */
+  /** Called once when the user quits the editor */
   def onExitEditor()
 }
 
-/**
-  * Trait which gets notified when a EditorScene event occurs
-  */
+/** Trait which gets notified when a EditorScene event occurs */
 trait EditorSceneListener {
 
-  /**
-    * Called when the user wants to save the level after the name has been chosen
-    * @param name the chosen level name
-    * @param map the chosen level map
-    * @param victoryRules the chosen victory rules
+  /** Called when the user wants to save the level after the name has been chosen
+    *
+    * @param name           the chosen level name
+    * @param map            the chosen level map
+    * @param victoryRules   the chosen victory rules
     * @param collisionRules the chosen collision rules
-    * @param entities the inserted entities
-    * @param callback the callback
+    * @param entities       the inserted entities
+    * @param callback       the callback
     */
   def onSaveLevel(name: String, map: MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value, entities: Seq[CellEntity], callback: Boolean => Unit)
 

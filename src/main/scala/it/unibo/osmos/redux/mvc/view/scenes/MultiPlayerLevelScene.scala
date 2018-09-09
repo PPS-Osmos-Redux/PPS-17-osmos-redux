@@ -1,4 +1,5 @@
 package it.unibo.osmos.redux.mvc.view.scenes
+
 import it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.level.LevelScreen
 import it.unibo.osmos.redux.mvc.view.context.{LevelContext, MultiPlayerLevelContext, MultiPlayerLevelContextListener}
@@ -18,11 +19,14 @@ class MultiPlayerLevelScene(override val parentStage: Stage, override val levelI
   extends LevelScene(parentStage, levelInfo, listener, upperSceneListener) with MultiPlayerLevelContextListener {
 
   /** The level context, created with the MultiPlayerLevelScene. It must be a MultiPlayerLevelContext */
-  override def levelContext: Option[ _ <: LevelContext] = _levelContext
-  override def levelContext_= (levelContext: LevelContext): Unit = levelContext match {
+  override def levelContext: Option[_ <: LevelContext] = _levelContext
+
+  override def levelContext_=(levelContext: LevelContext): Unit = levelContext match {
     case mplc: MultiPlayerLevelContext => _levelContext = Option(mplc)
     case _ => throw new IllegalArgumentException("MultiPLayerLevelScene must use a MultiPlayerLevelContext")
   }
+
+  onKeyPressed = _ => {}
 
   /** Called when we lost as a server */
   override def onLevelLostAsServer(): Unit = {
