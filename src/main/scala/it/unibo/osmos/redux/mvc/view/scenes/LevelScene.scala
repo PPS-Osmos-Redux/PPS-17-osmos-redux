@@ -7,22 +7,21 @@ import it.unibo.osmos.redux.mvc.view.ViewConstants
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Colors._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
-import it.unibo.osmos.redux.mvc.view.components.level.{LevelScreen, LevelStateBoxListener}
+import it.unibo.osmos.redux.mvc.view.components.level.LevelScreen
 import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextListener}
 import it.unibo.osmos.redux.mvc.view.drawables._
 import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import it.unibo.osmos.redux.utils.MathUtils._
-import it.unibo.osmos.redux.utils.Point
+import it.unibo.osmos.redux.utils.{MathUtils, Point}
 import javafx.scene.input.{KeyCode, MouseEvent}
 import scalafx.animation.FadeTransition
 import scalafx.application.Platform
 import scalafx.beans.property.{BooleanProperty, DoubleProperty}
 import scalafx.geometry.Pos
 import scalafx.scene.canvas.Canvas
-import scalafx.scene.effect.Light.Spot
-import scalafx.scene.effect.{DropShadow, Lighting}
-import scalafx.scene.image.{Image, ImageView}
+import scalafx.scene.effect.DropShadow
+import scalafx.scene.image.Image
 import scalafx.scene.layout.{StackPane, VBox}
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.{Circle, Rectangle, Shape}
@@ -55,7 +54,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   }
 
   /** Level state variables */
-  private object LevelState {
+  protected object LevelState {
     /** The current game pending state: true if the game is paused */
     var paused: BooleanProperty = BooleanProperty(false)
     /** Value indicating when the user can execute actions like pausing the game or moving around */
@@ -65,7 +64,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     /** Max zoom out scale */
     val maxZoomOutScale = 1.0
     /** Max zoom in scale */
-    val maxZoomInScale = 2.0
+    val maxZoomInScale = 1.2
   }
 
   /** Level player variables */
@@ -92,13 +91,13 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   setAdditionalAction(() => onExit())
 
   /** The canvas which will draw the elements on the screen */
-  private val canvas: Canvas = new Canvas {
+  protected val canvas: Canvas = new Canvas {
     width <== parentStage.width
     height <== parentStage.height
     cache = true
     opacity = 0.0
 
-    val light: Spot = new Spot()
+    /*val light: Spot = new Spot()
     light.color = Color.White
     light.x <== (LevelPlayer.playerPosX + halfWindowWidth) * this.scaleX
     light.y <== (LevelPlayer.playerPosY + halfWindowHeight) * this.scaleY
@@ -115,7 +114,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
     pickOnBounds = false
 
-    effect = lighting
+    effect = lighting*/
   }
 
   /** The splash screen showed when the game is paused */
@@ -228,28 +227,13 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     }
 
     /** Limiting the scale */
-    scale = clamp(scale, LevelState.maxZoomOutScale, LevelState.maxZoomInScale)
+    scale = MathUtils.clamp(scale, LevelState.maxZoomOutScale, LevelState.maxZoomInScale)
 
     /** Updating the canvas scale */
     canvas.scaleX = scale
     canvas.scaleY = scale
 
     scrollEvent.consume()
-  }
-
-  /**
-    * Method which limits a value between a minimum and a maximum ones
-    * @param value the value
-    * @param min the minimum value
-    * @param max the maximum value
-    * @return the clamped value
-    */
-  private def clamp(value: Double, min: Double, max: Double): Double = {
-    value match {
-      case v if v < min => min
-      case v if v > max => max
-      case _ => value
-    }
   }
 
   /**
