@@ -16,7 +16,7 @@ import scalafx.stage.Stage
   *
   * @param parentStage        the parent stage
   * @param listener           the MultiPlayerSceneListener
-  * @param upperSceneListener the UpperMultiPlayerSceneListener
+  * @param upperSceneListener the BackClickListener
   */
 class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlayerSceneListener, val upperSceneListener: BackClickListener) extends DefaultBackScene(parentStage, upperSceneListener) {
 
