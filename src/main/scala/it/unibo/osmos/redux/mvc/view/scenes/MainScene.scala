@@ -32,8 +32,9 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
   private val controlsScreenVisible: BooleanProperty = BooleanProperty(false)
   /** The instruction screen */
   private val controlsScreen = LevelScreen.Builder(this)
-    .withText("Game Controls", 50)
-    .withText("Click on the screen to eject mass and move in the opposite direction")
+    .withText("Game Controls & Instruction", 50)
+    .withText("Click on the screen to eject mass and move in the opposite click direction")
+    .withText("On collision the bigger cell will absorb the smaller one")
     .withText("Wheel up/down to zoom in/out")
     .withText("Press [esc] to stop game (single player only)")
     .withText("Press [up] or [right] arrow key to speed up game time (single player only)")
