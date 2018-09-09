@@ -47,9 +47,9 @@
   -fx-min-width: 170px;
 }
 
-.multi-player-scene-VBox-style {
+/*.multi-player-scene-VBox-style {
   -fx-background-color: white;
-}
+}*/
 
 .dialog-style {
   /* set background to null so that the .root background style is override */

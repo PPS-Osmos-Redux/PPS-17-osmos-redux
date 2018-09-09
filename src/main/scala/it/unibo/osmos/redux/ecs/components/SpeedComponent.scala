@@ -2,13 +2,11 @@ package it.unibo.osmos.redux.ecs.components
 
 import it.unibo.osmos.redux.utils.Vector
 
-/**
-  * Component of the speed vector
-  */
+/** Component of the speed vector */
 trait SpeedComponent extends VectorComponent {
 
-  /**
-    * Makes a defensive copy of this instance.
+  /** Makes a defensive copy of this instance.
+    *
     * @return The new instance.
     */
   override def copy(): SpeedComponent = SpeedComponent(vector.x, vector.y)
@@ -24,4 +22,5 @@ object SpeedComponent {
 
     override def vector_(vector: Vector): Unit = _speedVector = vector
   }
+
 }

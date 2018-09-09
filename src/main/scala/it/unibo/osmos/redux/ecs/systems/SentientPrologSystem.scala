@@ -5,6 +5,7 @@ import it.unibo.osmos.redux.ecs.entities.properties.composed.{SentientEnemyPrope
 import it.unibo.osmos.redux.utils.Scala2P.{separate, _}
 import it.unibo.osmos.redux.utils.{PrologRules, Vector}
 
+// TODO: remove?
 case class SentientPrologSystem() extends AbstractSystem2[SentientProperty, SentientEnemyProperty]() {
 
   private val prologEngine: Term => Stream[SolveInfo] = mkPrologEngine(PrologRules.rules)

@@ -2,7 +2,7 @@ package it.unibo.osmos.redux.mvc.view
 
 import it.unibo.osmos.redux.ecs.entities.CellEntity
 import it.unibo.osmos.redux.mvc.controller.Controller
-import it.unibo.osmos.redux.mvc.controller.levels.structure.{CollisionRules, LevelInfo, MapShape, VictoryRules}
+import it.unibo.osmos.redux.mvc.controller.levels.structure._
 import it.unibo.osmos.redux.mvc.view.components.custom.AlertFactory
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LobbyContext}
@@ -58,7 +58,18 @@ object View {
       case _ =>
     }
 
-    override def onLevelContextCreated(levelContext: LevelContext, level: String, isCustom: Boolean = false): Unit = checkController(() => controller.get.initLevel(levelContext, level, isCustom))
+    override def onLevelContextCreated(levelContext: LevelContext, level: String, isCustom: Boolean = false): Boolean = {
+      controller match {
+        case Some(c) =>
+          c.initLevel(levelContext, level, isCustom) match {
+            case Failure(t) =>
+              AlertFactory.createErrorAlert("Unable to start level", t.getMessage).showAndWait()
+              false
+            case _ => true
+          }
+        case None => false
+      }
+    }
 
     override def getSingleLevels: List[LevelInfo] = controller match {
       case Some(c) => c.getSinglePlayerLevels
@@ -72,6 +83,11 @@ object View {
 
     override def getMultiPlayerLevels: List[LevelInfo] = controller match {
       case Some(c) => c.getMultiPlayerLevels
+      case _ => List()
+    }
+
+    override def getCampaignLevels: List[CampaignLevel] = controller match {
+      case Some(c) => c.getCampaignLevels
       case _ => List()
     }
 
@@ -94,7 +110,7 @@ object View {
 
     def onDisplayError(message: String): Unit = {
       Platform.runLater {
-        AlertFactory.createErrorAlert("Error Dialog", message).showAndWait()
+        AlertFactory.createErrorAlert("Error occurred", message).showAndWait()
       }
     }
 
@@ -111,7 +127,7 @@ object View {
         case Failure(e) => onDisplayError("Connection call succeeded but did not receive response")
       })
 
-    override def onStartMultiplayerGameClick(levelInfo: LevelInfo): Unit = checkController(() => controller.get.initMultiPlayerLevel(levelInfo).future.onComplete {
+    override def onStartMultiPlayerGameClick(levelInfo: LevelInfo): Unit = checkController(() => controller.get.initMultiPlayerLevel(levelInfo).future.onComplete {
       case Failure(e) => onDisplayError("Failed controller init")
       case Success(_) => //do nothing
     })

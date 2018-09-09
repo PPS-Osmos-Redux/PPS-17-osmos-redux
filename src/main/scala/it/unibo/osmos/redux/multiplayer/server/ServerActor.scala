@@ -89,7 +89,7 @@ class ServerActor(private val server: Server) extends Actor {
 
       server.getState match {
         case ServerState.Lobby => server.removePlayerFromLobby(username)
-        case ServerState.Game => server.removePlayerFromGame(username)
+        case ServerState.Game => server.removePlayerFromGame(username); server.removePlayerFromLobby(username)
         case _ => //do nothing
       }
 

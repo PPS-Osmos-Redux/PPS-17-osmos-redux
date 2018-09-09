@@ -1,21 +1,22 @@
 package it.unibo.osmos.redux.mvc.controller.manager.sounds
 
-import it.unibo.osmos.redux.mvc.controller.Controller
-import it.unibo.osmos.redux.mvc.controller.manager.files.{FileManager, SoundFileManager}
+import it.unibo.osmos.redux.mvc.controller._
+import it.unibo.osmos.redux.mvc.controller.manager.files.SoundFileManager
 import it.unibo.osmos.redux.mvc.model._
+import it.unibo.osmos.redux.utils.Logger
 import javafx.scene.media.MediaPlayer.Status
 import javafx.scene.media.MediaPlayer.Status._
 import javafx.util
 
-/**
-  * Sound types
-  */
+/**Sound types.*/
 object SoundsType extends Enumeration {
   val menu, level, button = Value
 }
 
+/**Manages application sounds.*/
 object MusicPlayer extends Observable {
   import scalafx.scene.media.{AudioClip, Media, MediaPlayer}
+  implicit val who:String = "MusicPlayer"
   val MinVolume = 0
   val MaxVolume = 1
   private var controller: Option[Controller] = None
@@ -25,10 +26,10 @@ object MusicPlayer extends Observable {
   private var generalVolume: Double = MaxVolume
   private var settingObs:List[SettingsEventObserver] = List(SettingsHolder)
 
+  /**Set controller.*/
   def setController(controller: Controller): Unit = this.controller = Some(controller)
 
-  /**
-    * Play a sound
+  /** Play a sound.
     *
     * @param sound the sound to play
     */
@@ -42,25 +43,20 @@ object MusicPlayer extends Observable {
             sound match {
               case s if s.equals(SoundsType.level) || s.equals(SoundsType.menu) => checkMediaPlayerStatus(soundPath.get)
               case SoundsType.button => playButtonSound(soundPath.get)
-              case _ => println("Sound not managed! [MediaPlayer play]")
+              case _ => Logger.log("Sound not managed! [play]")
             }
           }
       }
-    case _ => println("Error: controller is not defined [MediaPlayer play]")
+    case _ => Logger.log("Error: controller is not defined [play]")
   }
 
-  /**
-    * Pause the music
-    */
+  /**Pause the music.*/
   def pause(): Unit = if (canApplyStateChange(List(Status.PLAYING))) {mediaPlayer.get.pause(); sendMusicEvent(true)}
 
-  /**
-    * Resume the music if it is in pause state
-    */
+  /**Resume the music if it is in pause state.*/
   def resume(): Unit = if (canApplyStateChange(List(Status.PAUSED))) mediaPlayer.get.play()
 
-  /**
-    * Change music and audio effects volume
+  /** Change music and audio effects volume.
     *
     * @param volume double value for volume, range 0 to 1
     */
@@ -74,15 +70,13 @@ object MusicPlayer extends Observable {
     updateMPVolume()
   }
 
-  /**
-    * Return current application volume
+  /** Get volume.
     *
     * @return application volume
     */
   def getVolume: Double = generalVolume
 
-  /**
-    * Return current media player status
+  /** Return current media player status
     *
     * @return Option of MediaPlayer.Status
     */
@@ -104,8 +98,11 @@ object MusicPlayer extends Observable {
   }
 
   private def setupAndPlayMedia(sound: String): Unit = {
+    /* 1) Sto media player */
     if (mediaPlayer.isDefined) mediaPlayer.get.stop()
+    /* 2)Change music */
     mediaPlayer = Some(new MediaPlayer(new Media(sound)))
+    /* 3)Set behaviour at the end of media as loop */
     mediaPlayer.get.setOnEndOfMedia(() => mediaPlayer.get.seek(util.Duration.ZERO))
     lastLoadedSound = Some(sound)
     updateMPVolume()
@@ -122,7 +119,6 @@ object MusicPlayer extends Observable {
 
   override def subscribe(observer:SettingsEventObserver): Unit = settingObs = observer :: settingObs
 
-  private def sendMusicEvent(isMute:Boolean = false): Unit = {
+  private def sendMusicEvent(isMute:Boolean = false): Unit =
     settingObs.foreach(_.notify(MusicPlayerEvent(Volume(if(isMute) MinVolume else generalVolume))))
-  }
 }

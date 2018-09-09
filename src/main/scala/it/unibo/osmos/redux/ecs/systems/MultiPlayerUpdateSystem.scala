@@ -1,13 +1,18 @@
 package it.unibo.osmos.redux.ecs.systems
 
 import it.unibo.osmos.redux.ecs.entities.properties.composed.DrawableProperty
-import it.unibo.osmos.redux.multiplayer.server.Server
+import it.unibo.osmos.redux.multiplayer.server.{Server, ServerState}
 import it.unibo.osmos.redux.multiplayer.server.ServerActor.UpdateGame
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity
 
+// TODO: scaladoc
+/**
+  *
+  * @param server
+  */
 case class MultiPlayerUpdateSystem(server: Server) extends AbstractSystem[DrawableProperty] {
 
-  override def update(): Unit = server.broadcastMessage(UpdateGame(getEntities))
+  override def update(): Unit = if (server.getState == ServerState.Game) server.broadcastMessage(UpdateGame(getEntities))
 
   private def getEntities: Seq[DrawableEntity] =
     entities filter(_.getVisibleComponent.isVisible) map wrapToDrawable

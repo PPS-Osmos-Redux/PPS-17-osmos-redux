@@ -7,10 +7,12 @@ import it.unibo.osmos.redux.ecs.systems.CollisionSystem
 import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.mvc.controller.levels.structure._
 import it.unibo.osmos.redux.utils.Point
+import org.scalactic.Tolerance._
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 class TestCollisionSystem extends FunSuite with BeforeAndAfter {
 
+  val TOLERANCE = 0.01
   val dimension:Double = 5
   val dimension1:Double = 2
 
@@ -96,10 +98,12 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
 
     system.update()
 
-    assert(entity.getDimensionComponent.radius == 5.2)
-    assert(entity.getPositionComponent.point == Point(59.5, 80))
+    assert(entity.getDimensionComponent.radius === 5.07 +- TOLERANCE)
+    assert(entity.getPositionComponent.point.x === 59.56 +- TOLERANCE)
+    assert(entity.getPositionComponent.point.y == 80)
     assert(entity1.getDimensionComponent.radius == 1.8)
-    assert(entity1.getPositionComponent.point == Point(66.5, 80))
+    assert(entity1.getPositionComponent.point.x === 66.43 +- TOLERANCE)
+    assert(entity1.getPositionComponent.point.y == 80)
   }
 
   test("Collision with AntiMatter entity should reduce both dimension's entity") {
@@ -156,16 +160,16 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
     system.update()
 
     assert(leftCollisionCellEntity.getSpeedComponent == SpeedComponent(4.0, 2.0))
-    assert(leftCollisionCellEntity.getPositionComponent.point == Point(85.0, 58.0))
+    assert(leftCollisionCellEntity.getPositionComponent.point == Point(82.0, 58.0))
 
     assert(rightCollisionCellEntity.getSpeedComponent == SpeedComponent(-6.0, 0.0))
-    assert(rightCollisionCellEntity.getPositionComponent.point == Point(229.0, 90.0))
+    assert(rightCollisionCellEntity.getPositionComponent.point == Point(233.0, 90.0))
 
     assert(topCollisionCellEntity.getSpeedComponent == SpeedComponent(6.0, 4.0))
-    assert(topCollisionCellEntity.getPositionComponent.point == Point(166.0, 60.0))
+    assert(topCollisionCellEntity.getPositionComponent.point == Point(166.0, 58.0))
 
     assert(bottomCollisionCellEntity.getSpeedComponent == SpeedComponent(-2.0, -7.0))
-    assert(bottomCollisionCellEntity.getPositionComponent.point == Point(113.0, 139.0))
+    assert(bottomCollisionCellEntity.getPositionComponent.point == Point(113.0, 145.0))
   }
 
   test("Collision with rectangular shape border, using instant death collision rule, reduces entities' radius") {
