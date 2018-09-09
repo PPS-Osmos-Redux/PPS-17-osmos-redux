@@ -15,7 +15,8 @@ import scalafx.util.Duration
 
 /**
   * Basic abstract level node, consisting of a text, an image, a play button and a simulation button
-  * @param listener the LevelNodeListener
+  *
+  * @param listener  the LevelNodeListener
   * @param levelInfo the level info
   */
 abstract class AbstractLevelNode(val listener: LevelNodeListener, val levelInfo: LevelInfo) extends VBox {
@@ -52,7 +53,8 @@ abstract class AbstractLevelNode(val listener: LevelNodeListener, val levelInfo:
 
 /**
   * Animated version of the base AbstractLevelNode, adding scaling and fading effects
-  * @param listener the LevelNodeListener
+  *
+  * @param listener  the LevelNodeListener
   * @param levelInfo the level info
   */
 abstract class AnimatedAbstractLevelNode(override val listener: LevelNodeListener, override val levelInfo: LevelInfo) extends AbstractLevelNode(listener, levelInfo) {
@@ -73,12 +75,16 @@ abstract class AnimatedAbstractLevelNode(override val listener: LevelNodeListene
   }
 
   text.visible = false
-
+text.fill = Color.White
   /**
     * Playing the fade animation when the image is hovered
     */
-  imageView.onMouseEntered = _ => {text.visible = true; fadeInTransition.play()}
-  imageView.onMouseExited = _ => {fadeOutTransition.play()}
+  imageView.onMouseEntered = _ => {
+    text.visible = true; fadeInTransition.play()
+  }
+  imageView.onMouseExited = _ => {
+    fadeOutTransition.play()
+  }
 
   playButton.visible <== hover
   simulationButton.visible <== hover
@@ -92,9 +98,10 @@ trait LevelNodeListener {
 
   /**
     * This method gets called when an available level buttons get clicked
-    * @param levelInfo the levelInfo name
+    *
+    * @param levelInfo  the levelInfo name
     * @param simulation true if the level must be started as a simulation, false otherwise
-    * @param custom true if the level is a custom one, false otherwise
+    * @param custom     true if the level is a custom one, false otherwise
     */
   def onLevelPlayClick(levelInfo: LevelInfo, simulation: Boolean, custom: Boolean = false)
 }
@@ -102,16 +109,18 @@ trait LevelNodeListener {
 
 /**
   * This node represents a single selectable level from the menu
-  * @param listener the LevelNodeListener
+  *
+  * @param listener  the LevelNodeListener
   * @param levelInfo the level info
-  * @param index the level index in the selection screen
+  * @param index     the level index in the selection screen
   */
 class LevelNode(override val listener: LevelNodeListener, override val levelInfo: LevelInfo, val index: Int) extends AnimatedAbstractLevelNode(listener, levelInfo) {
 
   /* The upper text */
   override lazy val text: Text = new Text() {
     margin = Insets(0, 0, 20, 0)
-    style = "-fx-font-size: 20pt"
+    style = "-fx-fx-font-size: 20pt"
+    //fill = Color.White
     if (levelInfo.isAvailable) {
       text = "Level " + levelInfo.name
     } else {
