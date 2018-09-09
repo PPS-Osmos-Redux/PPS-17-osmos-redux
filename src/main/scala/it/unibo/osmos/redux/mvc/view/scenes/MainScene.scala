@@ -37,6 +37,7 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
 
   /** This method makes the legend screen appear/disappear */
   private def changeLegendScreenState(): Unit = {
+    if (controlsScreenVisible.value) controlsScreenVisible.value = false
     legendScreenVisible.value = !legendScreenVisible.value
     background.opacity = if (legendScreenVisible.value) 0.3 else 1.0
   }
@@ -49,6 +50,7 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
 
   /** This method makes the instruction screen appear/disappear */
   private def changeInstructionScreenState(): Unit = {
+    if (legendScreenVisible.value) legendScreenVisible.value = false
     controlsScreenVisible.value = !controlsScreenVisible.value
     background.opacity = if (controlsScreenVisible.value) 0.3 else 1.0
   }
