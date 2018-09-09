@@ -4,7 +4,6 @@ import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.mvc.controller.manager.sounds.{MusicPlayer, SoundsType}
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.backgroundTexture
 import it.unibo.osmos.redux.mvc.view.components.instructions.{GameInstructionScreen, GameLegendScreen}
-import it.unibo.osmos.redux.mvc.view.components.level.LevelScreen
 import it.unibo.osmos.redux.mvc.view.components.menu.{MainMenuCenterBox, MainMenuCenterBoxListener}
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import javafx.scene.input.KeyCode
