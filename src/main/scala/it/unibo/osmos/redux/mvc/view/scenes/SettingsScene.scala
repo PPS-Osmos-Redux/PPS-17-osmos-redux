@@ -11,9 +11,15 @@ import scalafx.scene.layout._
 import scalafx.scene.paint.Color
 import scalafx.stage.Stage
 
+/** Scene where the user can configure in game settings
+  *
+  * @param parentStage the parent stage
+  * @param listener the SettingsSceneListener
+  * @param previousSceneListener the BackClickListener
+  */
 class SettingsScene(override val parentStage: Stage, listener: SettingsSceneListener, previousSceneListener: BackClickListener) extends DefaultBackScene(parentStage, previousSceneListener) {
 
-  implicit def toDouble(number: Number): Double = number.doubleValue()
+  private implicit def toDouble(number: Number): Double = number.doubleValue()
 
   private val volumeSlider = new Slider() {
     min = 0
@@ -70,23 +76,19 @@ class SettingsScene(override val parentStage: Stage, listener: SettingsSceneList
   /** adds save settings to goBack button */
   setAdditionalAction(() => SettingsHolder.saveSettings())
 
-  /**
-    * The central container
-    */
+  /**  The central container */
   protected val container: VBox = new VBox(15) {
     alignment = Pos.Center
     children = Seq(volumeContainer, volumeSlider, resetGameData, goBack)
     styleClass.add("settings-vbox")
   }
 
-  /* Setting the root container*/
+  /* Setting the root container */
   root = container
 }
 
-/**
-  * Trait which gets notified when a SettingsScene event occurs
-  */
+/** Trait which gets notified when a SettingsScene event occurs */
 trait SettingsSceneListener {
 
-  //TODO: insert method that will be overridden/implmented in View, if needed
+
 }
