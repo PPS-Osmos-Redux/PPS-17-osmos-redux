@@ -35,7 +35,7 @@ object LevelScreen {
       * @param color the text color
       * @return the builder itself
       */
-    def withText(text: String, size: Double, color: Color): Builder = {
+    def withText(text: String, size: Double = 30, color: Color = Color.White): Builder = {
       components += new Text(text) {
         font = Font.font("Verdana", size)
         fill = color

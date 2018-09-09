@@ -35,14 +35,9 @@ object OsmosReduxPrimaryStage {
     width = windowWidth
     height = windowHeight
 
-    private val mainScene = new MainScene(this, this) {
-      // TODO: changing scene will ignore the imported style
-      stylesheets.addAll(StyleFileManager.getStyle)
-    }
+    private val mainScene = new MainScene(this, this)
 
-    /**
-      * The scene field represents the scene currently shown to the screen
-      */
+    /** The scene field represents the scene currently shown to the screen */
     scene = mainScene
 
     override def onPlayClick(): Unit = scene = new LevelSelectionScene(this, listener, mainScene)
