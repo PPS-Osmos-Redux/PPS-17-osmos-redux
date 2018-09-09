@@ -9,6 +9,12 @@ import scalafx.scene.control.{TableColumn, TableView}
 import scalafx.scene.layout.VBox
 import scalafx.stage.Stage
 
+/** Scene where the user can find his in game stats
+  *
+  * @param parentStage the parent stage
+  * @param listener the StatsSceneListener
+  * @param previousSceneListener the BackClickListener
+  */
 class StatsScene(override val parentStage: Stage, listener: StatsSceneListener, previousSceneListener: BackClickListener) extends DefaultBackScene(parentStage, previousSceneListener) {
 
   private implicit def toStringProperty[A](value: A): StringProperty = StringProperty(value.toString)
@@ -25,7 +31,7 @@ class StatsScene(override val parentStage: Stage, listener: StatsSceneListener, 
   private val defeatsColumn = new TableColumn[CampaignLevel, String]("Defeats") {
     cellValueFactory = p => p.value.levelStat.defeats
   }
-  
+
   private val playerData = FXCollections.observableArrayList[CampaignLevel]()
   listener.getCampaignLevels.foreach(e => playerData.add(e))
 
