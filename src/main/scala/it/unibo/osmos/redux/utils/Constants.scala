@@ -51,7 +51,7 @@ object Constants {
     val DefaultFS: FileSystem = FileSystems.getDefault
     val SystemSeparator: String = DefaultFS.getSeparator
     val UserHome: String = System.getProperty("user.home")
-    val GameDirectory:String = "Osmos-Redux" + SystemSeparator
+    val GameDirectory:String = ".Osmos-Redux" + SystemSeparator
     val LevelsDirectory: String = UserHome + SystemSeparator + GameDirectory + "CustomLevels" + SystemSeparator
     val UserProgressDirectory:String = UserHome + SystemSeparator + GameDirectory +
        "UserProgress" + SystemSeparator
