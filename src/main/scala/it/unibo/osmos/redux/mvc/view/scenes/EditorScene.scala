@@ -5,7 +5,7 @@ import it.unibo.osmos.redux.mvc.controller.levels.structure.{CollisionRules, Map
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Editor._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
-import it.unibo.osmos.redux.mvc.view.components.custom.{StyledButton, TitledComboBox}
+import it.unibo.osmos.redux.mvc.view.components.custom.{AlertFactory, StyledButton, TitledComboBox}
 import it.unibo.osmos.redux.mvc.view.components.editor._
 import it.unibo.osmos.redux.mvc.view.components.level.LevelScreen
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
@@ -211,10 +211,7 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
 
         /** Check if the name is empty */
         if (name isEmpty) {
-          new Alert(Alert.AlertType.Error) {
-            title = "Error"
-            contentText.value = "The level name cannot be empty"
-          }.showAndWait()
+          AlertFactory.createErrorAlert("Error", "The level name cannot be empty").showAndWait()
         } else {
           /** The name is valid, we have to retrieve the elements */
           /** Level */
@@ -230,17 +227,9 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
           /** Save the level */
           listener.onSaveLevel(name, level, victoryRules, collisionRules, builtEntities, {
             /** The level has been created */
-            case true => new Alert(Alert.AlertType.Confirmation) {
-              title = "Success"
-              contentText.value = "The custom level has been successfully saved"
-            }.showAndWait()
-
+            case true => AlertFactory.createConfirmationAlert("Success", "The custom level has been successfully saved").showAndWait()
             /** We show an alert */
-            case false =>
-              new Alert(Alert.AlertType.Error) {
-                title = "Error"
-                contentText.value = "The custom level could not be made"
-              }.showAndWait()
+            case false => AlertFactory.createErrorAlert("Error", "The custom level could not be made").showAndWait()
           })
         }
 
@@ -328,9 +317,7 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
     content = editorElements
 
     /** Insert an entity to the built entities list */
-    val n = getVisibleCellBuilder create()
-    println(n)
-    builtEntities += n
+    builtEntities += getVisibleCellBuilder create()
   }
 
   /** The main editor elements */
