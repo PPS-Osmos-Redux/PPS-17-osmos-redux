@@ -3,6 +3,7 @@ package it.unibo.osmos.redux.mvc.view.scenes
 import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.mvc.controller.manager.sounds.{MusicPlayer, SoundsType}
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.backgroundTexture
+import it.unibo.osmos.redux.mvc.view.components.instructions.GameInstructionScreen
 import it.unibo.osmos.redux.mvc.view.components.level.LevelScreen
 import it.unibo.osmos.redux.mvc.view.components.menu.{MainMenuCenterBox, MainMenuCenterBoxListener}
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
@@ -31,17 +32,8 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
   /** Boolean binding with the instructionScreen */
   private val controlsScreenVisible: BooleanProperty = BooleanProperty(false)
   /** The instruction screen */
-  private val controlsScreen = LevelScreen.Builder(this)
-    .withText("Game Controls & Instruction", 50)
-    .withText("Click on the screen to eject mass and move in the opposite click direction")
-    .withText("On collision the bigger cell will absorb the smaller one")
-    .withText("Wheel up/down to zoom in/out")
-    .withText("Press [esc] to stop game (single player only)")
-    .withText("Press [up] or [right] arrow key to speed up game time (single player only)")
-    .withText("Press [down] or [left] arrow key to slow down game time (single player only)")
-    .withText("Press [i] to show/hide the game controls", 20)
-    .build()
-  controlsScreen.visible <== controlsScreenVisible
+  private val instructionScreen = new GameInstructionScreen(this).instructionScreen
+  instructionScreen.visible <== controlsScreenVisible
 
   /** This method makes the instruction screen appear/disappear */
   private def changeInstructionScreenState(): Unit = {
@@ -74,7 +66,7 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
     case _ =>
   }
 
-  content = Seq(background, rootLayout, controlsScreen)
+  content = Seq(background, rootLayout, instructionScreen)
 
   override def backToMainMenu(): Unit = {}
 
