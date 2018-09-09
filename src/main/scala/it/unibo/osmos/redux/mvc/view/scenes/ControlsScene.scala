@@ -1,6 +1,5 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
-import it.unibo.osmos.redux.mvc.view.ViewConstants
 import it.unibo.osmos.redux.mvc.view.stages.PrimaryStageListener
 import scalafx.geometry.Pos
 import scalafx.scene.control.Label
@@ -8,6 +7,12 @@ import scalafx.scene.layout.{HBox, VBox}
 import scalafx.scene.text.Text
 import scalafx.stage.Stage
 
+/** Scene where the user can find application controls
+  *
+  * @param parentStage the parent stage
+  * @param listener the PrimaryStageListener
+  * @param previousSceneListener the BackClickListener
+  */
 class ControlsScene(override val parentStage: Stage, listener: PrimaryStageListener, previousSceneListener: BackClickListener) extends DefaultBackScene(parentStage, previousSceneListener) {
 
   private val commands = new VBox() {
@@ -39,6 +44,6 @@ class ControlsScene(override val parentStage: Stage, listener: PrimaryStageListe
     styleClass.add("settings-vbox")
   }
 
-  /* Setting the root container*/
+  /* Setting the root container */
   root = controlSceneMainContainer
 }
