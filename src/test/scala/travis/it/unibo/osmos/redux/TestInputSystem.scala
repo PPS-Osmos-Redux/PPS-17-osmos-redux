@@ -10,6 +10,7 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 
 class TestInputSystem extends FunSuite with BeforeAndAfter {
 
+  val accelerationCoefficient: Double = 0.8
   var system: InputSystem = _
   var pce: PlayerCellEntity = _
 
@@ -72,7 +73,7 @@ class TestInputSystem extends FunSuite with BeforeAndAfter {
     var newAccel = accel.copy()
     events foreach (ev => {
       val p = MathUtils.unitVector(pos.point, ev.point)
-      newAccel = AccelerationComponent(newAccel.vector add (p multiply system.accelCoefficient))
+      newAccel = AccelerationComponent(newAccel.vector add (p multiply accelerationCoefficient))
     })
     newAccel
   }
