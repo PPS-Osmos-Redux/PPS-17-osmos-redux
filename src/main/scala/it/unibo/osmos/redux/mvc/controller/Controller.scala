@@ -130,8 +130,6 @@ case class ControllerImpl() extends Controller {
   private var client: Option[Client] = None
 
   override def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): Try[Unit] = {
-    Logger.log("initLevel")
-
     val isSimulation = levelContext.levelContextType == LevelContextType.simulation
     val loadedLevel:Option[Level] = loadLevel(chosenLevel, isCustom, isSimulation)
 
@@ -160,8 +158,6 @@ case class ControllerImpl() extends Controller {
   }
 
   override def initLobby(user: User, lobbyContext: LobbyContext): Promise[GenericResponse[Boolean]] = {
-    Logger.log("initLobby")
-
     val promise = Promise[GenericResponse[Boolean]]()
 
     //subscribe to lobby context to intercept exit from lobby click
@@ -210,7 +206,6 @@ case class ControllerImpl() extends Controller {
             case Success(true) =>
               this.client = Some(client)
               //creates the level context
-              //TODO: think about a better way, technically getUUID method of the client won't be called until the game is started (the GameStarted message will carry along this value).
               val levelContext = LevelContext(Constants.MultiPlayer.DefaultClientUUID)
               //initializes the game
               client.initGame(levelContext)
@@ -229,8 +224,6 @@ case class ControllerImpl() extends Controller {
   }
 
   override def initMultiPlayerLevel(levelInfo: LevelInfo): Promise[GenericResponse[Boolean]] = {
-    Logger.log("initMultiPlayerLevel")
-
     val promise = Promise[GenericResponse[Boolean]]()
     //End game result of the multiplayer levels doesn't influence campaign statistics
     lastLoadedLevel = None
@@ -263,8 +256,6 @@ case class ControllerImpl() extends Controller {
   }
 
   override def startLevel(): Unit = {
-    Logger.log("startLevel")
-
     multiPlayerMode match {
       case Some(MultiPlayerMode.Server) | None => if (engine.isDefined) engine.get.start()
       case _ =>
@@ -272,8 +263,6 @@ case class ControllerImpl() extends Controller {
   }
 
   override def changeLevelSpeed(increment: Boolean = false): Unit = {
-    Logger.log("changeLevelSpeed")
-
     multiPlayerMode match {
       case Some(MultiPlayerMode.Server) | None => if (engine.isDefined) engine.get.changeSpeed(increment)
       case _ =>
@@ -281,8 +270,6 @@ case class ControllerImpl() extends Controller {
   }
 
   override def stopLevel(victory: Boolean = false): Unit = {
-    Logger.log(s"stopLevel - victory: $victory")
-
     multiPlayerMode match {
       case Some(MultiPlayerMode.Client) =>
         if (client.isDefined) client.get.leaveGame()
@@ -296,8 +283,6 @@ case class ControllerImpl() extends Controller {
   }
 
   override def pauseLevel(): Unit = {
-    Logger.log("pauseLevel")
-
     multiPlayerMode match {
       case None => if (engine.isDefined) engine.get.pause()
       case _ => throw new UnsupportedOperationException("A multi-player level cannot be paused.")
@@ -305,8 +290,6 @@ case class ControllerImpl() extends Controller {
   }
 
   override def resumeLevel(): Unit = {
-    Logger.log("resumeLevel")
-
     multiPlayerMode match {
       case None => if (engine.isDefined) engine.get.resume()
       case _ => throw new UnsupportedOperationException("A multi-player level cannot be resumed.")
