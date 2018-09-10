@@ -1,8 +1,7 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
-import it.unibo.osmos.redux.ecs.entities.{EntityManager, PlayerCellEntity}
+import it.unibo.osmos.redux.ecs.entities.{CellBuilder, EntityManager, PlayerCellEntity}
 import it.unibo.osmos.redux.ecs.systems.InputSystem
 import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
 import it.unibo.osmos.redux.utils.{InputEventQueue, MathUtils, Point}

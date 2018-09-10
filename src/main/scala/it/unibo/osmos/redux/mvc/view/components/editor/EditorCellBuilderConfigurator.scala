@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.components.editor
 
-import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
+import it.unibo.osmos.redux.ecs.entities.CellBuilder
 
 /**
   * Basic CellBuilder configurator, used by the various cell editors

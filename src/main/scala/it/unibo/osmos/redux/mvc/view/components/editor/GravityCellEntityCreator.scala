@@ -1,7 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.components.editor
 
-import it.unibo.osmos.redux.ecs.entities.GravityCellEntity
-import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
+import it.unibo.osmos.redux.ecs.entities.{CellBuilder, GravityCellEntity}
 import it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField
 import scalafx.beans.property.DoubleProperty
 import scalafx.scene.control.Label

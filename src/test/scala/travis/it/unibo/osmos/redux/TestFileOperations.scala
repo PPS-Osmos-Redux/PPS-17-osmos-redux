@@ -1,12 +1,10 @@
 package it.unibo.osmos.redux
 
-import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.ecs.entities._
-import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
-import it.unibo.osmos.redux.mvc.controller.{Setting, Volume}
 import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.mvc.controller.levels.structure._
 import it.unibo.osmos.redux.mvc.controller.manager.files.{LevelFileManager, SettingsFileManger, UserProgressFileManager}
+import it.unibo.osmos.redux.mvc.controller.{Setting, Volume}
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.FunSuite
 

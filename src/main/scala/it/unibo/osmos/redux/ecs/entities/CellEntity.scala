@@ -3,7 +3,6 @@ package it.unibo.osmos.redux.ecs.entities
 import java.util.UUID
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 import it.unibo.osmos.redux.ecs.entities.properties.composed._
 
 /** Trait representing a CellEntity */

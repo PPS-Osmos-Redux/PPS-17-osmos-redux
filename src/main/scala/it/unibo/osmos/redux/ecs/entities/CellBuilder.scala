@@ -1,7 +1,6 @@
-package it.unibo.osmos.redux.ecs.entities.builders
+package it.unibo.osmos.redux.ecs.entities
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities._
 import it.unibo.osmos.redux.utils.{Point, Vector}
 
 /**Base builder for all type of cell*/
