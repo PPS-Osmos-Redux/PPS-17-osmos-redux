@@ -10,32 +10,26 @@ import scalafx.scene.{Node, Scene}
 
 import scala.collection.mutable
 
-/**
-  * A simple splash screen shown at the beginning of the level
-  */
+/** A simple splash screen shown at the beginning of the level */
 object LevelScreen {
 
-  /**
-    * Builder. The provided scene is used to determine the screen width and height
+  /** Builder. The provided scene is used to determine the screen width and height
     *
     * @param parentScene the scene in which the screen will be shown
     */
   case class Builder(private val parentScene: Scene) {
 
-    /**
-      * The components which will be added to the screen, in order from top to bottom
-      */
+    /** The components which will be added to the screen, in order from top to bottom */
     private var components: mutable.ListBuffer[Node] = mutable.ListBuffer()
 
-    /**
-      * Add a Text to the screen
+    /** Add a Text to the screen
       *
       * @param text  the text
       * @param size  the text size
       * @param color the text color
       * @return the builder itself
       */
-    def withText(text: String, size: Double, color: Color): Builder = {
+    def withText(text: String, size: Double = 30, color: Color = Color.White): Builder = {
       components += new Text(text) {
         font = Font.font("Verdana", size)
         fill = color
@@ -43,8 +37,7 @@ object LevelScreen {
       this
     }
 
-    /**
-      * Add a Button to the screen
+    /** Add a Button to the screen
       *
       * @param text    the text
       * @param onClick the handler that will be executed on the button click
@@ -57,8 +50,8 @@ object LevelScreen {
       this
     }
 
-    /**
-      * Add a node to the screen
+    /** Add a node to the screen
+      *
       * @param node the node
       * @return the builder itself
       */
@@ -67,21 +60,19 @@ object LevelScreen {
       this
     }
 
-    /**
-      * Creates a LevelScreenImpl with the provided components
+    /** Creates a LevelScreenImpl with the provided components
       *
       * @return a LevelScreenImpl
       */
     def build(): LevelScreenImpl = new LevelScreenImpl(parentScene, components)
   }
 
-  /**
-    * A protected class representing a black level screen
+  /** A protected class representing a black level screen
     *
     * @param parentScene the parent scene
     * @param components  the screen nodes/components, shown in order top to bottom
     */
-  protected class LevelScreenImpl(parentScene: Scene, components: Seq[Node]) extends VBox(spacing = 4) {
+  class LevelScreenImpl(parentScene: Scene, components: Seq[Node]) extends VBox(spacing = 4) {
     prefWidth <== parentScene.width
     prefHeight <== parentScene.height
     alignment = Pos.Center
@@ -92,7 +83,4 @@ object LevelScreen {
 
   }
 
-
 }
-
-

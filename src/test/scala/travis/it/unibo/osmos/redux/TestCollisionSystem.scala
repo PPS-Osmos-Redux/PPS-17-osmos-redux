@@ -98,11 +98,11 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
 
     system.update()
 
-    assert(entity.getDimensionComponent.radius === 5.07 +- TOLERANCE)
-    assert(entity.getPositionComponent.point.x === 59.56 +- TOLERANCE)
+    assert(entity.getDimensionComponent.radius === 5.13 +- TOLERANCE)
+    assert(entity.getPositionComponent.point.x === 59.62 +- TOLERANCE)
     assert(entity.getPositionComponent.point.y == 80)
-    assert(entity1.getDimensionComponent.radius == 1.8)
-    assert(entity1.getPositionComponent.point.x === 66.43 +- TOLERANCE)
+    assert(entity1.getDimensionComponent.radius == 1.62)
+    assert(entity1.getPositionComponent.point.x === 66.37 +- TOLERANCE)
     assert(entity1.getPositionComponent.point.y == 80)
   }
 
@@ -160,16 +160,16 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
     system.update()
 
     assert(leftCollisionCellEntity.getSpeedComponent == SpeedComponent(4.0, 2.0))
-    assert(leftCollisionCellEntity.getPositionComponent.point == Point(85.0, 58.0))
+    assert(leftCollisionCellEntity.getPositionComponent.point == Point(82.0, 58.0))
 
     assert(rightCollisionCellEntity.getSpeedComponent == SpeedComponent(-6.0, 0.0))
-    assert(rightCollisionCellEntity.getPositionComponent.point == Point(229.0, 90.0))
+    assert(rightCollisionCellEntity.getPositionComponent.point == Point(233.0, 90.0))
 
     assert(topCollisionCellEntity.getSpeedComponent == SpeedComponent(6.0, 4.0))
-    assert(topCollisionCellEntity.getPositionComponent.point == Point(166.0, 60.0))
+    assert(topCollisionCellEntity.getPositionComponent.point == Point(166.0, 58.0))
 
     assert(bottomCollisionCellEntity.getSpeedComponent == SpeedComponent(-2.0, -7.0))
-    assert(bottomCollisionCellEntity.getPositionComponent.point == Point(113.0, 139.0))
+    assert(bottomCollisionCellEntity.getPositionComponent.point == Point(113.0, 145.0))
   }
 
   test("Collision with rectangular shape border, using instant death collision rule, reduces entities' radius") {

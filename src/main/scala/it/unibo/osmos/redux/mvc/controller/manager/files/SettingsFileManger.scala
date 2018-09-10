@@ -32,4 +32,6 @@ object SettingsFileManger extends FileManager {
     }
     case None => List()
   }
+
+  def deleteSettingsFile(): Try[Unit] = deleteFile(SettingFilePath + jsonExtension)
 }
