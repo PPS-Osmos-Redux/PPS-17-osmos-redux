@@ -98,11 +98,11 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
 
     system.update()
 
-    assert(entity.getDimensionComponent.radius === 5.07 +- TOLERANCE)
-    assert(entity.getPositionComponent.point.x === 59.56 +- TOLERANCE)
+    assert(entity.getDimensionComponent.radius === 5.13 +- TOLERANCE)
+    assert(entity.getPositionComponent.point.x === 59.62 +- TOLERANCE)
     assert(entity.getPositionComponent.point.y == 80)
-    assert(entity1.getDimensionComponent.radius == 1.8)
-    assert(entity1.getPositionComponent.point.x === 66.43 +- TOLERANCE)
+    assert(entity1.getDimensionComponent.radius == 1.62)
+    assert(entity1.getPositionComponent.point.x === 66.37 +- TOLERANCE)
     assert(entity1.getPositionComponent.point.y == 80)
   }
 
