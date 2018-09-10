@@ -19,6 +19,7 @@ import scala.concurrent.duration._
 import scala.concurrent.{Future, Promise}
 import scala.util.{Failure, Success}
 
+/** Trait representing a Server */
 trait Server {
 
   type ServerState = ServerState.Value
@@ -156,11 +157,7 @@ object Server {
 
     //MAIN METHODS
 
-    override def bind(actorRef: ActorRef): Unit = ref = {
-      Logger.log("bind")
-
-      Some(actorRef)
-    }
+    override def bind(actorRef: ActorRef): Unit = ref = Some(actorRef)
 
     override def getUUID: String = uuid
 
@@ -169,16 +166,16 @@ object Server {
     override def getState: ServerState = status
 
     override def kill(): Unit = {
-      Logger.log("kill")
-
       status match {
         case ServerState.Game => broadcastMessage(GameEnded(false))
         case ServerState.Lobby => broadcastMessage(LobbyClosed)
         case _ => //do nothing is other states
       }
+
       if (lobby.nonEmpty) {
         lobby = None
       }
+
       if (ref.nonEmpty) {
         ref.get ! PoisonPill
         ref = None
@@ -190,6 +187,8 @@ object Server {
     //COMMUNICATION
 
     override def deliverMessage(username: String, message: Any): Unit = {
+      if (lobby.isEmpty) throw new UnsupportedOperationException("Cannot deliver message to specific client if the lobby is not defined.")
+
       lobby.get.getPlayers.find(_.getUsername == username) match  {
         case Some(player) => player.getActorRef ! message
         case None => throw new IllegalArgumentException("Cannot deliver message to specific client if the username does not match any player.")
@@ -198,6 +197,7 @@ object Server {
 
     override def broadcastMessage(message: Any, clientsToExclude: String*): Unit = {
       if (ref.isEmpty) throw new IllegalStateException("Unable to broadcast the message, server is not bind to an actor.")
+
       val usernameToExclude = clientsToExclude :+ this.username
       val actors = lobby.get.getPlayers.filterNot(p => (usernameToExclude contains p.getUsername) || !p.isAlive).map(_.getActorRef)
       actors.foreach(a => a ! message)
@@ -206,12 +206,9 @@ object Server {
     //GAME MANAGEMENT
 
     override def initGame(level: Level): Promise[Boolean] = {
-      Logger.log("initGame")
-
       if (status != ServerState.Lobby) throw new UnsupportedOperationException(s"Cannot init the game because the server is in the state: $status")
 
       val promise = Promise[Boolean]()
-
       //assign player cells to lobby players
       val futures = setupClients(level)
       Future.sequence(futures) onComplete {
@@ -222,17 +219,17 @@ object Server {
     }
 
     override def startGame(levelContext: MultiPlayerLevelContext, levelInfo: LevelInfo): Unit = {
-      Logger.log("startGame")
-
       if (status != ServerState.Lobby) throw new UnsupportedOperationException(s"Cannot start game because the server is in the state: $status")
 
-      lobby.get.notifyGameStarted(levelContext, levelInfo)
-      status = ServerState.Game
+      lobby match {
+        case Some(gameLobby) =>
+          gameLobby.notifyGameStarted(levelContext, levelInfo)
+          status = ServerState.Game
+        case _ => throw new IllegalArgumentException("Unable to start the game if the lobby is not defined.")
+      }
     }
 
     override def stopGame(winner: String = username): Unit = {
-      Logger.log("stopGame")
-
       if (status != ServerState.Lobby && status != ServerState.Game) throw new UnsupportedOperationException(s"Cannot stop game because the server is in the state: $status")
 
       //if the server won, everyone else lost
@@ -242,23 +239,19 @@ object Server {
         deliverMessage(winner, GameEnded(true))
         broadcastMessage(GameEnded(false), winner)
       }
-
+      //reset lobby death status
       resetLobbyPlayersDeathStatus()
-
+      //change current server status
       status = ServerState.Lobby
     }
 
     override def notifyClientInputEvent(event: MouseEventWrapper): Unit = {
-      Logger.log("notifyClientInputEvent")
-
       if (status != ServerState.Game) throw new UnsupportedOperationException(s"Cannot manage client input event because the server is in the state: $status")
 
       InputEventQueue enqueue event
     }
 
     override def removePlayerFromGame(username: String, notify: Boolean = false): Unit = {
-      Logger.log("removePlayerFromGame")
-
       if (status != ServerState.Game) throw new UnsupportedOperationException(s"Cannot remove player from game because it's in the state: $status")
 
       //detect if the dead player is the server itself
@@ -271,6 +264,7 @@ object Server {
       //notify player that he has lost (just clients)
       if (notify && !isServer) player.get.getActorRef ! GameEnded(false)
 
+      //get the player entity
       val playerEntity = EntityManager.filterEntities(classOf[PlayerCellEntity]).find(_.getUUID == player.get.getUUID)
       if (playerEntity.isEmpty) throw new IllegalArgumentException("Cannot remove player cell from game because it was not found.")
 
@@ -282,8 +276,6 @@ object Server {
     //LOBBY MANAGEMENT
 
     override def createLobby(lobbyContext: LobbyContext): Unit = {
-      Logger.log("createLobby")
-
       if (status != ServerState.Idle) throw new UnsupportedOperationException(s"Server cannot close lobby because it's in the state: $status")
 
       lobby = Some(GameLobby(lobbyContext))
@@ -299,58 +291,56 @@ object Server {
     }
 
     override def closeLobby(): Unit = {
-      Logger.log("closeLobby")
-
       if (status != ServerState.Lobby) throw new UnsupportedOperationException(s"Server cannot close lobby because it's in the state: $status")
+      if (lobby.isEmpty) throw new UnsupportedOperationException(s"Cannot close lobby if it's not defined.")
 
+      //broadcast that the lobby is closed
       broadcastMessage(LobbyClosed)
+      //let view change scene
       lobby.get.notifyLobbyClosed()
+      //clear lobby variable
       lobby = None
 
       status = ServerState.Idle
     }
 
     override def getLobbyPlayers: Seq[ReferablePlayer] = {
-
-      if (status != ServerState.Lobby && status != ServerState.Game)
-        throw new UnsupportedOperationException(s"Cannot because it's in the state: $status")
-
-      lobby.get.getPlayers
+      (status, lobby) match {
+        case (ServerState.Lobby | ServerState.Game, Some(gameLobby)) => gameLobby.getPlayers
+        case (_, None) => throw new UnsupportedOperationException(s"Cannot get lobby players because the lobby is not defined.")
+        case _ => throw new UnsupportedOperationException(s"Cannot because it's in the state: $status")
+      }
     }
 
     override def addPlayerToLobby(actorRef: ActorRef, player: BasePlayer): Boolean = {
-      Logger.log(s"addPlayerToLobby -> ${player.getUsername}, $actorRef")
-
-      status match {
-        case ServerState.Lobby =>
-          if (!lobby.get.isFull) {
+      (status, lobby) match {
+        case (ServerState.Lobby, Some(gameLobby)) =>
+          if (!gameLobby.isFull) {
             val newPlayer = new ReferablePlayer(player.getUsername, player.getAddress, player.getPort, actorRef)
+            //tell everyone a new player entered the lobby
             broadcastMessage(PlayerEnteredLobby(newPlayer.toBasicPlayer))
-            lobby.get.addPlayer(newPlayer)
+            //add the player to the lobby
+            gameLobby.addPlayer(newPlayer)
             true
           } else false
-        case _ =>
-          Logger.log(s"Unable to add player to lobby because the server status is $status")
-          false
+        case _ => throw new IllegalStateException("Unable to add player to lobby because the lobby is undefined")
       }
     }
 
     override def removePlayerFromLobby(username: String): Unit = {
-      Logger.log("removePlayerFromLobby")
-
-      status match {
-        case ServerState.Lobby | ServerState.Game =>
-          lobby.get.removePlayer(username)
+      (status, lobby) match {
+        case (ServerState.Lobby | ServerState.Game, Some(gameLobby)) =>
+          //effectively remove player from lobby
+          gameLobby.removePlayer(username)
+          //tell everyone the player left the game
           broadcastMessage(PlayerLeftLobby(username))
-        case _ =>
+        case _ => throw new IllegalStateException("Unable to remove player to lobby because the lobby is undefined")
       }
     }
 
     //HELPER METHODS
 
     private def setupClients(level: Level): Seq[Future[Any]] = {
-      Logger.log("assignCellsToPlayers")
-
       val availablePlayerCells = level.entities.filter(_.isInstanceOf[PlayerCellEntity]).map(p => Some(p.getUUID))
       val otherPlayers = lobby.get.getPlayers.filterNot(_.getUsername == this.username)
 
@@ -376,6 +366,7 @@ object Server {
         if !(extraCellPlayers contains e.getUUID)
       ) yield e
 
+      //prepare ask requests for all clients and return futures
       otherPlayers.map(Some(_)).zipAll(availablePlayerCells.tail, None, None).map {
         case (Some(p), Some(id)) => p.setUUID(id); Some(p.getActorRef ? GameStarted(id, level.levelInfo, mapShape))
         case (None, _) => None
@@ -383,28 +374,19 @@ object Server {
       }.filter(_.nonEmpty).map(_.get)
     }
 
-    private def getPlayerFromLobby(username: String): Option[ReferablePlayer] = {
-      Logger.log("getPlayerFromLobby")
-
-      if (lobby.isEmpty) throw new UnsupportedOperationException("Cannot get lobby player if the server doesn't have created any lobby.")
-
-      lobby.get.getPlayers.find(_.getUsername == username)
+    private def getPlayerFromLobby(username: String): Option[ReferablePlayer] = lobby match {
+      case Some(gameLobby) => gameLobby.getPlayers.find(_.getUsername == username)
+      case _ => throw new UnsupportedOperationException("Cannot get lobby player if the lobby is not defined.")
     }
 
-    private def setLobbyPlayerAsDead(username: String): Unit = {
-      Logger.log("setLobbyPlayerAsDead")
-
-      if (lobby.isEmpty) throw new UnsupportedOperationException("Cannot set lobby player as dead if the server doesn't have created any lobby.")
-
-      lobby.get.getPlayers.filter(_.getUsername == username).foreach(_ setLiveness false)
+    private def setLobbyPlayerAsDead(username: String): Unit = lobby match {
+      case Some(gameLobby) => gameLobby.getPlayers.filter(_.getUsername == username).foreach(_ setLiveness false)
+      case _ => throw new UnsupportedOperationException("Cannot set lobby player as dead if the lobby is not defined.")
     }
 
-    private def resetLobbyPlayersDeathStatus(): Unit = {
-      Logger.log("resetLobbyPlayersDeathStatus")
-
-      if (lobby.isEmpty) throw new UnsupportedOperationException("Cannot reset lobby players death status if the server doesn't have created any lobby.")
-
-      lobby.get.getPlayers.foreach(_ setLiveness true)
+    private def resetLobbyPlayersDeathStatus(): Unit = lobby match {
+      case Some(gameLobby) => gameLobby.getPlayers.foreach(_ setLiveness true)
+      case _ => throw new UnsupportedOperationException("Cannot reset lobby players death status if the lobby is not defined.")
     }
   }
 }
