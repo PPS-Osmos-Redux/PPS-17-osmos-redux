@@ -4,10 +4,6 @@ import java.nio.file.{FileSystem, FileSystems}
 
 object Constants {
 
-  object General {
-    final val CellMaxSpeed: Double = 4
-  }
-
   object Game {
     final val defaultFps: Int = 60
     final val minimumFps: Int = 30
@@ -41,8 +37,8 @@ object Constants {
     final val LevelStartPath: String = Separator + "levels"
     final val SinglePlayerLevelsPath: String = LevelStartPath + Separator + "singlePlayer" + Separator
     final val MultiPlayerLevelsPath: String = LevelStartPath + Separator + "multiPlayer" + Separator
-    final val ConfigSinglePlayer:String = LevelStartPath + Separator + "config" + Separator + "SinglePlayerLevels"
-    final val ConfigMultiPlayer:String = LevelStartPath + Separator + "config" + Separator + "MultiPlayerLevels"
+    final val ConfigSinglePlayer: String = LevelStartPath + Separator + "config" + Separator + "SinglePlayerLevels"
+    final val ConfigMultiPlayer: String = LevelStartPath + Separator + "config" + Separator + "MultiPlayerLevels"
     final val SoundsPath: String = Separator + "sounds" + Separator
     final val StylePath: String = Separator + "style" + Separator + "style.css"
   }
@@ -51,11 +47,12 @@ object Constants {
     final val DefaultFS: FileSystem = FileSystems.getDefault
     final val SystemSeparator: String = DefaultFS.getSeparator
     final val UserHome: String = System.getProperty("user.home")
-    final val GameDirectory:String = ".Osmos-Redux" + SystemSeparator
+    final val GameDirectory: String = ".Osmos-Redux" + SystemSeparator
     final val LevelsDirectory: String = UserHome + SystemSeparator + GameDirectory + "CustomLevels" + SystemSeparator
-    final val UserProgressDirectory:String = UserHome + SystemSeparator + GameDirectory +
-       "UserProgress" + SystemSeparator
+    final val UserProgressDirectory: String = UserHome + SystemSeparator + GameDirectory +
+      "UserProgress" + SystemSeparator
     final val UserProgressFileName: String = UserProgressDirectory + "UserProgress"
-    final val SettingFilePath:String = UserHome + SystemSeparator + GameDirectory + "Settings" + SystemSeparator + "GeneralSettings"
+    final val SettingFilePath: String = UserHome + SystemSeparator + GameDirectory + "Settings" + SystemSeparator + "GeneralSettings"
   }
+
 }
