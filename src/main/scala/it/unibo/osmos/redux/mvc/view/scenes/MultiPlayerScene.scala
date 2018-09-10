@@ -80,7 +80,10 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
 
           /** We go to the next scene */
           parentStage.scene = multiPlayerLobbyScene
-        case GenericResponse(false, message) =>
+        case GenericResponse(false, _) =>
+          val message = "Can't connect to the server: " +
+            "\n- check that the inserted address is correct" +
+            "\n- check your connection"
 
           /** If an error occurred */
           AlertFactory.createErrorAlert("Error", message).showAndWait()
