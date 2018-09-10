@@ -49,7 +49,7 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
     .withText("Configure the desired entities on the left panel")
     .withText("Configure the desired level, victory rule and collision rule on the right panel")
     .withText("When the placeholder is visible, click to insert a new entity on the level")
-    .withText("Press [i] to show/hide the instructions screen", 20, Color.White)
+    .withText("Press [H] to show/hide the instructions screen", 20, Color.White)
     .build()
   instructionScreen.visible <== instructionScreenVisible
 
@@ -187,7 +187,7 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
       alignment = Pos.Center
     }
     center = null
-    bottom = new HBox(0.0, new Text("Press [i] to show/hide the instructions") {
+    bottom = new HBox(0.0, new Text("Press [H] to show/hide the instructions") {
       style = "-fx-font-size: 20pt"
       fill = Color.White
       effect = new DropShadow {
@@ -290,7 +290,7 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
 
   /** On control key pressed we hide the placeholder to let the user insert values in the panes */
   onKeyPressed = key => key.getCode match {
-    case KeyCode.I => changeInstructionScreenState(); entityPlaceholder.visible = false
+    case KeyCode.H => changeInstructionScreenState(); entityPlaceholder.visible = false
     case KeyCode.CONTROL => if (!instructionScreenVisible.value) entityPlaceholder.visible = !entityPlaceholder.visible.value
     case _ =>
   }

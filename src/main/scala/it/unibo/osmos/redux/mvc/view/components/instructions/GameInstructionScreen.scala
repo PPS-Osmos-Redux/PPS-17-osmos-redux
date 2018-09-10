@@ -19,7 +19,7 @@ class GameInstructionScreen(val scene: BaseScene) {
     .withText("Press [esc] to stop game (single player only)")
     .withText("Press [up] or [right] arrow key to speed up game time (single player only)")
     .withText("Press [down] or [left] arrow key to slow down game time (single player only)")
-    .withText("Press [i] to show/hide the game controls", 20)
+    .withText("Press [C] to show/hide the game controls", 20)
     .build()
 
   /** Instruction screen getter */
