@@ -4,7 +4,6 @@ import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.mvc.controller.manager.sounds.{MusicPlayer, SoundsType}
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.backgroundTexture
 import it.unibo.osmos.redux.mvc.view.components.instructions.{GameInstructionScreen, GameLegendScreen}
-import it.unibo.osmos.redux.mvc.view.components.level.LevelScreen
 import it.unibo.osmos.redux.mvc.view.components.menu.{MainMenuCenterBox, MainMenuCenterBoxListener}
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import javafx.scene.input.KeyCode
@@ -49,7 +48,7 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
   instructionScreen.visible <== controlsScreenVisible
 
   /** This method makes the instruction screen appear/disappear */
-  private def changeInstructionScreenState(): Unit = {
+  private def changeControlsScreenState(): Unit = {
     if (legendScreenVisible.value) legendScreenVisible.value = false
     controlsScreenVisible.value = !controlsScreenVisible.value
     background.opacity = if (controlsScreenVisible.value) 0.3 else 1.0
@@ -62,19 +61,19 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
     visible <== !controlsScreenVisible and !legendScreenVisible
     /* Setting the upper MenuBar */
     center = new MainMenuCenterBox(MainScene.this)
-    bottom = new VBox(4.0, new Text("Press [i] to show/hide the game controls") {
+    bottom = new VBox(4.0, new Text("Press [C] to show/hide the game controls") {
       style = "-fx-font-size: 20pt"
       fill = Color.White
       effect = new DropShadow {
         color = Color.Blue
       }
-    }, new Text("Press [l] to show/hide the game legend") {
-        style = "-fx-font-size: 20pt"
-        fill = Color.White
-        effect = new DropShadow {
-          color = Color.Blue
-        }
+    }, new Text("Press [L] to show/hide the game legend") {
+      style = "-fx-font-size: 20pt"
+      fill = Color.White
+      effect = new DropShadow {
+        color = Color.Blue
       }
+    }
     ) {
       margin = Insets(50.0)
       alignment = Pos.Center
@@ -83,7 +82,7 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
   }
 
   onKeyPressed = key => key.getCode match {
-    case KeyCode.I => changeInstructionScreenState()
+    case KeyCode.C => changeControlsScreenState()
     case KeyCode.L => changeLegendScreenState()
     case _ =>
   }
