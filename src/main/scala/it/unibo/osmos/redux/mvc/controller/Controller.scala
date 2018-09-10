@@ -211,7 +211,7 @@ case class ControllerImpl() extends Controller {
               this.client = Some(client)
               //creates the level context
               //TODO: think about a better way, technically getUUID method of the client won't be called until the game is started (the GameStarted message will carry along this value).
-              val levelContext = LevelContext(Constants.MultiPlayer.defaultClientUUID)
+              val levelContext = LevelContext(Constants.MultiPlayer.DefaultClientUUID)
               //initializes the game
               client.initGame(levelContext)
               //fulfill promise
@@ -243,7 +243,7 @@ case class ControllerImpl() extends Controller {
         server.get.initGame(loadedLevel).future onComplete {
           case Success(_) =>
             //create the engine
-            if (engine.isEmpty) engine = Some(GameEngine(Constants.MultiPlayer.defaultMultiPlayerFps))
+            if (engine.isEmpty) engine = Some(GameEngine(Constants.MultiPlayer.DefaultMultiPlayerFps))
             //initialize the engine and let him create the levelContext
             val levelContext = engine.get.init(loadedLevel, server.get)
 
