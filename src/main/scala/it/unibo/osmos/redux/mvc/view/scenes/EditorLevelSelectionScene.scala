@@ -24,7 +24,7 @@ class EditorLevelSelectionScene(override val parentStage: Stage, override val li
     onAction = _ => parentStage.scene = new EditorScene(parentStage, listener, () => parentStage.scene = new EditorLevelSelectionScene(parentStage, listener, previousSceneListener))
   }
 
-  // TODO: check if can it be done better
+  /* Add newLevelButton before goBack button */
   buttonsContainer.children.add(buttonsContainer.children.size() - 1, newLevelButton)
 
   override def onLevelPlayClick(levelInfo: LevelInfo, simulation: Boolean, custom: Boolean = false): Unit = super.onLevelPlayClick(levelInfo, simulation, custom = true)

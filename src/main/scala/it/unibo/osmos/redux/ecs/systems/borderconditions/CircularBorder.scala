@@ -65,7 +65,7 @@ case class CircularBorder(levelCenter: Point, collisionRule: CollisionRules.Valu
     val entityPosition = entity.getPositionComponent.point
     val entitySpeed = entity.getSpeedComponent.vector
     val A = levelCenter
-    // TODO: consider keep in memory prec position to avoid its recomputation
+
     val B = entityPosition.subtract(entitySpeed)
     val C = entityPosition
     val R = levelRadius
