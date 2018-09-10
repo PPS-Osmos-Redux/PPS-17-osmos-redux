@@ -72,7 +72,7 @@ object LevelScreen {
     * @param parentScene the parent scene
     * @param components  the screen nodes/components, shown in order top to bottom
     */
-  protected class LevelScreenImpl(parentScene: Scene, components: Seq[Node]) extends VBox(spacing = 4) {
+  class LevelScreenImpl(parentScene: Scene, components: Seq[Node]) extends VBox(spacing = 4) {
     prefWidth <== parentScene.width
     prefHeight <== parentScene.height
     alignment = Pos.Center

@@ -3,7 +3,7 @@ package it.unibo.osmos.redux.mvc.view.scenes
 import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.mvc.controller.manager.sounds.{MusicPlayer, SoundsType}
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.backgroundTexture
-import it.unibo.osmos.redux.mvc.view.components.level.LevelScreen
+import it.unibo.osmos.redux.mvc.view.components.instructions.{GameInstructionScreen, GameLegendScreen}
 import it.unibo.osmos.redux.mvc.view.components.menu.{MainMenuCenterBox, MainMenuCenterBoxListener}
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import javafx.scene.input.KeyCode
@@ -28,23 +28,28 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
     fitHeight <== parentStage.height
   }
 
+  /** Boolean binding with the legendScreen */
+  private val legendScreenVisible: BooleanProperty = BooleanProperty(false)
+  /** The legend screen */
+  private val legendScreen = new GameLegendScreen(this).legendScreen
+  legendScreen.visible <== legendScreenVisible
+
+  /** This method makes the legend screen appear/disappear */
+  private def changeLegendScreenState(): Unit = {
+    if (controlsScreenVisible.value) controlsScreenVisible.value = false
+    legendScreenVisible.value = !legendScreenVisible.value
+    background.opacity = if (legendScreenVisible.value) 0.3 else 1.0
+  }
+
   /** Boolean binding with the instructionScreen */
   private val controlsScreenVisible: BooleanProperty = BooleanProperty(false)
   /** The instruction screen */
-  private val controlsScreen = LevelScreen.Builder(this)
-    .withText("Game Controls & Instruction", 50)
-    .withText("Click on the screen to eject mass and move in the opposite click direction")
-    .withText("On collision the bigger cell will absorb the smaller one")
-    .withText("Wheel up/down to zoom in/out")
-    .withText("Press [esc] to stop game (single player only)")
-    .withText("Press [up] or [right] arrow key to speed up game time (single player only)")
-    .withText("Press [down] or [left] arrow key to slow down game time (single player only)")
-    .withText("Press [i] to show/hide the game controls", 20)
-    .build()
-  controlsScreen.visible <== controlsScreenVisible
+  private val instructionScreen = new GameInstructionScreen(this).instructionScreen
+  instructionScreen.visible <== controlsScreenVisible
 
   /** This method makes the instruction screen appear/disappear */
   private def changeInstructionScreenState(): Unit = {
+    if (legendScreenVisible.value) legendScreenVisible.value = false
     controlsScreenVisible.value = !controlsScreenVisible.value
     background.opacity = if (controlsScreenVisible.value) 0.3 else 1.0
   }
@@ -53,16 +58,23 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
   private val rootLayout: BorderPane = new BorderPane {
     prefWidth <== parentStage.width
     prefHeight <== parentStage.height
-    visible <== !controlsScreenVisible
+    visible <== !controlsScreenVisible and !legendScreenVisible
     /* Setting the upper MenuBar */
     center = new MainMenuCenterBox(MainScene.this)
-    bottom = new HBox(0.0, new Text("Press [i] to show/hide the game controls") {
+    bottom = new VBox(4.0, new Text("Press [i] to show/hide the game controls") {
       style = "-fx-font-size: 20pt"
       fill = Color.White
       effect = new DropShadow {
         color = Color.Blue
       }
-    }) {
+    }, new Text("Press [l] to show/hide the game legend") {
+        style = "-fx-font-size: 20pt"
+        fill = Color.White
+        effect = new DropShadow {
+          color = Color.Blue
+        }
+      }
+    ) {
       margin = Insets(50.0)
       alignment = Pos.Center
     }
@@ -71,10 +83,11 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
 
   onKeyPressed = key => key.getCode match {
     case KeyCode.I => changeInstructionScreenState()
+    case KeyCode.L => changeLegendScreenState()
     case _ =>
   }
 
-  content = Seq(background, rootLayout, controlsScreen)
+  content = Seq(background, rootLayout, instructionScreen, legendScreen)
 
   override def backToMainMenu(): Unit = {}
 
