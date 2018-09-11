@@ -4,24 +4,22 @@ import scalafx.geometry.Insets
 import scalafx.scene.control.Button
 import scalafx.scene.layout.VBox
 
-/**
-  * Simple box to manage resume and exit events
+/** Simple box to manage resume and exit events
+  *
+  * @param listener the LevelStateBoxListener
+  * @param vSpacing the spacing between the elements
   */
 class LevelStateBox(val listener: LevelStateBoxListener, val vSpacing: Double) extends VBox(vSpacing){
   padding = Insets(4.0)
   visible = true
   margin = Insets(30.0)
 
-  /**
-    * Resume button
-    */
+  /** Resume button */
   private val resumeButton = new Button("Resume") {
     onAction = _ => listener.onResume()
   }
 
-  /**
-    * Exit button
-    */
+  /** Exit button */
   private val exitButton = new Button("Exit") {
     onAction = _ => listener.onExit()
   }

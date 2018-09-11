@@ -5,24 +5,26 @@ import scalafx.geometry.Pos
 import scalafx.scene.control.Button
 import scalafx.scene.layout.VBox
 
-/**
-  * Center menu shown in MainMenu
+
+/** Center menu shown in MainMenu
+  *
+  * @param listener the menu listener
   */
 class MainMenuCenterBox(val listener: MainMenuCenterBoxListener) extends VBox(20.0) {
 
   alignment = Pos.Center
 
-  /* Single-Player button */
+  /** Single-Player button */
   private val singlePlayerButton = new StyledButton("Single-Player")
-  /* Multi-Player button */
+  /** Multi-Player button */
   private val multiPlayerButton = new StyledButton("Multi-Player")
-  /* Editor button */
+  /** Editor button */
   private val levelEditorButton = new StyledButton("Level Editor")
-  /* Stats button */
+  /** Stats button */
   private val statsButton = new StyledButton("Stats")
-  /* Editor button */
+  /** Editor button */
   private val settingsButton = new StyledButton("Settings")
-  /* Exit button */
+  /** Exit button */
   private val exitButton = new StyledButton("Exit")
 
   children = List(singlePlayerButton, multiPlayerButton, levelEditorButton, statsButton, settingsButton, exitButton)
@@ -40,8 +42,9 @@ class MainMenuCenterBox(val listener: MainMenuCenterBoxListener) extends VBox(20
   */
 trait MainMenuCenterBoxListener {
 
-
-  /** Called when the user clicks on the back to menu button */
+  /**
+    * Called when the user clicks on the back to menu button
+    */
   def backToMainMenu()
 
   /**
