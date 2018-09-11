@@ -12,7 +12,7 @@ import scala.reflect.ClassTag
   */
 abstract class AbstractSystem[T <:Property: ClassTag]() extends Observer with System {
 
-  protected var entities: ListBuffer[T] = ListBuffer()
+  protected val entities: ListBuffer[T] = ListBuffer()
 
   EntityManager.subscribe(this, implicitly[ClassTag[T]].runtimeClass.asInstanceOf[Class[T]])
 

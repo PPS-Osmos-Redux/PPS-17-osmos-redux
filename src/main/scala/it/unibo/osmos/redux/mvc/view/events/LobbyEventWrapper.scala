@@ -13,8 +13,8 @@ case object UserRemoved extends LobbyEvent
 case class StartGame(multiPlayerLevelContext: MultiPlayerLevelContext, levelInfo: LevelInfo) extends LobbyEvent
 case object AbortLobby extends LobbyEvent
 
-/**
-  * Case class wrapping a LobbyEvent related to a User
+/** Case class wrapping a LobbyEvent related to a User
+  *
   * @param lobbyEvent the lobby event
   * @param user the user the event refers to
   */

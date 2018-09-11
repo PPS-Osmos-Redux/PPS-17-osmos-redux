@@ -13,7 +13,7 @@ import scalafx.scene.layout.VBox
   */
 class CircleLevelCreator extends BaseEditorCreator[MapShape.Circle] {
 
-  /* Center */
+  /** Center */
   val xCenter: DoubleProperty = DoubleProperty(0.0)
   val yCenter: DoubleProperty = DoubleProperty(0.0)
   private val centerNode = new VBox(2.0, new Label("Center"),
@@ -21,10 +21,10 @@ class CircleLevelCreator extends BaseEditorCreator[MapShape.Circle] {
     new TitledDoubleField("y: ", yCenter).innerNode
   )
 
-  /* Radius node*/
+  /** Radius node*/
   val radius: DoubleProperty = DoubleProperty(0.0)
-  val maxRadius: Double = ViewConstants.Editor.maxLevelRadius
-  private val radiusNode = new VBox(2.0, new Label(s"Radius (max: ${maxRadius})"),
+  val maxRadius: Double = ViewConstants.Editor.MaxLevelRadius
+  private val radiusNode = new VBox(2.0, new Label(s"Radius (max: $maxRadius)"),
     new TitledDoubleField("radius: ", radius, 1.0, maxRadius).innerNode,
   )
 

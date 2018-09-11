@@ -1,9 +1,8 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 import it.unibo.osmos.redux.ecs.entities.properties.basic.Position
-import it.unibo.osmos.redux.ecs.entities.{PlayerCellEntity, _}
+import it.unibo.osmos.redux.ecs.entities.{CellBuilder, PlayerCellEntity, _}
 import it.unibo.osmos.redux.ecs.systems.SpawnSystem
 import it.unibo.osmos.redux.utils.Point
 import org.scalatest.{BeforeAndAfter, FunSuite}

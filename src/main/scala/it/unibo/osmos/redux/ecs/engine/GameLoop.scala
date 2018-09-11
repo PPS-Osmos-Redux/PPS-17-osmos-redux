@@ -27,9 +27,9 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
       val startTick = System.currentTimeMillis()
       try {
         //let game progress by updating all systems
-        systems foreach (s => {
-          logRunTime(s.getClass.getSimpleName, () => s.update())
-        })
+        systems foreach (_.update())
+
+        //DEBUG ONLY: systems foreach (s => { logRunTime(s.getClass.getSimpleName, () => s.update()) })
       } finally {
         tryUnlock()
       }
@@ -37,7 +37,7 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
       //game loop iteration must last exactly tickTime, so sleep if the tickTime hasn't been reached yet
       val execTime = System.currentTimeMillis() - startTick
 
-      //Logger.log(s"Execution time: ${execTime}ms")("GameLoop")
+      //DEBUG ONLY: Logger.log(s"Execution time: ${execTime}ms")("GameLoop")
 
       if (!stopFlag) {
         val tickTime = getTickTime
@@ -49,14 +49,7 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
             case _: Throwable => //do nothing
           }
         } else {
-
-          try {
-            //TODO: should not block the game, for now catch and print error
-            throw ExceededTickTimeException("[Game loop] overrun tick time of " + tickTime +
-              "ms (" + engine.getFps + " fps) by " + math.abs(tickTime - execTime) + "ms.")
-          } catch {
-            case t: Throwable => Logger.log(t.getMessage)("GameLoop")
-          }
+          Logger.log(s"Exceeded tick time by ${math.abs(tickTime - execTime)}ms (${tickTime}ms - ${engine.getFps}fps)")("GameLoop")
         }
       }
     }
@@ -120,22 +113,13 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
   /**
     * Logs the runtime of a function.
     * @param who Who represents the function to log.
-    * @param f The function
+    * @param f The function.
     */
   private def logRunTime(who: String, f: () => Unit): Unit = {
     val start = System.currentTimeMillis()
     f()
     val end = System.currentTimeMillis()
-    //Logger.log(s"execution time: ${end-start}ms")(who)
+    Logger.log(s"Execution time: ${end - start}ms")(who)
   }
 }
-
-/**
-  * Custom exception to handle game loop tick time overrun
-  * @param message The message of the exception (optional)
-  * @param cause The cause of the exception (optional)
-  */
-final case class ExceededTickTimeException(private val message: String = "", private val cause: Throwable = null)
-  extends Exception(message, cause)
-
 

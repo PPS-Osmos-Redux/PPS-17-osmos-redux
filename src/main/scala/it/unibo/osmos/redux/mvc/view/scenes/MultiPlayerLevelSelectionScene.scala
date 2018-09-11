@@ -7,11 +7,12 @@ import scalafx.stage.Stage
 
 import scala.collection.mutable
 
-/**
-  * Scene in which the user can choose a level to play in multiplayer mode
+/** Scene in which the user can choose a level to play in multiplayer mode
+  *
   * @param parentStage the parent stage
   * @param listener the listener
   * @param upperListener the upper scene listener, which will be called to store the level selection
+  * @param user the User
   */
 class MultiPlayerLevelSelectionScene(override val parentStage: Stage, override val listener: MultiPlayerLevelSelectionSceneListener, val upperListener: UpperMultiPlayerLevelSelectionSceneListener, val user: User, previousSceneListener: BackClickListener)
   extends LevelSelectionScene(parentStage, listener, previousSceneListener) with LevelNodeListener {
@@ -32,8 +33,8 @@ class MultiPlayerLevelSelectionScene(override val parentStage: Stage, override v
 
 trait UpperMultiPlayerLevelSelectionSceneListener {
 
-  /**
-    * Called once when the user has selected a level
+  /** Called once when the user has selected a level
+    *
     * @param levelInfo the level info
     */
   def onLevelSelected(levelInfo: LevelInfo): Unit
@@ -45,8 +46,8 @@ trait UpperMultiPlayerLevelSelectionSceneListener {
   */
 trait MultiPlayerLevelSelectionSceneListener extends LevelSelectionSceneListener {
 
-  /**
-    * This method retrieves the multiplayer levels that must be shown as node
+  /** This method retrieves the multiplayer levels that must be shown as node
+    *
     * @return a list of multiplayer levels
     */
   def getMultiPlayerLevels: List[LevelInfo]

@@ -12,7 +12,7 @@ import scala.collection.mutable.ListBuffer
   *
   * @param enemies list of enemies from which choose the target enemy
   */
-case class FollowTargetRule(enemies: ListBuffer[SentientEnemyProperty]) extends RuleWithEnemies(enemies) {
+case class FollowTargetRule(enemies: ListBuffer[SentientEnemyProperty]) extends SentientRule {
 
   override def computeRule(sentient: SentientProperty, previousAcceleration: Vector): Vector = {
     val escapeVelocity = sentient.getSpeedComponent.vector add previousAcceleration

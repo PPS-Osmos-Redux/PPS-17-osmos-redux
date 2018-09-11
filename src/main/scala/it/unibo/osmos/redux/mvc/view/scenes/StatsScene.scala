@@ -36,9 +36,9 @@ class StatsScene(override val parentStage: Stage, listener: StatsSceneListener, 
   listener.getCampaignLevels.foreach(e => playerData.add(e))
 
   private val statsTable = new TableView[CampaignLevel]() {
-    maxWidth = ViewConstants.Window.halfWindowWidth
-    prefHeight = ViewConstants.Window.defaultWindowHeight / 4
-    /* add the columns to table*/
+    maxWidth = ViewConstants.Window.HalfWindowWidth
+    prefHeight = ViewConstants.Window.DefaultWindowHeight / 4
+    /** add the columns to table*/
     columns ++= List(levelNameColumn, victoryRuleColumn, victoriesColumn, defeatsColumn)
   }
 
@@ -48,7 +48,7 @@ class StatsScene(override val parentStage: Stage, listener: StatsSceneListener, 
   victoriesColumn.minWidth <== columnMinWidth
   defeatsColumn.minWidth <== columnMinWidth
 
-  /* add player data to table */
+  /** Adds player data to table */
   statsTable.setItems(playerData)
 
   /** The central container */
@@ -58,7 +58,7 @@ class StatsScene(override val parentStage: Stage, listener: StatsSceneListener, 
     styleClass.add("settings-vbox")
   }
 
-  /* Setting the root container*/
+  /** Setting the root container*/
   root = container
 }
 

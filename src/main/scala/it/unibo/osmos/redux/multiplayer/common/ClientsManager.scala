@@ -58,5 +58,5 @@ object ClientsManager {
     }
 
     override def clearClients(): Unit = clients.clear()
-    }
+  }
 }

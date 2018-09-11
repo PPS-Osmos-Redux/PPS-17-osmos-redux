@@ -12,11 +12,11 @@ import scala.collection.mutable.ListBuffer
   *
   * @param enemies list of possible enemies
   */
-case class EscapeFromEnemiesRule(enemies: ListBuffer[SentientEnemyProperty]) extends RuleWithEnemies(enemies) {
+case class EscapeFromEnemiesRule(enemies: ListBuffer[SentientEnemyProperty]) extends SentientRule {
 
   /*min value of distance between the entity before divide their unitVector for distance,
     so the nearest entities have greater weight*/
-  private val MinValueOfDistance: Double = 1
+  private val minValueOfDistance: Double = 1
 
   override def computeRule(sentient: SentientProperty, previousAcceleration: Vector): Vector = {
     escapeFromEnemies(sentient, findEnemies(sentient, enemies), previousAcceleration)
@@ -43,7 +43,7 @@ case class EscapeFromEnemiesRule(enemies: ListBuffer[SentientEnemyProperty]) ext
     val desiredSeparation = getDesiredSeparation(actualSpeed)
     enemies.map(e => (e, computeDistance(sentient, e)))
       .filter(p => p._2 < desiredSeparation)
-      .shiftDistance(MinValueOfDistance)
+      .shiftDistance(minValueOfDistance)
       .map(m => MathUtils.unitVector(sentient.getPositionComponent.point, m._1.getPositionComponent.point) divide m._2)
       .foldLeft((Vector.zero(), 1))((acc, i) => (acc._1 add ((i subtract acc._1) divide acc._2), acc._2 + 1))._1 normalized() match {
       case unitVectorDesiredVelocity if unitVectorDesiredVelocity == Vector(0, 0) => Vector.zero()

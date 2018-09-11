@@ -1,7 +1,6 @@
 package it.unibo.osmos.redux.ecs.entities
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 import it.unibo.osmos.redux.ecs.entities.properties.basic.Spawner
 import it.unibo.osmos.redux.ecs.entities.properties.composed.InputProperty
 

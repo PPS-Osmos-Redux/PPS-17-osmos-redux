@@ -1,15 +1,14 @@
 package it.unibo.osmos.redux.ecs.systems
 
+import it.unibo.osmos.redux.ecs.entities.PlayerCellEntity
 import it.unibo.osmos.redux.ecs.entities.properties.composed.DeathProperty
-import it.unibo.osmos.redux.ecs.entities.{EntityType, PlayerCellEntity}
-import it.unibo.osmos.redux.ecs.systems.victoryconditions.{AbsorbAllOtherPlayersCondition, AbsorbCellsWithTypeVictoryCondition, BecomeHugeVictoryCondition, BecomeTheBiggestVictoryCondition}
+import it.unibo.osmos.redux.ecs.systems.victoryconditions.AbsorbAllOtherPlayersCondition
 import it.unibo.osmos.redux.multiplayer.server.Server
 import it.unibo.osmos.redux.mvc.controller.levels.structure.VictoryRules
 import it.unibo.osmos.redux.mvc.view.context.GameStateHolder
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GameLostAsServer, GamePending, GameWon}
-import it.unibo.osmos.redux.utils.Logger
 
-/** System managing the level's ending rules
+/** System managing the level's ending rules for multi-player matches
   *
   * @param levelContext object to notify the view of the end game result
   * @param victoryRules enumeration representing the level's victory rules
@@ -28,12 +27,12 @@ case class MultiPlayerEndGameSystem(server: Server, levelContext: GameStateHolde
 
       //check
       for (
-        (player, cell, isServer) <- alivePlayers
+        (player, _, isServer) <- alivePlayers
           .map(i => (i, entities.find(_.getUUID == i.getUUID), i.getUUID == server.getUUID)) //get player, cell and isServer
           .filter(i => i._2.nonEmpty && victoryCondition.check(i._2.get, aliveCells)) //filter only players that have won
         if isGameRunning //when a winner is found do not check other players
       ) yield {
-        Logger.log(s"Victory detected for: ${player.getUsername} - ${player.getUUID} (server: $isServer)")("MultiPlayerEndGameSystem")
+        //DEBUG ONLY: Logger.log(s"Victory detected for: ${player.getUsername} - ${player.getUUID} (server: $isServer)")("MultiPlayerEndGameSystem")
         if (isServer) {
           server.stopGame()
           levelContext.notify(GameWon)

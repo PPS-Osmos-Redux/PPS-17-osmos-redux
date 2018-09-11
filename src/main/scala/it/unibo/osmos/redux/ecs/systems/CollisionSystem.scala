@@ -11,11 +11,11 @@ import it.unibo.osmos.redux.utils.{MathUtils, Point, Vector}
 case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidableProperty] {
 
   //the percentage of mass that an entity can acquire from another during a collision in a tick
-  private val MassExchangeRate = 0.2
+  private val massExchangeRate = 0.38
   //constants that controls how much deceleration is applied to an entity when colliding with another one
-  private val DecelerationAmount = 0.1
+  private val decelerationAmount = 0.01
   //the initial acceleration vector of a steady entity when a collision occurs
-  private val InitialAccelerationVector = Vector(0.1, 0.1)
+  private val stillEntityInitialAcceleration = 0.0035
   //the bouncing rule
   private val bounceRule = levelInfo.levelMap.mapShape match {
     case shape: Rectangle =>
@@ -75,8 +75,8 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
     val dir = MathUtils.unitVector(bigEntity.getPositionComponent.point, smallEntity.getPositionComponent.point)
 
     //apply deceleration to both entities, proportionally to their size
-    accelerateEntity(smallEntity, dir multiply -DecelerationAmount)
-    accelerateEntity(bigEntity, dir multiply DecelerationAmount)
+    accelerateEntity(smallEntity, dir multiply -1)
+    accelerateEntity(bigEntity, dir)
   }
 
   /** Exchanges mass from the small entity to the big one (modify entity radius).
@@ -89,20 +89,20 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
     val bigRadius = bigEntity.getDimensionComponent.radius
     val tinyRadius = smallEntity.getDimensionComponent.radius
     //reduce radius of the small entity
-    smallEntity.getDimensionComponent.radius_(tinyRadius - overlap * MassExchangeRate)
+    smallEntity.getDimensionComponent.radius_(tinyRadius - overlap * massExchangeRate)
 
     //change radius of the big entity and compute the quantity to move the two entity
     val quantityToMove = (bigEntity.getTypeComponent.typeEntity, smallEntity.getTypeComponent.typeEntity) match {
       case (EntityType.AntiMatter, _) | (_, EntityType.AntiMatter) =>
-        bigEntity.getDimensionComponent.radius_(bigRadius - overlap * MassExchangeRate)
-        (overlap * (1 - MassExchangeRate * 2)) / 2
+        bigEntity.getDimensionComponent.radius_(bigRadius - overlap * massExchangeRate)
+        (overlap * (1 - massExchangeRate * 2)) / 2
       case _ =>
         val oldSmallArea = MathUtils.circleArea(tinyRadius)
         val newSmallArea = MathUtils.circleArea(smallEntity.getDimensionComponent.radius)
         val newBigArea = MathUtils.circleArea(bigEntity.getDimensionComponent.radius) + oldSmallArea - newSmallArea
         bigEntity.getDimensionComponent.radius_(MathUtils.areaToRadius(newBigArea))
         limitMaxRadius(bigEntity)
-        (overlap - overlap * MassExchangeRate + (bigEntity.getDimensionComponent.radius - bigRadius)) / 2
+        (overlap - overlap * massExchangeRate + (bigEntity.getDimensionComponent.radius - bigRadius)) / 2
     }
 
     moveEntitiesAfterCollision(bigEntity, smallEntity, quantityToMove)
@@ -153,9 +153,9 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
 
     //gain acceleration even if the entity is still
     if (accel.vector == Vector(0, 0)) {
-      entity.getAccelerationComponent.vector_(direction multiply InitialAccelerationVector)
+      entity.getAccelerationComponent.vector_(direction multiply stillEntityInitialAcceleration)
     } else {
-      accel.vector_(accel.vector add direction)
+      accel.vector_(accel.vector add (direction multiply decelerationAmount))
     }
   }
 }

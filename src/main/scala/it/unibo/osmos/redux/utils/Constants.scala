@@ -8,21 +8,21 @@ object Constants {
     final val CellMaxSpeed: Double = 4
   }
 
-  object Game {
-    final val defaultFps: Int = 60
-    final val minimumFps: Int = 30
-    final val maximumFps: Int = 240
-    final val fpsChangeStep: Int = 30
+  object Engine {
+    final val DefaultFps: Int = 60
+    final val MinimumFps: Int = 30
+    final val MaximumFps: Int = 240
+    final val FpsChangeStep: Int = 10
   }
 
   object MultiPlayer {
-    final val defaultSystemConfig: String = "akka-config/kryo.conf"
-    final val defaultSystemName: String = "Osmos-Redux-MultiPlayer-System"
-    final val defaultServerActorName: String = "ServerActor"
-    final val defaultClientActorName: String = "ClientActor"
-    final val defaultClientUUID: String = "<unavailable>"
-    final val defaultMaximumLobbyPlayers: Int = 8
-    final val defaultMultiPlayerFps: Int = 30
+    final val ActorSystemConfigFilePath: String = "akka-config/kryo.conf"
+    final val ActorSystemName: String = "Osmos-Redux-MultiPlayer-System"
+    final val ServerActorName: String = "ServerActor"
+    final val ClientActorName: String = "ClientActor"
+    final val DefaultClientUUID: String = "<unavailable>"
+    final val MaximumLobbyPlayersCount: Int = 8
+    final val DefaultMultiPlayerFps: Int = 30
   }
 
   object Sentient {

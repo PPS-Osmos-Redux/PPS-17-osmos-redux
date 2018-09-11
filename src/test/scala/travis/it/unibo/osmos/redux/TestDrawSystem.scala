@@ -1,7 +1,6 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.entities._
-import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 import it.unibo.osmos.redux.ecs.entities.properties.composed.DrawableProperty
 import it.unibo.osmos.redux.ecs.systems.DrawSystem
 import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape

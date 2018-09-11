@@ -6,17 +6,12 @@ import it.unibo.osmos.redux.multiplayer.server.ServerActor._
 import it.unibo.osmos.redux.mvc.view.events._
 import it.unibo.osmos.redux.utils.Logger
 
-/**
-  * Client actor implementation
+/** Client actor implementation.
   * @param client The client to bind.
   */
 class ClientActor(private val client: Client) extends Actor {
 
   implicit val who: String = "ClientActor"
-
-  override def preStart(): Unit = {
-    Logger.log("Actor starting...")
-  }
 
   override def receive: Receive = {
 
@@ -34,33 +29,52 @@ class ClientActor(private val client: Client) extends Actor {
 
     case GameEnded(victory) => context.unwatch(sender); client.stopGame(victory)
 
-    case Terminated(_) =>
-      Logger.log(s"Received Terminated message from server.")
-      client.closeLobby(false)
-      client.kill()
+    case Terminated(_) => client.closeLobby(false); client.kill()
 
-    case unknownMessage => Logger.log("Received unknown message: " + unknownMessage)("ClientActor")
-  }
-
-  override def postStop(): Unit = {
-    Logger.log("Actor is shutting down...")
-    super.postStop()
+    case unknownMessage => Logger.log("Received unknown message: " + unknownMessage)
   }
 }
 
+/** Client actor helper object */
 object ClientActor {
-
   def props(client: Client) : Props = Props(new ClientActor(client))
 
-  final case object Ready //to reply to the server after game started received
-  final case class StartWatching(serverRef: ActorRef) //tell by himself to start watching server actor
+  /** Replies to the server, after receiving a game started message, that it's ready to receive updates */
+  final case object Ready
 
-  final case class Connect(actorRef: ActorRef) //to tell the server that you want to connect with it
-  final case class Disconnect(username: String) //send by the client when a problem occurs and the actor dies
+  /** Tells himself to start watching the server actor.
+    * @param serverRef The server actor reference
+    */
+  final case class StartWatching(serverRef: ActorRef)
 
-  final case class EnterLobby(clientID: String, username: String) //to tell the server that you want to enter the lobby (server gets the actor ref from the sender object at his side)
-  final case class LeaveLobby(username: String) //to tell the server that you leave the lobby
+  /** Asks the server to begin handshaking.
+    * @param actorRef It's own actor reference
+    */
+  final case class Connect(actorRef: ActorRef)
 
-  final case class PlayerInput(event: MouseEventWrapper) //to send a new input event to the server
-  final case class LeaveGame(username: String) //to tell server that you are leaving the game
+  /** Tells the server that a specific player is disconnecting.
+    * @param username The username of the player
+    */
+  final case class Disconnect(username: String)
+
+  /** Asks the server to enter the lobby.
+    * @param clientID The client temp id (received from handshaking)
+    * @param username The chosen username
+    */
+  final case class EnterLobby(clientID: String, username: String)
+
+  /** Tells the server that a player leaves the lobby.
+    * @param username The username of the player
+    */
+  final case class LeaveLobby(username: String)
+
+  /** Sends to the server the user triggered mouse event to process, to let him move the entity.
+    * @param event The mouse event.
+    */
+  final case class PlayerInput(event: MouseEventWrapper)
+
+  /** Tells the server that a player leaves the game.
+    * @param username The username of the player
+    */
+  final case class LeaveGame(username: String)
 }

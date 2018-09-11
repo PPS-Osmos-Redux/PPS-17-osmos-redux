@@ -7,13 +7,14 @@ import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
 import it.unibo.osmos.redux.mvc.view.components.custom.{AlertFactory, StyledButton, TitledComboBox}
 import it.unibo.osmos.redux.mvc.view.components.editor._
+import it.unibo.osmos.redux.mvc.view.components.instructions.EditorInstructionScreen
 import it.unibo.osmos.redux.mvc.view.components.level.LevelScreen
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import javafx.scene.input.KeyCode
 import javafx.scene.paint.ImagePattern
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 import scalafx.geometry.{Insets, Pos}
-import scalafx.scene.control.{Alert, TextInputDialog}
+import scalafx.scene.control.TextInputDialog
 import scalafx.scene.effect.DropShadow
 import scalafx.scene.image.ImageView
 import scalafx.scene.layout._
@@ -35,23 +36,16 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
   var builtEntities: ListBuffer[CellEntity] = ListBuffer()
 
   /** The background image */
-  val background: ImageView = new ImageView(ImageLoader.getImage(backgroundTexture)) {
+  val background: ImageView = new ImageView(ImageLoader.getImage(BackgroundTexture)) {
     fitWidth <== parentStage.width
     fitHeight <== parentStage.height
   }
 
   /** Boolean binding with the instructionScreen */
   private val instructionScreenVisible: BooleanProperty = BooleanProperty(false)
-  /** The instruction screen */
-  private val instructionScreen = LevelScreen.Builder(this)
-    .withText("Instructions", 50, Color.White)
-    .withText("Press [Ctrl] to toggle the placeholder visibility")
-    .withText("Configure the desired entities on the left panel")
-    .withText("Configure the desired level, victory rule and collision rule on the right panel")
-    .withText("When the placeholder is visible, click to insert a new entity on the level")
-    .withText("Press [i] to show/hide the instructions screen", 20, Color.White)
-    .build()
-  instructionScreen.visible <== instructionScreenVisible
+  /** The instruction screen container */
+  private val instructionContainer = new EditorInstructionScreen(this)
+  instructionContainer.instructionScreen.visible <== instructionScreenVisible
 
   /** This method makes the instruction screen appear/disappear */
   private def changeInstructionScreenState(): Unit = {
@@ -67,13 +61,13 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
   private val circularLevelBuilder: CircleLevelCreator = new CircleLevelCreator {
     xCenter.value = 0.0
     yCenter.value = 0.0
-    radius.value = startingLevelRadius
+    radius.value = StartingLevelRadius
   }
   /** Pane containing the field to configure the rectangular level */
   private val rectangularLevelBuilder: RectangleLevelCreator = new RectangleLevelCreator {
     visible = false
-    levelWidth.value = startingLevelWidth
-    levelHeight.value = startingLevelHeight
+    levelWidth.value = StartingLevelWidth
+    levelHeight.value = StartingLevelHeight
     xCenter.value = 0.0
     yCenter.value = 0.0
   }
@@ -187,7 +181,7 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
       alignment = Pos.Center
     }
     center = null
-    bottom = new HBox(0.0, new Text("Press [i] to show/hide the instructions") {
+    bottom = new HBox(0.0, new Text("Press [H] to show/hide the instructions") {
       style = "-fx-font-size: 20pt"
       fill = Color.White
       effect = new DropShadow {
@@ -198,6 +192,95 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
       alignment = Pos.Center
     }
   }
+
+
+
+  /** The placeholder which models the circular level */
+  val circularLevelPlaceholder: Circle = new Circle() {
+    centerX <== circularLevelBuilder.xCenter + HalfWindowWidth
+    centerY <== circularLevelBuilder.yCenter + HalfWindowHeight
+    radius <== circularLevelBuilder.radius
+    stroke = Color.White
+    strokeWidth = 2.0
+    fill = Color.Transparent
+    mouseTransparent = true
+    visible <== !instructionScreenVisible
+  }
+
+  /** The placeholder which models the rectangular level */
+  val rectangularLevelPlaceholder: Rectangle = new Rectangle() {
+    width <== rectangularLevelBuilder.levelWidth
+    height <== rectangularLevelBuilder.levelHeight
+    x <== rectangularLevelBuilder.xCenter - rectangularLevelBuilder.levelWidth / 2 + HalfWindowWidth
+    y <== rectangularLevelBuilder.yCenter - rectangularLevelBuilder.levelHeight / 2 + HalfWindowHeight
+    stroke = Color.White
+    strokeWidth = 2.0
+    fill = Color.Transparent
+    mouseTransparent = true
+    visible <== !instructionScreenVisible
+  }
+
+  /** The currently visible level placeholder */
+  var currentLevelPlaceholder: Shape = circularLevelPlaceholder
+
+  /** The placeholder which follows the user mouse and changes appearance on EntityType change */
+  val entityPlaceholder: Circle = new Circle() {
+    fill.value = new ImagePattern(ImageLoader.getImage(CellTexture))
+    radius = getVisibleCellBuilder.radius.value
+
+    /** We set a min and max for the size */
+    onScroll = scroll => {
+      radius = radius.value + (scroll.getDeltaY / 10) min 150 max 10
+      getVisibleCellBuilder.radius.value = radius.value
+    }
+
+    entityType.onChange(entityType.value match {
+      case EntityType.Matter => fill.value = new ImagePattern(ImageLoader.getImage(CellTexture))
+      case EntityType.AntiMatter => fill.value = new ImagePattern(ImageLoader.getImage(AntiMatterTexture))
+      case EntityType.Attractive => fill.value = new ImagePattern(ImageLoader.getImage(AttractiveTexture))
+      case EntityType.Repulsive => fill.value = new ImagePattern(ImageLoader.getImage(RepulsiveTexture))
+      case EntityType.Sentient => fill.value = new ImagePattern(ImageLoader.getImage(SentientTexture))
+      case EntityType.Controlled => fill.value = new ImagePattern(ImageLoader.getImage(ControllerTexture))
+      case _ => fill.value = new ImagePattern(ImageLoader.getImage(CellTexture))
+    })
+
+  }
+
+  /** On control key pressed we hide the placeholder to let the user insert values in the panes */
+  onKeyPressed = key => key.getCode match {
+    case KeyCode.H => changeInstructionScreenState(); entityPlaceholder.visible = false
+    case KeyCode.CONTROL => if (!instructionScreenVisible.value) entityPlaceholder.visible = !entityPlaceholder.visible.value
+    case _ =>
+  }
+
+  /** On mouse moved, we update the builder */
+  onMouseMoved = e => {
+    entityPlaceholder.centerX.value = e.getX
+    entityPlaceholder.centerY.value = e.getY
+    val visibleBuilder = getVisibleCellBuilder
+    visibleBuilder.x.value = e.getX - HalfWindowWidth
+    visibleBuilder.y.value = e.getY - HalfWindowHeight
+  }
+
+  /** On mouse clicked, we parse the placeholder values and created a new element */
+  onMouseClicked = _ => if (entityPlaceholder.visible.value) {
+    /** Insert an element to be shown */
+    editorElements += new Circle {
+      fill.value_=(entityPlaceholder.fill.value)
+      centerX = entityPlaceholder.centerX.value
+      centerY = entityPlaceholder.centerY.value
+      radius = entityPlaceholder.radius.value
+      effect.value_=(entityPlaceholder.effect.value)
+    }
+    content = editorElements
+
+    /** Insert an entity to the built entities list */
+    builtEntities += getVisibleCellBuilder create()
+  }
+
+  /** The main editor elements */
+  val editorElements = ListBuffer(background, mainContainer, entityPlaceholder, currentLevelPlaceholder, instructionContainer.instructionScreen)
+  content = editorElements
 
   /** Save level procedure */
   private def saveLevel(): Unit = {
@@ -237,100 +320,6 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
     }
   }
 
-  /** The placeholder which models the circular level */
-  val circularLevelPlaceholder: Circle = new Circle() {
-    centerX <== circularLevelBuilder.xCenter + halfWindowWidth
-    centerY <== circularLevelBuilder.yCenter + halfWindowHeight
-    radius <== circularLevelBuilder.radius
-    stroke = Color.White
-    strokeWidth = 2.0
-    fill = Color.Transparent
-    mouseTransparent = true
-    visible <== !instructionScreenVisible
-  }
-
-  /** The placeholder which models the rectangular level */
-  val rectangularLevelPlaceholder: Rectangle = new Rectangle() {
-    width <== rectangularLevelBuilder.levelWidth
-    height <== rectangularLevelBuilder.levelHeight
-    x <== rectangularLevelBuilder.xCenter - rectangularLevelBuilder.levelWidth / 2 + halfWindowWidth
-    y <== rectangularLevelBuilder.yCenter - rectangularLevelBuilder.levelHeight / 2 + halfWindowHeight
-    stroke = Color.White
-    strokeWidth = 2.0
-    fill = Color.Transparent
-    mouseTransparent = true
-    visible <== !instructionScreenVisible
-  }
-
-  /** The currently visible level placeholder */
-  var currentLevelPlaceholder: Shape = circularLevelPlaceholder
-
-  /** The placeholder which follows the user mouse and changes appearance on EntityType change */
-  val entityPlaceholder: Circle = new Circle() {
-    fill.value = new ImagePattern(ImageLoader.getImage(cellTexture))
-    radius = getVisibleCellBuilder.radius.value
-
-    /** We set a min and max for the size */
-    onScroll = scroll => {
-      radius = radius.value + (scroll.getDeltaY / 10) min 150 max 10
-      getVisibleCellBuilder.radius.value = radius.value
-    }
-
-    entityType.onChange(entityType.value match {
-      case EntityType.Matter => fill.value = new ImagePattern(ImageLoader.getImage(cellTexture))
-      case EntityType.AntiMatter => fill.value = new ImagePattern(ImageLoader.getImage(antiMatterTexture))
-      case EntityType.Attractive => fill.value = new ImagePattern(ImageLoader.getImage(attractiveTexture))
-      case EntityType.Repulsive => fill.value = new ImagePattern(ImageLoader.getImage(repulsiveTexture))
-      case EntityType.Sentient => fill.value = new ImagePattern(ImageLoader.getImage(sentientTexture))
-      case EntityType.Controlled => fill.value = new ImagePattern(ImageLoader.getImage(controllerTexture))
-      case _ => fill.value = new ImagePattern(ImageLoader.getImage(cellTexture))
-    })
-
-  }
-
-  /** On control key pressed we hide the placeholder to let the user insert values in the panes */
-  onKeyPressed = key => key.getCode match {
-    case KeyCode.I => changeInstructionScreenState(); entityPlaceholder.visible = false
-    case KeyCode.CONTROL => if (!instructionScreenVisible.value) entityPlaceholder.visible = !entityPlaceholder.visible.value
-    case _ =>
-  }
-
-  /** On mouse moved, we update the builder */
-  onMouseMoved = e => {
-    entityPlaceholder.centerX.value = e.getX
-    entityPlaceholder.centerY.value = e.getY
-    val visibleBuilder = getVisibleCellBuilder
-    visibleBuilder.x.value = e.getX - halfWindowWidth
-    visibleBuilder.y.value = e.getY - halfWindowHeight
-  }
-
-  /** On mouse clicked, we parse the placeholder values and created a new element */
-  onMouseClicked = _ => if (entityPlaceholder.visible.value) {
-    /** Insert an element to be shown */
-    editorElements += new Circle {
-      fill.value_=(entityPlaceholder.fill.value)
-      centerX = entityPlaceholder.centerX.value
-      centerY = entityPlaceholder.centerY.value
-      radius = entityPlaceholder.radius.value
-      effect.value_=(entityPlaceholder.effect.value)
-    }
-    content = editorElements
-
-    /** Insert an entity to the built entities list */
-    builtEntities += getVisibleCellBuilder create()
-  }
-
-  /** The main editor elements */
-  val editorElements = ListBuffer(background, mainContainer, entityPlaceholder, currentLevelPlaceholder, instructionScreen)
-  content = editorElements
-
-}
-
-/** Trait used by EditorScene to notify an event to the upper scene */
-trait UpperEditorSceneListener {
-
-  /** Called once when the user quits the editor */
-  def onExitEditor()
 }
 
 /** Trait which gets notified when a EditorScene event occurs */

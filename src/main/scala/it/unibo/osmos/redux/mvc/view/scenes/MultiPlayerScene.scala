@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
-import it.unibo.osmos.redux.multiplayer.common.NetworkUtils
+import it.unibo.osmos.redux.multiplayer.common.{ActorSystemHolder, NetworkUtils}
 import it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.custom._
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
@@ -18,7 +18,8 @@ import scalafx.stage.Stage
   * @param listener           the MultiPlayerSceneListener
   * @param upperSceneListener the BackClickListener
   */
-class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlayerSceneListener, val upperSceneListener: BackClickListener) extends DefaultBackScene(parentStage, upperSceneListener) {
+class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlayerSceneListener, val upperSceneListener: BackClickListener)
+  extends DefaultBackScene(parentStage, upperSceneListener) {
 
   /** Username */
   private val username: StringProperty = StringProperty("")
@@ -66,11 +67,8 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
     Platform.runLater({
       result match {
         case GenericResponse(true, _) =>
-
-          /** Creating an abstract listener on the run */
-          val lobbySceneListener: UpperMultiPlayerLobbySceneListener = () => parentStage.scene = MultiPlayerScene.this
           /** If the lobby was successfully created, we link the resulting lobby context and go to the next scene */
-          val multiPlayerLobbyScene = new MultiPlayerLobbyScene(parentStage, listener, lobbySceneListener, user)
+          val multiPlayerLobbyScene = new MultiPlayerLobbyScene(parentStage, listener, () => parentStage.scene = MultiPlayerScene.this, user)
 
           /** We link the lobby context */
           multiPlayerLobbyScene.lobbyContext_=(lobbyContext)
@@ -80,7 +78,10 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
 
           /** We go to the next scene */
           parentStage.scene = multiPlayerLobbyScene
-        case GenericResponse(false, message) =>
+        case GenericResponse(false, _) =>
+          val message = "Can't connect to the server: " +
+            "\n- check that the inserted address is correct" +
+            "\n- check your connection"
 
           /** If an error occurred */
           AlertFactory.createErrorAlert("Error", message).showAndWait()
@@ -147,17 +148,6 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
   /** Enabling the layout */
   root = rootLayout
 
-}
-
-/**
-  * Trait used by MultiPlayerScene to notify an event to the upper scene
-  */
-trait UpperMultiPlayerSceneListener {
-
-  /**
-    * Called when the user wants to go back to the previous screen
-    */
-  def onMultiPlayerSceneBackClick()
 }
 
 /**

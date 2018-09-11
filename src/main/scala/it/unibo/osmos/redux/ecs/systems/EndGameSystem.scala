@@ -24,7 +24,7 @@ case class EndGameSystem(levelContext: GameStateHolder, victoryRules: VictoryRul
 
   override def update(): Unit = {
     if (levelContext.gameCurrentState == GamePending) {
-      if (entities.isEmpty) {
+      if (entities isEmpty) {
         levelContext.notify(GameLost)
       } else {
         entities foreach (playerEntity => {

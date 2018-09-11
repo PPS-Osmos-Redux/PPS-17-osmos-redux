@@ -7,6 +7,7 @@ import it.unibo.osmos.redux.mvc.view.ViewConstants
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Colors._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
+import it.unibo.osmos.redux.mvc.view.ViewConstants.Level._
 import it.unibo.osmos.redux.mvc.view.components.level.LevelScreen
 import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextListener}
 import it.unibo.osmos.redux.mvc.view.drawables._
@@ -34,22 +35,22 @@ import scalafx.util.Duration
   * @param parentStage        the parent stage
   * @param levelInfo          the level info
   * @param listener           the listener
-  * @param upperSceneListener the upper scene listener to manage the previously scene events
+  * @param backClickListener  the back click listener listener
   */
 //noinspection ForwardReference
-class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val listener: LevelSceneListener, val upperSceneListener: BackClickListener)
-  extends DefaultBackScene(parentStage, upperSceneListener) with LevelContextListener {
+class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val listener: LevelSceneListener, val backClickListener: BackClickListener)
+  extends DefaultBackScene(parentStage, backClickListener) with LevelContextListener {
 
   /** Level images */
   private object LevelDrawables {
-    val cellDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(cellTexture), canvas.graphicsContext2D)
-    val playerCellDrawable: CellDrawable = new CellWithSpeedDrawable(ImageLoader.getImage(playerCellTexture), canvas.graphicsContext2D)
-    val attractiveDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(attractiveTexture), canvas.graphicsContext2D)
-    val repulsiveDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(repulsiveTexture), canvas.graphicsContext2D)
-    val antiMatterDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(antiMatterTexture), canvas.graphicsContext2D)
-    val sentientDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(sentientTexture), canvas.graphicsContext2D)
-    val controlledDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(controllerTexture), canvas.graphicsContext2D)
-    val backgroundImage: Image = ImageLoader.getImage(backgroundTexture)
+    val cellDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(CellTexture), canvas.graphicsContext2D)
+    val playerCellDrawable: CellDrawable = new CellWithSpeedDrawable(ImageLoader.getImage(PlayerCellTexture), canvas.graphicsContext2D)
+    val attractiveDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(AttractiveTexture), canvas.graphicsContext2D)
+    val repulsiveDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(RepulsiveTexture), canvas.graphicsContext2D)
+    val antiMatterDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(AntiMatterTexture), canvas.graphicsContext2D)
+    val sentientDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(SentientTexture), canvas.graphicsContext2D)
+    val controlledDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(ControllerTexture), canvas.graphicsContext2D)
+    val backgroundImage: Image = ImageLoader.getImage(BackgroundTexture)
   }
 
   /** Level state variables */
@@ -58,12 +59,6 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     var paused: BooleanProperty = BooleanProperty(false)
     /** Value indicating when the user can execute actions like pausing the game or moving around */
     var inputEnabled = false
-    /** Scrolling delta */
-    val delta = 1.1
-    /** Max zoom out scale */
-    val maxZoomOutScale = 1.0
-    /** Max zoom in scale */
-    val maxZoomInScale = 1.2
   }
 
   /** Level player variables */
@@ -97,25 +92,6 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     height <== parentStage.height
     cache = true
     opacity = 0.0
-
-    /*val light: Spot = new Spot()
-    light.color = Color.White
-    light.x <== (LevelPlayer.playerPosX + halfWindowWidth) * this.scaleX
-    light.y <== (LevelPlayer.playerPosY + halfWindowHeight) * this.scaleY
-    light.z = 200
-    light.pointsAtX <== (LevelPlayer.playerPosX + halfWindowWidth) * this.scaleX
-    light.pointsAtY <== (LevelPlayer.playerPosY + halfWindowHeight) * this.scaleY
-    light.pointsAtZ = -10
-    light.specularExponent = 2.0
-
-    val lighting: Lighting = new Lighting()
-    lighting.light = light
-    lighting.surfaceScale = 1.0
-    lighting.diffuseConstant = 2.0
-
-    pickOnBounds = false
-
-    effect = lighting*/
   }
 
   /** The splash screen showed when the game is paused */
@@ -154,22 +130,22 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
   /** Method to start the level */
   private def startLevel(): Unit = {
-    /* Splash screen animation, starting with a FadeIn */
+    /** Splash screen animation, starting with a FadeIn */
     new FadeTransition(Duration.apply(2000), splashScreen) {
       fromValue = 0.0
       toValue = 1.0
-      /* FadeOut */
+      /** FadeOut */
       onFinished = _ => new FadeTransition(Duration.apply(2000), splashScreen) {
         fromValue = 1.0
         toValue = 0.0
-        /* Showing the canvas */
+        /** Showing the canvas */
         onFinished = _ => {
           canvas.opacity = 1.0
           content.remove(splashScreen)
-          /* Adding the mapBorder */
+          /** Adding the mapBorder */
           content.add(mapBorder)
           LevelState.inputEnabled = true
-          /* Removing the splash screen to reduce the load. Then the level is started */
+          /** Removing the splash screen to reduce the load. Then the level is started */
           listener.onStartLevel()
         }
       }.play()
@@ -198,13 +174,13 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   /** Called when the user has to go to the LevelSelectionScene */
   private def goToPreviousScene(): Unit = {
     MusicPlayer.play(SoundsType.menu)
-    upperSceneListener.onBackClick()
+    backClickListener.onBackClick()
   }
 
   /** OnMouseClicked handler, reacting only if the game is not paused */
   onMouseClicked = mouseEvent => if (!LevelState.paused.value && LevelState.inputEnabled) {
     /** Creating a circle representing the player click */
-    val clickCircle = Circle(mouseEvent.getX, mouseEvent.getY, 2.0, defaultPlayerColor)
+    val clickCircle = Circle(mouseEvent.getX, mouseEvent.getY, 2.0, DefaultPlayerColor)
     content.add(clickCircle)
     val fadeOutTransition = new FadeTransition(Duration.apply(2000), clickCircle) {
       fromValue = 1.0
@@ -223,13 +199,13 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     /** Retrieving the current scale */
     var scale = canvas.scaleY.value
     if (scrollEvent.getDeltaY < 0) {
-      scale /= LevelState.delta
+      scale /= ScrollingDelta
     } else {
-      scale *= LevelState.delta
+      scale *= ScrollingDelta
     }
 
     /** Limiting the scale */
-    scale = MathUtils.clamp(scale, LevelState.maxZoomOutScale, LevelState.maxZoomInScale)
+    scale = MathUtils.clamp(scale, MaxZoomOutScale, MaxZoomInScale)
 
     /** Updating the canvas scale */
     canvas.scaleX = scale
@@ -282,7 +258,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
       fromValue = 0.0
       toValue = 1.0
       autoReverse = true
-      /* FadeOut */
+      /** FadeOut */
       onFinished = _ => new FadeTransition(Duration.apply(300), speedChangeScreen) {
         fromValue = 1.0
         toValue = 0.0
@@ -299,8 +275,8 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     case Some(lc) =>
       if (!LevelState.paused.value && LevelState.inputEnabled) {
         /** Transforming click coordinates considering window size and zoom */
-        val x = mouseEvent.getX - halfWindowWidth - canvas.getTranslateX / canvas.getScaleX
-        val y = mouseEvent.getY - halfWindowHeight - canvas.getTranslateY / canvas.getScaleY
+        val x = mouseEvent.getX - HalfWindowWidth - canvas.getTranslateX / canvas.getScaleX
+        val y = mouseEvent.getY - HalfWindowHeight - canvas.getTranslateY / canvas.getScaleY
         lc notifyMouseEvent MouseEventWrapper(Point(x, y), lc.getPlayerUUID)
       }
     case _ =>
@@ -309,7 +285,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   override def onLevelSetup(mapShape: MapShape): Unit = mapShape match {
     case null => throw new IllegalStateException("Map set was null")
     case _ =>
-      val center = Point(mapShape.center.x + halfWindowWidth, mapShape.center.y + halfWindowHeight)
+      val center = Point(mapShape.center.x + HalfWindowWidth, mapShape.center.y + HalfWindowHeight)
       mapShape match {
         case c: MapShape.Circle => mapBorder = new Circle {
           centerX = center.x
@@ -472,7 +448,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     * @return the sequence of pair where the first field is the entity and the second is the color
     */
   private def calculateColors(entities: Seq[DrawableWrapper], playerEntity: DrawableWrapper,
-                              minColor: Color = ViewConstants.Entities.Colors.defaultEntityMinColor, maxColor: Color = ViewConstants.Entities.Colors.defaultEntityMaxColor,
+                              minColor: Color = ViewConstants.Entities.Colors.DefaultEntityMinColor, maxColor: Color = ViewConstants.Entities.Colors.DefaultEntityMaxColor,
                               playerColor: Color = Color.Green): Seq[(DrawableWrapper, Color)] = {
     entities match {
       case Nil => Seq()
@@ -507,14 +483,6 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
       case _ => throw new IllegalArgumentException("Could not determine the min and max radius from an empty sequence of entities")
     }
   }
-
-}
-
-/** Trait used by LevelScene to notify an event to the upper scene */
-trait UpperLevelSceneListener extends BackClickListener {
-
-  /** Called when the level gets stopped */
-  def onStopLevel()
 
 }
 

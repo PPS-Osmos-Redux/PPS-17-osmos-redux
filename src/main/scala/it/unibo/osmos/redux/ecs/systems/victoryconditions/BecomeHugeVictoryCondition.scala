@@ -12,7 +12,6 @@ import scala.collection.mutable.ListBuffer
   */
 case class BecomeHugeVictoryCondition() extends AbstractVictoryCondition {
 
-  // TODO: adjust the value
   private val radiusPercentageToBeHuge = 70
 
   override def check(playerCellEntity: DeathProperty, entityList: ListBuffer[DeathProperty]): Boolean = {

@@ -8,8 +8,7 @@ import scalafx.stage.Stage
 
 import scala.collection.mutable
 
-/**
-  * Scene in which the user can see the created custom levels
+/** Scene in which the user can see the created custom levels
   *
   * @param parentStage the parent stage
   * @param listener    the listener
@@ -20,11 +19,11 @@ class EditorLevelSelectionScene(override val parentStage: Stage, override val li
   private val newLevelButton = new StyledButton("Create new level") {
     alignment = Pos.BottomCenter
     alignmentInParent = Pos.BottomCenter
-    /* We open the editor. On level saved we recreate the scene */
+    /** We open the editor. On level saved we recreate the scene */
     onAction = _ => parentStage.scene = new EditorScene(parentStage, listener, () => parentStage.scene = new EditorLevelSelectionScene(parentStage, listener, previousSceneListener))
   }
 
-  // TODO: check if can it be done better
+  /** Add newLevelButton before goBack button */
   buttonsContainer.children.add(buttonsContainer.children.size() - 1, newLevelButton)
 
   override def onLevelPlayClick(levelInfo: LevelInfo, simulation: Boolean, custom: Boolean = false): Unit = super.onLevelPlayClick(levelInfo, simulation, custom = true)
@@ -49,15 +48,13 @@ class EditorLevelSelectionScene(override val parentStage: Stage, override val li
   */
 trait EditorLevelSelectionSceneListener extends LevelSelectionSceneListener with EditorSceneListener {
 
-  /**
-    * This method retrieves the custom levels that must be shown as node
+  /** This method retrieves the custom levels that must be shown as node
     *
     * @return a list of custom levels
     */
   def getCustomLevels: List[LevelInfo]
 
-  /**
-    * Called when the user wants to delete a custom level
+  /** Called when the user wants to delete a custom level
     *
     * @param level    the level name
     * @param callback the callback
