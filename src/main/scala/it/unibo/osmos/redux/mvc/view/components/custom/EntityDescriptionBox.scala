@@ -14,9 +14,9 @@ import scalafx.scene.text.{Font, Text, TextAlignment}
   * @param description the entity description
   */
 class EntityDescriptionBox(val image: Image, val description: String) extends HBox(50.0) {
-  prefWidth = halfWindowWidth
-  minWidth = halfWindowWidth
-  maxWidth = halfWindowWidth
+  prefWidth = HalfWindowWidth
+  minWidth = HalfWindowWidth
+  maxWidth = HalfWindowWidth
 
   private val imageView = new ImageView(image)
 

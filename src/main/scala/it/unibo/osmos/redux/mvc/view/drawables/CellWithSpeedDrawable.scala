@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.drawables
 
-import it.unibo.osmos.redux.mvc.view.ViewConstants.Window.{halfWindowHeight, halfWindowWidth}
+import it.unibo.osmos.redux.mvc.view.ViewConstants.Window.{HalfWindowHeight, HalfWindowWidth}
 import scalafx.scene.canvas.GraphicsContext
 import scalafx.scene.image.Image
 import scalafx.scene.paint.Color
@@ -23,7 +23,7 @@ class CellWithSpeedDrawable(private var _image: Image, override val graphicsCont
     //graphicsContext.strokeArc(dw.center.x, dw.center.y,20, 20, -45, 240, ArcType.Open)
     graphicsContext.lineWidth = 2
     //TODO: find a better way
-    graphicsContext.strokeLine(dw.center.x + halfWindowWidth, dw.center.y + halfWindowHeight, dw.center.x + dw.speed._1 * dw.radius + halfWindowWidth, dw.center.y + dw.speed._2 * dw.radius + halfWindowHeight)
+    graphicsContext.strokeLine(dw.center.x + HalfWindowWidth, dw.center.y + HalfWindowHeight, dw.center.x + dw.speed._1 * dw.radius + HalfWindowWidth, dw.center.y + dw.speed._2 * dw.radius + HalfWindowHeight)
 
     /* Calling the super */
     super.draw(dw, color)

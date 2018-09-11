@@ -17,8 +17,8 @@ trait OsmosReduxPrimaryStage extends JFXApp.PrimaryStage {
   */
 object OsmosReduxPrimaryStage {
   def apply(listener: PrimaryStageListener,
-            windowWidth: Double = defaultWindowWidth,
-            windowHeight: Double = defaultWindowHeight): OsmosReduxPrimaryStageImpl = new OsmosReduxPrimaryStageImpl(listener, windowWidth, windowHeight)
+            windowWidth: Double = DefaultWindowWidth,
+            windowHeight: Double = DefaultWindowHeight): OsmosReduxPrimaryStageImpl = new OsmosReduxPrimaryStageImpl(listener, windowWidth, windowHeight)
 
   /**
     * Primary stage implementation
@@ -30,7 +30,7 @@ object OsmosReduxPrimaryStage {
   class OsmosReduxPrimaryStageImpl(val listener: PrimaryStageListener, val windowWidth: Double, val windowHeight: Double) extends OsmosReduxPrimaryStage
     with MainSceneListener {
 
-    title = defaultWindowTitle
+    title = DefaultWindowTitle
     resizable = false
     width = windowWidth
     height = windowHeight

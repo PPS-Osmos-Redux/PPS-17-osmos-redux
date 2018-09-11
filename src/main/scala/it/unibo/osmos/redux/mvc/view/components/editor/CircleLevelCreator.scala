@@ -23,7 +23,7 @@ class CircleLevelCreator extends BaseEditorCreator[MapShape.Circle] {
 
   /* Radius node*/
   val radius: DoubleProperty = DoubleProperty(0.0)
-  val maxRadius: Double = ViewConstants.Editor.maxLevelRadius
+  val maxRadius: Double = ViewConstants.Editor.MaxLevelRadius
   private val radiusNode = new VBox(2.0, new Label(s"Radius (max: ${maxRadius})"),
     new TitledDoubleField("radius: ", radius, 1.0, maxRadius).innerNode,
   )

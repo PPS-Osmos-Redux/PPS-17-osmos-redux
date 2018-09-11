@@ -35,7 +35,7 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
   var builtEntities: ListBuffer[CellEntity] = ListBuffer()
 
   /** The background image */
-  val background: ImageView = new ImageView(ImageLoader.getImage(backgroundTexture)) {
+  val background: ImageView = new ImageView(ImageLoader.getImage(BackgroundTexture)) {
     fitWidth <== parentStage.width
     fitHeight <== parentStage.height
   }
@@ -67,13 +67,13 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
   private val circularLevelBuilder: CircleLevelCreator = new CircleLevelCreator {
     xCenter.value = 0.0
     yCenter.value = 0.0
-    radius.value = startingLevelRadius
+    radius.value = StartingLevelRadius
   }
   /** Pane containing the field to configure the rectangular level */
   private val rectangularLevelBuilder: RectangleLevelCreator = new RectangleLevelCreator {
     visible = false
-    levelWidth.value = startingLevelWidth
-    levelHeight.value = startingLevelHeight
+    levelWidth.value = StartingLevelWidth
+    levelHeight.value = StartingLevelHeight
     xCenter.value = 0.0
     yCenter.value = 0.0
   }
@@ -239,8 +239,8 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
 
   /** The placeholder which models the circular level */
   val circularLevelPlaceholder: Circle = new Circle() {
-    centerX <== circularLevelBuilder.xCenter + halfWindowWidth
-    centerY <== circularLevelBuilder.yCenter + halfWindowHeight
+    centerX <== circularLevelBuilder.xCenter + HalfWindowWidth
+    centerY <== circularLevelBuilder.yCenter + HalfWindowHeight
     radius <== circularLevelBuilder.radius
     stroke = Color.White
     strokeWidth = 2.0
@@ -253,8 +253,8 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
   val rectangularLevelPlaceholder: Rectangle = new Rectangle() {
     width <== rectangularLevelBuilder.levelWidth
     height <== rectangularLevelBuilder.levelHeight
-    x <== rectangularLevelBuilder.xCenter - rectangularLevelBuilder.levelWidth / 2 + halfWindowWidth
-    y <== rectangularLevelBuilder.yCenter - rectangularLevelBuilder.levelHeight / 2 + halfWindowHeight
+    x <== rectangularLevelBuilder.xCenter - rectangularLevelBuilder.levelWidth / 2 + HalfWindowWidth
+    y <== rectangularLevelBuilder.yCenter - rectangularLevelBuilder.levelHeight / 2 + HalfWindowHeight
     stroke = Color.White
     strokeWidth = 2.0
     fill = Color.Transparent
@@ -267,7 +267,7 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
 
   /** The placeholder which follows the user mouse and changes appearance on EntityType change */
   val entityPlaceholder: Circle = new Circle() {
-    fill.value = new ImagePattern(ImageLoader.getImage(cellTexture))
+    fill.value = new ImagePattern(ImageLoader.getImage(CellTexture))
     radius = getVisibleCellBuilder.radius.value
 
     /** We set a min and max for the size */
@@ -277,13 +277,13 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
     }
 
     entityType.onChange(entityType.value match {
-      case EntityType.Matter => fill.value = new ImagePattern(ImageLoader.getImage(cellTexture))
-      case EntityType.AntiMatter => fill.value = new ImagePattern(ImageLoader.getImage(antiMatterTexture))
-      case EntityType.Attractive => fill.value = new ImagePattern(ImageLoader.getImage(attractiveTexture))
-      case EntityType.Repulsive => fill.value = new ImagePattern(ImageLoader.getImage(repulsiveTexture))
-      case EntityType.Sentient => fill.value = new ImagePattern(ImageLoader.getImage(sentientTexture))
-      case EntityType.Controlled => fill.value = new ImagePattern(ImageLoader.getImage(controllerTexture))
-      case _ => fill.value = new ImagePattern(ImageLoader.getImage(cellTexture))
+      case EntityType.Matter => fill.value = new ImagePattern(ImageLoader.getImage(CellTexture))
+      case EntityType.AntiMatter => fill.value = new ImagePattern(ImageLoader.getImage(AntiMatterTexture))
+      case EntityType.Attractive => fill.value = new ImagePattern(ImageLoader.getImage(AttractiveTexture))
+      case EntityType.Repulsive => fill.value = new ImagePattern(ImageLoader.getImage(RepulsiveTexture))
+      case EntityType.Sentient => fill.value = new ImagePattern(ImageLoader.getImage(SentientTexture))
+      case EntityType.Controlled => fill.value = new ImagePattern(ImageLoader.getImage(ControllerTexture))
+      case _ => fill.value = new ImagePattern(ImageLoader.getImage(CellTexture))
     })
 
   }
@@ -300,8 +300,8 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
     entityPlaceholder.centerX.value = e.getX
     entityPlaceholder.centerY.value = e.getY
     val visibleBuilder = getVisibleCellBuilder
-    visibleBuilder.x.value = e.getX - halfWindowWidth
-    visibleBuilder.y.value = e.getY - halfWindowHeight
+    visibleBuilder.x.value = e.getX - HalfWindowWidth
+    visibleBuilder.y.value = e.getY - HalfWindowHeight
   }
 
   /** On mouse clicked, we parse the placeholder values and created a new element */

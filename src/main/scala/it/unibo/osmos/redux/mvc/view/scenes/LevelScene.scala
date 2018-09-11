@@ -42,14 +42,14 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
   /** Level images */
   private object LevelDrawables {
-    val cellDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(cellTexture), canvas.graphicsContext2D)
-    val playerCellDrawable: CellDrawable = new CellWithSpeedDrawable(ImageLoader.getImage(playerCellTexture), canvas.graphicsContext2D)
-    val attractiveDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(attractiveTexture), canvas.graphicsContext2D)
-    val repulsiveDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(repulsiveTexture), canvas.graphicsContext2D)
-    val antiMatterDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(antiMatterTexture), canvas.graphicsContext2D)
-    val sentientDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(sentientTexture), canvas.graphicsContext2D)
-    val controlledDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(controllerTexture), canvas.graphicsContext2D)
-    val backgroundImage: Image = ImageLoader.getImage(backgroundTexture)
+    val cellDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(CellTexture), canvas.graphicsContext2D)
+    val playerCellDrawable: CellDrawable = new CellWithSpeedDrawable(ImageLoader.getImage(PlayerCellTexture), canvas.graphicsContext2D)
+    val attractiveDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(AttractiveTexture), canvas.graphicsContext2D)
+    val repulsiveDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(RepulsiveTexture), canvas.graphicsContext2D)
+    val antiMatterDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(AntiMatterTexture), canvas.graphicsContext2D)
+    val sentientDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(SentientTexture), canvas.graphicsContext2D)
+    val controlledDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(ControllerTexture), canvas.graphicsContext2D)
+    val backgroundImage: Image = ImageLoader.getImage(BackgroundTexture)
   }
 
   /** Level state variables */
@@ -204,7 +204,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   /** OnMouseClicked handler, reacting only if the game is not paused */
   onMouseClicked = mouseEvent => if (!LevelState.paused.value && LevelState.inputEnabled) {
     /** Creating a circle representing the player click */
-    val clickCircle = Circle(mouseEvent.getX, mouseEvent.getY, 2.0, defaultPlayerColor)
+    val clickCircle = Circle(mouseEvent.getX, mouseEvent.getY, 2.0, DefaultPlayerColor)
     content.add(clickCircle)
     val fadeOutTransition = new FadeTransition(Duration.apply(2000), clickCircle) {
       fromValue = 1.0
@@ -299,8 +299,8 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     case Some(lc) =>
       if (!LevelState.paused.value && LevelState.inputEnabled) {
         /** Transforming click coordinates considering window size and zoom */
-        val x = mouseEvent.getX - halfWindowWidth - canvas.getTranslateX / canvas.getScaleX
-        val y = mouseEvent.getY - halfWindowHeight - canvas.getTranslateY / canvas.getScaleY
+        val x = mouseEvent.getX - HalfWindowWidth - canvas.getTranslateX / canvas.getScaleX
+        val y = mouseEvent.getY - HalfWindowHeight - canvas.getTranslateY / canvas.getScaleY
         lc notifyMouseEvent MouseEventWrapper(Point(x, y), lc.getPlayerUUID)
       }
     case _ =>
@@ -309,7 +309,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   override def onLevelSetup(mapShape: MapShape): Unit = mapShape match {
     case null => throw new IllegalStateException("Map set was null")
     case _ =>
-      val center = Point(mapShape.center.x + halfWindowWidth, mapShape.center.y + halfWindowHeight)
+      val center = Point(mapShape.center.x + HalfWindowWidth, mapShape.center.y + HalfWindowHeight)
       mapShape match {
         case c: MapShape.Circle => mapBorder = new Circle {
           centerX = center.x
@@ -472,7 +472,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     * @return the sequence of pair where the first field is the entity and the second is the color
     */
   private def calculateColors(entities: Seq[DrawableWrapper], playerEntity: DrawableWrapper,
-                              minColor: Color = ViewConstants.Entities.Colors.defaultEntityMinColor, maxColor: Color = ViewConstants.Entities.Colors.defaultEntityMaxColor,
+                              minColor: Color = ViewConstants.Entities.Colors.DefaultEntityMinColor, maxColor: Color = ViewConstants.Entities.Colors.DefaultEntityMaxColor,
                               playerColor: Color = Color.Green): Seq[(DrawableWrapper, Color)] = {
     entities match {
       case Nil => Seq()

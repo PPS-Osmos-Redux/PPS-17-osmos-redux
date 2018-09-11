@@ -18,33 +18,33 @@ class GameLegendScreen(val scene: BaseScene) {
 
   private class BaseHBox extends HBox() {
     margin = Insets(10.0, 0.0, 10.0, 0.0)
-    prefWidth = defaultWindowWidth
-    minWidth = defaultWindowWidth
-    maxWidth = defaultWindowWidth
+    prefWidth = DefaultWindowWidth
+    minWidth = DefaultWindowWidth
+    maxWidth = DefaultWindowWidth
     alignment = Pos.CenterLeft
   }
 
   private val playerBox = new BaseHBox {
     alignment = Pos.Center
     margin = Insets(0.0, 0.0, 50.0, 0.0)
-    children = Seq(new EntityDescriptionBox(ImageLoader.getImage(playerCellTexture), "[Player]\n\nThis is your cell") {
+    children = Seq(new EntityDescriptionBox(ImageLoader.getImage(PlayerCellTexture), "[Player]\n\nThis is your cell") {
       alignment = Pos.Center
     })
   }
 
   private val firstBox = new BaseHBox {
-    children = Seq(new EntityDescriptionBox(ImageLoader.getImage(cellTexture), "[Matter]\n\nA simple enemy cell"),
-      new EntityDescriptionBox(ImageLoader.getImage(antiMatterTexture), "[AntiMatter]\n\nTouching this cell will reduce your size"))
+    children = Seq(new EntityDescriptionBox(ImageLoader.getImage(CellTexture), "[Matter]\n\nA simple enemy cell"),
+      new EntityDescriptionBox(ImageLoader.getImage(AntiMatterTexture), "[AntiMatter]\n\nTouching this cell will reduce your size"))
   }
 
   private val secondBox = new BaseHBox {
-    children = Seq(new EntityDescriptionBox(ImageLoader.getImage(attractiveTexture), "[Attractive]\n\nThis cell will attract other cells"),
-      new EntityDescriptionBox(ImageLoader.getImage(repulsiveTexture), "[Repulsive]\n\nThis cell will repulse other cells away"))
+    children = Seq(new EntityDescriptionBox(ImageLoader.getImage(AttractiveTexture), "[Attractive]\n\nThis cell will attract other cells"),
+      new EntityDescriptionBox(ImageLoader.getImage(RepulsiveTexture), "[Repulsive]\n\nThis cell will repulse other cells away"))
   }
 
   private val thirdBox = new BaseHBox {
-    children = Seq(new EntityDescriptionBox(ImageLoader.getImage(sentientTexture), "[Sentient]\n\nThis cell will try to win the game"),
-      new EntityDescriptionBox(ImageLoader.getImage(controllerTexture), "[Controlled]\n\nThis cell is controlled by another player"))
+    children = Seq(new EntityDescriptionBox(ImageLoader.getImage(SentientTexture), "[Sentient]\n\nThis cell will try to win the game"),
+      new EntityDescriptionBox(ImageLoader.getImage(ControllerTexture), "[Controlled]\n\nThis cell is controlled by another player"))
   }
 
   /** The legend screen */

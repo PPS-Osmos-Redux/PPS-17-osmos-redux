@@ -23,14 +23,14 @@ class RectangleLevelCreator extends BaseEditorCreator[MapShape.Rectangle] {
 
   /* Level width node*/
   val levelWidth: DoubleProperty = DoubleProperty(0.0)
-  val maxLevelWidth: Double = ViewConstants.Editor.maxLevelWidth
+  val maxLevelWidth: Double = ViewConstants.Editor.MaxLevelWidth
   private val widthNode = new VBox(2.0, new Label(s"Width (max ${maxLevelWidth})"),
     new TitledDoubleField("Width: ", levelWidth, 1.0, maxLevelWidth).innerNode,
   )
 
   /* Level height node*/
   val levelHeight: DoubleProperty = DoubleProperty(0.0)
-  val maxLevelHeight: Double = ViewConstants.Editor.maxLevelHeight
+  val maxLevelHeight: Double = ViewConstants.Editor.MaxLevelHeight
   private val heightNode = new VBox(2.0, new Label(s"Height (max ${maxLevelHeight})"),
     new TitledDoubleField("Height: ", levelHeight, 1.0, maxLevelHeight).innerNode,
   )

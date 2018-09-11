@@ -36,8 +36,8 @@ class StatsScene(override val parentStage: Stage, listener: StatsSceneListener, 
   listener.getCampaignLevels.foreach(e => playerData.add(e))
 
   private val statsTable = new TableView[CampaignLevel]() {
-    maxWidth = ViewConstants.Window.halfWindowWidth
-    prefHeight = ViewConstants.Window.defaultWindowHeight / 4
+    maxWidth = ViewConstants.Window.HalfWindowWidth
+    prefHeight = ViewConstants.Window.DefaultWindowHeight / 4
     /* add the columns to table*/
     columns ++= List(levelNameColumn, victoryRuleColumn, victoriesColumn, defeatsColumn)
   }

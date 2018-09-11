@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.drawables
 
-import it.unibo.osmos.redux.mvc.view.ViewConstants.Window.{halfWindowHeight, halfWindowWidth}
+import it.unibo.osmos.redux.mvc.view.ViewConstants.Window.{HalfWindowHeight, HalfWindowWidth}
 import scalafx.scene.canvas.GraphicsContext
 import scalafx.scene.image.Image
 import scalafx.scene.paint.Color
@@ -22,8 +22,8 @@ class CellDrawable(override val image: Image, override val graphicsContext: Grap
   override def draw(dw: DrawableWrapper, color: Color): Unit = {
     graphicsContext.stroke = color
     graphicsContext.lineWidth = 2
-    val xPosition = dw.center.x - dw.radius + halfWindowWidth
-    val yPosition = dw.center.y - dw.radius + halfWindowHeight
+    val xPosition = dw.center.x - dw.radius + HalfWindowWidth
+    val yPosition = dw.center.y - dw.radius + HalfWindowHeight
     // since it is a circle the width diameter
     // is equal to the height diameter
     val diameter = dw.radius * 2

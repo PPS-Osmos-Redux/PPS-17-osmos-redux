@@ -2,7 +2,7 @@ package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.mvc.controller.manager.sounds.{MusicPlayer, SoundsType}
-import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.backgroundTexture
+import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.BackgroundTexture
 import it.unibo.osmos.redux.mvc.view.components.instructions.{GameInstructionScreen, GameLegendScreen}
 import it.unibo.osmos.redux.mvc.view.components.menu.{MainMenuCenterBox, MainMenuCenterBoxListener}
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
@@ -23,7 +23,7 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
   MusicPlayer.play(SoundsType.menu)
 
   /** Background image when displaying controls */
-  val background: ImageView = new ImageView(ImageLoader.getImage(backgroundTexture)) {
+  val background: ImageView = new ImageView(ImageLoader.getImage(BackgroundTexture)) {
     fitWidth <== parentStage.width
     fitHeight <== parentStage.height
   }
