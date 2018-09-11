@@ -1,8 +1,7 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
-import it.unibo.osmos.redux.ecs.entities.{EntityManager, PlayerCellEntity}
+import it.unibo.osmos.redux.ecs.entities.{CellBuilder, EntityManager, PlayerCellEntity}
 import it.unibo.osmos.redux.ecs.systems.InputSystem
 import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
 import it.unibo.osmos.redux.utils.{InputEventQueue, MathUtils, Point}
@@ -10,6 +9,7 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 
 class TestInputSystem extends FunSuite with BeforeAndAfter {
 
+  val accelerationCoefficient: Double = 0.8
   var system: InputSystem = _
   var pce: PlayerCellEntity = _
 
@@ -72,7 +72,7 @@ class TestInputSystem extends FunSuite with BeforeAndAfter {
     var newAccel = accel.copy()
     events foreach (ev => {
       val p = MathUtils.unitVector(pos.point, ev.point)
-      newAccel = AccelerationComponent(newAccel.vector add (p multiply system.accelCoefficient))
+      newAccel = AccelerationComponent(newAccel.vector add (p multiply accelerationCoefficient))
     })
     newAccel
   }

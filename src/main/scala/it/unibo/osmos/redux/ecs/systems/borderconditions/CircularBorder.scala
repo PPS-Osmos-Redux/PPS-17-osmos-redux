@@ -40,7 +40,7 @@ case class CircularBorder(levelCenter: Point, collisionRule: CollisionRules.Valu
         case CollisionRules.bouncing =>
           val vector = MathUtils.unitVector(levelCenter, currentPosition)
           val back = currentDistanceFromCenter - levelRadius + entityRadius
-          positionComponent.point_(currentPosition.add(vector.multiply(back)))
+          positionComponent.point_(currentPosition add (vector multiply back))
         case _ =>
       }
     }
@@ -65,14 +65,14 @@ case class CircularBorder(levelCenter: Point, collisionRule: CollisionRules.Valu
     val entityPosition = entity.getPositionComponent.point
     val entitySpeed = entity.getSpeedComponent.vector
     val A = levelCenter
-    // TODO: consider keep in memory prec position to avoid its recomputation
-    val B = entityPosition.subtract(entitySpeed)
+
+    val B = entityPosition subtract entitySpeed
     val C = entityPosition
     val R = levelRadius
     val r = entity.getDimensionComponent.radius
 
-    val AB = A.subtract(B)
-    val BC = B.subtract(C)
+    val AB = A subtract B
+    val BC = B subtract C
     val magnitudeOfAB = AB.getMagnitude
     val magnitudeOfBC = BC.getMagnitude
 
@@ -88,12 +88,11 @@ case class CircularBorder(levelCenter: Point, collisionRule: CollisionRules.Valu
         k = b + Math.sqrt(d)
       }
 
-      val BD = C.subtract(B)
-      val newMagnitudeOfBD = BD.getNewMagnitude(magnitudeOfBC * k)
+      val BD = C subtract B
+      val newMagnitudeOfBD = BD getNewMagnitude (magnitudeOfBC * k)
 
       // D
-      B.add(newMagnitudeOfBD)
-      //Point(B.x + newBDMagnitude.x, B.y + newBDMagnitude.y)
+      B add newMagnitudeOfBD
     }
   }
 
@@ -105,12 +104,12 @@ case class CircularBorder(levelCenter: Point, collisionRule: CollisionRules.Valu
     */
   private def computeNewSpeed(currentPosition: Point, speedVector: Vector): Vector = {
     val v = speedVector
-    val n = currentPosition.subtract(levelCenter).normalized()
+    val n = currentPosition subtract levelCenter normalized()
 
-    val u = n.multiply(v.dot(n))
-    val w = v.subtract(u)
-    val vAfter = w.subtract(u)
-    val reflection = vAfter.subtract(v).multiply(restitution)
-    v.add(reflection)
+    val u = n multiply (v dot n)
+    val w = v subtract u
+    val vAfter = w subtract u
+    val reflection = vAfter subtract v multiply restitution
+    v add reflection
   }
 }

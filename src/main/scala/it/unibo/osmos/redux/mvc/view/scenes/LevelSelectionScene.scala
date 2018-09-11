@@ -12,7 +12,8 @@ import scala.collection.mutable
 /** This scene lets the players choose which level they want to play
   *
   * @param parentStage the parent stage
-  * @param listener    the listener
+  * @param listener the listener
+  * @param previousSceneListener the back click listener
   */
 class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSelectionSceneListener, previousSceneListener: BackClickListener)
   extends DefaultBackScene(parentStage, previousSceneListener) with LevelNodeListener {
@@ -56,7 +57,7 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
 
   protected val container: VBox = new VBox(10) {
     alignment = Pos.Center
-    /* Loading the levels */
+    /** Loading the levels */
     loadLevels()
     children = Seq(levelsContainer, buttonsContainer)
   }

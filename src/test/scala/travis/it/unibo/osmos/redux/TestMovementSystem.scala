@@ -1,7 +1,6 @@
 package it.unibo.osmos.redux
 
-import it.unibo.osmos.redux.ecs.entities.EntityManager
-import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
+import it.unibo.osmos.redux.ecs.entities.{CellBuilder, EntityManager}
 import it.unibo.osmos.redux.ecs.systems.MovementSystem
 import it.unibo.osmos.redux.utils.{Point, Vector}
 import org.scalactic.Tolerance._

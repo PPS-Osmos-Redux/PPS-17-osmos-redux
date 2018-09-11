@@ -64,7 +64,7 @@ object ActorSystemConfigFactory {
     * @return The file content.
     */
   private def readConfigFile: String = {
-    val fileStream = getClass.getClassLoader.getResourceAsStream(Constants.MultiPlayer.defaultSystemConfig)
+    val fileStream = getClass.getClassLoader.getResourceAsStream(Constants.MultiPlayer.ActorSystemConfigFilePath)
     try Source.fromInputStream(fileStream).mkString
     finally fileStream.close()
   }

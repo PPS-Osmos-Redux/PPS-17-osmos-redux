@@ -1,10 +1,12 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
+import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.custom.StyledButton
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.{User, UserWithProperties}
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, LobbyContextListener, MultiPlayerLevelContext}
 import it.unibo.osmos.redux.mvc.view.events.{AbortLobby, LobbyEventWrapper}
+import it.unibo.osmos.redux.utils.Logger
 import scalafx.application.Platform
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 import scalafx.collections.ObservableBuffer
@@ -14,98 +16,76 @@ import scalafx.scene.control.{Button, TableColumn, TableView}
 import scalafx.scene.layout.{BorderPane, HBox, VBox}
 import scalafx.stage.Stage
 
-/**
-  * Lobby showing other clients or servers playing in multiplayer
+/** Lobby showing other clients or servers playing in multiplayer
   *
-  * @param parentStage the parent stage
-  * @param listener    the MultiPlayerLobbySceneListener
-  * @param user        the user who requested to enter the lobby
+  * @param parentStage           the parent stage
+  * @param listener              the MultiPlayerLobbySceneListener
+  * @param backClickListener     the BackClickListener
+  * @param user                  the user who requested to enter the lobby
   */
 class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: MultiPlayerLobbySceneListener,
-                            val upperSceneListener: UpperMultiPlayerLobbySceneListener, val user: User)
-  extends BaseScene(parentStage) with LobbyContextListener {
-  
-  /**
-    * The lobby context, created with the MultiPlayerLobbyScene. It still needs to be properly setup
-    */
+                            val backClickListener: BackClickListener, val user: User)
+  extends DefaultBackScene(parentStage, backClickListener) with LobbyContextListener {
+
+  /** The lobby context, created with the MultiPlayerLobbyScene. It still needs to be properly setup */
   private var _lobbyContext: Option[LobbyContext] = Option.empty
   def lobbyContext: Option[LobbyContext] = _lobbyContext
   def lobbyContext_=(lobbyContext: LobbyContext): Unit = {
     _lobbyContext = Option(lobbyContext)
-    /* subscribe to lobby context events */
+    /** Subscribe to lobby context events */
     lobbyContext.setListener(this)
-    /* fill table with existing users */
+    /** Fill table with existing users */
     userList ++= lobbyContext.users.map(_.getUserWithProperty)
   }
 
-  /**
-    * The level info, which may be empty if the user is a client
-    */
+  /** The level info, which may be empty if the user is a client */
   private var _levelInfo: Option[LevelInfo] = Option.empty
   def levelInfo_=(levelInfo: Option[LevelInfo]): Unit = _levelInfo = levelInfo
 
-  /**
-    * ObservableBuffer holding the current users
-    */
+  /** ObservableBuffer holding the current users */
   private val userList = ObservableBuffer[UserWithProperties]()
-  /**
-    * BooleanProperty representing the visibility of the start button
-    */
+  /** BooleanProperty representing the visibility of the start button */
   private val isStartGameDisabled = BooleanProperty(true)
 
-  /**
-    * TableView linked with the user list
-    */
+  /** TableView linked with the user list */
   val usersTable: TableView[UserWithProperties] = new TableView[UserWithProperties](userList) {
     styleClass.add("multi-player-lobby-table")
     columnResizePolicy = TableView.ConstrainedResizePolicy
     columns ++= List(
       new TableColumn[UserWithProperties, String]() {
         text = "Username"
-        cellValueFactory = {
-          _.value.username
-        }
+        cellValueFactory = _.value.username
       }, new TableColumn[UserWithProperties, String]() {
         text = "IP"
-        cellValueFactory = {
-          _.value.ip
-        }
+        cellValueFactory = _.value.ip
       }, new TableColumn[UserWithProperties, Int]() {
         text = "Port"
-        cellValueFactory = p => {
-          new ObjectProperty[Int](this, "Port", p.value.port.value)
-        }
+        cellValueFactory = p => new ObjectProperty[Int](this, "Port", p.value.port.value)
       }
     )
   }
 
   private val container: VBox = new VBox(5.0) {
-
     maxWidth <== parentStage.width / 2
-    //maxHeight <== parentStage.height / 4
-
     alignment = Pos.Center
     children = Seq(usersTable)
   }
 
-  /**
-    * Exit lobby button
-    */
-  private val exitLobby = new StyledButton("Exit Lobby") {
-    onAction = _ => lobbyContext match {
-      /* We notify the lobby observer that we exited the lobby */
-      case Some(lc) =>
-        lc notifyLobbyEvent LobbyEventWrapper(AbortLobby, Some(user))
-        upperSceneListener.onLobbyExited()
-      case _ =>
-    }
-  }
+  /** Back button */
+  setText("Exit Lobby")
+  setAdditionalAction(() => lobbyContext match {
+    /** We notify the lobby observer that we exited the lobby */
+    case Some(lc) =>
+      lc notifyLobbyEvent LobbyEventWrapper(AbortLobby, Some(user))
+      ActorSystemHolder.clearActors()
+      Logger.log("Notifying exit lobby")("MultiPlayerLobbyScene")
 
-  /**
-    * Start game button
-    */
+    case _ =>
+  })
+
+  /** Start game button */
   private val startGame = new Button("Start Game") {
-    /* Only visible if the user is a server and there are at least two players*/
+    /** Only visible if the user is a server and there are at least two players*/
     styleClass.add("default-button-style")
     if (user.isServer) {
       disable <== isStartGameDisabled
@@ -119,26 +99,26 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     }
   }
 
-  /* Requesting a structured layout */
+  /** Requesting a structured layout */
   private val rootLayout: BorderPane = new BorderPane {
     padding = Insets(130)
     alignmentInParent = Pos.Center
-    /* Setting the upper MenuBar */
+    /** Setting the upper MenuBar */
     center = container
-    private val bottomContainer = new HBox(30.0, exitLobby) {
+    private val bottomContainer = new HBox(30.0, goBack) {
       alignment = Pos.Center
     }
     if (user.isServer) bottomContainer.children.add(startGame)
     bottom = bottomContainer
   }
 
-  /* Enabling the layout */
+  /** Enabling the layout */
   root = rootLayout
 
   override def updateUsers(users: Seq[User]): Unit = {
     userList clear()
     userList ++= users.map(_.getUserWithProperty)
-    /* Updating the observable property */
+    /** Updating the observable property */
     isStartGameDisabled.value_=(userList.size < 2)
     if (isStartGameDisabled.value) {
       startGame.styleClass.remove("enabled-button-style")
@@ -148,7 +128,7 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
   }
 
   override def onMultiPlayerGameStarted(multiPlayerLevelContext: MultiPlayerLevelContext, levelInfo: LevelInfo): Unit = {
-    /* Creating a multiplayer level*/
+    /** Creating a multiplayer level*/
     val multiPlayerLevelScene = new MultiPlayerLevelScene(parentStage, levelInfo, listener, () => parentStage.scene = this)
 
     multiPlayerLevelContext.setListener(multiPlayerLevelScene)
@@ -159,19 +139,7 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     })
   }
 
-  override def onLobbyAborted(): Unit = Platform.runLater({upperSceneListener.onLobbyExited()})
-
-}
-
-/**
-  * Trait used by UpperMultiPlayerLobbyScene to notify an event to the upper scene
-  */
-trait UpperMultiPlayerLobbySceneListener {
-
-  /**
-    * Called when the user exits from the lobby
-    */
-  def onLobbyExited()
+  override def onLobbyAborted(): Unit = Platform.runLater({backClickListener.onBackClick()})
 
 }
 
@@ -180,8 +148,8 @@ trait UpperMultiPlayerLobbySceneListener {
   */
 trait MultiPlayerLobbySceneListener extends LevelSceneListener {
 
-  /**
-    * Called once per lobby. This will eventually lead to the server init. The server will eventually respond using the previously passed lobby context
+  /** Called once per lobby. This will eventually lead to the server init. The server will eventually respond using the previously passed lobby context
+    *
     * @param levelInfo the level info requested by the controller
     */
   def onStartMultiPlayerGameClick(levelInfo: LevelInfo)

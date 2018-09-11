@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.stages
 
-import it.unibo.osmos.redux.mvc.controller.manager.files.StyleFileManager
+import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
 import it.unibo.osmos.redux.mvc.view.scenes._
 import scalafx.application.JFXApp
@@ -8,20 +8,24 @@ import scalafx.application.JFXApp
 /**
   * Primary stage which holds and manages all the different game scenes
   */
-trait OsmosReduxPrimaryStage extends JFXApp.PrimaryStage {
-
-}
+trait OsmosReduxPrimaryStage extends JFXApp.PrimaryStage
 
 /**
   * Companion object
   */
 object OsmosReduxPrimaryStage {
+  /** Creates a new OsmosReduxPrimaryStage, the application root stage
+    *
+    * @param listener the PrimaryStageListener
+    * @param windowWidth the window width (which is equal to the screen width by default)
+    * @param windowHeight the window width (which is equal to the screen width by default)
+    * @return an OsmosReduxPrimaryStageImpl instance
+    */
   def apply(listener: PrimaryStageListener,
-            windowWidth: Double = defaultWindowWidth,
-            windowHeight: Double = defaultWindowHeight): OsmosReduxPrimaryStageImpl = new OsmosReduxPrimaryStageImpl(listener, windowWidth, windowHeight)
+            windowWidth: Double = DefaultWindowWidth,
+            windowHeight: Double = DefaultWindowHeight): OsmosReduxPrimaryStageImpl = new OsmosReduxPrimaryStageImpl(listener, windowWidth, windowHeight)
 
-  /**
-    * Primary stage implementation
+  /** Primary stage implementation
     *
     * @param listener          the primary stage listener
     * @param windowWidth       the window width
@@ -30,7 +34,7 @@ object OsmosReduxPrimaryStage {
   class OsmosReduxPrimaryStageImpl(val listener: PrimaryStageListener, val windowWidth: Double, val windowHeight: Double) extends OsmosReduxPrimaryStage
     with MainSceneListener {
 
-    title = defaultWindowTitle
+    title = DefaultWindowTitle
     resizable = false
     width = windowWidth
     height = windowHeight
@@ -50,8 +54,11 @@ object OsmosReduxPrimaryStage {
 
     override def onSettingsClick(): Unit = scene = new SettingsScene(this, listener, mainScene)
 
-    /* Stopping the game when the user closes the window */
-    onCloseRequest = _ => System.exit(0)
+    /** Stopping the game when the user closes the window */
+    onCloseRequest = _ => {
+      ActorSystemHolder.kill()
+      System.exit(0)
+    }
   }
 
 }
@@ -61,6 +68,4 @@ object OsmosReduxPrimaryStage {
   */
 trait PrimaryStageListener extends LevelSelectionSceneListener with EditorLevelSelectionSceneListener
   with MultiPlayerSceneListener with MultiPlayerLobbySceneListener with MultiPlayerLevelSelectionSceneListener
-  with SettingsSceneListener with StatsSceneListener {
-
-}
+  with SettingsSceneListener with StatsSceneListener

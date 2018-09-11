@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.ecs.systems.sentientRule
 
-import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
+import it.unibo.osmos.redux.ecs.entities.CellBuilder
 import it.unibo.osmos.redux.ecs.entities.properties.composed.SentientProperty
 import it.unibo.osmos.redux.ecs.systems.borderconditions.{CircularBorder, RectangularBorder}
 import it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils._

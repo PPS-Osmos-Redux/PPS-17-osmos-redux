@@ -5,10 +5,8 @@ import it.unibo.osmos.redux.multiplayer.server.{Server, ServerState}
 import it.unibo.osmos.redux.multiplayer.server.ServerActor.UpdateGame
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity
 
-// TODO: scaladoc
-/**
-  *
-  * @param server
+/** System that sends the entities to draw to all connected clients.
+  * @param server The server used to send message to clients.
   */
 case class MultiPlayerUpdateSystem(server: Server) extends AbstractSystem[DrawableProperty] {
 

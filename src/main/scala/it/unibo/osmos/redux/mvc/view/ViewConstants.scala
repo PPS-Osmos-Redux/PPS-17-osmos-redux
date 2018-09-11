@@ -1,6 +1,5 @@
 package it.unibo.osmos.redux.mvc.view
 
-import it.unibo.osmos.redux.mvc.view.ViewConstants.Window.halfWindowHeight
 import scalafx.scene.paint.Color
 import scalafx.stage.Screen
 
@@ -11,42 +10,51 @@ object ViewConstants {
 
   /** Window constants */
   object Window {
-    val defaultWindowTitle: String = "Osmos-Redux"
-    val defaultWindowWidth: Double = Screen.primary.visualBounds.width
-    val halfWindowWidth: Double = defaultWindowWidth / 2
-    val defaultWindowHeight: Double = Screen.primary.visualBounds.height
-    val halfWindowHeight: Double = defaultWindowHeight / 2
+    val DefaultWindowTitle: String = "Osmos-Redux"
+    val DefaultWindowWidth: Double = Screen.primary.visualBounds.width
+    val HalfWindowWidth: Double = DefaultWindowWidth / 2
+    val DefaultWindowHeight: Double = Screen.primary.visualBounds.height
+    val HalfWindowHeight: Double = DefaultWindowHeight / 2
   }
 
   object Editor {
     import Window._
-    val maxLevelRadius: Double = 0.8 * (if (halfWindowHeight < halfWindowWidth) halfWindowHeight else halfWindowWidth)
-    val startingLevelRadius: Double = maxLevelRadius / 2
-    val maxLevelWidth: Double = 0.8 * defaultWindowWidth
-    val maxLevelHeight: Double = 0.8 * defaultWindowHeight
-    val startingLevelWidth: Double = defaultWindowWidth / 2
-    val startingLevelHeight: Double = defaultWindowHeight / 2
+    val MaxLevelRadius: Double = 0.8 * (if (HalfWindowHeight < HalfWindowWidth) HalfWindowHeight else HalfWindowWidth)
+    val StartingLevelRadius: Double = MaxLevelRadius / 2
+    val MaxLevelWidth: Double = 0.8 * DefaultWindowWidth
+    val MaxLevelHeight: Double = 0.8 * DefaultWindowHeight
+    val StartingLevelWidth: Double = DefaultWindowWidth / 2
+    val StartingLevelHeight: Double = DefaultWindowHeight / 2
+  }
+
+  object Level {
+    /** Scrolling delta */
+    val ScrollingDelta = 1.1
+    /** Max zoom out scale */
+    val MaxZoomOutScale = 1.0
+    /** Max zoom in scale */
+    val MaxZoomInScale = 1.2
   }
 
   /** Entities constants */
   object Entities {
     /** Colors constants */
     object Colors {
-      val defaultPlayerColor: Color = Color.Green
-      val defaultEntityMaxColor: Color = Color.DarkRed
-      val defaultEntityMinColor: Color = Color.LightBlue
+      val DefaultPlayerColor: Color = Color.Green
+      val DefaultEntityMaxColor: Color = Color.DarkRed
+      val DefaultEntityMinColor: Color = Color.LightBlue
     }
     /** Textures constants */
     object Textures {
-      val textureFolder: String = "/textures/"
-      val backgroundTexture: String = textureFolder + "background.png"
-      val cellTexture: String = textureFolder + "cell_blue.png"
-      val playerCellTexture: String = textureFolder + "cell_green.png"
-      val attractiveTexture: String = textureFolder + "cell_red.png"
-      val repulsiveTexture: String = textureFolder + "cell_yellow.png"
-      val antiMatterTexture: String = textureFolder + "cell_dark_blue.png"
-      val sentientTexture: String = textureFolder + "cell_purple.png"
-      val controllerTexture: String = textureFolder + "cell_violet.png"
+      val TextureFolder: String = "/textures/"
+      val BackgroundTexture: String = TextureFolder + "background.png"
+      val CellTexture: String = TextureFolder + "cell_blue.png"
+      val PlayerCellTexture: String = TextureFolder + "cell_green.png"
+      val AttractiveTexture: String = TextureFolder + "cell_red.png"
+      val RepulsiveTexture: String = TextureFolder + "cell_yellow.png"
+      val AntiMatterTexture: String = TextureFolder + "cell_dark_blue.png"
+      val SentientTexture: String = TextureFolder + "cell_purple.png"
+      val ControllerTexture: String = TextureFolder + "cell_violet.png"
     }
 
   }

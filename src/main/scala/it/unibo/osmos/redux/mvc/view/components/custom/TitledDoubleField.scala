@@ -7,8 +7,8 @@ import scalafx.scene.control.TextFormatter.Change
 import scalafx.scene.control.{TextField, TextFormatter}
 import scalafx.util.converter.{DoubleStringConverter, NumberStringConverter}
 
-/**
-  * TextField with a Title which controls the user inputs, checking that the text inserted is a Double
+/** TextField with a Title which controls the user inputs, checking that the text inserted is a Double
+  *
   * @param title the text shown
   * @param value the observable double property
   * @param minValue the minimum acceptable value, set to Double.MinValue if not specified
@@ -17,8 +17,8 @@ import scalafx.util.converter.{DoubleStringConverter, NumberStringConverter}
 class TitledDoubleField(override val title: StringProperty, private val value: DoubleProperty, private val minValue: Double = Double.MinValue, private val maxValue: Double = Double.MaxValue)
   extends TitledNode[TextField](title, vertical = false) {
 
-  /**
-    * Additional constructor
+  /** Additional constructor
+    *
     * @param title the title
     * @param value the value, as a DoubleProperty
     */
@@ -26,8 +26,8 @@ class TitledDoubleField(override val title: StringProperty, private val value: D
     this(StringProperty(title), value)
   }
 
-  /**
-    * Additional constructor
+  /** Additional constructor
+    *
     * @param title the title
     * @param value the value, as a DoubleProperty
     * @param minValue the minimum allowed value
@@ -37,8 +37,7 @@ class TitledDoubleField(override val title: StringProperty, private val value: D
     this(StringProperty(title), value, minValue, maxValue)
   }
 
-  /**
-    * The node that will be shown after the text
+  /** The node that will be shown after the text
     *
     * @return a node of type N <: Node
     */

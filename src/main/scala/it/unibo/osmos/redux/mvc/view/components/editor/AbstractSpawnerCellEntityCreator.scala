@@ -8,7 +8,7 @@ import scalafx.beans.property.BooleanProperty
   */
 abstract class AbstractSpawnerCellEntityCreator extends CellEntityCreator {
 
-  /* Can spawn combo box */
+  /** canSpawn property combo box */
   protected val canSpawn: BooleanProperty = BooleanProperty(true)
   protected val canSpawnComboBox = new TitledComboBox[Boolean]("Can spawn", Seq(true, false), (b) => {canSpawn.value = b}, vertical = false)
 

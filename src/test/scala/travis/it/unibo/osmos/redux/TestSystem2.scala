@@ -1,7 +1,6 @@
 package it.unibo.osmos.redux
 
 import it.unibo.osmos.redux.ecs.entities._
-import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 import it.unibo.osmos.redux.ecs.entities.properties.composed.{InputProperty, MovableProperty}
 import it.unibo.osmos.redux.ecs.systems.AbstractSystem2
 import org.scalatest.{BeforeAndAfter, FunSuite}

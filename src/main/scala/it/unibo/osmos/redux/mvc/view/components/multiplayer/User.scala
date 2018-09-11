@@ -3,8 +3,7 @@ package it.unibo.osmos.redux.mvc.view.components.multiplayer
 import it.unibo.osmos.redux.multiplayer.players.Player
 import scalafx.beans.property.{BooleanProperty, IntegerProperty, StringProperty}
 
-/**
-  * User class
+/** User class
   *
   * @param username the username
   * @param ip the ip
@@ -13,19 +12,22 @@ import scalafx.beans.property.{BooleanProperty, IntegerProperty, StringProperty}
   */
 case class User(username: String, ip: String = "", port: Int = 0, isServer: Boolean) {
 
-  /**
-    * Secondary constructor.
+  /** Secondary constructor
+    *
     * @param player The BasicPlayer where to get user info from
     * @param isServer true if the user is a server, false if it's a client
-    * @return
+    * @return the user
     */
   def this(player: Player, isServer: Boolean) = this(player.getUsername, player.getAddress, player.getPort, isServer)
 
+  /** This method return a bindable version of the User
+    *
+    * @return the same user but with bindable properties
+    */
   def getUserWithProperty: UserWithProperties = UserWithProperties(StringProperty(username), StringProperty(ip), IntegerProperty(port), BooleanProperty(isServer))
 }
 
-/**
-  * User class with properties as base fields
+/** User class with properties as base fields
   *
   * @param username the username
   * @param ip the ip
@@ -34,5 +36,9 @@ case class User(username: String, ip: String = "", port: Int = 0, isServer: Bool
   */
 case class UserWithProperties(username: StringProperty, ip: StringProperty = StringProperty(""), port: IntegerProperty = IntegerProperty(0), isServer: BooleanProperty) {
 
+  /** This method returns the User
+    *
+    * @return the same user but without the bindable properties
+    */
   def getUser: User = User(username.value, ip.value, port.value, isServer.value)
 }

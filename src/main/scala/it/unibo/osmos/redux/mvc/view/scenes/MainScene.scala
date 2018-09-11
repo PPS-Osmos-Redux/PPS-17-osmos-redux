@@ -2,7 +2,7 @@ package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.mvc.controller.manager.sounds.{MusicPlayer, SoundsType}
-import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.backgroundTexture
+import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.BackgroundTexture
 import it.unibo.osmos.redux.mvc.view.components.instructions.{GameInstructionScreen, GameLegendScreen}
 import it.unibo.osmos.redux.mvc.view.components.menu.{MainMenuCenterBox, MainMenuCenterBoxListener}
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
@@ -16,14 +16,18 @@ import scalafx.scene.paint.Color
 import scalafx.scene.text.Text
 import scalafx.stage.Stage
 
-/** Opening scene, showing the menu and the menu bar */
+/** Opening scene, showing the menu and the menu bar
+  *
+  * @param parentStage the parent stage
+  * @param listener the MainSceneListener
+  */
 class MainScene(override val parentStage: Stage, val listener: MainSceneListener) extends BaseScene(parentStage)
-  with MainMenuCenterBoxListener with UpperMultiPlayerSceneListener with BackClickListener {
+  with MainMenuCenterBoxListener with BackClickListener {
 
   MusicPlayer.play(SoundsType.menu)
 
   /** Background image when displaying controls */
-  val background: ImageView = new ImageView(ImageLoader.getImage(backgroundTexture)) {
+  val background: ImageView = new ImageView(ImageLoader.getImage(BackgroundTexture)) {
     fitWidth <== parentStage.width
     fitHeight <== parentStage.height
   }
@@ -54,12 +58,12 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
     background.opacity = if (controlsScreenVisible.value) 0.3 else 1.0
   }
 
-  /* Requesting a structured layout */
+  /** Requesting a structured layout */
   private val rootLayout: BorderPane = new BorderPane {
     prefWidth <== parentStage.width
     prefHeight <== parentStage.height
     visible <== !controlsScreenVisible and !legendScreenVisible
-    /* Setting the upper MenuBar */
+    /** Setting the upper MenuBar */
     center = new MainMenuCenterBox(MainScene.this)
     bottom = new VBox(4.0, new Text("Press [C] to show/hide the game controls") {
       style = "-fx-font-size: 20pt"
@@ -99,11 +103,9 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
 
   override def onSettingsClick(): Unit = listener.onSettingsClick()
 
-  override def onExitClick(): Unit = System.exit(0)
-
-  override def onMultiPlayerSceneBackClick(): Unit = {
-    ActorSystemHolder.clearActors()
-    parentStage.scene = this
+  override def onExitClick(): Unit = {
+    ActorSystemHolder.kill()
+    System.exit(0)
   }
 
   override def onBackClick(): Unit = parentStage.scene = this
