@@ -97,25 +97,6 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     height <== parentStage.height
     cache = true
     opacity = 0.0
-
-    /*val light: Spot = new Spot()
-    light.color = Color.White
-    light.x <== (LevelPlayer.playerPosX + halfWindowWidth) * this.scaleX
-    light.y <== (LevelPlayer.playerPosY + halfWindowHeight) * this.scaleY
-    light.z = 200
-    light.pointsAtX <== (LevelPlayer.playerPosX + halfWindowWidth) * this.scaleX
-    light.pointsAtY <== (LevelPlayer.playerPosY + halfWindowHeight) * this.scaleY
-    light.pointsAtZ = -10
-    light.specularExponent = 2.0
-
-    val lighting: Lighting = new Lighting()
-    lighting.light = light
-    lighting.surfaceScale = 1.0
-    lighting.diffuseConstant = 2.0
-
-    pickOnBounds = false
-
-    effect = lighting*/
   }
 
   /** The splash screen showed when the game is paused */
@@ -154,22 +135,22 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
   /** Method to start the level */
   private def startLevel(): Unit = {
-    /* Splash screen animation, starting with a FadeIn */
+    /** Splash screen animation, starting with a FadeIn */
     new FadeTransition(Duration.apply(2000), splashScreen) {
       fromValue = 0.0
       toValue = 1.0
-      /* FadeOut */
+      /** FadeOut */
       onFinished = _ => new FadeTransition(Duration.apply(2000), splashScreen) {
         fromValue = 1.0
         toValue = 0.0
-        /* Showing the canvas */
+        /** Showing the canvas */
         onFinished = _ => {
           canvas.opacity = 1.0
           content.remove(splashScreen)
-          /* Adding the mapBorder */
+          /** Adding the mapBorder */
           content.add(mapBorder)
           LevelState.inputEnabled = true
-          /* Removing the splash screen to reduce the load. Then the level is started */
+          /** Removing the splash screen to reduce the load. Then the level is started */
           listener.onStartLevel()
         }
       }.play()
@@ -282,7 +263,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
       fromValue = 0.0
       toValue = 1.0
       autoReverse = true
-      /* FadeOut */
+      /** FadeOut */
       onFinished = _ => new FadeTransition(Duration.apply(300), speedChangeScreen) {
         fromValue = 1.0
         toValue = 0.0

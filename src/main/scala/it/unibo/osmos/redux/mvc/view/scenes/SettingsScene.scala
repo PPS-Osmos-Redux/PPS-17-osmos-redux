@@ -73,7 +73,7 @@ class SettingsScene(override val parentStage: Stage, listener: SettingsSceneList
     onAction = _ => AlertFactory.showConfirmationAlert(text.value + "?", "Your progresses will be lost", SinglePlayerLevels.reset(), {})
   }
 
-  /** adds save settings to goBack button */
+  /** Adds save settings to goBack button */
   setAdditionalAction(() => SettingsHolder.saveSettings())
 
   /**  The central container */
@@ -83,12 +83,9 @@ class SettingsScene(override val parentStage: Stage, listener: SettingsSceneList
     styleClass.add("settings-vbox")
   }
 
-  /* Setting the root container */
+  /** Setting the root container */
   root = container
 }
 
 /** Trait which gets notified when a SettingsScene event occurs */
-trait SettingsSceneListener {
-
-
-}
+trait SettingsSceneListener

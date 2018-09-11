@@ -18,7 +18,8 @@ import scalafx.stage.Stage
   * @param listener           the MultiPlayerSceneListener
   * @param upperSceneListener the BackClickListener
   */
-class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlayerSceneListener, val upperSceneListener: BackClickListener) extends DefaultBackScene(parentStage, upperSceneListener) {
+class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlayerSceneListener, val upperSceneListener: BackClickListener)
+  extends DefaultBackScene(parentStage, upperSceneListener) {
 
   /** Username */
   private val username: StringProperty = StringProperty("")
@@ -157,9 +158,7 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
   */
 trait UpperMultiPlayerSceneListener {
 
-  /**
-    * Called when the user wants to go back to the previous screen
-    */
+  /** Called when the user wants to go back to the previous screen */
   def onMultiPlayerSceneBackClick()
 }
 
