@@ -11,10 +11,10 @@ import it.unibo.osmos.redux.utils.{Point, Vector}
 case class SentientSystem(levelInfo: Level) extends AbstractSystem2[SentientProperty, SentientEnemyProperty] {
 
   // The lost mass spawn point offset (starting from the perimeter of the entity, where to spawn lost mass due to movement)
-  private val LostMassSpawnOffset: Double = 0.1
+  private val lostMassSpawnOffset: Double = 0.1
 
   // The initial velocity of the lost mass
-  private val LostMassInitialVelocity: Double = 4.0
+  private val lostMassInitialVelocity: Double = 4.0
 
   private var radiusAmount = 0.0
 
@@ -49,12 +49,12 @@ case class SentientSystem(levelInfo: Level) extends AbstractSystem2[SentientProp
         val sentientPosition = sentient.getPositionComponent.point
         val directionVector = totalAcceleration multiply -1 normalized()
 
-        val spawnPoint = sentientPosition add (directionVector multiply (radiusSentient.radius + LostMassSpawnOffset + radiusAmount))
+        val spawnPoint = sentientPosition add (directionVector multiply (radiusSentient.radius + lostMassSpawnOffset + radiusAmount))
 
         sentient.getSpawnerComponent.enqueueActions(SpawnAction(
           PositionComponent(Point(spawnPoint.x, spawnPoint.y)),
           DimensionComponent(radiusAmount),
-          SpeedComponent(directionVector multiply LostMassInitialVelocity)))
+          SpeedComponent(directionVector multiply lostMassInitialVelocity)))
         radiusAmount = 0.0
       }
     }

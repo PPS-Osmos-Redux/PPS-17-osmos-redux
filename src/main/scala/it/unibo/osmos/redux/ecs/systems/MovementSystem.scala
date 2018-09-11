@@ -5,7 +5,7 @@ import it.unibo.osmos.redux.ecs.entities.properties.composed.MovableProperty
 /** System manging cell movement based on their acceleration and speed */
 case class MovementSystem() extends AbstractSystem[MovableProperty] {
 
-  private final val CellMaxSpeed: Double = 4
+  private val cellMaxSpeed: Double = 4
 
   override def update(): Unit = {
     entities foreach (entity => {
@@ -19,7 +19,7 @@ case class MovementSystem() extends AbstractSystem[MovableProperty] {
     val accelerationVector = accelerationComponent.vector
     val speedComponent = entity.getSpeedComponent
     val speedVector = speedComponent.vector
-    speedComponent.vector_(speedVector add accelerationVector limit CellMaxSpeed)
+    speedComponent.vector_(speedVector add accelerationVector limit cellMaxSpeed)
     accelerationComponent.reset()
   }
 
