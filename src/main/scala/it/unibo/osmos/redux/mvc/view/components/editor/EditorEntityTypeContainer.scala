@@ -146,10 +146,8 @@ class EditorEntityTypeContainer(editorEntityTypeContainerListener: EditorEntityT
     }
     /** Creating the new editor which will be part of the new level configuration */
     val newCellEntity = getVisibleCellBuilder create()
-
     /** Notify the listener */
     editorEntityTypeContainerListener.onEntityCreated(newShape, newCellEntity)
-
   }
 
 }
