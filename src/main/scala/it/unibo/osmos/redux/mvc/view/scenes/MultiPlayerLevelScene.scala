@@ -13,10 +13,10 @@ import scalafx.util.Duration
   * @param parentStage        the parent stage
   * @param levelInfo          the level info
   * @param listener           the listener
-  * @param upperSceneListener the upper scene listener to manage the previously scene events
+  * @param backClickListener  the back click listener
   */
-class MultiPlayerLevelScene(override val parentStage: Stage, override val levelInfo: LevelInfo, override val listener: LevelSceneListener, override val upperSceneListener: BackClickListener)
-  extends LevelScene(parentStage, levelInfo, listener, upperSceneListener) with MultiPlayerLevelContextListener {
+class MultiPlayerLevelScene(override val parentStage: Stage, override val levelInfo: LevelInfo, override val listener: LevelSceneListener, override val backClickListener: BackClickListener)
+  extends LevelScene(parentStage, levelInfo, listener, backClickListener) with MultiPlayerLevelContextListener {
 
   /** The level context, created with the MultiPlayerLevelScene. It must be a MultiPlayerLevelContext */
   override def levelContext: Option[_ <: LevelContext] = _levelContext

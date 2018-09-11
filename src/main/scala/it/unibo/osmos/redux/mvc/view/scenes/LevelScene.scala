@@ -34,11 +34,11 @@ import scalafx.util.Duration
   * @param parentStage        the parent stage
   * @param levelInfo          the level info
   * @param listener           the listener
-  * @param upperSceneListener the upper scene listener to manage the previously scene events
+  * @param backClickListener  the back click listener listener
   */
 //noinspection ForwardReference
-class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val listener: LevelSceneListener, val upperSceneListener: BackClickListener)
-  extends DefaultBackScene(parentStage, upperSceneListener) with LevelContextListener {
+class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val listener: LevelSceneListener, val backClickListener: BackClickListener)
+  extends DefaultBackScene(parentStage, backClickListener) with LevelContextListener {
 
   /** Level images */
   private object LevelDrawables {
@@ -179,7 +179,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   /** Called when the user has to go to the LevelSelectionScene */
   private def goToPreviousScene(): Unit = {
     MusicPlayer.play(SoundsType.menu)
-    upperSceneListener.onBackClick()
+    backClickListener.onBackClick()
   }
 
   /** OnMouseClicked handler, reacting only if the game is not paused */
@@ -488,14 +488,6 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
       case _ => throw new IllegalArgumentException("Could not determine the min and max radius from an empty sequence of entities")
     }
   }
-
-}
-
-/** Trait used by LevelScene to notify an event to the upper scene */
-trait UpperLevelSceneListener extends BackClickListener {
-
-  /** Called when the level gets stopped */
-  def onStopLevel()
 
 }
 
