@@ -12,7 +12,7 @@ object Constants {
     final val DefaultFps: Int = 60
     final val MinimumFps: Int = 30
     final val MaximumFps: Int = 240
-    final val FpsChangeStep: Int = 30
+    final val FpsChangeStep: Int = 10
   }
 
   object MultiPlayer {

@@ -176,8 +176,12 @@ object GameEngine {
     }
 
     override def clear(): Unit = {
+      //clear entities
       EntityManager.clear()
+      //clear mouse events
       InputEventQueue.dequeueAll()
+      //reset game speed
+      frameRate = Constants.Engine.DefaultFps
 
       gameLoop match {
         case Some(i) => i.getStatus match {
