@@ -7,8 +7,8 @@ import it.unibo.osmos.redux.ecs.entities.CellBuilder
   */
 trait EditorCellBuilderConfigurator {
 
-  /**
-    * This method configure the EntityBuilder
+  /** This method configure the EntityBuilder
+    *
     * @param builder the CellBuilder that must be configured
     * @param withEntityType true if the Configurator has to put the entity type in the newly created cell
     */

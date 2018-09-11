@@ -13,7 +13,7 @@ import scalafx.scene.layout.VBox
   */
 class RectangleLevelCreator extends BaseEditorCreator[MapShape.Rectangle] {
 
-  /* Center */
+  /** Center */
   val xCenter: DoubleProperty = DoubleProperty(0.0)
   val yCenter: DoubleProperty = DoubleProperty(0.0)
   private val centerNode = new VBox(2.0, new Label("Center"),
@@ -21,17 +21,17 @@ class RectangleLevelCreator extends BaseEditorCreator[MapShape.Rectangle] {
     new TitledDoubleField("y: ", yCenter).innerNode
   )
 
-  /* Level width node*/
+  /** Level width node*/
   val levelWidth: DoubleProperty = DoubleProperty(0.0)
   val maxLevelWidth: Double = ViewConstants.Editor.MaxLevelWidth
-  private val widthNode = new VBox(2.0, new Label(s"Width (max ${maxLevelWidth})"),
+  private val widthNode = new VBox(2.0, new Label(s"Width (max $maxLevelWidth)"),
     new TitledDoubleField("Width: ", levelWidth, 1.0, maxLevelWidth).innerNode,
   )
 
-  /* Level height node*/
+  /** Level height node*/
   val levelHeight: DoubleProperty = DoubleProperty(0.0)
   val maxLevelHeight: Double = ViewConstants.Editor.MaxLevelHeight
-  private val heightNode = new VBox(2.0, new Label(s"Height (max ${maxLevelHeight})"),
+  private val heightNode = new VBox(2.0, new Label(s"Height (max $maxLevelHeight)"),
     new TitledDoubleField("Height: ", levelHeight, 1.0, maxLevelHeight).innerNode,
   )
 

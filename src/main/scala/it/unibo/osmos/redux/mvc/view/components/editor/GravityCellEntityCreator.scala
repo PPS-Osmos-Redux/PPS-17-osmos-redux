@@ -8,11 +8,10 @@ import scalafx.scene.layout.VBox
 
 /**
   * A panel showing input nodes which is also capable of providing the requested GravityCellEntity
-  *
   */
 class GravityCellEntityCreator extends CellEntityCreator {
 
-  /* Specific weight node*/
+  /** Specific weight node*/
   val weight: DoubleProperty = DoubleProperty(1.0)
   val weightNode = new VBox(2.0, new Label("Weight"), new TitledDoubleField("Weight: ", weight, 0.0, Double.MaxValue).innerNode)
 
