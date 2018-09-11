@@ -1,25 +1,24 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityType}
-import it.unibo.osmos.redux.mvc.controller.levels.structure.{CollisionRules, MapShape, MapShapeType, VictoryRules}
-import it.unibo.osmos.redux.mvc.view.ViewConstants.Editor._
+import it.unibo.osmos.redux.mvc.controller.levels.structure.{CollisionRules, MapShape, VictoryRules}
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
 import it.unibo.osmos.redux.mvc.view.components.custom.{AlertFactory, StyledButton, TitledComboBox}
 import it.unibo.osmos.redux.mvc.view.components.editor._
 import it.unibo.osmos.redux.mvc.view.components.instructions.EditorInstructionScreen
-import it.unibo.osmos.redux.mvc.view.components.level.LevelScreen
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import javafx.scene.input.KeyCode
 import javafx.scene.paint.ImagePattern
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 import scalafx.geometry.{Insets, Pos}
+import scalafx.scene.Node
 import scalafx.scene.control.TextInputDialog
 import scalafx.scene.effect.DropShadow
 import scalafx.scene.image.ImageView
 import scalafx.scene.layout._
 import scalafx.scene.paint.Color
-import scalafx.scene.shape.{Circle, Rectangle, Shape}
+import scalafx.scene.shape.Circle
 import scalafx.scene.text.Text
 import scalafx.stage.Stage
 
@@ -30,6 +29,7 @@ import scala.collection.mutable.ListBuffer
   * @param parentStage the parent stage
   * @param listener    the EditorSceneListener
   */
+//noinspection ForwardReference
 class EditorScene(override val parentStage: Stage, val listener: EditorSceneListener, val upperListener: BackClickListener) extends DefaultBackScene(parentStage, upperListener, "Exit Level") {
 
   /** Entities currently built */
@@ -53,25 +53,6 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
     background.opacity = if (instructionScreenVisible.value) 0.3 else 1.0
   }
 
-  /** Level Type */
-  private val levelType: ObjectProperty[MapShapeType.Value] = ObjectProperty(MapShapeType.Circle)
-  private val levelTypeBox = new TitledComboBox[MapShapeType.Value]("Level Type:", MapShapeType.values.toSeq, mapType => levelType.value = mapType)
-
-  /** Pane containing the field to configure the circular level */
-  private val circularLevelBuilder: CircleLevelCreator = new CircleLevelCreator {
-    xCenter.value = 0.0
-    yCenter.value = 0.0
-    radius.value = StartingLevelRadius
-  }
-  /** Pane containing the field to configure the rectangular level */
-  private val rectangularLevelBuilder: RectangleLevelCreator = new RectangleLevelCreator {
-    visible = false
-    levelWidth.value = StartingLevelWidth
-    levelHeight.value = StartingLevelHeight
-    xCenter.value = 0.0
-    yCenter.value = 0.0
-  }
-
   /** Victory Rule */
   private val victoryRule: ObjectProperty[VictoryRules.Value] = ObjectProperty(VictoryRules.becomeTheBiggest)
   private val victoryRuleBox = new TitledComboBox[VictoryRules.Value]("Victory Rule:", VictoryRules.values.toSeq, vr => victoryRule.value = vr)
@@ -85,6 +66,13 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
   private val entityComboBox = new TitledComboBox[EntityType.Value]("Entity Type:", EntityType.values.toSeq, et => {
     entityType.value = et
   })
+
+  /** Level Type, encapsulated in a container with a listener providing reaction to change */
+  private val editorLevelTypeContainer = new EditorLevelTypeContainer((oldShape, newShape) => {
+    editorElements -= oldShape
+    editorElements += newShape
+    content = editorElements
+  }, !instructionScreenVisible)
 
   /** Pane containing the field to configure the entities */
   private val cellEntityCreator: CellEntityCreator = new CellEntityCreator
@@ -138,30 +126,6 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
     children = List(entityComboBox.root, verticalStackPane)
   }
 
-  /** The level container */
-  private val levelTypeContainer: VBox = new VBox(1.0) {
-
-    /** Right builder seq */
-    private val builderSeq = Seq(circularLevelBuilder, rectangularLevelBuilder)
-
-    private val verticalStackPane = new StackPane() {
-      children = builderSeq
-      levelType.onChange({
-        builderSeq.foreach(levelBuilder => levelBuilder.visible = false)
-        editorElements -= currentLevelPlaceholder
-        levelType.value match {
-          case MapShapeType.Circle => circularLevelBuilder.visible = true; currentLevelPlaceholder = circularLevelPlaceholder
-          case MapShapeType.Rectangle => rectangularLevelBuilder.visible = true; currentLevelPlaceholder = rectangularLevelPlaceholder
-          case _ =>
-        }
-        editorElements += currentLevelPlaceholder
-        EditorScene.this.content = editorElements
-      })
-    }
-
-    children = List(levelTypeBox.root, verticalStackPane)
-  }
-
   /** The main container, wrapping the other panes */
   private val mainContainer: BorderPane = new BorderPane() {
     prefWidth <== parentStage.width
@@ -169,7 +133,7 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
     /** We don't show the container if the instructions are visible */
     visible <== !instructionScreenVisible
     left = entityContainer
-    right = new VBox(5.0, victoryRuleBox.root, collisionRuleBox.root, levelTypeContainer) {
+    right = new VBox(5.0, victoryRuleBox.root, collisionRuleBox.root, editorLevelTypeContainer.levelTypeContainer) {
       margin = Insets(10.0)
       padding = Insets(0.0, 10.0, 0.0, 0.0)
     }
@@ -193,35 +157,6 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
     }
   }
 
-
-
-  /** The placeholder which models the circular level */
-  val circularLevelPlaceholder: Circle = new Circle() {
-    centerX <== circularLevelBuilder.xCenter + HalfWindowWidth
-    centerY <== circularLevelBuilder.yCenter + HalfWindowHeight
-    radius <== circularLevelBuilder.radius
-    stroke = Color.White
-    strokeWidth = 2.0
-    fill = Color.Transparent
-    mouseTransparent = true
-    visible <== !instructionScreenVisible
-  }
-
-  /** The placeholder which models the rectangular level */
-  val rectangularLevelPlaceholder: Rectangle = new Rectangle() {
-    width <== rectangularLevelBuilder.levelWidth
-    height <== rectangularLevelBuilder.levelHeight
-    x <== rectangularLevelBuilder.xCenter - rectangularLevelBuilder.levelWidth / 2 + HalfWindowWidth
-    y <== rectangularLevelBuilder.yCenter - rectangularLevelBuilder.levelHeight / 2 + HalfWindowHeight
-    stroke = Color.White
-    strokeWidth = 2.0
-    fill = Color.Transparent
-    mouseTransparent = true
-    visible <== !instructionScreenVisible
-  }
-
-  /** The currently visible level placeholder */
-  var currentLevelPlaceholder: Shape = circularLevelPlaceholder
 
   /** The placeholder which follows the user mouse and changes appearance on EntityType change */
   val entityPlaceholder: Circle = new Circle() {
@@ -279,7 +214,7 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
   }
 
   /** The main editor elements */
-  val editorElements = ListBuffer(background, mainContainer, entityPlaceholder, currentLevelPlaceholder, instructionContainer.instructionScreen)
+  val editorElements: ListBuffer[Node] = ListBuffer(background, mainContainer, entityPlaceholder, editorLevelTypeContainer.currentLevelPlaceholder, instructionContainer.instructionScreen)
   content = editorElements
 
   /** Save level procedure */
@@ -298,10 +233,7 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
         } else {
           /** The name is valid, we have to retrieve the elements */
           /** Level */
-          val level: MapShape = levelType.value match {
-            case MapShapeType.Circle => circularLevelBuilder.create()
-            case MapShapeType.Rectangle => rectangularLevelBuilder.create()
-          }
+          val level: MapShape = editorLevelTypeContainer.createLevel()
           /** Victory rules */
           val victoryRules = victoryRule.value
           /** Collision rules */
