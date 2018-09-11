@@ -7,8 +7,8 @@ import scalafx.scene.image.Image
   */
 object ImageLoader extends Loader[String, Image] {
 
-  /**
-    * This method retrieves an Image by its path.
+  /** This method retrieves an Image by its path.
+    *
     * @param path the Image path
     * @return the Image
     */

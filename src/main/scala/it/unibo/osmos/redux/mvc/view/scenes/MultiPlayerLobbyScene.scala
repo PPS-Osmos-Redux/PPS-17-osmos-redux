@@ -53,19 +53,13 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     columns ++= List(
       new TableColumn[UserWithProperties, String]() {
         text = "Username"
-        cellValueFactory = {
-          _.value.username
-        }
+        cellValueFactory = _.value.username
       }, new TableColumn[UserWithProperties, String]() {
         text = "IP"
-        cellValueFactory = {
-          _.value.ip
-        }
+        cellValueFactory = _.value.ip
       }, new TableColumn[UserWithProperties, Int]() {
         text = "Port"
-        cellValueFactory = p => {
-          new ObjectProperty[Int](this, "Port", p.value.port.value)
-        }
+        cellValueFactory = p => new ObjectProperty[Int](this, "Port", p.value.port.value)
       }
     )
   }
