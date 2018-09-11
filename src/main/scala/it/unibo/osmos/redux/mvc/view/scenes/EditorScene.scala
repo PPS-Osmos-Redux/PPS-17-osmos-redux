@@ -193,43 +193,7 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
     }
   }
 
-  /** Save level procedure */
-  private def saveLevel(): Unit = {
-    /** We show a confirmation dialog in which we ask for a name */
-    val dialog: TextInputDialog = new TextInputDialog("") {
-      headerText = "Insert your new level name"
-    }
-    val levelName = dialog.showAndWait()
-    levelName match {
-      case Some(name) =>
 
-        /** Check if the name is empty */
-        if (name isEmpty) {
-          AlertFactory.createErrorAlert("Error", "The level name cannot be empty").showAndWait()
-        } else {
-          /** The name is valid, we have to retrieve the elements */
-          /** Level */
-          val level: MapShape = levelType.value match {
-            case MapShapeType.Circle => circularLevelBuilder.create()
-            case MapShapeType.Rectangle => rectangularLevelBuilder.create()
-          }
-          /** Victory rules */
-          val victoryRules = victoryRule.value
-          /** Collision rules */
-          val collisionRules = collisionRule.value
-
-          /** Save the level */
-          listener.onSaveLevel(name, level, victoryRules, collisionRules, builtEntities, {
-            /** The level has been created */
-            case true => AlertFactory.createConfirmationAlert("Success", "The custom level has been successfully saved").showAndWait()
-            /** We show an alert */
-            case false => AlertFactory.createErrorAlert("Error", "The custom level could not be made").showAndWait()
-          })
-        }
-
-      case _ =>
-    }
-  }
 
   /** The placeholder which models the circular level */
   val circularLevelPlaceholder: Circle = new Circle() {
@@ -317,6 +281,44 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
   /** The main editor elements */
   val editorElements = ListBuffer(background, mainContainer, entityPlaceholder, currentLevelPlaceholder, instructionContainer.instructionScreen)
   content = editorElements
+
+  /** Save level procedure */
+  private def saveLevel(): Unit = {
+    /** We show a confirmation dialog in which we ask for a name */
+    val dialog: TextInputDialog = new TextInputDialog("") {
+      headerText = "Insert your new level name"
+    }
+    val levelName = dialog.showAndWait()
+    levelName match {
+      case Some(name) =>
+
+        /** Check if the name is empty */
+        if (name isEmpty) {
+          AlertFactory.createErrorAlert("Error", "The level name cannot be empty").showAndWait()
+        } else {
+          /** The name is valid, we have to retrieve the elements */
+          /** Level */
+          val level: MapShape = levelType.value match {
+            case MapShapeType.Circle => circularLevelBuilder.create()
+            case MapShapeType.Rectangle => rectangularLevelBuilder.create()
+          }
+          /** Victory rules */
+          val victoryRules = victoryRule.value
+          /** Collision rules */
+          val collisionRules = collisionRule.value
+
+          /** Save the level */
+          listener.onSaveLevel(name, level, victoryRules, collisionRules, builtEntities, {
+            /** The level has been created */
+            case true => AlertFactory.createConfirmationAlert("Success", "The custom level has been successfully saved").showAndWait()
+            /** We show an alert */
+            case false => AlertFactory.createErrorAlert("Error", "The custom level could not be made").showAndWait()
+          })
+        }
+
+      case _ =>
+    }
+  }
 
 }
 

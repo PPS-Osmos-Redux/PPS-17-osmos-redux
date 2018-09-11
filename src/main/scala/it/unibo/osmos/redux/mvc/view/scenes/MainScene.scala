@@ -103,7 +103,10 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
 
   override def onSettingsClick(): Unit = listener.onSettingsClick()
 
-  override def onExitClick(): Unit = System.exit(0)
+  override def onExitClick(): Unit = {
+    ActorSystemHolder.kill()
+    System.exit(0)
+  }
 
   override def onBackClick(): Unit = parentStage.scene = this
 
