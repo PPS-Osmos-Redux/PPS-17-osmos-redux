@@ -7,6 +7,7 @@ import it.unibo.osmos.redux.mvc.view.ViewConstants
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Colors._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
+import it.unibo.osmos.redux.mvc.view.ViewConstants.Level._
 import it.unibo.osmos.redux.mvc.view.components.level.LevelScreen
 import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextListener}
 import it.unibo.osmos.redux.mvc.view.drawables._
@@ -58,12 +59,6 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     var paused: BooleanProperty = BooleanProperty(false)
     /** Value indicating when the user can execute actions like pausing the game or moving around */
     var inputEnabled = false
-    /** Scrolling delta */
-    val delta = 1.1
-    /** Max zoom out scale */
-    val maxZoomOutScale = 1.0
-    /** Max zoom in scale */
-    val maxZoomInScale = 1.2
   }
 
   /** Level player variables */
@@ -204,13 +199,13 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     /** Retrieving the current scale */
     var scale = canvas.scaleY.value
     if (scrollEvent.getDeltaY < 0) {
-      scale /= LevelState.delta
+      scale /= ScrollingDelta
     } else {
-      scale *= LevelState.delta
+      scale *= ScrollingDelta
     }
 
     /** Limiting the scale */
-    scale = MathUtils.clamp(scale, LevelState.maxZoomOutScale, LevelState.maxZoomInScale)
+    scale = MathUtils.clamp(scale, MaxZoomOutScale, MaxZoomInScale)
 
     /** Updating the canvas scale */
     canvas.scaleX = scale

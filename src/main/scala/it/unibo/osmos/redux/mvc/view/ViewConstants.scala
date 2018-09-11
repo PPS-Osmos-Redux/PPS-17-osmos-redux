@@ -27,6 +27,15 @@ object ViewConstants {
     val StartingLevelHeight: Double = DefaultWindowHeight / 2
   }
 
+  object Level {
+    /** Scrolling delta */
+    val ScrollingDelta = 1.1
+    /** Max zoom out scale */
+    val MaxZoomOutScale = 1.0
+    /** Max zoom in scale */
+    val MaxZoomInScale = 1.2
+  }
+
   /** Entities constants */
   object Entities {
     /** Colors constants */
