@@ -76,17 +76,8 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     children = Seq(usersTable)
   }
 
-  /** Exit lobby button */
-  /* private val exitLobby = new StyledButton("Exit Lobby") {
-    onAction = _ => lobbyContext match {
-      // We notify the lobby observer that we exited the lobby
-      case Some(lc) =>
-        lc notifyLobbyEvent LobbyEventWrapper(AbortLobby, Some(user))
-        upperSceneListener.onLobbyExited()
-      case _ =>
-    }
-  }*/
-
+  /** Back button */
+  setText("Exit Lobby")
   setAdditionalAction(() => lobbyContext match {
     /** We notify the lobby observer that we exited the lobby */
     case Some(lc) =>
