@@ -8,7 +8,10 @@ import it.unibo.osmos.redux.mvc.view.components.level.LevelScreen.LevelScreenImp
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import it.unibo.osmos.redux.mvc.view.scenes.BaseScene
 import scalafx.geometry.{Insets, Pos}
+import scalafx.scene.effect.DropShadow
 import scalafx.scene.layout.HBox
+import scalafx.scene.paint.Color
+import scalafx.scene.text.Text
 
 /** Container holding a single legend screen showing the game entities
   *
@@ -53,9 +56,19 @@ class GameLegendScreen(val scene: BaseScene) {
     .withNode(firstBox)
     .withNode(secondBox)
     .withNode(thirdBox)
+    .withNode(new Text("Press [L] to show/hide the game legend") {
+      style = "-fx-font-size: 20pt"
+      fill = Color.White
+      effect = new DropShadow {
+        color = Color.Blue
+      }
+    })
     .build()
 
-  /** Legend screen getter */
+  /** Legend screen getter
+    *
+    * @return the legend screen
+    */
   def legendScreen: LevelScreenImpl = _legendScreen
 
 }

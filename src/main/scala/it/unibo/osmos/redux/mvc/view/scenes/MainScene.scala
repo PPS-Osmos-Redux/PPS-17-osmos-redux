@@ -16,7 +16,11 @@ import scalafx.scene.paint.Color
 import scalafx.scene.text.Text
 import scalafx.stage.Stage
 
-/** Opening scene, showing the menu and the menu bar */
+/** Opening scene, showing the menu and the menu bar
+  *
+  * @param parentStage the parent stage
+  * @param listener the MainSceneListener
+  */
 class MainScene(override val parentStage: Stage, val listener: MainSceneListener) extends BaseScene(parentStage)
   with MainMenuCenterBoxListener with UpperMultiPlayerSceneListener with BackClickListener {
 
@@ -54,12 +58,12 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
     background.opacity = if (controlsScreenVisible.value) 0.3 else 1.0
   }
 
-  /* Requesting a structured layout */
+  /** Requesting a structured layout */
   private val rootLayout: BorderPane = new BorderPane {
     prefWidth <== parentStage.width
     prefHeight <== parentStage.height
     visible <== !controlsScreenVisible and !legendScreenVisible
-    /* Setting the upper MenuBar */
+    /** Setting the upper MenuBar */
     center = new MainMenuCenterBox(MainScene.this)
     bottom = new VBox(4.0, new Text("Press [C] to show/hide the game controls") {
       style = "-fx-font-size: 20pt"
