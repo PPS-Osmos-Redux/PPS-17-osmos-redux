@@ -1,6 +1,5 @@
 package it.unibo.osmos.redux.mvc.view
 
-import it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowHeight
 import scalafx.scene.paint.Color
 import scalafx.stage.Screen
 

@@ -8,20 +8,24 @@ import scalafx.application.JFXApp
 /**
   * Primary stage which holds and manages all the different game scenes
   */
-trait OsmosReduxPrimaryStage extends JFXApp.PrimaryStage {
-
-}
+trait OsmosReduxPrimaryStage extends JFXApp.PrimaryStage
 
 /**
   * Companion object
   */
 object OsmosReduxPrimaryStage {
+  /** Creates a new OsmosReduxPrimaryStage, the application root stage
+    *
+    * @param listener the PrimaryStageListener
+    * @param windowWidth the window width (which is equal to the screen width by default)
+    * @param windowHeight the window width (which is equal to the screen width by default)
+    * @return an OsmosReduxPrimaryStageImpl instance
+    */
   def apply(listener: PrimaryStageListener,
             windowWidth: Double = DefaultWindowWidth,
             windowHeight: Double = DefaultWindowHeight): OsmosReduxPrimaryStageImpl = new OsmosReduxPrimaryStageImpl(listener, windowWidth, windowHeight)
 
-  /**
-    * Primary stage implementation
+  /** Primary stage implementation
     *
     * @param listener          the primary stage listener
     * @param windowWidth       the window width
@@ -50,7 +54,7 @@ object OsmosReduxPrimaryStage {
 
     override def onSettingsClick(): Unit = scene = new SettingsScene(this, listener, mainScene)
 
-    /* Stopping the game when the user closes the window */
+    /** Stopping the game when the user closes the window */
     onCloseRequest = _ => System.exit(0)
   }
 
@@ -61,6 +65,4 @@ object OsmosReduxPrimaryStage {
   */
 trait PrimaryStageListener extends LevelSelectionSceneListener with EditorLevelSelectionSceneListener
   with MultiPlayerSceneListener with MultiPlayerLobbySceneListener with MultiPlayerLevelSelectionSceneListener
-  with SettingsSceneListener with StatsSceneListener {
-
-}
+  with SettingsSceneListener with StatsSceneListener
