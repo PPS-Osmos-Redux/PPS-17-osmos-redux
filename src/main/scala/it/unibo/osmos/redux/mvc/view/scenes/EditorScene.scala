@@ -320,13 +320,6 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
 
 }
 
-/** Trait used by EditorScene to notify an event to the upper scene */
-trait UpperEditorSceneListener {
-
-  /** Called once when the user quits the editor */
-  def onExitEditor()
-}
-
 /** Trait which gets notified when a EditorScene event occurs */
 trait EditorSceneListener {
 
