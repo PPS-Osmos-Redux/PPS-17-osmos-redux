@@ -18,8 +18,10 @@ class EntityDescriptionBox(val image: Image, val description: String) extends HB
   minWidth = HalfWindowWidth
   maxWidth = HalfWindowWidth
 
+  /** The image view */
   private val imageView = new ImageView(image)
 
+  /** The image description text*/
   private val text = new Text(description) {
     textAlignment = TextAlignment.Left
     font = Font.font("Verdana", 20.0)
