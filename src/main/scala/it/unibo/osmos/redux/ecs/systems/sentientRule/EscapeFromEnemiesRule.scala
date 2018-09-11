@@ -12,7 +12,7 @@ import scala.collection.mutable.ListBuffer
   *
   * @param enemies list of possible enemies
   */
-case class EscapeFromEnemiesRule(enemies: ListBuffer[SentientEnemyProperty]) extends RuleWithEnemies(enemies) {
+case class EscapeFromEnemiesRule(enemies: ListBuffer[SentientEnemyProperty]) extends SentientRule {
 
   /*min value of distance between the entity before divide their unitVector for distance,
     so the nearest entities have greater weight*/
