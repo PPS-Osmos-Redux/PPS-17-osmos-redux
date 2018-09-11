@@ -22,7 +22,7 @@ import scalafx.stage.Stage
   * @param listener the MainSceneListener
   */
 class MainScene(override val parentStage: Stage, val listener: MainSceneListener) extends BaseScene(parentStage)
-  with MainMenuCenterBoxListener with UpperMultiPlayerSceneListener with BackClickListener {
+  with MainMenuCenterBoxListener with BackClickListener {
 
   MusicPlayer.play(SoundsType.menu)
 
@@ -104,11 +104,6 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
   override def onSettingsClick(): Unit = listener.onSettingsClick()
 
   override def onExitClick(): Unit = System.exit(0)
-
-  override def onMultiPlayerSceneBackClick(): Unit = {
-    ActorSystemHolder.clearActors()
-    parentStage.scene = this
-  }
 
   override def onBackClick(): Unit = parentStage.scene = this
 

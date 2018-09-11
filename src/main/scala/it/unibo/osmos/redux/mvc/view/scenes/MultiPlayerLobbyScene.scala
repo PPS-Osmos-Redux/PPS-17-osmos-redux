@@ -5,6 +5,7 @@ import it.unibo.osmos.redux.mvc.view.components.custom.StyledButton
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.{User, UserWithProperties}
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, LobbyContextListener, MultiPlayerLevelContext}
 import it.unibo.osmos.redux.mvc.view.events.{AbortLobby, LobbyEventWrapper}
+import it.unibo.osmos.redux.utils.Logger
 import scalafx.application.Platform
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 import scalafx.collections.ObservableBuffer
@@ -18,12 +19,12 @@ import scalafx.stage.Stage
   *
   * @param parentStage           the parent stage
   * @param listener              the MultiPlayerLobbySceneListener
-  * @param upperSceneListener    the UpperMultiPlayerLobbySceneListener
-  * @param user                   the user who requested to enter the lobby
+  * @param backClickListener     the BackClickListener
+  * @param user                  the user who requested to enter the lobby
   */
 class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: MultiPlayerLobbySceneListener,
-                            val upperSceneListener: UpperMultiPlayerLobbySceneListener, val user: User)
-  extends BaseScene(parentStage) with LobbyContextListener {
+                            val backClickListener: BackClickListener, val user: User)
+  extends DefaultBackScene(parentStage, backClickListener) with LobbyContextListener {
 
   /** The lobby context, created with the MultiPlayerLobbyScene. It still needs to be properly setup */
   private var _lobbyContext: Option[LobbyContext] = Option.empty
@@ -76,15 +77,23 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
   }
 
   /** Exit lobby button */
-  private val exitLobby = new StyledButton("Exit Lobby") {
+  /* private val exitLobby = new StyledButton("Exit Lobby") {
     onAction = _ => lobbyContext match {
-      /** We notify the lobby observer that we exited the lobby */
+      // We notify the lobby observer that we exited the lobby
       case Some(lc) =>
         lc notifyLobbyEvent LobbyEventWrapper(AbortLobby, Some(user))
         upperSceneListener.onLobbyExited()
       case _ =>
     }
-  }
+  }*/
+
+  setAdditionalAction(() => lobbyContext match {
+    /** We notify the lobby observer that we exited the lobby */
+    case Some(lc) =>
+      lc notifyLobbyEvent LobbyEventWrapper(AbortLobby, Some(user))
+      Logger.log("Notifying exit lobby")("MultiPlayerLobbyScene")
+    case _ =>
+  })
 
   /** Start game button */
   private val startGame = new Button("Start Game") {
@@ -108,7 +117,7 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     alignmentInParent = Pos.Center
     /** Setting the upper MenuBar */
     center = container
-    private val bottomContainer = new HBox(30.0, exitLobby) {
+    private val bottomContainer = new HBox(30.0, goBack) {
       alignment = Pos.Center
     }
     if (user.isServer) bottomContainer.children.add(startGame)
@@ -142,17 +151,7 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     })
   }
 
-  override def onLobbyAborted(): Unit = Platform.runLater({upperSceneListener.onLobbyExited()})
-
-}
-
-/**
-  * Trait used by UpperMultiPlayerLobbyScene to notify an event to the upper scene
-  */
-trait UpperMultiPlayerLobbySceneListener {
-
-  /** Called when the user exits from the lobby */
-  def onLobbyExited()
+  override def onLobbyAborted(): Unit = Platform.runLater({backClickListener.onBackClick()})
 
 }
 
