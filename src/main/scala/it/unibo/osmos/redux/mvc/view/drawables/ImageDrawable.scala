@@ -7,8 +7,8 @@ import scalafx.scene.image.Image
   */
 trait ImageDrawable extends Drawable {
 
-  /**
-    * The image stored in the Drawable
+  /** The image stored in the Drawable
+    *
     * @return the image
     */
   def image: Image
