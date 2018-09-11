@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.stages
 
-import it.unibo.osmos.redux.mvc.controller.manager.files.StyleFileManager
+import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
 import it.unibo.osmos.redux.mvc.view.scenes._
 import scalafx.application.JFXApp
@@ -55,7 +55,10 @@ object OsmosReduxPrimaryStage {
     override def onSettingsClick(): Unit = scene = new SettingsScene(this, listener, mainScene)
 
     /** Stopping the game when the user closes the window */
-    onCloseRequest = _ => System.exit(0)
+    onCloseRequest = _ => {
+      ActorSystemHolder.kill()
+      System.exit(0)
+    }
   }
 
 }

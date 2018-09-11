@@ -1,5 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
+import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.custom.StyledButton
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.{User, UserWithProperties}
@@ -76,7 +77,9 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     /** We notify the lobby observer that we exited the lobby */
     case Some(lc) =>
       lc notifyLobbyEvent LobbyEventWrapper(AbortLobby, Some(user))
+      ActorSystemHolder.clearActors()
       Logger.log("Notifying exit lobby")("MultiPlayerLobbyScene")
+
     case _ =>
   })
 
