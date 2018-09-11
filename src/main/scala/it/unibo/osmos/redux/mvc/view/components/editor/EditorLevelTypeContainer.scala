@@ -10,7 +10,7 @@ import scalafx.scene.layout.{StackPane, VBox}
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.{Circle, Rectangle, Shape}
 
-/** This class holds those variables and view component responsible to let the user choose the level type in the EditorScene
+/** This class holds those variables and view components responsible to let the user choose the level type in the EditorScene
   *
   * @param editorLevelTypeContainerListener the listener
   * @param isContainerVisible BooleanBinding which manages the panels visibility
@@ -68,7 +68,7 @@ class EditorLevelTypeContainer(editorLevelTypeContainerListener: EditorLevelType
   def levelTypeContainer: VBox = _levelTypeContainer
 
   /** The placeholder which models the circular level */
-  val circularLevelPlaceholder: Circle = new Circle() {
+  private val circularLevelPlaceholder: Circle = new Circle() {
     centerX <== circularLevelBuilder.xCenter + HalfWindowWidth
     centerY <== circularLevelBuilder.yCenter + HalfWindowHeight
     radius <== circularLevelBuilder.radius
@@ -80,7 +80,7 @@ class EditorLevelTypeContainer(editorLevelTypeContainerListener: EditorLevelType
   }
 
   /** The placeholder which models the rectangular level */
-  val rectangularLevelPlaceholder: Rectangle = new Rectangle() {
+  private val rectangularLevelPlaceholder: Rectangle = new Rectangle() {
     width <== rectangularLevelBuilder.levelWidth
     height <== rectangularLevelBuilder.levelHeight
     x <== rectangularLevelBuilder.xCenter - rectangularLevelBuilder.levelWidth / 2 + HalfWindowWidth

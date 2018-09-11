@@ -61,12 +61,6 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
   private val collisionRule: ObjectProperty[CollisionRules.Value] = ObjectProperty(CollisionRules.bouncing)
   private val collisionRuleBox = new TitledComboBox[CollisionRules.Value]("Collision Rule:", CollisionRules.values.toSeq, cr => collisionRule.value = cr)
 
-  /** Entity Type */
-  private val entityType: ObjectProperty[EntityType.Value] = ObjectProperty(EntityType.Matter)
-  private val entityComboBox = new TitledComboBox[EntityType.Value]("Entity Type:", EntityType.values.toSeq, et => {
-    entityType.value = et
-  })
-
   /** Level Type, encapsulated in a container with a listener providing reaction to change */
   private val editorLevelTypeContainer = new EditorLevelTypeContainer((oldShape, newShape) => {
     editorElements -= oldShape
@@ -74,57 +68,15 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
     content = editorElements
   }, !instructionScreenVisible)
 
-  /** Pane containing the field to configure the entities */
-  private val cellEntityCreator: CellEntityCreator = new CellEntityCreator
-  /** Pane containing the field to configure the gravity entities */
-  private val gravityCellEntityCreator: GravityCellEntityCreator = new GravityCellEntityCreator {
-    weight.value = 1.0
-    visible = false
-  }
-  /** Pane containing the field to configure the sentient entities */
-  private val sentientCellEntityCreator: CellEntityCreator = new SentientCellEntityCreator {
-    visible = false
-  }
-  /** Pane containing the field to configure the player entities */
-  private val playerCellEntityCreator: CellEntityCreator = new PlayerCellEntityCreator {
-    visible = false
-  }
-
-  /** The entity builders */
-  private val entityBuilders = Seq(cellEntityCreator, gravityCellEntityCreator, sentientCellEntityCreator, playerCellEntityCreator)
-
-  /** Returns the currently visible cell entity creator
-    *
-    * @return the currently visible cell entity creator
-    */
-  private def getVisibleCellBuilder: CellEntityCreator = entityBuilders.filter((b) => b.visible.value).head
-
-  /** The entity container */
-  private val entityContainer: VBox = new VBox(1.0) {
-    margin = Insets(10.0)
-
-    /** Left builder seq */
-    private val builderSeq = entityBuilders
-
-    /** putting the builder one on top of the other */
-    private val verticalStackPane = new StackPane() {
-      children = builderSeq
-      entityType.onChange({
-        builderSeq.foreach(cellBuilder => cellBuilder.visible = false)
-        entityType.value match {
-          case EntityType.Matter => cellEntityCreator.visible = true; cellEntityCreator.entityType_=(EntityType.Matter)
-          case EntityType.AntiMatter => cellEntityCreator.visible = true; cellEntityCreator.entityType_=(EntityType.AntiMatter)
-          case EntityType.Attractive => gravityCellEntityCreator.visible = true; gravityCellEntityCreator.entityType_=(EntityType.Attractive)
-          case EntityType.Repulsive => gravityCellEntityCreator.visible = true; gravityCellEntityCreator.entityType_=(EntityType.Repulsive)
-          case EntityType.Sentient => sentientCellEntityCreator.visible = true; sentientCellEntityCreator.entityType_=(EntityType.Sentient)
-          case EntityType.Controlled => playerCellEntityCreator.visible = true; playerCellEntityCreator.entityType_=(EntityType.Controlled)
-          case _ => cellEntityCreator.visible = true; cellEntityCreator.entityType_=(EntityType.Matter)
-        }
-      })
-    }
-
-    children = List(entityComboBox.root, verticalStackPane)
-  }
+  /** Level Type, encapsulated in a container with a listener providing reaction to change and to mouse events */
+  private val editorEntityTypeContainer = new EditorEntityTypeContainer((newShape, newEntity) => {
+    /** Insert an element to be shown */
+    editorElements += newShape
+    /** Update the scene content */
+    content = editorElements
+    /** Insert an entity to the built entities list */
+    builtEntities += newEntity
+  })
 
   /** The main container, wrapping the other panes */
   private val mainContainer: BorderPane = new BorderPane() {
@@ -132,7 +84,7 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
     prefHeight <== parentStage.height
     /** We don't show the container if the instructions are visible */
     visible <== !instructionScreenVisible
-    left = entityContainer
+    left = editorEntityTypeContainer.entityContainer
     right = new VBox(5.0, victoryRuleBox.root, collisionRuleBox.root, editorLevelTypeContainer.levelTypeContainer) {
       margin = Insets(10.0)
       padding = Insets(0.0, 10.0, 0.0, 0.0)
@@ -157,64 +109,29 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
     }
   }
 
-
-  /** The placeholder which follows the user mouse and changes appearance on EntityType change */
-  val entityPlaceholder: Circle = new Circle() {
-    fill.value = new ImagePattern(ImageLoader.getImage(CellTexture))
-    radius = getVisibleCellBuilder.radius.value
-
-    /** We set a min and max for the size */
-    onScroll = scroll => {
-      radius = radius.value + (scroll.getDeltaY / 10) min 150 max 10
-      getVisibleCellBuilder.radius.value = radius.value
-    }
-
-    entityType.onChange(entityType.value match {
-      case EntityType.Matter => fill.value = new ImagePattern(ImageLoader.getImage(CellTexture))
-      case EntityType.AntiMatter => fill.value = new ImagePattern(ImageLoader.getImage(AntiMatterTexture))
-      case EntityType.Attractive => fill.value = new ImagePattern(ImageLoader.getImage(AttractiveTexture))
-      case EntityType.Repulsive => fill.value = new ImagePattern(ImageLoader.getImage(RepulsiveTexture))
-      case EntityType.Sentient => fill.value = new ImagePattern(ImageLoader.getImage(SentientTexture))
-      case EntityType.Controlled => fill.value = new ImagePattern(ImageLoader.getImage(ControllerTexture))
-      case _ => fill.value = new ImagePattern(ImageLoader.getImage(CellTexture))
-    })
-
-  }
-
   /** On control key pressed we hide the placeholder to let the user insert values in the panes */
-  onKeyPressed = key => key.getCode match {
-    case KeyCode.H => changeInstructionScreenState(); entityPlaceholder.visible = false
-    case KeyCode.CONTROL => if (!instructionScreenVisible.value) entityPlaceholder.visible = !entityPlaceholder.visible.value
-    case _ =>
-  }
+  onKeyPressed = key => {
 
-  /** On mouse moved, we update the builder */
-  onMouseMoved = e => {
-    entityPlaceholder.centerX.value = e.getX
-    entityPlaceholder.centerY.value = e.getY
-    val visibleBuilder = getVisibleCellBuilder
-    visibleBuilder.x.value = e.getX - HalfWindowWidth
-    visibleBuilder.y.value = e.getY - HalfWindowHeight
-  }
-
-  /** On mouse clicked, we parse the placeholder values and created a new element */
-  onMouseClicked = _ => if (entityPlaceholder.visible.value) {
-    /** Insert an element to be shown */
-    editorElements += new Circle {
-      fill.value_=(entityPlaceholder.fill.value)
-      centerX = entityPlaceholder.centerX.value
-      centerY = entityPlaceholder.centerY.value
-      radius = entityPlaceholder.radius.value
-      effect.value_=(entityPlaceholder.effect.value)
+    key.getCode match {
+      case KeyCode.H => changeInstructionScreenState(); editorEntityTypeContainer.setEntityPlaceholderVisibility(false)
+      case KeyCode.CONTROL => if (!instructionScreenVisible.value) editorEntityTypeContainer.toggleEntityPlaceholder()
+      case _ =>
     }
-    content = editorElements
-
-    /** Insert an entity to the built entities list */
-    builtEntities += getVisibleCellBuilder create()
   }
+
+  /** On mouse moved, we ask the editorEntityTypeContainer to manage the event */
+  onMouseMoved = e => editorEntityTypeContainer.manageMouseMovedEvent(e)
+
+  /** On mouse clicked, we ask the editorEntityTypeContainer to manage the event and create a new element */
+  onMouseClicked = e => editorEntityTypeContainer.manageMouseClickedEvent(e)
 
   /** The main editor elements */
-  val editorElements: ListBuffer[Node] = ListBuffer(background, mainContainer, entityPlaceholder, editorLevelTypeContainer.currentLevelPlaceholder, instructionContainer.instructionScreen)
+  val editorElements: ListBuffer[Node] = ListBuffer(
+    background,
+    mainContainer,
+    editorEntityTypeContainer.entityPlaceholder,
+    editorLevelTypeContainer.currentLevelPlaceholder,
+    instructionContainer.instructionScreen)
   content = editorElements
 
   /** Save level procedure */
@@ -226,7 +143,6 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
     val levelName = dialog.showAndWait()
     levelName match {
       case Some(name) =>
-
         /** Check if the name is empty */
         if (name isEmpty) {
           AlertFactory.createErrorAlert("Error", "The level name cannot be empty").showAndWait()
@@ -247,7 +163,6 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
             case false => AlertFactory.createErrorAlert("Error", "The custom level could not be made").showAndWait()
           })
         }
-
       case _ =>
     }
   }
