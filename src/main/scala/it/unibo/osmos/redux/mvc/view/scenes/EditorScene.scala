@@ -7,13 +7,14 @@ import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
 import it.unibo.osmos.redux.mvc.view.components.custom.{AlertFactory, StyledButton, TitledComboBox}
 import it.unibo.osmos.redux.mvc.view.components.editor._
+import it.unibo.osmos.redux.mvc.view.components.instructions.EditorInstructionScreen
 import it.unibo.osmos.redux.mvc.view.components.level.LevelScreen
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import javafx.scene.input.KeyCode
 import javafx.scene.paint.ImagePattern
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 import scalafx.geometry.{Insets, Pos}
-import scalafx.scene.control.{Alert, TextInputDialog}
+import scalafx.scene.control.TextInputDialog
 import scalafx.scene.effect.DropShadow
 import scalafx.scene.image.ImageView
 import scalafx.scene.layout._
@@ -42,16 +43,9 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
 
   /** Boolean binding with the instructionScreen */
   private val instructionScreenVisible: BooleanProperty = BooleanProperty(false)
-  /** The instruction screen */
-  private val instructionScreen = LevelScreen.Builder(this)
-    .withText("Instructions", 50, Color.White)
-    .withText("Press [Ctrl] to toggle the placeholder visibility")
-    .withText("Configure the desired entities on the left panel")
-    .withText("Configure the desired level, victory rule and collision rule on the right panel")
-    .withText("When the placeholder is visible, click to insert a new entity on the level")
-    .withText("Press [H] to show/hide the instructions screen", 20, Color.White)
-    .build()
-  instructionScreen.visible <== instructionScreenVisible
+  /** The instruction screen container */
+  private val instructionContainer = new EditorInstructionScreen(this)
+  instructionContainer.instructionScreen.visible <== instructionScreenVisible
 
   /** This method makes the instruction screen appear/disappear */
   private def changeInstructionScreenState(): Unit = {
@@ -321,7 +315,7 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
   }
 
   /** The main editor elements */
-  val editorElements = ListBuffer(background, mainContainer, entityPlaceholder, currentLevelPlaceholder, instructionScreen)
+  val editorElements = ListBuffer(background, mainContainer, entityPlaceholder, currentLevelPlaceholder, instructionContainer.instructionScreen)
   content = editorElements
 
 }

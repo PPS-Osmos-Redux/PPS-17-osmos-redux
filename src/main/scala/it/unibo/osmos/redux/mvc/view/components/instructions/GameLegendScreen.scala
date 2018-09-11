@@ -56,12 +56,9 @@ class GameLegendScreen(val scene: BaseScene) {
     .withNode(firstBox)
     .withNode(secondBox)
     .withNode(thirdBox)
-    .withNode(new Text("Press [L] to show/hide the game legend") {
+    .withNode(new Text("Press [L] to hide the game legend") {
       style = "-fx-font-size: 20pt"
       fill = Color.White
-      effect = new DropShadow {
-        color = Color.Blue
-      }
     })
     .build()
 
