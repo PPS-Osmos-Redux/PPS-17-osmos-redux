@@ -7,8 +7,8 @@ import it.unibo.osmos.redux.mvc.view.events.{EventWrapperObserver, GameStateEven
   */
 trait GameStateHolder extends EventWrapperObserver[GameStateEventWrapper] {
 
-  /**
-    * A generic definition of the game state
+  /** A generic definition of the game state
+    *
     * @return a GameStateEventWrapper
     */
   def gameCurrentState: GameStateEventWrapper
