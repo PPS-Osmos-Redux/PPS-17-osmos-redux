@@ -5,10 +5,10 @@ import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
 import it.unibo.osmos.redux.mvc.view.components.custom.TitledComboBox
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
+import javafx.scene.input.MouseEvent
 import javafx.scene.paint.ImagePattern
 import scalafx.beans.property.ObjectProperty
 import scalafx.geometry.Insets
-import javafx.scene.input.MouseEvent
 import scalafx.scene.layout.{StackPane, VBox}
 import scalafx.scene.shape.{Circle, Shape}
 

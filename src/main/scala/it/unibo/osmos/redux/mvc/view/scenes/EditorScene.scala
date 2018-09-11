@@ -1,15 +1,13 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
-import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityType}
+import it.unibo.osmos.redux.ecs.entities.CellEntity
 import it.unibo.osmos.redux.mvc.controller.levels.structure.{CollisionRules, MapShape, VictoryRules}
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
-import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
 import it.unibo.osmos.redux.mvc.view.components.custom.{AlertFactory, StyledButton, TitledComboBox}
 import it.unibo.osmos.redux.mvc.view.components.editor._
 import it.unibo.osmos.redux.mvc.view.components.instructions.EditorInstructionScreen
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import javafx.scene.input.KeyCode
-import javafx.scene.paint.ImagePattern
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Node
@@ -18,7 +16,6 @@ import scalafx.scene.effect.DropShadow
 import scalafx.scene.image.ImageView
 import scalafx.scene.layout._
 import scalafx.scene.paint.Color
-import scalafx.scene.shape.Circle
 import scalafx.scene.text.Text
 import scalafx.stage.Stage
 
@@ -110,13 +107,10 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
   }
 
   /** On control key pressed we hide the placeholder to let the user insert values in the panes */
-  onKeyPressed = key => {
-
-    key.getCode match {
-      case KeyCode.H => changeInstructionScreenState(); editorEntityTypeContainer.setEntityPlaceholderVisibility(false)
-      case KeyCode.CONTROL => if (!instructionScreenVisible.value) editorEntityTypeContainer.toggleEntityPlaceholder()
-      case _ =>
-    }
+  onKeyPressed = key => key.getCode match {
+    case KeyCode.H => changeInstructionScreenState(); editorEntityTypeContainer.setEntityPlaceholderVisibility(false)
+    case KeyCode.CONTROL => if (!instructionScreenVisible.value) editorEntityTypeContainer.toggleEntityPlaceholder()
+    case _ =>
   }
 
   /** On mouse moved, we ask the editorEntityTypeContainer to manage the event */
