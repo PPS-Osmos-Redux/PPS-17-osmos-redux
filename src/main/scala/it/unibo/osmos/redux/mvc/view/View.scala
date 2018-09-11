@@ -19,8 +19,7 @@ import scala.util.{Failure, Success}
 trait View {
 
 
-  /**
-    * Setter. This method sets the reference to the Controller instance
+  /** Setter. This method sets the reference to the Controller instance
     *
     * @param controller the Controller instance
     */
@@ -32,15 +31,15 @@ object View {
 
   def apply(app: JFXApp): View = new ViewImpl(app)
 
-  /**
-    * View implementation, holding the main stage and the current scene
+  /** View implementation, holding the main stage and the current scene
     *
     * @param app a reference to the JFXApp, necessary to the correct setup of the whole application
     */
   class ViewImpl(private val app: JFXApp) extends View with PrimaryStageListener {
 
+    /** Implicit executor */
     implicit val ec: ExecutionContextExecutor = ExecutionContext.global
-
+    /** Setting the primary stage */
     app.stage = OsmosReduxPrimaryStage(this)
     private var controller: Option[Controller] = Option.empty
 
@@ -48,8 +47,7 @@ object View {
       this.controller = Option(controller)
     }
 
-    /**
-      * Utility method that checks if controller is not empty and execute f() if that is the case
+    /** Utility method that checks if controller is not empty and execute f() if that is the case
       *
       * @param f the function which will be executed if controller is not empty
       */
@@ -114,8 +112,7 @@ object View {
       }
     }
 
-    /**
-      * After checking the controller, we ask to enter the lobby asynchronously and call the callback function after the future result
+    /** After checking the controller, we ask to enter the lobby asynchronously and call the callback function after the future result
       *
       * @param user         the user requesting to enter the lobby
       * @param lobbyContext the lobby context, which may be used by the server to configure existing lobby users
