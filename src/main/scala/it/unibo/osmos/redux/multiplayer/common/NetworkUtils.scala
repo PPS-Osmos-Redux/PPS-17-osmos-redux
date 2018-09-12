@@ -39,7 +39,5 @@ object NetworkUtils {
     * @param port The port.
     * @return True, if the port is valid; otherwise false.
     */
-  def validatePort(port: String): Boolean = {
-    port.nonEmpty && port.forall(_.isDigit) && (0 to 65535 contains port.toInt)
-  }
+  def validatePort(port: Int): Boolean = 0 to 65535 contains port
 }

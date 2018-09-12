@@ -59,6 +59,7 @@ class ServerActor(private val server: Server) extends Actor {
         case Some(ref) =>
           //get client info
           val (address, port) = (ref.path.address.host.get, ref.path.address.port.get)
+          //try to add the player to the lobby
           if (server.addPlayerToLobby(ref, BasePlayer(username, address, port))) {
             //send info about the lobby
             sender ! LobbyInfo(server.getLobbyPlayers.map(_.toBasicPlayer))

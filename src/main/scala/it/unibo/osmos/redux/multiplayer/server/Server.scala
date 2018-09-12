@@ -4,7 +4,7 @@ import akka.actor.{ActorRef, PoisonPill}
 import akka.pattern.ask
 import akka.util.Timeout
 import it.unibo.osmos.redux.ecs.entities.{EntityManager, PlayerCellEntity}
-import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
+import it.unibo.osmos.redux.multiplayer.common.{ActorSystemHolder, NetworkUtils}
 import it.unibo.osmos.redux.multiplayer.lobby.GameLobby
 import it.unibo.osmos.redux.multiplayer.players.{BasePlayer, ReferablePlayer}
 import it.unibo.osmos.redux.multiplayer.server.ServerActor._
@@ -323,10 +323,18 @@ object Server {
     override def createLobby(lobbyContext: LobbyContext): Unit = {
       if (status != ServerState.Idle) throw new UnsupportedOperationException(s"Server cannot close lobby because it's in the state: $status")
 
-      lobby = Some(GameLobby(lobbyContext))
+      //retrieve actor system address
       val address = ActorSystemHolder.systemAddress
+      //abort if something is wrong with the system
+      if (!NetworkUtils.validatePort(address.port.getOrElse(-1)) ||
+        !NetworkUtils.validateIPV4Address(address.host.getOrElse(""))) {
+        throw new IllegalStateException("Server cannot create the lobby because the actor system gave invalid address or port.")
+      }
+
+      //Create the lobby
+      lobby = Some(GameLobby(lobbyContext))
       //add the server itself
-      val serverPlayer = BasePlayer(username, address.host.getOrElse("0.0.0.0"), address.port.getOrElse(0))
+      val serverPlayer = BasePlayer(username, address.host.get, address.port.get)
       //let interface to show immediately the server player
       lobbyContext.users = Seq(new User(serverPlayer, true))
       //add himself to the lobby

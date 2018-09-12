@@ -64,6 +64,9 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
     onAction = _ => if (username.value.isEmpty) {
       /** Checking if the user name is empty */
       AlertFactory.createErrorAlert("Error", "Your username cannot be empty").showAndWait()
+    } else if (!NetworkUtils.validateIPV4Address(addressValue.value)) {
+      /** Checking if the specified address is invalid */
+      AlertFactory.createErrorAlert("Error", "The declared address is invalid.").showAndWait()
     } else {
       /** We create the User */
       val user = User(username.value, addressValue.value, portValue.value, isServer = mode.value)
@@ -75,7 +78,6 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
         /** If we are the client */
         goToLobby(user, Option.empty)
       }
-
     }
   }
   private val container: VBox = new VBox(5.0) {

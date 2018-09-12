@@ -8,7 +8,12 @@ import it.unibo.osmos.redux.utils.Constants
 object ActorSystemHolder {
 
   /** Actor System variable, lazily initialized */
-  private lazy val system: ActorSystem = ActorSystem(Constants.MultiPlayer.ActorSystemName, ActorSystemConfigFactory.load())
+  private lazy val system: ActorSystem = {
+    initialized = true
+    ActorSystem(Constants.MultiPlayer.ActorSystemName, ActorSystemConfigFactory.load())
+  }
+  /** Determines whether the lazy system variable have been initialized or not */
+  private var initialized: Boolean = false
 
   /** Gets the actor system.
     *
@@ -43,12 +48,8 @@ object ActorSystemHolder {
   def stopActor(actorRef: ActorRef): Unit = system stop actorRef
 
   /** Clears all the actors of the actor system. */
-  def clearActors(): Unit = {
-    system.actorSelection("/user/*") ! PoisonPill
-  }
+  def clearActors(): Unit = system.actorSelection("/user/*") ! PoisonPill
 
   /** Kills this instance. */
-  def kill(): Unit = {
-    system.terminate()
-  }
+  def kill(): Unit = if (initialized) system.terminate(); initialized = false
 }
