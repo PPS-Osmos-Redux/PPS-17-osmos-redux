@@ -19,12 +19,6 @@ class StatsScene(override val parentStage: Stage, listener: StatsSceneListener, 
 
   private implicit def toStringProperty[A](value: A): StringProperty = StringProperty(value.toString)
 
-  /** The central container */
-  protected val container: VBox = new VBox(15) {
-    alignment = Pos.Center
-    children = Seq(statsTable, goBack)
-    styleClass.add("settings-vbox")
-  }
   private val levelNameColumn = new TableColumn[CampaignLevel, String]("Level Name") {
     cellValueFactory = p => p.value.levelInfo.name
   }
@@ -37,14 +31,17 @@ class StatsScene(override val parentStage: Stage, listener: StatsSceneListener, 
   private val defeatsColumn = new TableColumn[CampaignLevel, String]("Defeats") {
     cellValueFactory = p => p.value.levelStat.defeats
   }
-  listener.getCampaignLevels.foreach(e => playerData.add(e))
+
   private val playerData = FXCollections.observableArrayList[CampaignLevel]()
+  listener.getCampaignLevels.foreach(e => playerData.add(e))
+
   private val statsTable = new TableView[CampaignLevel]() {
     maxWidth = ViewConstants.Window.HalfWindowWidth
     prefHeight = ViewConstants.Window.DefaultWindowHeight / 4
     /** add the columns to table */
     columns ++= List(levelNameColumn, victoryRuleColumn, victoriesColumn, defeatsColumn)
   }
+
   private val columnMinWidth = statsTable.width / 4.1
   levelNameColumn.minWidth <== columnMinWidth
   victoryRuleColumn.minWidth <== columnMinWidth
@@ -53,6 +50,13 @@ class StatsScene(override val parentStage: Stage, listener: StatsSceneListener, 
 
   /** Adds player data to table */
   statsTable.setItems(playerData)
+
+  /** The central container */
+  protected val container: VBox = new VBox(15) {
+    alignment = Pos.Center
+    children = Seq(statsTable, goBack)
+    styleClass.add("settings-vbox")
+  }
 
   /** Setting the root container */
   root = container
