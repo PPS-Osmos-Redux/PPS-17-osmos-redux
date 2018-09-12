@@ -10,9 +10,7 @@ import scalafx.scene.{Node, Scene}
 
 import scala.collection.mutable
 
-/**
-  * A simple splash screen shown at the beginning of the level
-  */
+/** A simple splash screen shown at the beginning of the level */
 object LevelScreen {
 
   /** Builder. The provided scene is used to determine the screen width and height

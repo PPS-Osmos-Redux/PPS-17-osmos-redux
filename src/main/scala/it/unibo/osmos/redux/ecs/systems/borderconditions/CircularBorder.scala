@@ -33,29 +33,6 @@ case class CircularBorder(levelCenter: Point, collisionRule: CollisionRules.Valu
     }
   }
 
-
-  override def repositionIfOutsideMap(entity: CollidableProperty): Unit = {
-    if (checkCollision(entity)) {
-      collisionRule match {
-        case CollisionRules.bouncing =>
-          val vector = MathUtils.unitVector(levelCenter, currentPosition)
-          val back = currentDistanceFromCenter - levelRadius + entityRadius
-          positionComponent.point_(currentPosition add (vector multiply back))
-        case _ =>
-      }
-    }
-  }
-
-  private def checkCollision(entity: CollidableProperty): Boolean = {
-    positionComponent = entity.getPositionComponent
-    currentPosition = positionComponent.point
-    dimensionComponent = entity.getDimensionComponent
-    entityRadius = dimensionComponent.radius
-    maxReachableDistance = levelRadius - entityRadius
-    currentDistanceFromCenter = MathUtils.euclideanDistance(levelCenter, currentPosition)
-    currentDistanceFromCenter > maxReachableDistance
-  }
-
   /** For better understanding see: http://gamedev.stackexchange.com/a/29658
     *
     * @param entity the entity to compute new position after bounce
@@ -111,5 +88,27 @@ case class CircularBorder(levelCenter: Point, collisionRule: CollisionRules.Valu
     val vAfter = w subtract u
     val reflection = vAfter subtract v multiply restitution
     v add reflection
+  }
+
+  override def repositionIfOutsideMap(entity: CollidableProperty): Unit = {
+    if (checkCollision(entity)) {
+      collisionRule match {
+        case CollisionRules.bouncing =>
+          val vector = MathUtils.unitVector(levelCenter, currentPosition)
+          val back = currentDistanceFromCenter - levelRadius + entityRadius
+          positionComponent.point_(currentPosition add (vector multiply back))
+        case _ =>
+      }
+    }
+  }
+
+  private def checkCollision(entity: CollidableProperty): Boolean = {
+    positionComponent = entity.getPositionComponent
+    currentPosition = positionComponent.point
+    dimensionComponent = entity.getDimensionComponent
+    entityRadius = dimensionComponent.radius
+    maxReachableDistance = levelRadius - entityRadius
+    currentDistanceFromCenter = MathUtils.euclideanDistance(levelCenter, currentPosition)
+    currentDistanceFromCenter > maxReachableDistance
   }
 }

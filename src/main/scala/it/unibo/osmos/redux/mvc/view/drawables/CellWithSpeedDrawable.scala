@@ -7,14 +7,14 @@ import scalafx.scene.paint.Color
 
 /** Drawable implementation that shows a tintable cell on the screen
   *
-  * @param _image the image
+  * @param _image          the image
   * @param graphicsContext the GraphicContext on which the Image will be drawn on
   */
 class CellWithSpeedDrawable(private var _image: Image, override val graphicsContext: GraphicsContext) extends CellDrawable(_image, graphicsContext) {
 
   /** Draws the cell on the canvas
     *
-    * @param dw the drawable wrapper containing the drawable info
+    * @param dw    the drawable wrapper containing the drawable info
     * @param color the color of the cell
     */
   override def draw(dw: DrawableWrapper, color: Color): Unit = {

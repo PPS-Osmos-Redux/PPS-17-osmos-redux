@@ -24,15 +24,6 @@ object MathUtils {
     point1 subtract point2 normalized()
   }
 
-  /** Returns the Euclidean distance in 2D space
-    *
-    * @param point1 first point
-    * @param point2 second point
-    * @return Euclidean distance
-    */
-  def euclideanDistance(point1: Point, point2: Point): Double =
-    Math.sqrt(Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2))
-
   /** Returns the square of Euclidean distance in 2D space
     *
     * @param point1 first point
@@ -50,6 +41,15 @@ object MathUtils {
     */
   def euclideanDistance(position1: PositionComponent, position2: PositionComponent): Double =
     euclideanDistance(position1.point, position2.point)
+
+  /** Returns the Euclidean distance in 2D space
+    *
+    * @param point1 first point
+    * @param point2 second point
+    * @return Euclidean distance
+    */
+  def euclideanDistance(point1: Point, point2: Point): Double =
+    Math.sqrt(Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2))
 
   /** Returns the area of a circle of a given radius
     *

@@ -29,52 +29,39 @@ import scala.collection.mutable.ListBuffer
 //noinspection ForwardReference
 class EditorScene(override val parentStage: Stage, val listener: EditorSceneListener, val upperListener: BackClickListener) extends DefaultBackScene(parentStage, upperListener, "Exit Level") {
 
-  /** Entities currently built */
-  var builtEntities: ListBuffer[CellEntity] = ListBuffer()
-
   /** The background image */
   val background: ImageView = new ImageView(ImageLoader.getImage(BackgroundTexture)) {
     fitWidth <== parentStage.width
     fitHeight <== parentStage.height
   }
-
   /** Boolean binding with the instructionScreen */
   private val instructionScreenVisible: BooleanProperty = BooleanProperty(false)
   /** The instruction screen container */
   private val instructionContainer = new EditorInstructionScreen(this)
   instructionContainer.instructionScreen.visible <== instructionScreenVisible
-
-  /** This method makes the instruction screen appear/disappear */
-  private def changeInstructionScreenState(): Unit = {
-    instructionScreenVisible.value = !instructionScreenVisible.value
-    background.opacity = if (instructionScreenVisible.value) 0.3 else 1.0
-  }
-
   /** Victory Rule */
   private val victoryRule: ObjectProperty[VictoryRules.Value] = ObjectProperty(VictoryRules.becomeTheBiggest)
   private val victoryRuleBox = new TitledComboBox[VictoryRules.Value]("Victory Rule:", VictoryRules.values.toSeq, vr => victoryRule.value = vr)
-
   /** Collision Rule */
   private val collisionRule: ObjectProperty[CollisionRules.Value] = ObjectProperty(CollisionRules.bouncing)
   private val collisionRuleBox = new TitledComboBox[CollisionRules.Value]("Collision Rule:", CollisionRules.values.toSeq, cr => collisionRule.value = cr)
-
   /** Level Type, encapsulated in a container with a listener providing reaction to change */
   private val editorLevelTypeContainer = new EditorLevelTypeContainer((oldShape, newShape) => {
     editorElements -= oldShape
     editorElements += newShape
     content = editorElements
   }, !instructionScreenVisible)
-
   /** Level Type, encapsulated in a container with a listener providing reaction to change and to mouse events */
   private val editorEntityTypeContainer = new EditorEntityTypeContainer((newShape, newEntity) => {
     /** Insert an element to be shown */
     editorElements += newShape
+
     /** Update the scene content */
     content = editorElements
+
     /** Insert an entity to the built entities list */
     builtEntities += newEntity
   })
-
   /** The main container, wrapping the other panes */
   private val mainContainer: BorderPane = new BorderPane() {
     prefWidth <== parentStage.width
@@ -105,6 +92,15 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
       alignment = Pos.Center
     }
   }
+  /** Entities currently built */
+  var builtEntities: ListBuffer[CellEntity] = ListBuffer()
+  /** The main editor elements */
+  val editorElements: ListBuffer[Node] = ListBuffer(
+    background,
+    mainContainer,
+    editorEntityTypeContainer.entityPlaceholder,
+    editorLevelTypeContainer.currentLevelPlaceholder,
+    instructionContainer.instructionScreen)
 
   /** On control key pressed we hide the placeholder to let the user insert values in the panes */
   onKeyPressed = key => key.getCode match {
@@ -119,13 +115,11 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
   /** On mouse clicked, we ask the editorEntityTypeContainer to manage the event and create a new element */
   onMouseClicked = e => editorEntityTypeContainer.manageMouseClickedEvent(e)
 
-  /** The main editor elements */
-  val editorElements: ListBuffer[Node] = ListBuffer(
-    background,
-    mainContainer,
-    editorEntityTypeContainer.entityPlaceholder,
-    editorLevelTypeContainer.currentLevelPlaceholder,
-    instructionContainer.instructionScreen)
+  /** This method makes the instruction screen appear/disappear */
+  private def changeInstructionScreenState(): Unit = {
+    instructionScreenVisible.value = !instructionScreenVisible.value
+    background.opacity = if (instructionScreenVisible.value) 0.3 else 1.0
+  }
   content = editorElements
 
   /** Save level procedure */
@@ -137,6 +131,7 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
     val levelName = dialog.showAndWait()
     levelName match {
       case Some(name) =>
+
         /** Check if the name is empty */
         if (name isEmpty) {
           AlertFactory.createErrorAlert("Error", "The level name cannot be empty").showAndWait()
@@ -153,6 +148,7 @@ class EditorScene(override val parentStage: Stage, val listener: EditorSceneList
           listener.onSaveLevel(name, level, victoryRules, collisionRules, builtEntities, {
             /** The level has been created */
             case true => AlertFactory.createConfirmationAlert("Success", "The custom level has been successfully saved").showAndWait()
+
             /** We show an alert */
             case false => AlertFactory.createErrorAlert("Error", "The custom level could not be made").showAndWait()
           })

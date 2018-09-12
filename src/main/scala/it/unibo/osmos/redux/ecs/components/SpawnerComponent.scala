@@ -54,11 +54,7 @@ object SpawnerComponent {
 
   private case class SpawnerComponentImpl(var _canSpawn: Boolean) extends SpawnerComponent {
 
-    override def canSpawn: Boolean = _canSpawn
-
     override def canSpawn_(canSpawn: Boolean): Unit = _canSpawn = canSpawn
-
-    override def enqueueActions(actions: SpawnAction*): Unit = actionQueue.enqueue(actions: _*)
 
     override def dequeueAction(): Option[SpawnAction] = if (actionQueue.nonEmpty) Some(actionQueue.dequeue()) else None
 
@@ -73,6 +69,10 @@ object SpawnerComponent {
       })
       copy
     }
+
+    override def canSpawn: Boolean = _canSpawn
+
+    override def enqueueActions(actions: SpawnAction*): Unit = actionQueue.enqueue(actions: _*)
   }
 
 }

@@ -37,11 +37,6 @@ case class RectangularBorder(levelCenter: Point, collisionRule: CollisionRules.V
     }
   }
 
-  override def repositionIfOutsideMap(entity: CollidableProperty): Unit = {
-    initEntityCollisionData(entity)
-    positionComponent.point_(computeNewPosition())
-  }
-
   private def initEntityCollisionData(entity: CollidableProperty): Unit = {
     dimensionComponent = entity.getDimensionComponent
     entityRadius = dimensionComponent.radius
@@ -81,5 +76,10 @@ case class RectangularBorder(levelCenter: Point, collisionRule: CollisionRules.V
       case p if p > maxReachablePosition => dimensionComponent.radius_(entityRadius - (p - maxReachablePosition))
       case _ => // no border collision, do nothing
     }
+  }
+
+  override def repositionIfOutsideMap(entity: CollidableProperty): Unit = {
+    initEntityCollisionData(entity)
+    positionComponent.point_(computeNewPosition())
   }
 }

@@ -3,16 +3,16 @@ package it.unibo.osmos.redux.ecs.entities
 import it.unibo.osmos.redux.ecs.components._
 import it.unibo.osmos.redux.utils.{Point, Vector}
 
-/**Base builder for all type of cell*/
+/** Base builder for all type of cell */
 case class CellBuilder() {
 
   // Flag to detect multiple builds
   private var multipleBuildFlag = false
 
-  private var acceleration = AccelerationComponent(0,0)
+  private var acceleration = AccelerationComponent(0, 0)
   private var collidable = CollidableComponent(true)
   private var dimension = DimensionComponent(1)
-  private var position = PositionComponent(Point(0,0))
+  private var position = PositionComponent(Point(0, 0))
   private var speed = SpeedComponent(0, 0)
   private var visible = VisibleComponent(true)
   private var entityType = TypeComponent(EntityType.Matter)
@@ -20,6 +20,7 @@ case class CellBuilder() {
   private var spawner = SpawnerComponent(false)
 
   /** Sets the collidability.
+    *
     * @param collidable If the entity can collide or not.
     * @return The entity builder.
     */
@@ -29,6 +30,7 @@ case class CellBuilder() {
   }
 
   /** Sets the visibility.
+    *
     * @param visible If the entity is visible or not.
     * @return The entity builder.
     */
@@ -38,6 +40,7 @@ case class CellBuilder() {
   }
 
   /** Sets the acceleration.
+    *
     * @param x The acceleration x coordinate.
     * @param y The acceleration y coordinate.
     * @return The entity builder.
@@ -48,6 +51,7 @@ case class CellBuilder() {
   }
 
   /** Sets the acceleration.
+    *
     * @param acceleration The acceleration vector.
     * @return The entity builder.
     */
@@ -57,6 +61,7 @@ case class CellBuilder() {
   }
 
   /** Sets the acceleration.
+    *
     * @param acceleration The Acceleration component.
     * @return The entity builder.
     */
@@ -66,6 +71,7 @@ case class CellBuilder() {
   }
 
   /** Sets the dimension.
+    *
     * @param dimension The radius of the entity.
     * @return The entity builder.
     */
@@ -75,6 +81,7 @@ case class CellBuilder() {
   }
 
   /** Sets the dimension.
+    *
     * @param dimension The dimension component.
     * @return The entity builder.
     */
@@ -84,6 +91,7 @@ case class CellBuilder() {
   }
 
   /** Sets the position.
+    *
     * @param x The position x coordinate.
     * @param y The position y coordinate.
     * @return The entity builder.
@@ -94,6 +102,7 @@ case class CellBuilder() {
   }
 
   /** Sets the position.
+    *
     * @param position The position point.
     * @return The entity builder.
     */
@@ -103,6 +112,7 @@ case class CellBuilder() {
   }
 
   /** Sets the position.
+    *
     * @param position The position component.
     * @return The entity builder.
     */
@@ -112,6 +122,7 @@ case class CellBuilder() {
   }
 
   /** Sets the speed.
+    *
     * @param x The speed x coordinate.
     * @param y The speed y coordinate.
     * @return The entity builder.
@@ -122,6 +133,7 @@ case class CellBuilder() {
   }
 
   /** Sets the speed.
+    *
     * @param speed The speed component.
     * @return The entity builder.
     */
@@ -131,6 +143,7 @@ case class CellBuilder() {
   }
 
   /** Sets the speed.
+    *
     * @param speed The speed component.
     * @return The entity builder.
     */
@@ -139,16 +152,8 @@ case class CellBuilder() {
     this
   }
 
-  /** Sets the entity type.
-    * @param entityType The entity type.
-    * @return The entity builder.
-    */
-  def withEntityType(entityType: EntityType.Value): CellBuilder = {
-    this.entityType = TypeComponent(entityType)
-    this
-  }
-
   /** Sets the specific weight.
+    *
     * @param weight The weight.
     * @return The entity builder.
     */
@@ -158,6 +163,7 @@ case class CellBuilder() {
   }
 
   /** Sets the specific weight.
+    *
     * @param weight The specific weight component.
     * @return The entity builder.
     */
@@ -167,6 +173,7 @@ case class CellBuilder() {
   }
 
   /** Sets the spawner.
+    *
     * @param canSpawn If the entity spawner can spawn or not.
     * @return The entity builder.
     */
@@ -176,12 +183,28 @@ case class CellBuilder() {
   }
 
   /** Sets the spawner.
+    *
     * @param spawner The spawner component.
     * @return The entity builder.
     */
   def withSpawner(spawner: SpawnerComponent): CellBuilder = {
     this.spawner = spawner.copy()
     this
+  }
+
+  /** Builds a CellEntity.
+    *
+    * @return The CellEntity.
+    */
+  def buildCellEntity(): CellEntity = buildBaseCell()
+
+  /** Builds the base cell entity, checks for multiple builds.
+    *
+    * @return The base cell entity.
+    */
+  private def buildBaseCell(): CellEntity = {
+    checkMultipleBuild()
+    CellEntity(acceleration, collidable, dimension, position, speed, visible, entityType)
   }
 
   //checks if the build method is called multiple times.
@@ -193,30 +216,29 @@ case class CellBuilder() {
     }
   }
 
-  /** Builds the base cell entity, checks for multiple builds.
-    * @return The base cell entity.
-    */
-  private def buildBaseCell(): CellEntity = {
-    checkMultipleBuild()
-    CellEntity(acceleration, collidable, dimension, position, speed, visible, entityType)
-  }
-
-  /** Builds a CellEntity.
-    * @return The CellEntity.
-    */
-  def buildCellEntity(): CellEntity = buildBaseCell()
-
   /** Builds a GravityCellEntity.
+    *
     * @return The GravityCellEntity.
     */
   def buildGravityEntity(): GravityCellEntity = {
-    if(!(Seq(EntityType.Attractive, EntityType.Repulsive) contains entityType.typeEntity)) {
+    if (!(Seq(EntityType.Attractive, EntityType.Repulsive) contains entityType.typeEntity)) {
       withEntityType(EntityType.Attractive)
     }
     GravityCellEntity(buildBaseCell(), specificWeight)
   }
 
+  /** Sets the entity type.
+    *
+    * @param entityType The entity type.
+    * @return The entity builder.
+    */
+  def withEntityType(entityType: EntityType.Value): CellBuilder = {
+    this.entityType = TypeComponent(entityType)
+    this
+  }
+
   /** Builds a PlayerCellEntity.
+    *
     * @return The PlayerCellEntity.
     */
   def buildPlayerEntity(): PlayerCellEntity = {
@@ -225,6 +247,7 @@ case class CellBuilder() {
   }
 
   /** Builds a SentientCellEntity.
+    *
     * @return The SentientCellEntity.
     */
   def buildSentientEntity(): SentientCellEntity = {

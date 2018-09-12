@@ -117,11 +117,11 @@ case class CollisionSystem(levelInfo: Level) extends AbstractSystem[CollidablePr
     val dimension = entity.getDimensionComponent
     level match {
       case map: Rectangle =>
-        if(dimension.radius > map.base/2) {
-          dimension.radius_(map.base/2)
+        if (dimension.radius > map.base / 2) {
+          dimension.radius_(map.base / 2)
         }
-        if(dimension.radius > map.height/2) {
-          dimension.radius_(map.height/2)
+        if (dimension.radius > map.height / 2) {
+          dimension.radius_(map.height / 2)
         }
       case _ =>
     }

@@ -12,7 +12,7 @@ import scalafx.scene.text.Text
 
 /** Level node representing a multiplayer level
   *
-  * @param listener the LevelNodeListener
+  * @param listener  the LevelNodeListener
   * @param levelInfo the level info
   */
 class MultiPlayerLevelNode(override val listener: LevelNodeListener, override val levelInfo: LevelInfo) extends AnimatedAbstractLevelNode(listener, levelInfo) {

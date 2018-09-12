@@ -10,6 +10,7 @@ import it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity
 import it.unibo.osmos.redux.utils.Logger
 
 /** Server actor implementation.
+  *
   * @param server The server to bind.
   */
 class ServerActor(private val server: Server) extends Actor {
@@ -89,47 +90,65 @@ class ServerActor(private val server: Server) extends Actor {
 
 /** Server actor helper object */
 object ServerActor {
-  def props(server: Server) : Props = Props(new ServerActor(server))
+  def props(server: Server): Props = Props(new ServerActor(server))
 
   /** Replies to a client connection request initiating the handshaking
+    *
     * @param tempID The temp id
     */
   final case class Connected(tempID: String)
-  /** Aborts an handshaking with a client */
-  final case object Disconnected
+
   /** Replies to a client enter lobby request with its info
+    *
     * @param players The players already inside the lobby
     */
   final case class LobbyInfo(players: Seq[BasePlayer])
-  /** Aborts a client enter lobby request because the chosen username is already taken */
-  final case object UsernameAlreadyTaken
-  /** Aborts a client enter lobby request because the lobby is full */
-  final case object LobbyFull
-  /** Tells the client that the lobby have been closed */
-  final case object LobbyClosed
+
   /** Tells the client that a new player entered in the lobby
+    *
     * @param player The new player
     */
   final case class PlayerEnteredLobby(player: BasePlayer)
+
   /**
     * Tells the client that a player left the lobby
+    *
     * @param username The username of the player
     */
   final case class PlayerLeftLobby(username: String)
+
   /** Sends the client the entities to draw
+    *
     * @param entities The entities to draw
     */
   final case class UpdateGame(entities: Seq[DrawableEntity])
+
   /** Tells the client that the game have been started
-    * @param uuid The uuid of the entity assigned to the client by the server that represents him in the game
+    *
+    * @param uuid      The uuid of the entity assigned to the client by the server that represents him in the game
     * @param levelInfo The level info
-    * @param mapShape The map shape
+    * @param mapShape  The map shape
     */
   final case class GameStarted(uuid: String, levelInfo: LevelInfo, mapShape: MapShape)
+
   /** Tells the client that the game is ended and what's the final result
+    *
     * @param victory If client won or lost.
     */
   final case class GameEnded(victory: Boolean)
+
+  /** Aborts an handshaking with a client */
+  final case object Disconnected
+
+  /** Aborts a client enter lobby request because the chosen username is already taken */
+  final case object UsernameAlreadyTaken
+
+  /** Aborts a client enter lobby request because the lobby is full */
+  final case object LobbyFull
+
+  /** Tells the client that the lobby have been closed */
+  final case object LobbyClosed
+
 }
 
 

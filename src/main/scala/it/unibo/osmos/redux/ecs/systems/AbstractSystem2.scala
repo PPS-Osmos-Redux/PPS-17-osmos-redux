@@ -11,19 +11,22 @@ import scala.reflect.ClassTag
   * Abstract system with two type of generic entity.
   * The lists of entity are not exclusive
   */
-abstract class AbstractSystem2[T <:Property: ClassTag, R <:Property: ClassTag]
-          extends AbstractSystem[T] with Observer with System {
+abstract class AbstractSystem2[T <: Property : ClassTag, R <: Property : ClassTag]
+  extends AbstractSystem[T] with Observer with System {
 
+  /** The entity list with property of type R.
+    * An entity with property of type T could be also in this list
+    */
   protected val entitiesSecondType: ListBuffer[R] = ListBuffer()
 
   EntityManager.subscribe(this, implicitly[ClassTag[R]].runtimeClass.asInstanceOf[Class[R]])
 
   override def notify(event: EMEvents.EntityManagerEvent): Unit = {
     event.entity match {
-      case _:R =>
+      case _: R =>
         event match {
           case event: EntityCreated if !entitiesSecondType.contains(event.entity) => entitiesSecondType += event.entity.asInstanceOf[R]
-          case event: EntityDeleted if entitiesSecondType.contains(event.entity)=> entitiesSecondType -= event.entity.asInstanceOf[R]
+          case event: EntityDeleted if entitiesSecondType.contains(event.entity) => entitiesSecondType -= event.entity.asInstanceOf[R]
           //the event is already managed so the event is duplicated, perhaps it is for the other type of entity
           case _ => super.notify(event)
         }

@@ -2,6 +2,7 @@ package it.unibo.osmos.redux.utils
 
 import java.time.Instant
 
+/** Debugging utility */
 object Logger {
   private val enable = true
 

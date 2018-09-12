@@ -13,7 +13,7 @@ import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, MultiPlayerLevelContext}
 import it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity
 import it.unibo.osmos.redux.mvc.view.events.{GameLost, GamePending, GameWon, MouseEventWrapper}
-import it.unibo.osmos.redux.utils.{Constants, Logger}
+import it.unibo.osmos.redux.utils.Constants
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
@@ -26,101 +26,95 @@ trait Client {
   implicit val who: String = "Client"
   implicit val timeout: Timeout = Timeout(5.seconds)
 
-  /**
-    * Binds this instance with the input ActorRef.
+  /** Binds this instance with the input ActorRef.
+    *
     * @param actorRef The ActorRef
     */
   def bind(actorRef: ActorRef): Unit
 
-  /**
-    * Connects to a server.
+  /** Connects to a server.
+    *
     * @param address The server address.
-    * @param port The port address.
+    * @param port    The port address.
     * @return Promise that completes with true if the connection has been successfully established; otherwise false.
     */
   def connect(address: String, port: Int): Promise[Boolean]
 
-  /**
-    * Gets the uuid of the cell entity that represents this client.
+  /** Gets the uuid of the cell entity that represents this client.
+    *
     * @return The uuid
     */
   def getUUID: String
 
-  /**
-    * Kills this instance.
-    */
+  /** Kills this instance. */
   def kill(): Unit
 
-  /**
-    * Initializes the game.
+  /** Initializes the game.
+    *
     * @param levelContext The level context.
     */
   def initGame(levelContext: MultiPlayerLevelContext): Unit
 
-  /**
-    * Starts the game.
-    * @param uuid The entity uuid assigned to this client by the server.
+  /** Starts the game.
+    *
+    * @param uuid      The entity uuid assigned to this client by the server.
     * @param levelInfo The level info.
-    * @param mapShape The shape of the level.
+    * @param mapShape  The shape of the level.
     */
   def startGame(uuid: String, levelInfo: LevelInfo, mapShape: MapShape): Unit
 
-  /**
-    * Stops the game.
+  /** Stops the game.
+    *
     * @param victorious If this client won or not.
     */
   def stopGame(victorious: Boolean): Unit
 
-  /**
-    * Leaves the game.
-    */
+  /** Leaves the game. */
   def leaveGame(): Unit
 
-  /**
-    * Requests to enter the lobby.
-    * @param username The username of the player.
+  /** Requests to enter the lobby.
+    *
+    * @param username     The username of the player.
     * @param lobbyContext The lobby context.
     * @return Promise that completes with true if the client have successfully entered the lobby; otherwise false.
     */
   def enterLobby(username: String, lobbyContext: LobbyContext): Promise[Boolean]
 
-  /**
-    * Requests to leave the lobby.
-    */
+  /** Requests to leave the lobby. */
   def leaveLobby(): Unit
 
-  /**
-    * Gets the lobby players.
+  /** Gets the lobby players.
+    *
     * @return All players in the lobby.
     */
   def getLobbyPlayers: Seq[BasePlayer]
 
-  /**
-    * Removes a player from the lobby.
+  /** Removes a player from the lobby.
+    *
     * @param username The username of the player.
     */
   def removePlayerFromLobby(username: String): Unit
 
-  /**
-    * Adds a player to the lobby.
+  /** Adds a player to the lobby.
+    *
     * @param player The player to add.
     */
   def addPlayerToLobby(player: BasePlayer): Unit
 
-  /**
-    * Closes the lobby.
+  /** Closes the lobby.
+    *
     * @param byUser If the lobby have been closed by the user or not.
     */
   def closeLobby(byUser: Boolean = true): Unit
 
-  /**
-    * Forwards player into to the server.
+  /** Forwards player into to the server.
+    *
     * @param event The event.
     */
   def signalPlayerInput(event: MouseEventWrapper): Unit
 
-  /**
-    * Notifies the client to redraw.
+  /** Notifies the client to redraw.
+    *
     * @param entities The entities to draw.
     */
   def notifyRedraw(entities: Seq[DrawableEntity]): Unit
@@ -169,8 +163,6 @@ object Client {
       promise
     }
 
-    override def getUUID: String = uuid
-
     override def kill(): Unit = {
       if (lobby.nonEmpty && server.nonEmpty) {
         if (uuid.nonEmpty && levelContext.nonEmpty) server.get ! LeaveGame(username)
@@ -192,16 +184,29 @@ object Client {
       }
     }
 
+    private def generateRemoteActorPath(address: String, port: Int): String =
+      s"""akka.tcp://${Constants.MultiPlayer.ActorSystemName}@$address:$port/user/${Constants.MultiPlayer.ServerActorName}"""
+
     //GAME MANAGEMENT
+
+    private def resolveRemotePath(remotePath: String): Future[ActorRef] =
+      ActorSystemHolder.getSystem.actorSelection(remotePath) resolveOne()
 
     override def initGame(levelContext: MultiPlayerLevelContext): Unit = {
       if (lobby.isEmpty) throw new IllegalStateException("The player entered no lobby, unable to initialize the game.")
       if (this.levelContext.nonEmpty) throw new IllegalStateException("The server already hold a level context, unable to initialize the game.")
 
       //register client to the mouse event listener to send input events to the server
-      levelContext.subscribe(e => { signalPlayerInput(e) })
+      levelContext.subscribe(e => {
+        signalPlayerInput(e)
+      })
       //save the level context, will be used later to communicate with the view
       this.levelContext = Some(levelContext)
+    }
+
+    override def signalPlayerInput(event: MouseEventWrapper): Unit = server match {
+      case Some(serverRef) => serverRef ! PlayerInput(event)
+      case _ => throw new IllegalStateException("Unable to signal player input if the server is not defined")
     }
 
     override def startGame(uuid: String, levelInfo: LevelInfo, mapShape: MapShape): Unit = {
@@ -223,10 +228,14 @@ object Client {
       }
     }
 
+    //INPUT MANAGEMENT
+
     override def stopGame(victorious: Boolean): Unit = levelContext match {
       case Some(context) => context.notify(if (victorious) GameWon else GameLost)
       case _ => throw new IllegalStateException("Unable to stop the game because the level context is not defined")
     }
+
+    //LOBBY
 
     override def leaveGame(): Unit = {
       if (username.isEmpty) throw new IllegalStateException("Unable to leave the game if the player username is undefined.")
@@ -241,15 +250,6 @@ object Client {
         case _ => throw new IllegalStateException("Unable to leave the game if the level context is not defined.")
       }
     }
-
-    //INPUT MANAGEMENT
-
-    override def signalPlayerInput(event: MouseEventWrapper): Unit = server match {
-      case Some(serverRef) => serverRef ! PlayerInput(event)
-      case _ => throw new IllegalStateException("Unable to signal player input if the server is not defined")
-    }
-
-    //LOBBY
 
     override def enterLobby(username: String, lobbyContext: LobbyContext): Promise[Boolean] = {
 
@@ -304,12 +304,14 @@ object Client {
       case _ => throw new UnsupportedOperationException("Unable to add player to lobby if no lobby is defined.")
     }
 
+    //OBSERVERS MANAGEMENT
+
     override def removePlayerFromLobby(username: String): Unit = lobby match {
       case Some(gameLobby) => gameLobby.removePlayer(username)
       case _ => throw new UnsupportedOperationException("Unable to remove player from lobby if no lobby is defined.")
     }
 
-    //OBSERVERS MANAGEMENT
+    //HELPERS
 
     override def notifyRedraw(entities: Seq[DrawableEntity]): Unit = {
       val player = entities.find(_.getUUID == getUUID)
@@ -317,12 +319,7 @@ object Client {
       levelContext.get.drawEntities(player, entities)
     }
 
-    //HELPERS
-
-    private def generateRemoteActorPath(address: String, port: Int): String =
-      s"""akka.tcp://${Constants.MultiPlayer.ActorSystemName}@$address:$port/user/${Constants.MultiPlayer.ServerActorName}"""
-
-    private def resolveRemotePath(remotePath: String): Future[ActorRef] =
-      ActorSystemHolder.getSystem.actorSelection(remotePath) resolveOne()
+    override def getUUID: String = uuid
   }
+
 }

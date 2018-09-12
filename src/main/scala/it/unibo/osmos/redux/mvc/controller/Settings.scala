@@ -16,18 +16,15 @@ object SettingsHolder extends SettingsEventObserver {
     */
   def init(loadedSettings: List[Setting]): Unit = loadedSettings.foreach(setting => sendSettingToDestination(setting))
 
+  private def sendSettingToDestination(setting: Setting): Unit = setting match {
+    case vol: Volume => MusicPlayer.changeVolume(vol.value)
+    case _ => Logger.log("Error setting not managed " + setting)
+  }
+
   override def notify(settingsEvent: SettingsEvent): Unit = settingsEvent match {
     case mpEvent: MusicPlayerEvent =>
       createOrUpdateSetting(mpEvent.volume, mpEvent.volume.settingType)
     case _ => Logger.log("Error settings event not managed " + settingsEvent)
-  }
-
-  /** saves settings */
-  def saveSettings(): Unit = SettingsFileManger.saveSettings(settings)
-
-  private def sendSettingToDestination(setting: Setting): Unit = setting match {
-    case vol: Volume => MusicPlayer.changeVolume(vol.value)
-    case _ => Logger.log("Error setting not managed " + setting)
   }
 
   private def createOrUpdateSetting(setting: Setting, settingType: SettingsTypes.Value): Unit =
@@ -38,6 +35,9 @@ object SettingsHolder extends SettingsEventObserver {
     }
 
   private def indexOf(settingType: SettingsTypes.Value): Int = settings.map(st => st.settingType).indexOf(settingType)
+
+  /** saves settings */
+  def saveSettings(): Unit = SettingsFileManger.saveSettings(settings)
 }
 
 

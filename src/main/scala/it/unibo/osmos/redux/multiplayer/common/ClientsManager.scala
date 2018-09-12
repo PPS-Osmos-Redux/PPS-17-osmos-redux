@@ -9,37 +9,35 @@ trait ClientsManager {
 
   protected val clients: TrieMap[String, ActorRef] = TrieMap()
 
-  /**
-    * Generates the next temp id for a new client.
+  /** Generates the next temp id for a new client.
+    *
     * @return The next temp id to add a new client.
     */
   def nextTempID: String
 
-  /**
-    * Adds a new client.
-    * @param tempID The temp id
+  /** Adds a new client.
+    *
+    * @param tempID   The temp id
     * @param actorRef The actor ref
     * @return True, if the operation is s; otherwise false.
     */
   def addClient(tempID: String, actorRef: ActorRef): Boolean
 
-  /**
-    * Gets and remove the specified client.
+  /** Gets and remove the specified client.
+    *
     * @param tempID The temp id of the client.
     * @return The Actor reference.
     */
   def getClient(tempID: String): Option[ActorRef]
 
-  /**
-    * Clears all clients from the manager.
-    */
+  /** Clears all clients from the manager. */
   def clearClients(): Unit
 }
 
 object ClientsManager {
 
-  /**
-    * Creates a new clients manager instance.
+  /** Creates a new clients manager instance.
+    *
     * @param seed The random seed used to generate temp ids.
     * @return A new ClientsManager instance.
     */
@@ -59,4 +57,5 @@ object ClientsManager {
 
     override def clearClients(): Unit = clients.clear()
   }
+
 }

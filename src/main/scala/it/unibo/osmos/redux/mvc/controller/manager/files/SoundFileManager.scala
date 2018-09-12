@@ -2,7 +2,7 @@ package it.unibo.osmos.redux.mvc.controller.manager.files
 
 import it.unibo.osmos.redux.utils.Constants.ResourcesPaths._
 
-/**Defines operation on sounds files*/
+/** Defines operation on sounds files */
 object SoundFileManager extends FileManager {
 
   override implicit val who: String = "SoundFileManager"

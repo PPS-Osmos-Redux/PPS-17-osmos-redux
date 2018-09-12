@@ -9,10 +9,10 @@ import scala.collection.mutable
 
 /** Scene in which the user can choose a level to play in multiplayer mode
   *
-  * @param parentStage the parent stage
-  * @param listener the listener
+  * @param parentStage   the parent stage
+  * @param listener      the listener
   * @param upperListener the upper scene listener, which will be called to store the level selection
-  * @param user the User
+  * @param user          the User
   */
 class MultiPlayerLevelSelectionScene(override val parentStage: Stage, override val listener: MultiPlayerLevelSelectionSceneListener, val upperListener: UpperMultiPlayerLevelSelectionSceneListener, val user: User, previousSceneListener: BackClickListener)
   extends LevelSelectionScene(parentStage, listener, previousSceneListener) with LevelNodeListener {
@@ -20,9 +20,9 @@ class MultiPlayerLevelSelectionScene(override val parentStage: Stage, override v
   /** Multiplayer levels are always available */
   override lazy val levels: mutable.Buffer[LevelInfo] = listener.getMultiPlayerLevels.toBuffer
 
-  override def loadLevels(): Unit = levels foreach(level => levelsContainer.children.add(new MultiPlayerLevelNode(this, level)))
+  override def loadLevels(): Unit = levels foreach (level => levelsContainer.children.add(new MultiPlayerLevelNode(this, level)))
 
-  /** Overridden to manage multiplayer levels*/
+  /** Overridden to manage multiplayer levels */
   override def refreshLevels(): Unit = {
     levels.clear()
     levels.appendAll(listener.getMultiPlayerLevels)
@@ -41,9 +41,7 @@ trait UpperMultiPlayerLevelSelectionSceneListener {
 
 }
 
-/**
-  * Trait which gets notified when a MultiPlayerLevelSelectionScene event occurs
-  */
+/** Trait which gets notified when a MultiPlayerLevelSelectionScene event occurs */
 trait MultiPlayerLevelSelectionSceneListener extends LevelSelectionSceneListener {
 
   /** This method retrieves the multiplayer levels that must be shown as node

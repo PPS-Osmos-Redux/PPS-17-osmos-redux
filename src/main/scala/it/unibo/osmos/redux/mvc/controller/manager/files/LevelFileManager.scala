@@ -12,7 +12,7 @@ import spray.json._
 
 import scala.util.{Failure, Success, Try}
 
-/**Defines operation on levels files*/
+/** Defines operation on levels files */
 object LevelFileManager extends FileManager {
 
   implicit val who: String = "LevelFileManager"
@@ -22,7 +22,7 @@ object LevelFileManager extends FileManager {
     * @param multiPlayer true if is required multiPlayer level files name
     * @return an Option of List[String]
     */
-  def getLevelsConfigResourcesPath(multiPlayer:Boolean = false) : Option[List[String]] = {
+  def getLevelsConfigResourcesPath(multiPlayer: Boolean = false): Option[List[String]] = {
     import it.unibo.osmos.redux.utils.Constants.ResourcesPaths._
     val configPath = (if (multiPlayer) ConfigMultiPlayer else ConfigSinglePlayer) + jsonExtension
     Try(getResourcesFileText(configPath).parseJson.convertTo[List[String]]).toOption
@@ -36,12 +36,14 @@ object LevelFileManager extends FileManager {
   def getLevelFromResource(chosenLevel: String, isMultiPlayer: Boolean = false): Option[Level] = {
     import it.unibo.osmos.redux.utils.Constants.ResourcesPaths._
     val levelsPath = (if (isMultiPlayer) MultiPlayerLevelsPath else SinglePlayerLevelsPath) + chosenLevel + jsonExtension
-      textToLevel(getResourcesFileText(levelsPath)) match {
+    textToLevel(getResourcesFileText(levelsPath)) match {
       case Success(level) => level.checkCellPosition()
-                             Some(level)
+        Some(level)
       case Failure(e: Throwable) => Logger.log(e.printStackTrace().toString); None
     }
   }
+
+  private def textToLevel(text: String): Try[Level] = Try(text.parseJson.convertTo[Level])
 
   /** Save a custom level into user home.
     *
@@ -61,7 +63,7 @@ object LevelFileManager extends FileManager {
     * @param levelName the name of the file
     * @return Try[Unit]
     */
-  def deleteCustomLevel(levelName:String): Try[Unit] = deleteFile(Paths.get(LevelsDirectory + levelName + jsonExtension))
+  def deleteCustomLevel(levelName: String): Try[Unit] = deleteFile(Paths.get(LevelsDirectory + levelName + jsonExtension))
 
   /** Load level from file saved into user home directory
     *
@@ -71,11 +73,11 @@ object LevelFileManager extends FileManager {
   def getCustomLevel(implicit fileName: String): Option[Level] =
     loadFile(LevelsDirectory + fileName + jsonExtension) match {
       case Some(text) => textToLevel(text) match {
-                          case Success(level) => level.checkCellPosition()
-                                                 Some(level)
-                          case Failure(_) => Logger.log("Error: convertion of custom level " + fileName + " is failed")(who)
-                                                     None
-                        }
+        case Success(level) => level.checkCellPosition()
+          Some(level)
+        case Failure(_) => Logger.log("Error: convertion of custom level " + fileName + " is failed")(who)
+          None
+      }
       case _ => None
     }
 
@@ -91,36 +93,35 @@ object LevelFileManager extends FileManager {
       .filter(optLvl => optLvl.isDefined).map(opt => opt.get).toList)
   }
 
-  /** Read from file into resources the levels info
-    *
-    * @return Option[LevelInfo]
-    */
-  def getResourceLevelInfo(filePath:String):Option[LevelInfo] = {
-   Try(getResourcesFileText(filePath).parseJson.convertTo[LevelInfo]) match {
-      case Success(value) => Some(value)
-      case Failure(_) => Logger.log("File not found into resources: " + filePath)
-        None
-    }
-  }
-
-  private def textToLevel(text: String): Try[Level] = Try(text.parseJson.convertTo[Level])
-  private def textToLevelInfo(text:String): Try[LevelInfo] = Try(text.parseJson.convertTo[LevelInfo])
-
-  private def processFilePath(fileName:String, index:Option[Int] = None): (Path, String) = {
-    val uniqueName =  fileName+index.getOrElse("")
-    val path = DefaultFS.getPath(LevelsDirectory + uniqueName + jsonExtension)
-    if (Files.exists(path)) {
-      processFilePath(fileName, if(index.isDefined) Some(index.get+1) else Some(1))
-    } else {
-      (path, uniqueName)
-    }
-  }
-
   private def loadLevelInfo(implicit fileName: String): Option[LevelInfo] =
     loadFile(LevelsDirectory + fileName + jsonExtension) match {
       case Some(text) => textToLevelInfo(text).toOption
       case _ => None
     }
 
-  private implicit def getFileNameWithoutJsonExtension(file:File):String = file.getName.substring(0,file.getName.length-jsonExtension.length)
+  private def textToLevelInfo(text: String): Try[LevelInfo] = Try(text.parseJson.convertTo[LevelInfo])
+
+  /** Read from file into resources the levels info
+    *
+    * @return Option[LevelInfo]
+    */
+  def getResourceLevelInfo(filePath: String): Option[LevelInfo] = {
+    Try(getResourcesFileText(filePath).parseJson.convertTo[LevelInfo]) match {
+      case Success(value) => Some(value)
+      case Failure(_) => Logger.log("File not found into resources: " + filePath)
+        None
+    }
+  }
+
+  private def processFilePath(fileName: String, index: Option[Int] = None): (Path, String) = {
+    val uniqueName = fileName + index.getOrElse("")
+    val path = DefaultFS.getPath(LevelsDirectory + uniqueName + jsonExtension)
+    if (Files.exists(path)) {
+      processFilePath(fileName, if (index.isDefined) Some(index.get + 1) else Some(1))
+    } else {
+      (path, uniqueName)
+    }
+  }
+
+  private implicit def getFileNameWithoutJsonExtension(file: File): String = file.getName.substring(0, file.getName.length - jsonExtension.length)
 }

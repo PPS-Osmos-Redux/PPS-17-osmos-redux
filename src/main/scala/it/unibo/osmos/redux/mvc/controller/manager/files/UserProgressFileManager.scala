@@ -6,20 +6,20 @@ import java.nio.file.Paths
 import it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels
 import it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel
 import it.unibo.osmos.redux.mvc.model.JsonProtocols._
-import spray.json.DefaultJsonProtocol._
-import spray.json._
 import it.unibo.osmos.redux.utils.Constants.UserHomePaths._
 import it.unibo.osmos.redux.utils.Logger
+import spray.json.DefaultJsonProtocol._
+import spray.json._
 
 import scala.util.{Failure, Success, Try}
 
-/**Defines operation on user progress files.*/
+/** Defines operation on user progress files. */
 object UserProgressFileManager extends FileManager {
   override implicit val who: String = "UserProgressFileManager"
 
   /** Saves user progress.
     *
-    * @param userProgress  List[CampaignLevel]
+    * @param userProgress List[CampaignLevel]
     * @return true if the function is completed with success
     */
   def saveUserProgress(userProgress: List[CampaignLevel]): Boolean = {
@@ -35,11 +35,11 @@ object UserProgressFileManager extends FileManager {
   def loadUserProgress(): List[CampaignLevel] =
     loadFile(UserProgressFileName + jsonExtension) match {
       case Some(text) => Try(text.parseJson.convertTo[List[CampaignLevel]]) match {
-                            case Success(value) => value
-                            case Failure(_) => Logger.log("Error: failed user progress convertion to json")
-                                                       deleteFile(Paths.get(UserProgressFileName + jsonExtension))
-                                                       loadUserProgress()
-                          }
+        case Success(value) => value
+        case Failure(_) => Logger.log("Error: failed user progress convertion to json")
+          deleteFile(Paths.get(UserProgressFileName + jsonExtension))
+          loadUserProgress()
+      }
       case _ => saveUserProgress(SinglePlayerLevels.getCampaignLevels)
         loadUserProgress()
     }

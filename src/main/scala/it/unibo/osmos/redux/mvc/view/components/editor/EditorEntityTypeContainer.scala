@@ -42,13 +42,6 @@ class EditorEntityTypeContainer(editorEntityTypeContainerListener: EditorEntityT
 
   /** The entity builders */
   private val entityBuilders = Seq(cellEntityCreator, gravityCellEntityCreator, sentientCellEntityCreator, playerCellEntityCreator)
-
-  /** This method returns the currently visible cell entity creator
-    *
-    * @return the currently visible cell entity creator
-    */
-  private def getVisibleCellBuilder: CellEntityCreator = entityBuilders.filter((b) => b.visible.value).head
-
   /** The entity container */
   private val _entityContainer: VBox = new VBox(1.0) {
     margin = Insets(10.0)
@@ -75,13 +68,6 @@ class EditorEntityTypeContainer(editorEntityTypeContainerListener: EditorEntityT
 
     children = List(entityComboBox.root, verticalStackPane)
   }
-
-  /** Getter which returns the entity type container node
-    *
-    * @return the entity type container node
-    */
-  def entityContainer: VBox = _entityContainer
-
   /** The placeholder which follows the user mouse and changes appearance on EntityType change */
   private val _entityPlaceholder: Circle = new Circle() {
     fill.value = new ImagePattern(ImageLoader.getImage(CellTexture))
@@ -104,17 +90,17 @@ class EditorEntityTypeContainer(editorEntityTypeContainerListener: EditorEntityT
     })
   }
 
-  /** Getter which returns the entity placeholder node
+  /** Getter which returns the entity type container node
     *
-    * @return the entity placeholder node
+    * @return the entity type container node
     */
-  def entityPlaceholder: Circle = _entityPlaceholder
+  def entityContainer: VBox = _entityContainer
 
   /** This method changes the entity placeholder visibility
     *
     * @param visible true if the entity placeholder must turn visible, false otherwise
     */
-  def setEntityPlaceholderVisibility(visible: Boolean) : Unit = _entityPlaceholder.visible.value = visible
+  def setEntityPlaceholderVisibility(visible: Boolean): Unit = _entityPlaceholder.visible.value = visible
 
   /** This method toggles the entity placeholder visibility */
   def toggleEntityPlaceholder(): Unit = _entityPlaceholder.visible = !_entityPlaceholder.visible.value
@@ -146,9 +132,22 @@ class EditorEntityTypeContainer(editorEntityTypeContainerListener: EditorEntityT
     }
     /** Creating the new editor which will be part of the new level configuration */
     val newCellEntity = getVisibleCellBuilder create()
+
     /** Notify the listener */
     editorEntityTypeContainerListener.onEntityCreated(newShape, newCellEntity)
   }
+
+  /** This method returns the currently visible cell entity creator
+    *
+    * @return the currently visible cell entity creator
+    */
+  private def getVisibleCellBuilder: CellEntityCreator = entityBuilders.filter((b) => b.visible.value).head
+
+  /** Getter which returns the entity placeholder node
+    *
+    * @return the entity placeholder node
+    */
+  def entityPlaceholder: Circle = _entityPlaceholder
 
 }
 
@@ -159,7 +158,7 @@ trait EditorEntityTypeContainerListener {
 
   /** This method tells the listener to update the currently visible entities
     *
-    * @param newShape a new enity shape, visible by the user
+    * @param newShape  a new enity shape, visible by the user
     * @param newEntity a new built cell entity
     */
   def onEntityCreated(newShape: Shape, newEntity: CellEntity): Unit

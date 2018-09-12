@@ -9,7 +9,7 @@ import scalafx.scene.layout.VBox
   * @param listener the LevelStateBoxListener
   * @param vSpacing the spacing between the elements
   */
-class LevelStateBox(val listener: LevelStateBoxListener, val vSpacing: Double) extends VBox(vSpacing){
+class LevelStateBox(val listener: LevelStateBoxListener, val vSpacing: Double) extends VBox(vSpacing) {
   padding = Insets(4.0)
   visible = true
   margin = Insets(30.0)

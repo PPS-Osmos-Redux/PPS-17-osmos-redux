@@ -8,9 +8,9 @@ import scalafx.scene.layout.{HBox, Pane, VBox}
 
 /** Abstract node which holds a Text and a generic node subclass in a Pane
   *
-  * @param title the text shown
+  * @param title    the text shown
   * @param vertical true if the text must be shown above the node, false otherwise
-  * @param spacing the spacing between the text and the node
+  * @param spacing  the spacing between the text and the node
   * @tparam N the node type
   */
 abstract class TitledNode[N <: Node](val title: StringProperty, vertical: Boolean, spacing: Double = 4.0) {

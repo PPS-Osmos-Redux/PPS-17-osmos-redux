@@ -5,14 +5,10 @@ import it.unibo.osmos.redux.mvc.view.drawables.{DrawableWrapper, EntitiesDrawer}
 import it.unibo.osmos.redux.mvc.view.events._
 import it.unibo.osmos.redux.utils.Logger
 
-/**
-  * Trait modelling the context of a level
-  */
+/** Trait modelling the context of a level */
 trait LevelContext extends EventWrapperObservable[MouseEventWrapper] with EntitiesDrawer with GameStateHolder {
 
-  /**
-    * The level context type
-    */
+  /** The level context type */
   val levelContextType: LevelContextType.Value
 
   /** Called once at the beginning at the level. Manages the context setup
@@ -39,20 +35,14 @@ trait LevelContext extends EventWrapperObservable[MouseEventWrapper] with Entiti
     */
   override def getPlayerUUID: String
 
-  /**
-    * Sets the current player uuid.
-    */
+  /** Sets the current player uuid. */
   def setPlayerUUID(playerUUID: String): Unit
 }
 
-/**
-  * LevelContext used in multplayer sessions
-  */
+/** LevelContext used in multplayer sessions */
 trait MultiPlayerLevelContext extends LevelContext {}
 
-/**
-  * Companion object
-  */
+/** Companion object */
 object LevelContext {
 
   /** Apply method to create a new single-player level context
@@ -77,10 +67,10 @@ object LevelContext {
 
     /** The level context listener */
     protected var listener: Option[LevelContextListener] = Option.empty
-    override def setListener(levelContextListener: LevelContextListener): Unit = listener = Option(levelContextListener)
-
     /** A reference to the mouse event listener */
     private var mouseEventObserver: Option[EventWrapperObserver[MouseEventWrapper]] = Option.empty
+
+    override def setListener(levelContextListener: LevelContextListener): Unit = listener = Option(levelContextListener)
 
     override def setupLevel(mapShape: MapShape): Unit = listener match {
       case Some(l) => l.onLevelSetup(mapShape)
@@ -102,14 +92,24 @@ object LevelContext {
     override def unsubscribe(eventObserver: EventWrapperObserver[MouseEventWrapper]): Unit = mouseEventObserver = Option.empty
   }
 
-  /**
-    * Implementation of the LevelContext trait
-    */
+  /** Implementation of the LevelContext trait */
   private class LevelContextImpl(private var playerUUID: String = "", override val levelContextType: LevelContextType.Value = LevelContextType.normal) extends AbstractLevelContext(levelContextType) {
 
     /** The current game state */
     private[this] var _gameCurrentState: GameStateEventWrapper = GamePending
-    def gameCurrentState: GameStateEventWrapper = _gameCurrentState
+
+    override def getPlayerUUID: String = playerUUID
+
+    override def setPlayerUUID(playerUUID: String): Unit = this.playerUUID = playerUUID
+
+    /** Called on a event T type
+      *
+      * @param event the event
+      */
+    override def notify(event: GameStateEventWrapper): Unit = {
+      gameCurrentState_=(event)
+    }
+
     def gameCurrentState_=(value: GameStateEventWrapper): Unit = {
       _gameCurrentState = value
       listener match {
@@ -125,20 +125,10 @@ object LevelContext {
       case _ =>
     }
 
-    override def getPlayerUUID: String = playerUUID
-
-    override def setPlayerUUID(playerUUID: String): Unit = this.playerUUID = playerUUID
-
-    /** Called on a event T type
-      *
-      * @param event the event
-      */
-    override def notify(event: GameStateEventWrapper): Unit = {
-      gameCurrentState_=(event)
-    }
+    def gameCurrentState: GameStateEventWrapper = _gameCurrentState
   }
 
-  /*** Implementation of the MultiPlayerLevelContext trait, override LevelContextImpl */
+  /** Implementation of the MultiPlayerLevelContext trait, override LevelContextImpl */
   private class MultiPlayerLevelContextImpl(private val playerUUID: String) extends LevelContextImpl(playerUUID, LevelContextType.multiplayer) with MultiPlayerLevelContext {
 
     /** The multiplayer level context listener */
@@ -157,14 +147,12 @@ object LevelContext {
 
 }
 
-/**
-  * Trait which gets notified when a LevelContext event occurs
-  */
+/** Trait which gets notified when a LevelContext event occurs */
 trait LevelContextListener {
   /** Called when the LevelContext retrieve a collection of entities that must be drawn on the scene
     *
     * @param playerEntity the player entity. It may be empty
-    * @param entities the other entities
+    * @param entities     the other entities
     */
   def onDrawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper])
 
@@ -181,9 +169,7 @@ trait LevelContextListener {
   def onLevelEnd(levelResult: Boolean)
 }
 
-/**
-  * Trait which gets notified when a LevelContext event occurs
-  */
+/** Trait which gets notified when a LevelContext event occurs */
 trait MultiPlayerLevelContextListener extends LevelContextListener {
 
   /** Called once when the level ends with a loss and we are the server. */

@@ -19,7 +19,7 @@ import scalafx.stage.Stage
 /** Opening scene, showing the menu and the menu bar
   *
   * @param parentStage the parent stage
-  * @param listener the MainSceneListener
+  * @param listener    the MainSceneListener
   */
 class MainScene(override val parentStage: Stage, val listener: MainSceneListener) extends BaseScene(parentStage)
   with MainMenuCenterBoxListener with BackClickListener {
@@ -37,27 +37,10 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
   /** The legend screen */
   private val legendScreen = new GameLegendScreen(this).legendScreen
   legendScreen.visible <== legendScreenVisible
-
-  /** This method makes the legend screen appear/disappear */
-  private def changeLegendScreenState(): Unit = {
-    if (controlsScreenVisible.value) controlsScreenVisible.value = false
-    legendScreenVisible.value = !legendScreenVisible.value
-    background.opacity = if (legendScreenVisible.value) 0.3 else 1.0
-  }
-
   /** Boolean binding with the instructionScreen */
   private val controlsScreenVisible: BooleanProperty = BooleanProperty(false)
   /** The instruction screen */
   private val instructionScreen = new GameInstructionScreen(this).instructionScreen
-  instructionScreen.visible <== controlsScreenVisible
-
-  /** This method makes the instruction screen appear/disappear */
-  private def changeControlsScreenState(): Unit = {
-    if (legendScreenVisible.value) legendScreenVisible.value = false
-    controlsScreenVisible.value = !controlsScreenVisible.value
-    background.opacity = if (controlsScreenVisible.value) 0.3 else 1.0
-  }
-
   /** Requesting a structured layout */
   private val rootLayout: BorderPane = new BorderPane {
     prefWidth <== parentStage.width
@@ -84,6 +67,11 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
     }
     styleClass.add("default-background")
   }
+  instructionScreen.visible <== controlsScreenVisible
+
+  override def backToMainMenu(): Unit = {}
+
+  override def onPlayClick(): Unit = listener.onPlayClick()
 
   onKeyPressed = key => key.getCode match {
     case KeyCode.C => changeControlsScreenState()
@@ -92,10 +80,6 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
   }
 
   content = Seq(background, rootLayout, instructionScreen, legendScreen)
-
-  override def backToMainMenu(): Unit = {}
-
-  override def onPlayClick(): Unit = listener.onPlayClick()
 
   override def onMultiPlayerClick(): Unit = listener.onMultiPlayerClick()
 
@@ -111,6 +95,20 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
   override def onBackClick(): Unit = parentStage.scene = this
 
   override def onStatsClick(): Unit = listener.onStatsClick()
+
+  /** This method makes the legend screen appear/disappear */
+  private def changeLegendScreenState(): Unit = {
+    if (controlsScreenVisible.value) controlsScreenVisible.value = false
+    legendScreenVisible.value = !legendScreenVisible.value
+    background.opacity = if (legendScreenVisible.value) 0.3 else 1.0
+  }
+
+  /** This method makes the instruction screen appear/disappear */
+  private def changeControlsScreenState(): Unit = {
+    if (legendScreenVisible.value) legendScreenVisible.value = false
+    controlsScreenVisible.value = !controlsScreenVisible.value
+    background.opacity = if (controlsScreenVisible.value) 0.3 else 1.0
+  }
 }
 
 /** Trait which gets notified when a MainScene event occurs */

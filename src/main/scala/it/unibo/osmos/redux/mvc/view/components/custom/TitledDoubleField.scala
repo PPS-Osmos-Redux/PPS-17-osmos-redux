@@ -9,8 +9,8 @@ import scalafx.util.converter.{DoubleStringConverter, NumberStringConverter}
 
 /** TextField with a Title which controls the user inputs, checking that the text inserted is a Double
   *
-  * @param title the text shown
-  * @param value the observable double property
+  * @param title    the text shown
+  * @param value    the observable double property
   * @param minValue the minimum acceptable value, set to Double.MinValue if not specified
   * @param maxValue the maximum acceptable value, set to Double.MaxValue if not specified
   */
@@ -28,8 +28,8 @@ class TitledDoubleField(override val title: StringProperty, private val value: D
 
   /** Additional constructor
     *
-    * @param title the title
-    * @param value the value, as a DoubleProperty
+    * @param title    the title
+    * @param value    the value, as a DoubleProperty
     * @param minValue the minimum allowed value
     * @param maxValue the maximum allowed value
     */
@@ -41,7 +41,7 @@ class TitledDoubleField(override val title: StringProperty, private val value: D
     *
     * @return a node of type N <: Node
     */
-  override def innerNode: TextField = new TextField(){
+  override def innerNode: TextField = new TextField() {
     text.delegate.bindBidirectional(value, new NumberStringConverter(Locale.US))
     editable = true
     prefWidth <== maxWidth
@@ -50,7 +50,7 @@ class TitledDoubleField(override val title: StringProperty, private val value: D
       /** Checking if the double starts with the dot */
       val dotted = input.matches("^(-?)(\\.[0-9]+)?$")
       if (dotted) {
-        /** Adding 0 in front*/
+        /** Adding 0 in front */
         c.setText("0")
         c
       } else {
@@ -60,6 +60,7 @@ class TitledDoubleField(override val title: StringProperty, private val value: D
         if (isNumber && (maxValue <= c.getControlNewText.toDouble || minValue >= c.getControlNewText.toDouble)) c.setText("")
         c
       }
-    }})
+    }
+    })
   }
 }

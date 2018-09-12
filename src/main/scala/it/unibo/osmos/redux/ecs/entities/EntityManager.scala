@@ -86,21 +86,6 @@ object EntityManager extends EntityManager with Observable {
   private var observers: List[ObserverEntry] = List()
   private var entities: mutable.Set[Property] = mutable.Set()
 
-  def getInterfaces(entity: Property): List[Class[_]] =
-    ClassUtils.getAllInterfaces(entity.getClass).asScala.toList
-
-  def extendsInterface(ent: Property, entityInt: EntityManager.ManagedEntity): Boolean =
-    getInterfaces(ent) contains entityInt
-
-  @tailrec
-  private def notifyEvent(observers: List[ObserverEntry], emEvent: EntityManagerEvent): Unit =
-    observers match {
-      case Nil =>
-      case (obs, entityInt) :: t if extendsInterface(emEvent.entity, entityInt) =>
-        obs.notify(emEvent); notifyEvent(t, emEvent)
-      case _ :: t => notifyEvent(t, emEvent)
-    }
-
   override def add(entity: Property): Unit = {
     entities += entity
     notifyEvent(observers, EMEvents.entityCreated(entity))
@@ -117,8 +102,23 @@ object EntityManager extends EntityManager with Observable {
   override def filterEntities(entityInterface: EntityManager.ManagedEntity): List[Property] =
     entities.filter(ent => extendsInterface(ent, entityInterface)).toList
 
+  def extendsInterface(ent: Property, entityInt: EntityManager.ManagedEntity): Boolean =
+    getInterfaces(ent) contains entityInt
+
+  def getInterfaces(entity: Property): List[Class[_]] =
+    ClassUtils.getAllInterfaces(entity.getClass).asScala.toList
+
   override def clear(): Unit = {
     observers = List()
     entities.clear()
   }
+
+  @tailrec
+  private def notifyEvent(observers: List[ObserverEntry], emEvent: EntityManagerEvent): Unit =
+    observers match {
+      case Nil =>
+      case (obs, entityInt) :: t if extendsInterface(emEvent.entity, entityInt) =>
+        obs.notify(emEvent); notifyEvent(t, emEvent)
+      case _ :: t => notifyEvent(t, emEvent)
+    }
 }

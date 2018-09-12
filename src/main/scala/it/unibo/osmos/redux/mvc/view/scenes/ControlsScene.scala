@@ -9,8 +9,8 @@ import scalafx.stage.Stage
 
 /** Scene where the user can find application controls
   *
-  * @param parentStage the parent stage
-  * @param listener the PrimaryStageListener
+  * @param parentStage           the parent stage
+  * @param listener              the PrimaryStageListener
   * @param previousSceneListener the BackClickListener
   */
 class ControlsScene(override val parentStage: Stage, listener: PrimaryStageListener, previousSceneListener: BackClickListener) extends DefaultBackScene(parentStage, previousSceneListener) {
@@ -21,23 +21,18 @@ class ControlsScene(override val parentStage: Stage, listener: PrimaryStageListe
       new Label("Speed up time"),
       new Label("Slow down time"))
   }
-
   private val controls = new VBox() {
     children = Seq(new Text("Click on the screen to eject mass and move in the opposite direction"),
       new Text("Press esc to stop game (single player only)"),
       new Text("Press up or right arrow key to speed up game time (single player only)"),
       new Text("Press down or left arrow key to speed up game time (single player only)"))
   }
-
   private val container = new HBox(20) {
     alignment = Pos.Center
     children = Seq(commands, controls)
     styleClass.add("controls-hbox")
   }
-
-  /**
-    * The central container
-    */
+  /** The central container */
   protected val controlSceneMainContainer: VBox = new VBox(15) {
     alignment = Pos.Center
     children = Seq(container, goBack)

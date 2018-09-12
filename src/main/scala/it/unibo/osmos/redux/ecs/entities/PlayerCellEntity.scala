@@ -18,9 +18,9 @@ object PlayerCellEntity {
             typeEntity: TypeComponent = TypeComponent(EntityType.Controlled)): PlayerCellEntity =
     PlayerCellEntityImpl(CellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity), spawner)
 
-  def apply(cell: CellEntity, spawner: SpawnerComponent): PlayerCellEntity = PlayerCellEntityImpl(cell, spawner)
-
   def apply(builder: CellBuilder, spawner: SpawnerComponent): PlayerCellEntity = apply(builder.buildCellEntity(), spawner)
+
+  def apply(cell: CellEntity, spawner: SpawnerComponent): PlayerCellEntity = PlayerCellEntityImpl(cell, spawner)
 
   private case class PlayerCellEntityImpl(cellEntity: CellEntity, private val spawner: SpawnerComponent) extends PlayerCellEntity {
 
@@ -44,4 +44,5 @@ object PlayerCellEntity {
 
     override def getSpawnerComponent: SpawnerComponent = spawner
   }
+
 }

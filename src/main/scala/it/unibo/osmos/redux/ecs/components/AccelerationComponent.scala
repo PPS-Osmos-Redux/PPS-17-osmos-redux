@@ -24,9 +24,9 @@ object AccelerationComponent {
 
     override def vector: Vector = _speedVector
 
-    override def vector_(vector: Vector): Unit = _speedVector = vector
-
     override def reset(): Unit = vector_(Vector.zero())
+
+    override def vector_(vector: Vector): Unit = _speedVector = vector
   }
 
 }

@@ -5,14 +5,16 @@ import it.unibo.osmos.redux.utils.Constants
 
 import scala.io.Source
 
+/** Factory to create and load the actor's configs */
 object ActorSystemConfigFactory {
 
-  /**
-    * Creates and returns a default config.
+  /** Creates and returns a default config.
+    *
     * @return The default config.
     */
   def create(): Config = {
-    val configString = """
+    val configString =
+      """
      akka {
        actor {
          provider = remote
@@ -28,13 +30,14 @@ object ActorSystemConfigFactory {
     ConfigFactory.parseString(configString)
   }
 
-  /**
-    * Creates and returns a config with the specified address and port.
+  /** Creates and returns a config with the specified address and port.
+    *
     * @param address The user object that contains declared port
     * @return The default config with custom port and address.
     */
   def create(address: String, port: String): Config = {
-    val configString = s"""
+    val configString =
+      s"""
      akka {
        actor {
          provider = remote
@@ -51,16 +54,16 @@ object ActorSystemConfigFactory {
     ConfigFactory.parseString(configString)
   }
 
-  /**
-    * Loads and returns the config declared in the default.conf file in the resources.
+  /** Loads and returns the config declared in the default.conf file in the resources.
+    *
     * @return The config.
     */
   def load(): Config = {
     ConfigFactory.parseString(readConfigFile)
   }
 
-  /**
-    * Reads from the default system conf file.
+  /** Reads from the default system conf file.
+    *
     * @return The file content.
     */
   private def readConfigFile: String = {
