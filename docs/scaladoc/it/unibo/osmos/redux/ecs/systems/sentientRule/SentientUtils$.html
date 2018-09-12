@@ -3,9 +3,9 @@
         <head>
           <meta http-equiv="X-UA-Compatible" content="IE=edge" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-          <title>osmos-redux 1.2.0 API  - it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils</title>
-          <meta name="description" content="osmos - redux 1.2.0 API - it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils" />
-          <meta name="keywords" content="osmos redux 1.2.0 API it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils" />
+          <title>osmos-redux 1.3.0 API  - it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils</title>
+          <meta name="description" content="osmos - redux 1.3.0 API - it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils" />
+          <meta name="keywords" content="osmos redux 1.3.0 API it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../../../../../lib/index.css" media="screen" type="text/css" rel="stylesheet" />
@@ -28,7 +28,7 @@
         </head>
         <body>
       <div id="search">
-        <span id="doc-title">osmos-redux 1.2.0 API<span id="doc-version"></span></span>
+        <span id="doc-title">osmos-redux 1.3.0 API<span id="doc-version"></span></span>
         <span class="close-results"><span class="left">&lt;</span> Back</span>
         <div id="textfilter">
           <span class="input">
@@ -183,28 +183,24 @@
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../index.html" class="extype" name="it.unibo.osmos.redux.ecs.systems">systems</a></dd></dl></div>
     </li><li class="current-entities indented7">
                         <span class="separator"></span>
-                        <a class="class" href="EscapeFromBoundaryRule.html" title=""></a>
-                        <a href="EscapeFromBoundaryRule.html" title="">EscapeFromBoundaryRule</a>
+                        <a class="class" href="EscapeFromBoundaryRule.html" title="compute the acceleration to avoid the boundary in according with boundary collision rule"></a>
+                        <a href="EscapeFromBoundaryRule.html" title="compute the acceleration to avoid the boundary in according with boundary collision rule">EscapeFromBoundaryRule</a>
                       </li><li class="current-entities indented7">
                         <span class="separator"></span>
-                        <a class="class" href="EscapeFromEnemiesRule.html" title=""></a>
-                        <a href="EscapeFromEnemiesRule.html" title="">EscapeFromEnemiesRule</a>
+                        <a class="class" href="EscapeFromEnemiesRule.html" title="Rule to compute the acceleration to run away from enemies"></a>
+                        <a href="EscapeFromEnemiesRule.html" title="Rule to compute the acceleration to run away from enemies">EscapeFromEnemiesRule</a>
                       </li><li class="current-entities indented7">
                         <span class="separator"></span>
-                        <a class="class" href="FollowTargetRule.html" title=""></a>
-                        <a href="FollowTargetRule.html" title="">FollowTargetRule</a>
+                        <a class="class" href="FollowTargetRule.html" title="Rule to compute the acceleration to follow the target enemy"></a>
+                        <a href="FollowTargetRule.html" title="Rule to compute the acceleration to follow the target enemy">FollowTargetRule</a>
                       </li><li class="current-entities indented7">
                         <span class="separator"></span>
-                        <a class="class" href="RuleWithEnemies.html" title=""></a>
-                        <a href="RuleWithEnemies.html" title="">RuleWithEnemies</a>
+                        <a class="trait" href="SentientRule.html" title="Base rule for sentient entity"></a>
+                        <a href="SentientRule.html" title="Base rule for sentient entity">SentientRule</a>
                       </li><li class="current-entities indented7">
                         <span class="separator"></span>
-                        <a class="trait" href="SentientRule.html" title=""></a>
-                        <a href="SentientRule.html" title="">SentientRule</a>
-                      </li><li class="current-entities indented7">
-                        <span class="separator"></span>
-                        <a class="object" href="" title=""></a>
-                        <a href="" title="">SentientUtils</a>
+                        <a class="object" href="" title="Utils for sentient system and rules"></a>
+                        <a href="" title="Utils for sentient system and rules">SentientUtils</a>
                       </li>
               </ul>
             </div>
@@ -233,7 +229,7 @@
       </h4>
 
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Utils for sentient system and rules</p></div><div class="toggleContainer block">
           <span class="toggle">
             Linear Supertypes
           </span>
@@ -397,7 +393,7 @@
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils#computeSteer" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils#computeSteer" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="computeSteer(actualVelocity:it.unibo.osmos.redux.utils.Vector,desiredVelocity:it.unibo.osmos.redux.utils.Vector):it.unibo.osmos.redux.utils.Vector"></a><a id="computeSteer(Vector,Vector):Vector"></a>
       <span class="permalink">
       <a href="../../../../../../../it/unibo/osmos/redux/ecs/systems/sentientRule/SentientUtils$.html#computeSteer(actualVelocity:it.unibo.osmos.redux.utils.Vector,desiredVelocity:it.unibo.osmos.redux.utils.Vector):it.unibo.osmos.redux.utils.Vector" title="Permalink">
@@ -412,8 +408,12 @@
         <span class="name">computeSteer</span><span class="params">(<span name="actualVelocity">actualVelocity: <a href="../../../utils/Vector.html" class="extype" name="it.unibo.osmos.redux.utils.Vector">Vector</a></span>, <span name="desiredVelocity">desiredVelocity: <a href="../../../utils/Vector.html" class="extype" name="it.unibo.osmos.redux.utils.Vector">Vector</a></span>)</span><span class="result">: <a href="../../../utils/Vector.html" class="extype" name="it.unibo.osmos.redux.utils.Vector">Vector</a></span>
       </span>
       
-      
-    </li><li name="it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils#computeUnlimitedSteer" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt">compute the acceleration to apply to the actual velocity and obtain the desired velocity,
+then limit it
+</p><div class="fullcomment"><div class="comment cmt"><p>compute the acceleration to apply to the actual velocity and obtain the desired velocity,
+then limit it
+</p></div><dl class="paramcmts block"><dt class="param">actualVelocity</dt><dd class="cmt"><p>actual velocity</p></dd><dt class="param">desiredVelocity</dt><dd class="cmt"><p>desired velocity</p></dd><dt>returns</dt><dd class="cmt"><p>the limited acceleration</p></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils#computeUnlimitedSteer" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="computeUnlimitedSteer(actualVelocity:it.unibo.osmos.redux.utils.Vector,desiredVelocity:it.unibo.osmos.redux.utils.Vector):it.unibo.osmos.redux.utils.Vector"></a><a id="computeUnlimitedSteer(Vector,Vector):Vector"></a>
       <span class="permalink">
       <a href="../../../../../../../it/unibo/osmos/redux/ecs/systems/sentientRule/SentientUtils$.html#computeUnlimitedSteer(actualVelocity:it.unibo.osmos.redux.utils.Vector,desiredVelocity:it.unibo.osmos.redux.utils.Vector):it.unibo.osmos.redux.utils.Vector" title="Permalink">
@@ -428,7 +428,9 @@
         <span class="name">computeUnlimitedSteer</span><span class="params">(<span name="actualVelocity">actualVelocity: <a href="../../../utils/Vector.html" class="extype" name="it.unibo.osmos.redux.utils.Vector">Vector</a></span>, <span name="desiredVelocity">desiredVelocity: <a href="../../../utils/Vector.html" class="extype" name="it.unibo.osmos.redux.utils.Vector">Vector</a></span>)</span><span class="result">: <a href="../../../utils/Vector.html" class="extype" name="it.unibo.osmos.redux.utils.Vector">Vector</a></span>
       </span>
       
-      
+      <p class="shortcomment cmt">compute the acceleration to apply to the actual velocity and obtain the desired velocity
+</p><div class="fullcomment"><div class="comment cmt"><p>compute the acceleration to apply to the actual velocity and obtain the desired velocity
+</p></div><dl class="paramcmts block"><dt class="param">actualVelocity</dt><dd class="cmt"><p>actual velocity</p></dd><dt class="param">desiredVelocity</dt><dd class="cmt"><p>desired velocity</p></dd><dt>returns</dt><dd class="cmt"><p>the acceleration</p></dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a><a id="eq(AnyRef):Boolean"></a>
       <span class="permalink">
@@ -502,7 +504,7 @@
                 <span class="name">@native</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li name="it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils#getDesiredSeparation" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils#getDesiredSeparation" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getDesiredSeparation(actualVelocity:it.unibo.osmos.redux.utils.Vector):Double"></a><a id="getDesiredSeparation(Vector):Double"></a>
       <span class="permalink">
       <a href="../../../../../../../it/unibo/osmos/redux/ecs/systems/sentientRule/SentientUtils$.html#getDesiredSeparation(actualVelocity:it.unibo.osmos.redux.utils.Vector):Double" title="Permalink">
@@ -517,8 +519,10 @@
         <span class="name">getDesiredSeparation</span><span class="params">(<span name="actualVelocity">actualVelocity: <a href="../../../utils/Vector.html" class="extype" name="it.unibo.osmos.redux.utils.Vector">Vector</a></span>)</span><span class="result">: <span class="extype" name="scala.Double">Double</span></span>
       </span>
       
-      
-    </li><li name="it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils#hasLostRadiusBehaviour" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt">Return the desired acceleration from a sentient to other enemies
+</p><div class="fullcomment"><div class="comment cmt"><p>Return the desired acceleration from a sentient to other enemies
+</p></div><dl class="paramcmts block"><dt class="param">actualVelocity</dt><dd class="cmt"><p>sentient's velocity</p></dd><dt>returns</dt><dd class="cmt"><p>desired separation</p></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils#hasLostRadiusBehaviour" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hasLostRadiusBehaviour(sentient:it.unibo.osmos.redux.ecs.entities.properties.composed.SentientProperty):Boolean"></a><a id="hasLostRadiusBehaviour(SentientProperty):Boolean"></a>
       <span class="permalink">
       <a href="../../../../../../../it/unibo/osmos/redux/ecs/systems/sentientRule/SentientUtils$.html#hasLostRadiusBehaviour(sentient:it.unibo.osmos.redux.ecs.entities.properties.composed.SentientProperty):Boolean" title="Permalink">
@@ -533,7 +537,9 @@
         <span class="name">hasLostRadiusBehaviour</span><span class="params">(<span name="sentient">sentient: <a href="../../entities/properties/composed/SentientProperty.html" class="extype" name="it.unibo.osmos.redux.ecs.entities.properties.composed.SentientProperty">SentientProperty</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       
-      
+      <p class="shortcomment cmt">check which behaviour have the sentient
+</p><div class="fullcomment"><div class="comment cmt"><p>check which behaviour have the sentient
+</p></div><dl class="paramcmts block"><dt class="param">sentient</dt><dd class="cmt"><p>sentient to check</p></dd><dt>returns</dt><dd class="cmt"><p>true if the behaviour is lost radius, false otherwise</p></dd></dl></div>
     </li><li name="scala.AnyRef#hashCode" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
       <span class="permalink">

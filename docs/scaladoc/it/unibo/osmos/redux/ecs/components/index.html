@@ -3,9 +3,9 @@
         <head>
           <meta http-equiv="X-UA-Compatible" content="IE=edge" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-          <title>osmos-redux 1.2.0 API  - it.unibo.osmos.redux.ecs.components</title>
-          <meta name="description" content="osmos - redux 1.2.0 API - it.unibo.osmos.redux.ecs.components" />
-          <meta name="keywords" content="osmos redux 1.2.0 API it.unibo.osmos.redux.ecs.components" />
+          <title>osmos-redux 1.3.0 API  - it.unibo.osmos.redux.ecs.components</title>
+          <meta name="description" content="osmos - redux 1.3.0 API - it.unibo.osmos.redux.ecs.components" />
+          <meta name="keywords" content="osmos redux 1.3.0 API it.unibo.osmos.redux.ecs.components" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../../../../lib/index.css" media="screen" type="text/css" rel="stylesheet" />
@@ -28,7 +28,7 @@
         </head>
         <body>
       <div id="search">
-        <span id="doc-title">osmos-redux 1.2.0 API<span id="doc-version"></span></span>
+        <span id="doc-title">osmos-redux 1.3.0 API<span id="doc-version"></span></span>
         <span class="close-results"><span class="left">&lt;</span> Back</span>
         <div id="textfilter">
           <span class="input">
@@ -211,8 +211,8 @@
                         <a href="TypeComponent.html" title="Component for entity's type">TypeComponent</a>
                       </li><li class="current-entities indented6">
                         <span class="separator"></span>
-                        <a class="trait" href="VectorComponent.html" title=""></a>
-                        <a href="VectorComponent.html" title="">VectorComponent</a>
+                        <a class="trait" href="VectorComponent.html" title="Base component with vector element"></a>
+                        <a href="VectorComponent.html" title="Base component with vector element">VectorComponent</a>
                       </li><li class="current-entities indented6">
                         <a class="object" href="VisibleComponent$.html" title=""></a>
                         <a class="trait" href="VisibleComponent.html" title="Component for visible entity"></a>
@@ -375,8 +375,7 @@
         <a title="Component base trait" href="Component.html"><span class="name">Component</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       
-      <p class="shortcomment cmt">Component base trait
-</p>
+      <p class="shortcomment cmt">Component base trait</p>
     </li><li name="it.unibo.osmos.redux.ecs.components.DimensionComponent" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="DimensionComponentextendsComponent"></a><a id="DimensionComponent:DimensionComponent"></a>
       <span class="permalink">
@@ -392,8 +391,7 @@
         <a title="Component Dimension (radius of the sphere)" href="DimensionComponent.html"><span class="name">DimensionComponent</span></a><span class="result"> extends <a href="Component.html" class="extype" name="it.unibo.osmos.redux.ecs.components.Component">Component</a></span>
       </span>
       
-      <p class="shortcomment cmt">Component Dimension (radius of the sphere)
-</p>
+      <p class="shortcomment cmt">Component Dimension (radius of the sphere)</p>
     </li><li name="it.unibo.osmos.redux.ecs.components.MassComponent" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="MassComponentextendsComponent"></a><a id="MassComponent:MassComponent"></a>
       <span class="permalink">
@@ -409,8 +407,7 @@
         <a title="Component for entity's mass" href="MassComponent.html"><span class="name">MassComponent</span></a><span class="result"> extends <a href="Component.html" class="extype" name="it.unibo.osmos.redux.ecs.components.Component">Component</a></span>
       </span>
       
-      <p class="shortcomment cmt">Component for entity's mass
-</p>
+      <p class="shortcomment cmt">Component for entity's mass</p>
     </li><li name="it.unibo.osmos.redux.ecs.components.PositionComponent" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="PositionComponentextendsComponent"></a><a id="PositionComponent:PositionComponent"></a>
       <span class="permalink">
@@ -426,8 +423,7 @@
         <a title="Component Position (coordinates of the sphere's center)" href="PositionComponent.html"><span class="name">PositionComponent</span></a><span class="result"> extends <a href="Component.html" class="extype" name="it.unibo.osmos.redux.ecs.components.Component">Component</a></span>
       </span>
       
-      <p class="shortcomment cmt">Component Position (coordinates of the sphere's center)
-</p>
+      <p class="shortcomment cmt">Component Position (coordinates of the sphere's center)</p>
     </li><li name="it.unibo.osmos.redux.ecs.components.SpawnAction" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="SpawnActionextendsProductwithSerializable"></a><a id="SpawnAction:SpawnAction"></a>
       <span class="permalink">
@@ -443,7 +439,8 @@
         <a title="Represents a spawn action of a spawner." href="SpawnAction.html"><span class="name">SpawnAction</span></a><span class="params">(<span name="position">position: <a href="PositionComponent.html" class="extype" name="it.unibo.osmos.redux.ecs.components.PositionComponent">PositionComponent</a></span>, <span name="dimension">dimension: <a href="DimensionComponent.html" class="extype" name="it.unibo.osmos.redux.ecs.components.DimensionComponent">DimensionComponent</a></span>, <span name="speed">speed: <a href="SpeedComponent.html" class="extype" name="it.unibo.osmos.redux.ecs.components.SpeedComponent">SpeedComponent</a></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
-      <p class="shortcomment cmt">Represents a spawn action of a spawner.</p><div class="fullcomment"><div class="comment cmt"><p>Represents a spawn action of a spawner.</p></div><dl class="paramcmts block"><dt class="param">position</dt><dd class="cmt"><p>The initial position of the entity to spawn</p></dd><dt class="param">dimension</dt><dd class="cmt"><p>The dimension of the entity to spawn</p></dd><dt class="param">speed</dt><dd class="cmt"><p>The initial speed of the entity to spawn</p></dd></dl></div>
+      <p class="shortcomment cmt">Represents a spawn action of a spawner.</p><div class="fullcomment"><div class="comment cmt"><p>Represents a spawn action of a spawner.
+</p></div><dl class="paramcmts block"><dt class="param">position</dt><dd class="cmt"><p>The initial position of the entity to spawn</p></dd><dt class="param">dimension</dt><dd class="cmt"><p>The dimension of the entity to spawn</p></dd><dt class="param">speed</dt><dd class="cmt"><p>The initial speed of the entity to spawn</p></dd></dl></div>
     </li><li name="it.unibo.osmos.redux.ecs.components.SpawnerComponent" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="SpawnerComponentextendsComponent"></a><a id="SpawnerComponent:SpawnerComponent"></a>
       <span class="permalink">
@@ -459,8 +456,7 @@
         <a title="Spawner Component" href="SpawnerComponent.html"><span class="name">SpawnerComponent</span></a><span class="result"> extends <a href="Component.html" class="extype" name="it.unibo.osmos.redux.ecs.components.Component">Component</a></span>
       </span>
       
-      <p class="shortcomment cmt">Spawner Component
-</p>
+      <p class="shortcomment cmt">Spawner Component</p>
     </li><li name="it.unibo.osmos.redux.ecs.components.SpecificWeightComponent" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="SpecificWeightComponentextendsComponentwithProductwithSerializable"></a><a id="SpecificWeightComponent:SpecificWeightComponent"></a>
       <span class="permalink">
@@ -476,7 +472,9 @@
         <a title="Component for the specific weight of the entity" href="SpecificWeightComponent.html"><span class="name">SpecificWeightComponent</span></a><span class="params">(<span name="specificWeight">specificWeight: <span class="extype" name="scala.Double">Double</span></span>)</span><span class="result"> extends <a href="Component.html" class="extype" name="it.unibo.osmos.redux.ecs.components.Component">Component</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
-      <p class="shortcomment cmt">Component for the specific weight of the entity</p><div class="fullcomment"><div class="comment cmt"><p>Component for the specific weight of the entity</p></div><dl class="paramcmts block"><dt class="param">specificWeight</dt><dd class="cmt"><p>specific weight</p></dd></dl></div>
+      <p class="shortcomment cmt">Component for the specific weight of the entity
+</p><div class="fullcomment"><div class="comment cmt"><p>Component for the specific weight of the entity
+</p></div><dl class="paramcmts block"><dt class="param">specificWeight</dt><dd class="cmt"><p>specific weight</p></dd></dl></div>
     </li><li name="it.unibo.osmos.redux.ecs.components.SpeedComponent" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="SpeedComponentextendsVectorComponent"></a><a id="SpeedComponent:SpeedComponent"></a>
       <span class="permalink">
@@ -492,8 +490,7 @@
         <a title="Component of the speed vector" href="SpeedComponent.html"><span class="name">SpeedComponent</span></a><span class="result"> extends <a href="VectorComponent.html" class="extype" name="it.unibo.osmos.redux.ecs.components.VectorComponent">VectorComponent</a></span>
       </span>
       
-      <p class="shortcomment cmt">Component of the speed vector
-</p>
+      <p class="shortcomment cmt">Component of the speed vector</p>
     </li><li name="it.unibo.osmos.redux.ecs.components.TypeComponent" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="TypeComponentextendsComponentwithProductwithSerializable"></a><a id="TypeComponent:TypeComponent"></a>
       <span class="permalink">
@@ -524,10 +521,10 @@
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <a title="" href="VectorComponent.html"><span class="name">VectorComponent</span></a><span class="result"> extends <a href="Component.html" class="extype" name="it.unibo.osmos.redux.ecs.components.Component">Component</a></span>
+        <a title="Base component with vector element" href="VectorComponent.html"><span class="name">VectorComponent</span></a><span class="result"> extends <a href="Component.html" class="extype" name="it.unibo.osmos.redux.ecs.components.Component">Component</a></span>
       </span>
       
-      <p class="shortcomment cmt"></p>
+      <p class="shortcomment cmt">Base component with vector element</p>
     </li><li name="it.unibo.osmos.redux.ecs.components.VisibleComponent" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="VisibleComponentextendsComponent"></a><a id="VisibleComponent:VisibleComponent"></a>
       <span class="permalink">
@@ -543,8 +540,7 @@
         <a title="Component for visible entity" href="VisibleComponent.html"><span class="name">VisibleComponent</span></a><span class="result"> extends <a href="Component.html" class="extype" name="it.unibo.osmos.redux.ecs.components.Component">Component</a></span>
       </span>
       
-      <p class="shortcomment cmt">Component for visible entity
-</p>
+      <p class="shortcomment cmt">Component for visible entity</p>
     </li></ol>
             </div>
 

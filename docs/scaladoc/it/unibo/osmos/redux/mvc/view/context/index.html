@@ -3,9 +3,9 @@
         <head>
           <meta http-equiv="X-UA-Compatible" content="IE=edge" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-          <title>osmos-redux 1.2.0 API  - it.unibo.osmos.redux.mvc.view.context</title>
-          <meta name="description" content="osmos - redux 1.2.0 API - it.unibo.osmos.redux.mvc.view.context" />
-          <meta name="keywords" content="osmos redux 1.2.0 API it.unibo.osmos.redux.mvc.view.context" />
+          <title>osmos-redux 1.3.0 API  - it.unibo.osmos.redux.mvc.view.context</title>
+          <meta name="description" content="osmos - redux 1.3.0 API - it.unibo.osmos.redux.mvc.view.context" />
+          <meta name="keywords" content="osmos redux 1.3.0 API it.unibo.osmos.redux.mvc.view.context" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../../../../../lib/index.css" media="screen" type="text/css" rel="stylesheet" />
@@ -28,7 +28,7 @@
         </head>
         <body>
       <div id="search">
-        <span id="doc-title">osmos-redux 1.2.0 API<span id="doc-version"></span></span>
+        <span id="doc-title">osmos-redux 1.3.0 API<span id="doc-version"></span></span>
         <span class="close-results"><span class="left">&lt;</span> Back</span>
         <div id="textfilter">
           <span class="input">
@@ -215,8 +215,8 @@
                         <a href="LevelContextType$.html" title="Enumeration representing the type of level the user is playing">LevelContextType</a>
                       </li><li class="current-entities indented7">
                         <a class="object" href="LobbyContext$.html" title="Companion object"></a>
-                        <a class="trait" href="LobbyContext.html" title="Basic LobbyContext trait, seen as a LobbyEvent wrapper and a User container"></a>
-                        <a href="LobbyContext.html" title="Basic LobbyContext trait, seen as a LobbyEvent wrapper and a User container">LobbyContext</a>
+                        <a class="trait" href="LobbyContext.html" title="Basic LobbyContext trait, seen both as a LobbyEventWrapper observable and observer"></a>
+                        <a href="LobbyContext.html" title="Basic LobbyContext trait, seen both as a LobbyEventWrapper observable and observer">LobbyContext</a>
                       </li><li class="current-entities indented7">
                         <span class="separator"></span>
                         <a class="trait" href="LobbyContextListener.html" title="Trait which gets notified when a LobbyContext event occurs"></a>
@@ -225,6 +225,10 @@
                         <span class="separator"></span>
                         <a class="trait" href="MultiPlayerLevelContext.html" title="LevelContext used in multplayer sessions"></a>
                         <a href="MultiPlayerLevelContext.html" title="LevelContext used in multplayer sessions">MultiPlayerLevelContext</a>
+                      </li><li class="current-entities indented7">
+                        <span class="separator"></span>
+                        <a class="trait" href="MultiPlayerLevelContextListener.html" title="Trait which gets notified when a LevelContext event occurs"></a>
+                        <a href="MultiPlayerLevelContextListener.html" title="Trait which gets notified when a LevelContext event occurs">MultiPlayerLevelContextListener</a>
                       </li><li name="it.unibo.osmos.redux.mvc.view.drawables" visbl="pub" class="indented7 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="drawables"></a><a id="drawables:drawables"></a>
       <span class="permalink">
@@ -383,8 +387,7 @@
         <a title="Trait modelling an object which holds the current game state and reacts when it gets changed" href="GameStateHolder.html"><span class="name">GameStateHolder</span></a><span class="result"> extends <a href="../events/EventWrapperObserver.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver">EventWrapperObserver</a>[<a href="../events/GameStateEventWrapper.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.GameStateEventWrapper">GameStateEventWrapper</a>]</span>
       </span>
       
-      <p class="shortcomment cmt">Trait modelling an object which holds the current game state and reacts when it gets changed
-</p>
+      <p class="shortcomment cmt">Trait modelling an object which holds the current game state and reacts when it gets changed</p>
     </li><li name="it.unibo.osmos.redux.mvc.view.context.LevelContext" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="LevelContextextendsEventWrapperObservable[it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper]withEntitiesDrawerwithGameStateHolder"></a><a id="LevelContext:LevelContext"></a>
       <span class="permalink">
@@ -400,8 +403,7 @@
         <a title="Trait modelling the context of a level" href="LevelContext.html"><span class="name">LevelContext</span></a><span class="result"> extends <a href="../events/EventWrapperObservable.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.EventWrapperObservable">EventWrapperObservable</a>[<a href="../events/MouseEventWrapper.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper">MouseEventWrapper</a>] with <a href="../drawables/EntitiesDrawer.html" class="extype" name="it.unibo.osmos.redux.mvc.view.drawables.EntitiesDrawer">EntitiesDrawer</a> with <a href="GameStateHolder.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.GameStateHolder">GameStateHolder</a></span>
       </span>
       
-      <p class="shortcomment cmt">Trait modelling the context of a level
-</p>
+      <p class="shortcomment cmt">Trait modelling the context of a level</p>
     </li><li name="it.unibo.osmos.redux.mvc.view.context.LevelContextListener" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="LevelContextListenerextendsAnyRef"></a><a id="LevelContextListener:LevelContextListener"></a>
       <span class="permalink">
@@ -417,8 +419,7 @@
         <a title="Trait which gets notified when a LevelContext event occurs" href="LevelContextListener.html"><span class="name">LevelContextListener</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       
-      <p class="shortcomment cmt">Trait which gets notified when a LevelContext event occurs
-</p>
+      <p class="shortcomment cmt">Trait which gets notified when a LevelContext event occurs</p>
     </li><li name="it.unibo.osmos.redux.mvc.view.context.LobbyContext" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="LobbyContextextendsEventWrapperObserver[it.unibo.osmos.redux.mvc.view.events.LobbyEventWrapper]withEventWrapperObservable[it.unibo.osmos.redux.mvc.view.events.LobbyEventWrapper]"></a><a id="LobbyContext:LobbyContext"></a>
       <span class="permalink">
@@ -431,11 +432,10 @@
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <a title="Basic LobbyContext trait, seen as a LobbyEvent wrapper and a User container" href="LobbyContext.html"><span class="name">LobbyContext</span></a><span class="result"> extends <a href="../events/EventWrapperObserver.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver">EventWrapperObserver</a>[<a href="../events/LobbyEventWrapper.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.LobbyEventWrapper">LobbyEventWrapper</a>] with <a href="../events/EventWrapperObservable.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.EventWrapperObservable">EventWrapperObservable</a>[<a href="../events/LobbyEventWrapper.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.LobbyEventWrapper">LobbyEventWrapper</a>]</span>
+        <a title="Basic LobbyContext trait, seen both as a LobbyEventWrapper observable and observer" href="LobbyContext.html"><span class="name">LobbyContext</span></a><span class="result"> extends <a href="../events/EventWrapperObserver.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver">EventWrapperObserver</a>[<a href="../events/LobbyEventWrapper.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.LobbyEventWrapper">LobbyEventWrapper</a>] with <a href="../events/EventWrapperObservable.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.EventWrapperObservable">EventWrapperObservable</a>[<a href="../events/LobbyEventWrapper.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.LobbyEventWrapper">LobbyEventWrapper</a>]</span>
       </span>
       
-      <p class="shortcomment cmt">Basic LobbyContext trait, seen as a LobbyEvent wrapper and a User container
-</p>
+      <p class="shortcomment cmt">Basic LobbyContext trait, seen both as a LobbyEventWrapper observable and observer</p>
     </li><li name="it.unibo.osmos.redux.mvc.view.context.LobbyContextListener" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="LobbyContextListenerextendsAnyRef"></a><a id="LobbyContextListener:LobbyContextListener"></a>
       <span class="permalink">
@@ -451,8 +451,7 @@
         <a title="Trait which gets notified when a LobbyContext event occurs" href="LobbyContextListener.html"><span class="name">LobbyContextListener</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       
-      <p class="shortcomment cmt">Trait which gets notified when a LobbyContext event occurs
-</p>
+      <p class="shortcomment cmt">Trait which gets notified when a LobbyContext event occurs</p>
     </li><li name="it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContext" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="MultiPlayerLevelContextextendsLevelContext"></a><a id="MultiPlayerLevelContext:MultiPlayerLevelContext"></a>
       <span class="permalink">
@@ -468,8 +467,23 @@
         <a title="LevelContext used in multplayer sessions" href="MultiPlayerLevelContext.html"><span class="name">MultiPlayerLevelContext</span></a><span class="result"> extends <a href="LevelContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.LevelContext">LevelContext</a></span>
       </span>
       
-      <p class="shortcomment cmt">LevelContext used in multplayer sessions
-</p>
+      <p class="shortcomment cmt">LevelContext used in multplayer sessions</p>
+    </li><li name="it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContextListener" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="MultiPlayerLevelContextListenerextendsLevelContextListener"></a><a id="MultiPlayerLevelContextListener:MultiPlayerLevelContextListener"></a>
+      <span class="permalink">
+      <a href="../../../../../../../it/unibo/osmos/redux/mvc/view/context/index.html#MultiPlayerLevelContextListenerextendsLevelContextListener" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a title="Trait which gets notified when a LevelContext event occurs" href="MultiPlayerLevelContextListener.html"><span class="name">MultiPlayerLevelContextListener</span></a><span class="result"> extends <a href="LevelContextListener.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.LevelContextListener">LevelContextListener</a></span>
+      </span>
+      
+      <p class="shortcomment cmt">Trait which gets notified when a LevelContext event occurs</p>
     </li></ol>
             </div>
 
@@ -493,8 +507,7 @@
         <a title="Companion object" href="LevelContext$.html"><span class="name">LevelContext</span></a>
       </span>
       
-      <p class="shortcomment cmt">Companion object
-</p>
+      <p class="shortcomment cmt">Companion object</p>
     </li><li name="it.unibo.osmos.redux.mvc.view.context.LevelContextType" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="LevelContextType"></a><a id="LevelContextType:LevelContextType"></a>
       <span class="permalink">
@@ -510,8 +523,7 @@
         <a title="Enumeration representing the type of level the user is playing" href="LevelContextType$.html"><span class="name">LevelContextType</span></a><span class="result"> extends <span class="extype" name="scala.Enumeration">Enumeration</span></span>
       </span>
       
-      <p class="shortcomment cmt">Enumeration representing the type of level the user is playing
-</p>
+      <p class="shortcomment cmt">Enumeration representing the type of level the user is playing</p>
     </li><li name="it.unibo.osmos.redux.mvc.view.context.LobbyContext" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="LobbyContext"></a><a id="LobbyContext:LobbyContext"></a>
       <span class="permalink">
@@ -527,8 +539,7 @@
         <a title="Companion object" href="LobbyContext$.html"><span class="name">LobbyContext</span></a>
       </span>
       
-      <p class="shortcomment cmt">Companion object
-</p>
+      <p class="shortcomment cmt">Companion object</p>
     </li>
               </ol>
             </div>

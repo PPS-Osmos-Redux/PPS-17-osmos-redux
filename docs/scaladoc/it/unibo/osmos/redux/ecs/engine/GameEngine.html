@@ -3,9 +3,9 @@
         <head>
           <meta http-equiv="X-UA-Compatible" content="IE=edge" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-          <title>osmos-redux 1.2.0 API  - it.unibo.osmos.redux.ecs.engine.GameEngine</title>
-          <meta name="description" content="osmos - redux 1.2.0 API - it.unibo.osmos.redux.ecs.engine.GameEngine" />
-          <meta name="keywords" content="osmos redux 1.2.0 API it.unibo.osmos.redux.ecs.engine.GameEngine" />
+          <title>osmos-redux 1.3.0 API  - it.unibo.osmos.redux.ecs.engine.GameEngine</title>
+          <meta name="description" content="osmos - redux 1.3.0 API - it.unibo.osmos.redux.ecs.engine.GameEngine" />
+          <meta name="keywords" content="osmos redux 1.3.0 API it.unibo.osmos.redux.ecs.engine.GameEngine" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../../../../lib/index.css" media="screen" type="text/css" rel="stylesheet" />
@@ -28,7 +28,7 @@
         </head>
         <body>
       <div id="search">
-        <span id="doc-title">osmos-redux 1.2.0 API<span id="doc-version"></span></span>
+        <span id="doc-title">osmos-redux 1.3.0 API<span id="doc-version"></span></span>
         <span class="close-results"><span class="left">&lt;</span> Back</span>
         <div id="textfilter">
           <span class="input">
@@ -166,10 +166,6 @@
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../index.html" class="extype" name="it.unibo.osmos.redux.ecs">ecs</a></dd></dl></div>
     </li><li class="current-entities indented6">
-                        <span class="separator"></span>
-                        <a class="class" href="ExceededTickTimeException.html" title="Custom exception to handle game loop tick time overrun"></a>
-                        <a href="ExceededTickTimeException.html" title="Custom exception to handle game loop tick time overrun">ExceededTickTimeException</a>
-                      </li><li class="current-entities indented6">
                         <a class="object" href="GameEngine$.html" title="Game engine object companion."></a>
                         <a class="trait" href="" title="Game engine, the game loop manager."></a>
                         <a href="" title="Game engine, the game loop manager.">GameEngine</a>
@@ -179,8 +175,8 @@
                         <a href="GameLoop.html" title="Implementation of the game loop.">GameLoop</a>
                       </li><li class="current-entities indented6">
                         <span class="separator"></span>
-                        <a class="object" href="GameStatus$.html" title=""></a>
-                        <a href="GameStatus$.html" title="">GameStatus</a>
+                        <a class="object" href="GameStatus$.html" title="The current status of the game"></a>
+                        <a href="GameStatus$.html" title="The current status of the game">GameStatus</a>
                       </li>
               </ul>
             </div>
@@ -211,8 +207,7 @@
       </h4>
 
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Game engine, the game loop manager.
-</p></div><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Game engine, the game loop manager.</p></div><div class="toggleContainer block">
           <span class="toggle">
             Linear Supertypes
           </span>
@@ -285,7 +280,24 @@
 
         <div class="values members">
               <h3>Abstract Value Members</h3>
-              <ol><li name="it.unibo.osmos.redux.ecs.engine.GameEngine#clear" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
+              <ol><li name="it.unibo.osmos.redux.ecs.engine.GameEngine#changeSpeed" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="changeSpeed(increment:Boolean):Unit"></a><a id="changeSpeed(Boolean):Unit"></a>
+      <span class="permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/ecs/engine/GameEngine.html#changeSpeed(increment:Boolean):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">changeSpeed</span><span class="params">(<span name="increment">increment: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">Changes the game loop speed by updating the current frame rate.</p><div class="fullcomment"><div class="comment cmt"><p>Changes the game loop speed by updating the current frame rate.
+</p></div><dl class="paramcmts block"><dt class="param">increment</dt><dd class="cmt"><p>Whether the game loop speed needs to be increased or decreased.</p></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.ecs.engine.GameEngine#clear" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="clear():Unit"></a>
       <span class="permalink">
       <a href="../../../../../../it/unibo/osmos/redux/ecs/engine/GameEngine.html#clear():Unit" title="Permalink">
@@ -316,7 +328,8 @@
         <span class="name">getFps</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       
-      <p class="shortcomment cmt">Returns the current frame rate.</p><div class="fullcomment"><div class="comment cmt"><p>Returns the current frame rate.</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>The frame rate.</p></dd></dl></div>
+      <p class="shortcomment cmt">Returns the current frame rate.</p><div class="fullcomment"><div class="comment cmt"><p>Returns the current frame rate.
+</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>The frame rate.</p></dd></dl></div>
     </li><li name="it.unibo.osmos.redux.ecs.engine.GameEngine#getStatus" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="getStatus:GameEngine.this.GameStatus"></a><a id="getStatus:GameStatus"></a>
       <span class="permalink">
@@ -332,11 +345,12 @@
         <span class="name">getStatus</span><span class="result">: <a href="#GameStatus=it.unibo.osmos.redux.ecs.engine.GameStatus.Value" class="extmbr" name="it.unibo.osmos.redux.ecs.engine.GameEngine.GameStatus">GameStatus</a></span>
       </span>
       
-      <p class="shortcomment cmt">Gets the current game loop status.</p><div class="fullcomment"><div class="comment cmt"><p>Gets the current game loop status.</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>The current game loop status.</p></dd></dl></div>
+      <p class="shortcomment cmt">Gets the current game loop status.</p><div class="fullcomment"><div class="comment cmt"><p>Gets the current game loop status.
+</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>The current game loop status.</p></dd></dl></div>
     </li><li name="it.unibo.osmos.redux.ecs.engine.GameEngine#init" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
-      <a id="init(level:it.unibo.osmos.redux.mvc.model.Level,server:it.unibo.osmos.redux.multiplayer.server.Server):it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContext"></a><a id="init(Level,Server):MultiPlayerLevelContext"></a>
+      <a id="init(level:it.unibo.osmos.redux.mvc.controller.levels.structure.Level,server:it.unibo.osmos.redux.multiplayer.server.Server):it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContext"></a><a id="init(Level,Server):MultiPlayerLevelContext"></a>
       <span class="permalink">
-      <a href="../../../../../../it/unibo/osmos/redux/ecs/engine/GameEngine.html#init(level:it.unibo.osmos.redux.mvc.model.Level,server:it.unibo.osmos.redux.multiplayer.server.Server):it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContext" title="Permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/ecs/engine/GameEngine.html#init(level:it.unibo.osmos.redux.mvc.controller.levels.structure.Level,server:it.unibo.osmos.redux.multiplayer.server.Server):it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContext" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -345,14 +359,15 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">init</span><span class="params">(<span name="level">level: <a href="../../mvc/model/Level.html" class="extype" name="it.unibo.osmos.redux.mvc.model.Level">Level</a></span>, <span name="server">server: <a href="../../multiplayer/server/Server.html" class="extype" name="it.unibo.osmos.redux.multiplayer.server.Server">Server</a></span>)</span><span class="result">: <a href="../../mvc/view/context/MultiPlayerLevelContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContext">MultiPlayerLevelContext</a></span>
+        <span class="name">init</span><span class="params">(<span name="level">level: <a href="../../mvc/controller/levels/structure/Level.html" class="extype" name="it.unibo.osmos.redux.mvc.controller.levels.structure.Level">Level</a></span>, <span name="server">server: <a href="../../multiplayer/server/Server.html" class="extype" name="it.unibo.osmos.redux.multiplayer.server.Server">Server</a></span>)</span><span class="result">: <a href="../../mvc/view/context/MultiPlayerLevelContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContext">MultiPlayerLevelContext</a></span>
       </span>
       
-      <p class="shortcomment cmt">Initializes the game loop and server for a multi-player level.</p><div class="fullcomment"><div class="comment cmt"><p>Initializes the game loop and server for a multi-player level.</p></div><dl class="paramcmts block"><dt class="param">level</dt><dd class="cmt"><p>The object that contains all level data.</p></dd><dt class="param">server</dt><dd class="cmt"><p>The server.</p></dd><dt>returns</dt><dd class="cmt"><p>The context of the initialized game level.</p></dd></dl></div>
+      <p class="shortcomment cmt">Initializes the game loop and server for a multi-player level.</p><div class="fullcomment"><div class="comment cmt"><p>Initializes the game loop and server for a multi-player level.
+</p></div><dl class="paramcmts block"><dt class="param">level</dt><dd class="cmt"><p>The object that contains all level data.</p></dd><dt class="param">server</dt><dd class="cmt"><p>The server.</p></dd><dt>returns</dt><dd class="cmt"><p>The context of the initialized game level.</p></dd></dl></div>
     </li><li name="it.unibo.osmos.redux.ecs.engine.GameEngine#init" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
-      <a id="init(level:it.unibo.osmos.redux.mvc.model.Level,levelContext:it.unibo.osmos.redux.mvc.view.context.LevelContext):Unit"></a><a id="init(Level,LevelContext):Unit"></a>
+      <a id="init(level:it.unibo.osmos.redux.mvc.controller.levels.structure.Level,levelContext:it.unibo.osmos.redux.mvc.view.context.LevelContext):Unit"></a><a id="init(Level,LevelContext):Unit"></a>
       <span class="permalink">
-      <a href="../../../../../../it/unibo/osmos/redux/ecs/engine/GameEngine.html#init(level:it.unibo.osmos.redux.mvc.model.Level,levelContext:it.unibo.osmos.redux.mvc.view.context.LevelContext):Unit" title="Permalink">
+      <a href="../../../../../../it/unibo/osmos/redux/ecs/engine/GameEngine.html#init(level:it.unibo.osmos.redux.mvc.controller.levels.structure.Level,levelContext:it.unibo.osmos.redux.mvc.view.context.LevelContext):Unit" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -361,7 +376,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">init</span><span class="params">(<span name="level">level: <a href="../../mvc/model/Level.html" class="extype" name="it.unibo.osmos.redux.mvc.model.Level">Level</a></span>, <span name="levelContext">levelContext: <a href="../../mvc/view/context/LevelContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.LevelContext">LevelContext</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">init</span><span class="params">(<span name="level">level: <a href="../../mvc/controller/levels/structure/Level.html" class="extype" name="it.unibo.osmos.redux.mvc.controller.levels.structure.Level">Level</a></span>, <span name="levelContext">levelContext: <a href="../../mvc/view/context/LevelContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.LevelContext">LevelContext</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       
       <p class="shortcomment cmt">Initializes the game loop with the input data that represents the level.</p><div class="fullcomment"><div class="comment cmt"><p>Initializes the game loop with the input data that represents the level.

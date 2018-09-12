@@ -3,9 +3,9 @@
         <head>
           <meta http-equiv="X-UA-Compatible" content="IE=edge" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-          <title>osmos-redux 1.2.0 API  - it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContext</title>
-          <meta name="description" content="osmos - redux 1.2.0 API - it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContext" />
-          <meta name="keywords" content="osmos redux 1.2.0 API it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContext" />
+          <title>osmos-redux 1.3.0 API  - it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContext</title>
+          <meta name="description" content="osmos - redux 1.3.0 API - it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContext" />
+          <meta name="keywords" content="osmos redux 1.3.0 API it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContext" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../../../../../lib/index.css" media="screen" type="text/css" rel="stylesheet" />
@@ -28,7 +28,7 @@
         </head>
         <body>
       <div id="search">
-        <span id="doc-title">osmos-redux 1.2.0 API<span id="doc-version"></span></span>
+        <span id="doc-title">osmos-redux 1.3.0 API<span id="doc-version"></span></span>
         <span class="close-results"><span class="left">&lt;</span> Back</span>
         <div id="textfilter">
           <span class="input">
@@ -199,8 +199,8 @@
                         <a href="LevelContextType$.html" title="Enumeration representing the type of level the user is playing">LevelContextType</a>
                       </li><li class="current-entities indented7">
                         <a class="object" href="LobbyContext$.html" title="Companion object"></a>
-                        <a class="trait" href="LobbyContext.html" title="Basic LobbyContext trait, seen as a LobbyEvent wrapper and a User container"></a>
-                        <a href="LobbyContext.html" title="Basic LobbyContext trait, seen as a LobbyEvent wrapper and a User container">LobbyContext</a>
+                        <a class="trait" href="LobbyContext.html" title="Basic LobbyContext trait, seen both as a LobbyEventWrapper observable and observer"></a>
+                        <a href="LobbyContext.html" title="Basic LobbyContext trait, seen both as a LobbyEventWrapper observable and observer">LobbyContext</a>
                       </li><li class="current-entities indented7">
                         <span class="separator"></span>
                         <a class="trait" href="LobbyContextListener.html" title="Trait which gets notified when a LobbyContext event occurs"></a>
@@ -209,6 +209,10 @@
                         <span class="separator"></span>
                         <a class="trait" href="" title="LevelContext used in multplayer sessions"></a>
                         <a href="" title="LevelContext used in multplayer sessions">MultiPlayerLevelContext</a>
+                      </li><li class="current-entities indented7">
+                        <span class="separator"></span>
+                        <a class="trait" href="MultiPlayerLevelContextListener.html" title="Trait which gets notified when a LevelContext event occurs"></a>
+                        <a href="MultiPlayerLevelContextListener.html" title="Trait which gets notified when a LevelContext event occurs">MultiPlayerLevelContextListener</a>
                       </li>
               </ul>
             </div>
@@ -237,8 +241,7 @@
       </h4>
 
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>LevelContext used in multplayer sessions
-</p></div><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>LevelContext used in multplayer sessions</p></div><div class="toggleContainer block">
           <span class="toggle">
             Linear Supertypes
           </span>
@@ -307,7 +310,9 @@
         <span class="name">drawEntities</span><span class="params">(<span name="playerEntity">playerEntity: <span class="extype" name="scala.Option">Option</span>[<a href="../drawables/DrawableWrapper.html" class="extype" name="it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper">DrawableWrapper</a>]</span>, <span name="entities">entities: <span class="extype" name="scala.Seq">Seq</span>[<a href="../drawables/DrawableWrapper.html" class="extype" name="it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper">DrawableWrapper</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       
-      <p class="shortcomment cmt">Called whenever the entities must be drawn</p><div class="fullcomment"><div class="comment cmt"><p>Called whenever the entities must be drawn</p></div><dl class="paramcmts block"><dt class="param">playerEntity</dt><dd class="cmt"><p>the player entity. It may be empty</p></dd><dt class="param">entities</dt><dd class="cmt"><p>the other entities</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../drawables/EntitiesDrawer.html" class="extype" name="it.unibo.osmos.redux.mvc.view.drawables.EntitiesDrawer">EntitiesDrawer</a></dd></dl></div>
+      <p class="shortcomment cmt">Called whenever the entities must be drawn
+</p><div class="fullcomment"><div class="comment cmt"><p>Called whenever the entities must be drawn
+</p></div><dl class="paramcmts block"><dt class="param">playerEntity</dt><dd class="cmt"><p>the player entity. It may be empty</p></dd><dt class="param">entities</dt><dd class="cmt"><p>the other entities</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../drawables/EntitiesDrawer.html" class="extype" name="it.unibo.osmos.redux.mvc.view.drawables.EntitiesDrawer">EntitiesDrawer</a></dd></dl></div>
     </li><li name="it.unibo.osmos.redux.mvc.view.context.GameStateHolder#gameCurrentState" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="gameCurrentState:it.unibo.osmos.redux.mvc.view.events.GameStateEventWrapper"></a><a id="gameCurrentState:GameStateEventWrapper"></a>
       <span class="permalink">
@@ -323,7 +328,9 @@
         <span class="name">gameCurrentState</span><span class="result">: <a href="../events/GameStateEventWrapper.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.GameStateEventWrapper">GameStateEventWrapper</a></span>
       </span>
       
-      <p class="shortcomment cmt">A generic definition of the game state</p><div class="fullcomment"><div class="comment cmt"><p>A generic definition of the game state</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>a GameStateEventWrapper</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="GameStateHolder.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.GameStateHolder">GameStateHolder</a></dd></dl></div>
+      <p class="shortcomment cmt">A generic definition of the game state
+</p><div class="fullcomment"><div class="comment cmt"><p>A generic definition of the game state
+</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>a GameStateEventWrapper</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="GameStateHolder.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.GameStateHolder">GameStateHolder</a></dd></dl></div>
     </li><li name="it.unibo.osmos.redux.mvc.view.context.LevelContext#getPlayerUUID" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="getPlayerUUID:String"></a>
       <span class="permalink">
@@ -339,7 +346,9 @@
         <span class="name">getPlayerUUID</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       
-      <p class="shortcomment cmt">The UUID of the current player, used to discriminate between different users</p><div class="fullcomment"><div class="comment cmt"><p>The UUID of the current player, used to discriminate between different users</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>Some(uuid) if it's defined and the current game mode is not simulation; otherwise None.</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="LevelContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.LevelContext">LevelContext</a> → <a href="../drawables/EntitiesDrawer.html" class="extype" name="it.unibo.osmos.redux.mvc.view.drawables.EntitiesDrawer">EntitiesDrawer</a></dd></dl></div>
+      <p class="shortcomment cmt">The UUID of the current player, used to discriminate between different users
+</p><div class="fullcomment"><div class="comment cmt"><p>The UUID of the current player, used to discriminate between different users
+</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>Some(uuid) if it's defined and the current game mode is not simulation; otherwise None.</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="LevelContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.LevelContext">LevelContext</a> → <a href="../drawables/EntitiesDrawer.html" class="extype" name="it.unibo.osmos.redux.mvc.view.drawables.EntitiesDrawer">EntitiesDrawer</a></dd></dl></div>
     </li><li name="it.unibo.osmos.redux.mvc.view.context.LevelContext#levelContextType" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="levelContextType:it.unibo.osmos.redux.mvc.view.context.LevelContextType.Value"></a><a id="levelContextType:LevelContextType.Value"></a>
       <span class="permalink">
@@ -355,9 +364,7 @@
         <span class="name">levelContextType</span><span class="result">: <a href="LevelContextType$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="it.unibo.osmos.redux.mvc.view.context.LevelContextType.Value">LevelContextType.Value</a></span>
       </span>
       
-      <p class="shortcomment cmt">The level context type
-</p><div class="fullcomment"><div class="comment cmt"><p>The level context type
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="LevelContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.LevelContext">LevelContext</a></dd></dl></div>
+      <p class="shortcomment cmt">The level context type</p><div class="fullcomment"><div class="comment cmt"><p>The level context type</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="LevelContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.LevelContext">LevelContext</a></dd></dl></div>
     </li><li name="it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver#notify" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="notify(event:T):Unit"></a><a id="notify(GameStateEventWrapper):Unit"></a>
       <span class="permalink">
@@ -373,7 +380,9 @@
         <span class="name">notify</span><span class="params">(<span name="event">event: <a href="../events/GameStateEventWrapper.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.GameStateEventWrapper">GameStateEventWrapper</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       
-      <p class="shortcomment cmt">Called on a event T type</p><div class="fullcomment"><div class="comment cmt"><p>Called on a event T type</p></div><dl class="paramcmts block"><dt class="param">event</dt><dd class="cmt"><p>the event</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../events/EventWrapperObserver.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver">EventWrapperObserver</a></dd></dl></div>
+      <p class="shortcomment cmt">Called on a event T type
+</p><div class="fullcomment"><div class="comment cmt"><p>Called on a event T type
+</p></div><dl class="paramcmts block"><dt class="param">event</dt><dd class="cmt"><p>the event</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../events/EventWrapperObserver.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver">EventWrapperObserver</a></dd></dl></div>
     </li><li name="it.unibo.osmos.redux.mvc.view.context.LevelContext#notifyMouseEvent" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="notifyMouseEvent(event:it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper):Unit"></a><a id="notifyMouseEvent(MouseEventWrapper):Unit"></a>
       <span class="permalink">
@@ -389,7 +398,9 @@
         <span class="name">notifyMouseEvent</span><span class="params">(<span name="event">event: <a href="../events/MouseEventWrapper.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper">MouseEventWrapper</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       
-      <p class="shortcomment cmt">Called when the LevelContext gets a mouse event from the scene</p><div class="fullcomment"><div class="comment cmt"><p>Called when the LevelContext gets a mouse event from the scene</p></div><dl class="paramcmts block"><dt class="param">event</dt><dd class="cmt"><p>the mouse event</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="LevelContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.LevelContext">LevelContext</a></dd></dl></div>
+      <p class="shortcomment cmt">Called when the LevelContext gets a mouse event from the scene
+</p><div class="fullcomment"><div class="comment cmt"><p>Called when the LevelContext gets a mouse event from the scene
+</p></div><dl class="paramcmts block"><dt class="param">event</dt><dd class="cmt"><p>the mouse event</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="LevelContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.LevelContext">LevelContext</a></dd></dl></div>
     </li><li name="it.unibo.osmos.redux.mvc.view.context.LevelContext#setListener" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="setListener(levelContextListener:it.unibo.osmos.redux.mvc.view.context.LevelContextListener):Unit"></a><a id="setListener(LevelContextListener):Unit"></a>
       <span class="permalink">
@@ -405,7 +416,8 @@
         <span class="name">setListener</span><span class="params">(<span name="levelContextListener">levelContextListener: <a href="LevelContextListener.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.LevelContextListener">LevelContextListener</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       
-      <p class="shortcomment cmt">Setter.</p><div class="fullcomment"><div class="comment cmt"><p>Setter. Sets the level context listener</p></div><dl class="paramcmts block"><dt class="param">levelContextListener</dt><dd class="cmt"><p>the level context listener</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="LevelContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.LevelContext">LevelContext</a></dd></dl></div>
+      <p class="shortcomment cmt">Setter.</p><div class="fullcomment"><div class="comment cmt"><p>Setter. Sets the level context listener
+</p></div><dl class="paramcmts block"><dt class="param">levelContextListener</dt><dd class="cmt"><p>the level context listener</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="LevelContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.LevelContext">LevelContext</a></dd></dl></div>
     </li><li name="it.unibo.osmos.redux.mvc.view.context.LevelContext#setPlayerUUID" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="setPlayerUUID(playerUUID:String):Unit"></a><a id="setPlayerUUID(String):Unit"></a>
       <span class="permalink">
@@ -421,12 +433,11 @@
         <span class="name">setPlayerUUID</span><span class="params">(<span name="playerUUID">playerUUID: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       
-      <p class="shortcomment cmt">Sets the current player uuid.</p><div class="fullcomment"><div class="comment cmt"><p>Sets the current player uuid.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="LevelContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.LevelContext">LevelContext</a></dd></dl></div>
+      <p class="shortcomment cmt">Sets the current player uuid.</p><div class="fullcomment"><div class="comment cmt"><p>Sets the current player uuid.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="LevelContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.LevelContext">LevelContext</a></dd></dl></div>
     </li><li name="it.unibo.osmos.redux.mvc.view.context.LevelContext#setupLevel" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
-      <a id="setupLevel(mapShape:it.unibo.osmos.redux.mvc.model.MapShape):Unit"></a><a id="setupLevel(MapShape):Unit"></a>
+      <a id="setupLevel(mapShape:it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape):Unit"></a><a id="setupLevel(MapShape):Unit"></a>
       <span class="permalink">
-      <a href="../../../../../../../it/unibo/osmos/redux/mvc/view/context/MultiPlayerLevelContext.html#setupLevel(mapShape:it.unibo.osmos.redux.mvc.model.MapShape):Unit" title="Permalink">
+      <a href="../../../../../../../it/unibo/osmos/redux/mvc/view/context/MultiPlayerLevelContext.html#setupLevel(mapShape:it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape):Unit" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -435,10 +446,11 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">setupLevel</span><span class="params">(<span name="mapShape">mapShape: <a href="../../model/MapShape.html" class="extype" name="it.unibo.osmos.redux.mvc.model.MapShape">MapShape</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">setupLevel</span><span class="params">(<span name="mapShape">mapShape: <a href="../../controller/levels/structure/MapShape.html" class="extype" name="it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape">MapShape</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       
-      <p class="shortcomment cmt">Called once at the beginning at the level.</p><div class="fullcomment"><div class="comment cmt"><p>Called once at the beginning at the level. Manages the context setup</p></div><dl class="paramcmts block"><dt class="param">mapShape</dt><dd class="cmt"><p>the level shape</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="LevelContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.LevelContext">LevelContext</a></dd></dl></div>
+      <p class="shortcomment cmt">Called once at the beginning at the level.</p><div class="fullcomment"><div class="comment cmt"><p>Called once at the beginning at the level. Manages the context setup
+</p></div><dl class="paramcmts block"><dt class="param">mapShape</dt><dd class="cmt"><p>the level shape</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="LevelContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.LevelContext">LevelContext</a></dd></dl></div>
     </li><li name="it.unibo.osmos.redux.mvc.view.events.EventWrapperObservable#subscribe" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="subscribe(eventWrapperObserver:it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver[T]):Unit"></a><a id="subscribe(EventWrapperObserver[MouseEventWrapper]):Unit"></a>
       <span class="permalink">
@@ -454,7 +466,9 @@
         <span class="name">subscribe</span><span class="params">(<span name="eventWrapperObserver">eventWrapperObserver: <a href="../events/EventWrapperObserver.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver">EventWrapperObserver</a>[<a href="../events/MouseEventWrapper.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper">MouseEventWrapper</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       
-      <p class="shortcomment cmt">This method subscribes a single event observer</p><div class="fullcomment"><div class="comment cmt"><p>This method subscribes a single event observer</p></div><dl class="paramcmts block"><dt class="param">eventWrapperObserver</dt><dd class="cmt"><p>the observer</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../events/EventWrapperObservable.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.EventWrapperObservable">EventWrapperObservable</a></dd></dl></div>
+      <p class="shortcomment cmt">This method subscribes a single event observer
+</p><div class="fullcomment"><div class="comment cmt"><p>This method subscribes a single event observer
+</p></div><dl class="paramcmts block"><dt class="param">eventWrapperObserver</dt><dd class="cmt"><p>the observer</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../events/EventWrapperObservable.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.EventWrapperObservable">EventWrapperObservable</a></dd></dl></div>
     </li><li name="it.unibo.osmos.redux.mvc.view.events.EventWrapperObservable#unsubscribe" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="unsubscribe(eventWrapperObserver:it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver[T]):Unit"></a><a id="unsubscribe(EventWrapperObserver[MouseEventWrapper]):Unit"></a>
       <span class="permalink">
@@ -470,7 +484,9 @@
         <span class="name">unsubscribe</span><span class="params">(<span name="eventWrapperObserver">eventWrapperObserver: <a href="../events/EventWrapperObserver.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver">EventWrapperObserver</a>[<a href="../events/MouseEventWrapper.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper">MouseEventWrapper</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       
-      <p class="shortcomment cmt">This method unsubscribes a single event observer</p><div class="fullcomment"><div class="comment cmt"><p>This method unsubscribes a single event observer</p></div><dl class="paramcmts block"><dt class="param">eventWrapperObserver</dt><dd class="cmt"><p>the observer</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../events/EventWrapperObservable.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.EventWrapperObservable">EventWrapperObservable</a></dd></dl></div>
+      <p class="shortcomment cmt">This method unsubscribes a single event observer
+</p><div class="fullcomment"><div class="comment cmt"><p>This method unsubscribes a single event observer
+</p></div><dl class="paramcmts block"><dt class="param">eventWrapperObserver</dt><dd class="cmt"><p>the observer</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../events/EventWrapperObservable.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.EventWrapperObservable">EventWrapperObservable</a></dd></dl></div>
     </li></ol>
             </div>
 

@@ -3,9 +3,9 @@
         <head>
           <meta http-equiv="X-UA-Compatible" content="IE=edge" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-          <title>osmos-redux 1.2.0 API  - it.unibo.osmos.redux.mvc.view.components.editor.EditorCellBuilderConfigurator</title>
-          <meta name="description" content="osmos - redux 1.2.0 API - it.unibo.osmos.redux.mvc.view.components.editor.EditorCellBuilderConfigurator" />
-          <meta name="keywords" content="osmos redux 1.2.0 API it.unibo.osmos.redux.mvc.view.components.editor.EditorCellBuilderConfigurator" />
+          <title>osmos-redux 1.3.0 API  - it.unibo.osmos.redux.mvc.view.components.editor.EditorCellBuilderConfigurator</title>
+          <meta name="description" content="osmos - redux 1.3.0 API - it.unibo.osmos.redux.mvc.view.components.editor.EditorCellBuilderConfigurator" />
+          <meta name="keywords" content="osmos redux 1.3.0 API it.unibo.osmos.redux.mvc.view.components.editor.EditorCellBuilderConfigurator" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../../../../../../lib/index.css" media="screen" type="text/css" rel="stylesheet" />
@@ -28,7 +28,7 @@
         </head>
         <body>
       <div id="search">
-        <span id="doc-title">osmos-redux 1.2.0 API<span id="doc-version"></span></span>
+        <span id="doc-title">osmos-redux 1.3.0 API<span id="doc-version"></span></span>
         <span class="close-results"><span class="left">&lt;</span> Back</span>
         <div id="textfilter">
           <span class="input">
@@ -223,12 +223,28 @@
                         <a href="EditorCreator.html" title="A trait modelling a component which can provide an element of the requested type">EditorCreator</a>
                       </li><li class="current-entities indented8">
                         <span class="separator"></span>
+                        <a class="class" href="EditorEntityTypeContainer.html" title="This class holds those variables and view components responsible to let the user choose and create the entity type in the EditorScene"></a>
+                        <a href="EditorEntityTypeContainer.html" title="This class holds those variables and view components responsible to let the user choose and create the entity type in the EditorScene">EditorEntityTypeContainer</a>
+                      </li><li class="current-entities indented8">
+                        <span class="separator"></span>
+                        <a class="trait" href="EditorEntityTypeContainerListener.html" title="Trait used to notify EditorEntityTypeContainer events"></a>
+                        <a href="EditorEntityTypeContainerListener.html" title="Trait used to notify EditorEntityTypeContainer events">EditorEntityTypeContainerListener</a>
+                      </li><li class="current-entities indented8">
+                        <span class="separator"></span>
                         <a class="class" href="EditorLevelNode.html" title="Level node representing a custom level created by the user"></a>
                         <a href="EditorLevelNode.html" title="Level node representing a custom level created by the user">EditorLevelNode</a>
                       </li><li class="current-entities indented8">
                         <span class="separator"></span>
                         <a class="trait" href="EditorLevelNodeListener.html" title="Trait which gets notified when a LevelNode event occurs"></a>
                         <a href="EditorLevelNodeListener.html" title="Trait which gets notified when a LevelNode event occurs">EditorLevelNodeListener</a>
+                      </li><li class="current-entities indented8">
+                        <span class="separator"></span>
+                        <a class="class" href="EditorLevelTypeContainer.html" title="This class holds those variables and view components responsible to let the user choose the level type in the EditorScene"></a>
+                        <a href="EditorLevelTypeContainer.html" title="This class holds those variables and view components responsible to let the user choose the level type in the EditorScene">EditorLevelTypeContainer</a>
+                      </li><li class="current-entities indented8">
+                        <span class="separator"></span>
+                        <a class="trait" href="EditorLevelTypeContainerListener.html" title="Trait used to notify EditorLevelTypeContainer events"></a>
+                        <a href="EditorLevelTypeContainerListener.html" title="Trait used to notify EditorLevelTypeContainer events">EditorLevelTypeContainerListener</a>
                       </li><li class="current-entities indented8">
                         <span class="separator"></span>
                         <a class="class" href="GravityCellEntityCreator.html" title="A panel showing input nodes which is also capable of providing the requested GravityCellEntity"></a>
@@ -268,12 +284,12 @@
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <span class="name">EditorCellBuilderConfigurator</span><span class="tparams">[<span name="T">T &lt;: <a href="../../../../ecs/entities/builders/CellBuilder.html" class="extype" name="it.unibo.osmos.redux.ecs.entities.builders.CellBuilder">CellBuilder</a></span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <span class="name">EditorCellBuilderConfigurator</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
 
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Basic CellBuilder configurator, used by the various cell editors</p></div><dl class="paramcmts block"><dt class="tparam">T</dt><dd class="cmt"><p>a subtype of CellBuilder</p></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Basic CellBuilder configurator, used by the various cell editors</p></div><div class="toggleContainer block">
           <span class="toggle">
             Linear Supertypes
           </span>
@@ -333,9 +349,9 @@
         <div class="values members">
               <h3>Abstract Value Members</h3>
               <ol><li name="it.unibo.osmos.redux.mvc.view.components.editor.EditorCellBuilderConfigurator#configureBuilder" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
-      <a id="configureBuilder(builder:T,withEntityType:Boolean):Unit"></a><a id="configureBuilder(T,Boolean):Unit"></a>
+      <a id="configureBuilder(builder:it.unibo.osmos.redux.ecs.entities.CellBuilder,withEntityType:Boolean):Unit"></a><a id="configureBuilder(CellBuilder,Boolean):Unit"></a>
       <span class="permalink">
-      <a href="../../../../../../../../it/unibo/osmos/redux/mvc/view/components/editor/EditorCellBuilderConfigurator.html#configureBuilder(builder:T,withEntityType:Boolean):Unit" title="Permalink">
+      <a href="../../../../../../../../it/unibo/osmos/redux/mvc/view/components/editor/EditorCellBuilderConfigurator.html#configureBuilder(builder:it.unibo.osmos.redux.ecs.entities.CellBuilder,withEntityType:Boolean):Unit" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -344,10 +360,12 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">configureBuilder</span><span class="params">(<span name="builder">builder: <span class="extype" name="it.unibo.osmos.redux.mvc.view.components.editor.EditorCellBuilderConfigurator.T">T</span></span>, <span name="withEntityType">withEntityType: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">configureBuilder</span><span class="params">(<span name="builder">builder: <a href="../../../../ecs/entities/CellBuilder.html" class="extype" name="it.unibo.osmos.redux.ecs.entities.CellBuilder">CellBuilder</a></span>, <span name="withEntityType">withEntityType: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       
-      <p class="shortcomment cmt">This method configure the CellBuilder</p><div class="fullcomment"><div class="comment cmt"><p>This method configure the CellBuilder</p></div><dl class="paramcmts block"><dt class="param">builder</dt><dd class="cmt"><p>the CellBuilder that must be configured</p></dd><dt class="param">withEntityType</dt><dd class="cmt"><p>true if the Configurator has to put the entity type in the newly created cell</p></dd></dl></div>
+      <p class="shortcomment cmt">This method configure the EntityBuilder
+</p><div class="fullcomment"><div class="comment cmt"><p>This method configure the EntityBuilder
+</p></div><dl class="paramcmts block"><dt class="param">builder</dt><dd class="cmt"><p>the CellBuilder that must be configured</p></dd><dt class="param">withEntityType</dt><dd class="cmt"><p>true if the Configurator has to put the entity type in the newly created cell</p></dd></dl></div>
     </li></ol>
             </div>
 

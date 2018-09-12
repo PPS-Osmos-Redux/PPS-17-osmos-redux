@@ -3,9 +3,9 @@
         <head>
           <meta http-equiv="X-UA-Compatible" content="IE=edge" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-          <title>osmos-redux 1.2.0 API  - it.unibo.osmos.redux.ecs.engine</title>
-          <meta name="description" content="osmos - redux 1.2.0 API - it.unibo.osmos.redux.ecs.engine" />
-          <meta name="keywords" content="osmos redux 1.2.0 API it.unibo.osmos.redux.ecs.engine" />
+          <title>osmos-redux 1.3.0 API  - it.unibo.osmos.redux.ecs.engine</title>
+          <meta name="description" content="osmos - redux 1.3.0 API - it.unibo.osmos.redux.ecs.engine" />
+          <meta name="keywords" content="osmos redux 1.3.0 API it.unibo.osmos.redux.ecs.engine" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../../../../lib/index.css" media="screen" type="text/css" rel="stylesheet" />
@@ -28,7 +28,7 @@
         </head>
         <body>
       <div id="search">
-        <span id="doc-title">osmos-redux 1.2.0 API<span id="doc-version"></span></span>
+        <span id="doc-title">osmos-redux 1.3.0 API<span id="doc-version"></span></span>
         <span class="close-results"><span class="left">&lt;</span> Back</span>
         <div id="textfilter">
           <span class="input">
@@ -182,10 +182,6 @@
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../index.html" class="extype" name="it.unibo.osmos.redux.ecs">ecs</a></dd></dl></div>
     </li><li class="current-entities indented6">
-                        <span class="separator"></span>
-                        <a class="class" href="ExceededTickTimeException.html" title="Custom exception to handle game loop tick time overrun"></a>
-                        <a href="ExceededTickTimeException.html" title="Custom exception to handle game loop tick time overrun">ExceededTickTimeException</a>
-                      </li><li class="current-entities indented6">
                         <a class="object" href="GameEngine$.html" title="Game engine object companion."></a>
                         <a class="trait" href="GameEngine.html" title="Game engine, the game loop manager."></a>
                         <a href="GameEngine.html" title="Game engine, the game loop manager.">GameEngine</a>
@@ -195,8 +191,8 @@
                         <a href="GameLoop.html" title="Implementation of the game loop.">GameLoop</a>
                       </li><li class="current-entities indented6">
                         <span class="separator"></span>
-                        <a class="object" href="GameStatus$.html" title=""></a>
-                        <a href="GameStatus$.html" title="">GameStatus</a>
+                        <a class="object" href="GameStatus$.html" title="The current status of the game"></a>
+                        <a href="GameStatus$.html" title="The current status of the game">GameStatus</a>
                       </li><li name="it.unibo.osmos.redux.ecs.entities" visbl="pub" class="indented6 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="entities"></a><a id="entities:entities"></a>
       <span class="permalink">
@@ -292,23 +288,7 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="it.unibo.osmos.redux.ecs.engine.ExceededTickTimeException" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="ExceededTickTimeExceptionextendsExceptionwithProductwithSerializable"></a><a id="ExceededTickTimeException:ExceededTickTimeException"></a>
-      <span class="permalink">
-      <a href="../../../../../../it/unibo/osmos/redux/ecs/engine/index.html#ExceededTickTimeExceptionextendsExceptionwithProductwithSerializable" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a title="Custom exception to handle game loop tick time overrun" href="ExceededTickTimeException.html"><span class="name">ExceededTickTimeException</span></a><span class="params">(<span name="message">message: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>, <span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span> = <span class="symbol">null</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Exception">Exception</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      
-      <p class="shortcomment cmt">Custom exception to handle game loop tick time overrun</p><div class="fullcomment"><div class="comment cmt"><p>Custom exception to handle game loop tick time overrun</p></div><dl class="paramcmts block"><dt class="param">message</dt><dd class="cmt"><p>The message of the exception (optional)</p></dd><dt class="param">cause</dt><dd class="cmt"><p>The cause of the exception (optional)</p></dd></dl></div>
-    </li><li name="it.unibo.osmos.redux.ecs.engine.GameEngine" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
+              <ol><li name="it.unibo.osmos.redux.ecs.engine.GameEngine" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="GameEngineextendsAnyRef"></a><a id="GameEngine:GameEngine"></a>
       <span class="permalink">
       <a href="../../../../../../it/unibo/osmos/redux/ecs/engine/index.html#GameEngineextendsAnyRef" title="Permalink">
@@ -376,10 +356,10 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a title="" href="GameStatus$.html"><span class="name">GameStatus</span></a><span class="result"> extends <span class="extype" name="scala.Enumeration">Enumeration</span></span>
+        <a title="The current status of the game" href="GameStatus$.html"><span class="name">GameStatus</span></a><span class="result"> extends <span class="extype" name="scala.Enumeration">Enumeration</span></span>
       </span>
       
-      
+      <p class="shortcomment cmt">The current status of the game</p>
     </li>
               </ol>
             </div>

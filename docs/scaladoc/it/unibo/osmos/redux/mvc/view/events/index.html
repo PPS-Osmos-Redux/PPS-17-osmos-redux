@@ -3,9 +3,9 @@
         <head>
           <meta http-equiv="X-UA-Compatible" content="IE=edge" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-          <title>osmos-redux 1.2.0 API  - it.unibo.osmos.redux.mvc.view.events</title>
-          <meta name="description" content="osmos - redux 1.2.0 API - it.unibo.osmos.redux.mvc.view.events" />
-          <meta name="keywords" content="osmos redux 1.2.0 API it.unibo.osmos.redux.mvc.view.events" />
+          <title>osmos-redux 1.3.0 API  - it.unibo.osmos.redux.mvc.view.events</title>
+          <meta name="description" content="osmos - redux 1.3.0 API - it.unibo.osmos.redux.mvc.view.events" />
+          <meta name="keywords" content="osmos redux 1.3.0 API it.unibo.osmos.redux.mvc.view.events" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../../../../../lib/index.css" media="screen" type="text/css" rel="stylesheet" />
@@ -28,7 +28,7 @@
         </head>
         <body>
       <div id="search">
-        <span id="doc-title">osmos-redux 1.2.0 API<span id="doc-version"></span></span>
+        <span id="doc-title">osmos-redux 1.3.0 API<span id="doc-version"></span></span>
         <span class="close-results"><span class="left">&lt;</span> Back</span>
         <div id="textfilter">
           <span class="input">
@@ -251,6 +251,10 @@
                         <a href="GameLost$.html" title="">GameLost</a>
                       </li><li class="current-entities indented7">
                         <span class="separator"></span>
+                        <a class="object" href="GameLostAsServer$.html" title=""></a>
+                        <a href="GameLostAsServer$.html" title="">GameLostAsServer</a>
+                      </li><li class="current-entities indented7">
+                        <span class="separator"></span>
                         <a class="object" href="GamePending$.html" title=""></a>
                         <a href="GamePending$.html" title="">GamePending</a>
                       </li><li class="current-entities indented7">
@@ -273,6 +277,10 @@
                         <span class="separator"></span>
                         <a class="class" href="MouseEventWrapper.html" title="Case class which wraps a mouse event"></a>
                         <a href="MouseEventWrapper.html" title="Case class which wraps a mouse event">MouseEventWrapper</a>
+                      </li><li class="current-entities indented7">
+                        <span class="separator"></span>
+                        <a class="trait" href="MultiPlayerGameStateEventWrapper.html" title="Possible game events as a server"></a>
+                        <a href="MultiPlayerGameStateEventWrapper.html" title="Possible game events as a server">MultiPlayerGameStateEventWrapper</a>
                       </li><li class="current-entities indented7">
                         <span class="separator"></span>
                         <a class="class" href="StartGame.html" title=""></a>
@@ -411,8 +419,7 @@
         <a title="Basic event wrapper" href="EventWrapper.html"><span class="name">EventWrapper</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       
-      <p class="shortcomment cmt">Basic event wrapper
-</p>
+      <p class="shortcomment cmt">Basic event wrapper</p>
     </li><li name="it.unibo.osmos.redux.mvc.view.events.EventWrapperObservable" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="EventWrapperObservable[T&lt;:it.unibo.osmos.redux.mvc.view.events.EventWrapper]extendsAnyRef"></a><a id="EventWrapperObservable[T&lt;:EventWrapper]:EventWrapperObservable[T]"></a>
       <span class="permalink">
@@ -464,8 +471,7 @@
         <a title="Possible game events" href="GameStateEventWrapper.html"><span class="name">GameStateEventWrapper</span></a><span class="result"> extends <a href="EventWrapper.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.EventWrapper">EventWrapper</a></span>
       </span>
       
-      <p class="shortcomment cmt">Possible game events
-</p>
+      <p class="shortcomment cmt">Possible game events</p>
     </li><li name="it.unibo.osmos.redux.mvc.view.events.LobbyEvent" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="LobbyEventextendsEventWrapper"></a><a id="LobbyEvent:LobbyEvent"></a>
       <span class="permalink">
@@ -481,8 +487,7 @@
         <a title="Possible LobbyEvents" href="LobbyEvent.html"><span class="name">LobbyEvent</span></a><span class="result"> extends <a href="EventWrapper.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.EventWrapper">EventWrapper</a></span>
       </span>
       
-      <p class="shortcomment cmt">Possible LobbyEvents
-</p>
+      <p class="shortcomment cmt">Possible LobbyEvents</p>
     </li><li name="it.unibo.osmos.redux.mvc.view.events.LobbyEventWrapper" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="LobbyEventWrapperextendsEventWrapperwithProductwithSerializable"></a><a id="LobbyEventWrapper:LobbyEventWrapper"></a>
       <span class="permalink">
@@ -498,7 +503,9 @@
         <a title="Case class wrapping a LobbyEvent related to a User" href="LobbyEventWrapper.html"><span class="name">LobbyEventWrapper</span></a><span class="params">(<span name="lobbyEvent">lobbyEvent: <a href="LobbyEvent.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.LobbyEvent">LobbyEvent</a></span>, <span name="user">user: <span class="extype" name="scala.Option">Option</span>[<a href="../components/multiplayer/User.html" class="extype" name="it.unibo.osmos.redux.mvc.view.components.multiplayer.User">User</a>]</span>)</span><span class="result"> extends <a href="EventWrapper.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.EventWrapper">EventWrapper</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
-      <p class="shortcomment cmt">Case class wrapping a LobbyEvent related to a User</p><div class="fullcomment"><div class="comment cmt"><p>Case class wrapping a LobbyEvent related to a User</p></div><dl class="paramcmts block"><dt class="param">lobbyEvent</dt><dd class="cmt"><p>the lobby event</p></dd><dt class="param">user</dt><dd class="cmt"><p>the user the event refers to</p></dd></dl></div>
+      <p class="shortcomment cmt">Case class wrapping a LobbyEvent related to a User
+</p><div class="fullcomment"><div class="comment cmt"><p>Case class wrapping a LobbyEvent related to a User
+</p></div><dl class="paramcmts block"><dt class="param">lobbyEvent</dt><dd class="cmt"><p>the lobby event</p></dd><dt class="param">user</dt><dd class="cmt"><p>the user the event refers to</p></dd></dl></div>
     </li><li name="it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="MouseEventWrapperextendsEventWrapperwithProductwithSerializable"></a><a id="MouseEventWrapper:MouseEventWrapper"></a>
       <span class="permalink">
@@ -516,7 +523,23 @@
       
       <p class="shortcomment cmt">Case class which wraps a mouse event
 </p><div class="fullcomment"><div class="comment cmt"><p>Case class which wraps a mouse event
-</p></div><dl class="paramcmts block"><dt class="param">point</dt><dd class="cmt"><p>the coordinates of the clicked point</p></dd><dt class="param">uuid</dt><dd class="cmt"><p>the uuid of the entity linked with this event, if None set empty string to prevent any .</p></dd></dl></div>
+</p></div><dl class="paramcmts block"><dt class="param">point</dt><dd class="cmt"><p>the coordinates of the clicked point</p></dd><dt class="param">uuid</dt><dd class="cmt"><p>the uuid of the entity linked with this event, if None set empty string to prevent any.</p></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.mvc.view.events.MultiPlayerGameStateEventWrapper" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="MultiPlayerGameStateEventWrapperextendsGameStateEventWrapper"></a><a id="MultiPlayerGameStateEventWrapper:MultiPlayerGameStateEventWrapper"></a>
+      <span class="permalink">
+      <a href="../../../../../../../it/unibo/osmos/redux/mvc/view/events/index.html#MultiPlayerGameStateEventWrapperextendsGameStateEventWrapper" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">sealed </span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a title="Possible game events as a server" href="MultiPlayerGameStateEventWrapper.html"><span class="name">MultiPlayerGameStateEventWrapper</span></a><span class="result"> extends <a href="GameStateEventWrapper.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.GameStateEventWrapper">GameStateEventWrapper</a></span>
+      </span>
+      
+      <p class="shortcomment cmt">Possible game events as a server</p>
     </li><li name="it.unibo.osmos.redux.mvc.view.events.StartGame" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="StartGameextendsLobbyEventwithProductwithSerializable"></a><a id="StartGame:StartGame"></a>
       <span class="permalink">
@@ -529,7 +552,7 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="" href="StartGame.html"><span class="name">StartGame</span></a><span class="params">(<span name="multiPlayerLevelContext">multiPlayerLevelContext: <a href="../context/MultiPlayerLevelContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContext">MultiPlayerLevelContext</a></span>, <span name="levelInfo">levelInfo: <a href="../../controller/LevelInfo.html" class="extype" name="it.unibo.osmos.redux.mvc.controller.LevelInfo">LevelInfo</a></span>)</span><span class="result"> extends <a href="LobbyEvent.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.LobbyEvent">LobbyEvent</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="" href="StartGame.html"><span class="name">StartGame</span></a><span class="params">(<span name="multiPlayerLevelContext">multiPlayerLevelContext: <a href="../context/MultiPlayerLevelContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContext">MultiPlayerLevelContext</a></span>, <span name="levelInfo">levelInfo: <a href="../../controller/levels/structure/LevelInfo.html" class="extype" name="it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo">LevelInfo</a></span>)</span><span class="result"> extends <a href="LobbyEvent.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.LobbyEvent">LobbyEvent</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
       
@@ -570,6 +593,22 @@
       </span>
       <span class="symbol">
         <a title="" href="GameLost$.html"><span class="name">GameLost</span></a><span class="result"> extends <a href="GameStateEventWrapper.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.GameStateEventWrapper">GameStateEventWrapper</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      
+      
+    </li><li name="it.unibo.osmos.redux.mvc.view.events.GameLostAsServer" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="GameLostAsServer"></a><a id="GameLostAsServer:GameLostAsServer"></a>
+      <span class="permalink">
+      <a href="../../../../../../../it/unibo/osmos/redux/mvc/view/events/index.html#GameLostAsServer" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="GameLostAsServer$.html"><span class="name">GameLostAsServer</span></a><span class="result"> extends <a href="MultiPlayerGameStateEventWrapper.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.MultiPlayerGameStateEventWrapper">MultiPlayerGameStateEventWrapper</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
       

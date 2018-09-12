@@ -3,9 +3,9 @@
         <head>
           <meta http-equiv="X-UA-Compatible" content="IE=edge" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-          <title>osmos-redux 1.2.0 API  - it.unibo.osmos.redux.multiplayer.client.ClientActor</title>
-          <meta name="description" content="osmos - redux 1.2.0 API - it.unibo.osmos.redux.multiplayer.client.ClientActor" />
-          <meta name="keywords" content="osmos redux 1.2.0 API it.unibo.osmos.redux.multiplayer.client.ClientActor" />
+          <title>osmos-redux 1.3.0 API  - it.unibo.osmos.redux.multiplayer.client.ClientActor</title>
+          <meta name="description" content="osmos - redux 1.3.0 API - it.unibo.osmos.redux.multiplayer.client.ClientActor" />
+          <meta name="keywords" content="osmos redux 1.3.0 API it.unibo.osmos.redux.multiplayer.client.ClientActor" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../../../../lib/index.css" media="screen" type="text/css" rel="stylesheet" />
@@ -28,7 +28,7 @@
         </head>
         <body>
       <div id="search">
-        <span id="doc-title">osmos-redux 1.2.0 API<span id="doc-version"></span></span>
+        <span id="doc-title">osmos-redux 1.3.0 API<span id="doc-version"></span></span>
         <span class="close-results"><span class="left">&lt;</span> Back</span>
         <div id="textfilter">
           <span class="input">
@@ -167,12 +167,12 @@
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../index.html" class="extype" name="it.unibo.osmos.redux.multiplayer">multiplayer</a></dd></dl></div>
     </li><li class="current-entities indented6">
                         <a class="object" href="Client$.html" title=""></a>
-                        <a class="trait" href="Client.html" title=""></a>
-                        <a href="Client.html" title="">Client</a>
+                        <a class="trait" href="Client.html" title="Trait representing a Client"></a>
+                        <a href="Client.html" title="Trait representing a Client">Client</a>
                       </li><li class="current-entities indented6">
-                        <a class="object" href="" title=""></a>
-                        <a class="class" href="ClientActor.html" title="Client actor implementation"></a>
-                        <a href="ClientActor.html" title="Client actor implementation">ClientActor</a>
+                        <a class="object" href="" title="Client actor helper object"></a>
+                        <a class="class" href="ClientActor.html" title="Client actor implementation."></a>
+                        <a href="ClientActor.html" title="Client actor implementation.">ClientActor</a>
                       </li>
               </ul>
             </div>
@@ -203,7 +203,7 @@
       </h4>
 
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Client actor helper object</p></div><div class="toggleContainer block">
           <span class="toggle">
             Linear Supertypes
           </span>
@@ -255,7 +255,7 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="it.unibo.osmos.redux.multiplayer.client.ClientActor.Connect" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+              <ol><li name="it.unibo.osmos.redux.multiplayer.client.ClientActor.Connect" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ConnectextendsProductwithSerializable"></a><a id="Connect:Connect"></a>
       <span class="permalink">
       <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/ClientActor$.html#ConnectextendsProductwithSerializable" title="Permalink">
@@ -267,11 +267,12 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="" href="ClientActor$$Connect.html"><span class="name">Connect</span></a><span class="params">(<span name="actorRef">actorRef: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="Asks the server to begin handshaking." href="ClientActor$$Connect.html"><span class="name">Connect</span></a><span class="params">(<span name="actorRef">actorRef: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
-      
-    </li><li name="it.unibo.osmos.redux.multiplayer.client.ClientActor.Disconnect" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt">Asks the server to begin handshaking.</p><div class="fullcomment"><div class="comment cmt"><p>Asks the server to begin handshaking.
+</p></div><dl class="paramcmts block"><dt class="param">actorRef</dt><dd class="cmt"><p>It's own actor reference</p></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.multiplayer.client.ClientActor.Disconnect" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="DisconnectextendsProductwithSerializable"></a><a id="Disconnect:Disconnect"></a>
       <span class="permalink">
       <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/ClientActor$.html#DisconnectextendsProductwithSerializable" title="Permalink">
@@ -283,11 +284,12 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="" href="ClientActor$$Disconnect.html"><span class="name">Disconnect</span></a><span class="params">(<span name="username">username: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="Tells the server that a specific player is disconnecting." href="ClientActor$$Disconnect.html"><span class="name">Disconnect</span></a><span class="params">(<span name="username">username: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
-      
-    </li><li name="it.unibo.osmos.redux.multiplayer.client.ClientActor.EnterLobby" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt">Tells the server that a specific player is disconnecting.</p><div class="fullcomment"><div class="comment cmt"><p>Tells the server that a specific player is disconnecting.
+</p></div><dl class="paramcmts block"><dt class="param">username</dt><dd class="cmt"><p>The username of the player</p></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.multiplayer.client.ClientActor.EnterLobby" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="EnterLobbyextendsProductwithSerializable"></a><a id="EnterLobby:EnterLobby"></a>
       <span class="permalink">
       <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/ClientActor$.html#EnterLobbyextendsProductwithSerializable" title="Permalink">
@@ -299,11 +301,12 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="" href="ClientActor$$EnterLobby.html"><span class="name">EnterLobby</span></a><span class="params">(<span name="clientID">clientID: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="username">username: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="Asks the server to enter the lobby." href="ClientActor$$EnterLobby.html"><span class="name">EnterLobby</span></a><span class="params">(<span name="clientID">clientID: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="username">username: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
-      
-    </li><li name="it.unibo.osmos.redux.multiplayer.client.ClientActor.LeaveGame" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt">Asks the server to enter the lobby.</p><div class="fullcomment"><div class="comment cmt"><p>Asks the server to enter the lobby.
+</p></div><dl class="paramcmts block"><dt class="param">clientID</dt><dd class="cmt"><p>The client temp id (received from handshaking)</p></dd><dt class="param">username</dt><dd class="cmt"><p>The chosen username</p></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.multiplayer.client.ClientActor.LeaveGame" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="LeaveGameextendsProductwithSerializable"></a><a id="LeaveGame:LeaveGame"></a>
       <span class="permalink">
       <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/ClientActor$.html#LeaveGameextendsProductwithSerializable" title="Permalink">
@@ -315,11 +318,12 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="" href="ClientActor$$LeaveGame.html"><span class="name">LeaveGame</span></a><span class="params">(<span name="username">username: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="Tells the server that a player leaves the game." href="ClientActor$$LeaveGame.html"><span class="name">LeaveGame</span></a><span class="params">(<span name="username">username: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
-      
-    </li><li name="it.unibo.osmos.redux.multiplayer.client.ClientActor.LeaveLobby" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt">Tells the server that a player leaves the game.</p><div class="fullcomment"><div class="comment cmt"><p>Tells the server that a player leaves the game.
+</p></div><dl class="paramcmts block"><dt class="param">username</dt><dd class="cmt"><p>The username of the player</p></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.multiplayer.client.ClientActor.LeaveLobby" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="LeaveLobbyextendsProductwithSerializable"></a><a id="LeaveLobby:LeaveLobby"></a>
       <span class="permalink">
       <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/ClientActor$.html#LeaveLobbyextendsProductwithSerializable" title="Permalink">
@@ -331,11 +335,12 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="" href="ClientActor$$LeaveLobby.html"><span class="name">LeaveLobby</span></a><span class="params">(<span name="username">username: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="Tells the server that a player leaves the lobby." href="ClientActor$$LeaveLobby.html"><span class="name">LeaveLobby</span></a><span class="params">(<span name="username">username: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
-      
-    </li><li name="it.unibo.osmos.redux.multiplayer.client.ClientActor.PlayerInput" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt">Tells the server that a player leaves the lobby.</p><div class="fullcomment"><div class="comment cmt"><p>Tells the server that a player leaves the lobby.
+</p></div><dl class="paramcmts block"><dt class="param">username</dt><dd class="cmt"><p>The username of the player</p></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.multiplayer.client.ClientActor.PlayerInput" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="PlayerInputextendsProductwithSerializable"></a><a id="PlayerInput:PlayerInput"></a>
       <span class="permalink">
       <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/ClientActor$.html#PlayerInputextendsProductwithSerializable" title="Permalink">
@@ -347,11 +352,12 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="" href="ClientActor$$PlayerInput.html"><span class="name">PlayerInput</span></a><span class="params">(<span name="event">event: <a href="../../mvc/view/events/MouseEventWrapper.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper">MouseEventWrapper</a></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="Sends to the server the user triggered mouse event to process, to let him move the entity." href="ClientActor$$PlayerInput.html"><span class="name">PlayerInput</span></a><span class="params">(<span name="event">event: <a href="../../mvc/view/events/MouseEventWrapper.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper">MouseEventWrapper</a></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
-      
-    </li><li name="it.unibo.osmos.redux.multiplayer.client.ClientActor.StartWatching" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt">Sends to the server the user triggered mouse event to process, to let him move the entity.</p><div class="fullcomment"><div class="comment cmt"><p>Sends to the server the user triggered mouse event to process, to let him move the entity.
+</p></div><dl class="paramcmts block"><dt class="param">event</dt><dd class="cmt"><p>The mouse event.</p></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.multiplayer.client.ClientActor.StartWatching" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="StartWatchingextendsProductwithSerializable"></a><a id="StartWatching:StartWatching"></a>
       <span class="permalink">
       <a href="../../../../../../it/unibo/osmos/redux/multiplayer/client/ClientActor$.html#StartWatchingextendsProductwithSerializable" title="Permalink">
@@ -363,10 +369,11 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="" href="ClientActor$$StartWatching.html"><span class="name">StartWatching</span></a><span class="params">(<span name="serverRef">serverRef: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="Tells himself to start watching the server actor." href="ClientActor$$StartWatching.html"><span class="name">StartWatching</span></a><span class="params">(<span name="serverRef">serverRef: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
-      
+      <p class="shortcomment cmt">Tells himself to start watching the server actor.</p><div class="fullcomment"><div class="comment cmt"><p>Tells himself to start watching the server actor.
+</p></div><dl class="paramcmts block"><dt class="param">serverRef</dt><dd class="cmt"><p>The server actor reference</p></dd></dl></div>
     </li></ol>
             </div>
 
@@ -753,10 +760,10 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a title="" href="ClientActor$$Ready$.html"><span class="name">Ready</span></a><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="Replies to the server, after receiving a game started message, that it's ready to receive updates" href="ClientActor$$Ready$.html"><span class="name">Ready</span></a><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
-      
+      <p class="shortcomment cmt">Replies to the server, after receiving a game started message, that it's ready to receive updates</p>
     </li>
               </ol>
             </div>

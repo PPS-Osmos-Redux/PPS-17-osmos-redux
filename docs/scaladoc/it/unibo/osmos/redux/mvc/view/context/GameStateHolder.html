@@ -3,9 +3,9 @@
         <head>
           <meta http-equiv="X-UA-Compatible" content="IE=edge" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-          <title>osmos-redux 1.2.0 API  - it.unibo.osmos.redux.mvc.view.context.GameStateHolder</title>
-          <meta name="description" content="osmos - redux 1.2.0 API - it.unibo.osmos.redux.mvc.view.context.GameStateHolder" />
-          <meta name="keywords" content="osmos redux 1.2.0 API it.unibo.osmos.redux.mvc.view.context.GameStateHolder" />
+          <title>osmos-redux 1.3.0 API  - it.unibo.osmos.redux.mvc.view.context.GameStateHolder</title>
+          <meta name="description" content="osmos - redux 1.3.0 API - it.unibo.osmos.redux.mvc.view.context.GameStateHolder" />
+          <meta name="keywords" content="osmos redux 1.3.0 API it.unibo.osmos.redux.mvc.view.context.GameStateHolder" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../../../../../lib/index.css" media="screen" type="text/css" rel="stylesheet" />
@@ -28,7 +28,7 @@
         </head>
         <body>
       <div id="search">
-        <span id="doc-title">osmos-redux 1.2.0 API<span id="doc-version"></span></span>
+        <span id="doc-title">osmos-redux 1.3.0 API<span id="doc-version"></span></span>
         <span class="close-results"><span class="left">&lt;</span> Back</span>
         <div id="textfilter">
           <span class="input">
@@ -199,8 +199,8 @@
                         <a href="LevelContextType$.html" title="Enumeration representing the type of level the user is playing">LevelContextType</a>
                       </li><li class="current-entities indented7">
                         <a class="object" href="LobbyContext$.html" title="Companion object"></a>
-                        <a class="trait" href="LobbyContext.html" title="Basic LobbyContext trait, seen as a LobbyEvent wrapper and a User container"></a>
-                        <a href="LobbyContext.html" title="Basic LobbyContext trait, seen as a LobbyEvent wrapper and a User container">LobbyContext</a>
+                        <a class="trait" href="LobbyContext.html" title="Basic LobbyContext trait, seen both as a LobbyEventWrapper observable and observer"></a>
+                        <a href="LobbyContext.html" title="Basic LobbyContext trait, seen both as a LobbyEventWrapper observable and observer">LobbyContext</a>
                       </li><li class="current-entities indented7">
                         <span class="separator"></span>
                         <a class="trait" href="LobbyContextListener.html" title="Trait which gets notified when a LobbyContext event occurs"></a>
@@ -209,6 +209,10 @@
                         <span class="separator"></span>
                         <a class="trait" href="MultiPlayerLevelContext.html" title="LevelContext used in multplayer sessions"></a>
                         <a href="MultiPlayerLevelContext.html" title="LevelContext used in multplayer sessions">MultiPlayerLevelContext</a>
+                      </li><li class="current-entities indented7">
+                        <span class="separator"></span>
+                        <a class="trait" href="MultiPlayerLevelContextListener.html" title="Trait which gets notified when a LevelContext event occurs"></a>
+                        <a href="MultiPlayerLevelContextListener.html" title="Trait which gets notified when a LevelContext event occurs">MultiPlayerLevelContextListener</a>
                       </li>
               </ul>
             </div>
@@ -237,8 +241,7 @@
       </h4>
 
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Trait modelling an object which holds the current game state and reacts when it gets changed
-</p></div><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Trait modelling an object which holds the current game state and reacts when it gets changed</p></div><div class="toggleContainer block">
           <span class="toggle">
             Linear Supertypes
           </span>
@@ -247,7 +250,7 @@
             <span class="toggle">
               Known Subclasses
             </span>
-            <div class="subClasses hiddenContent"><a href="../../controller/ControllerImpl.html" class="extype" name="it.unibo.osmos.redux.mvc.controller.ControllerImpl">ControllerImpl</a>, <a href="LevelContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.LevelContext">LevelContext</a>, <a href="MultiPlayerLevelContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContext">MultiPlayerLevelContext</a></div>
+            <div class="subClasses hiddenContent"><a href="LevelContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.LevelContext">LevelContext</a>, <a href="MultiPlayerLevelContext.html" class="extype" name="it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContext">MultiPlayerLevelContext</a></div>
           </div></div>
         
 
@@ -312,7 +315,9 @@
         <span class="name">gameCurrentState</span><span class="result">: <a href="../events/GameStateEventWrapper.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.GameStateEventWrapper">GameStateEventWrapper</a></span>
       </span>
       
-      <p class="shortcomment cmt">A generic definition of the game state</p><div class="fullcomment"><div class="comment cmt"><p>A generic definition of the game state</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>a GameStateEventWrapper</p></dd></dl></div>
+      <p class="shortcomment cmt">A generic definition of the game state
+</p><div class="fullcomment"><div class="comment cmt"><p>A generic definition of the game state
+</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>a GameStateEventWrapper</p></dd></dl></div>
     </li><li name="it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver#notify" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="notify(event:T):Unit"></a><a id="notify(GameStateEventWrapper):Unit"></a>
       <span class="permalink">
@@ -328,7 +333,9 @@
         <span class="name">notify</span><span class="params">(<span name="event">event: <a href="../events/GameStateEventWrapper.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.GameStateEventWrapper">GameStateEventWrapper</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       
-      <p class="shortcomment cmt">Called on a event T type</p><div class="fullcomment"><div class="comment cmt"><p>Called on a event T type</p></div><dl class="paramcmts block"><dt class="param">event</dt><dd class="cmt"><p>the event</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../events/EventWrapperObserver.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver">EventWrapperObserver</a></dd></dl></div>
+      <p class="shortcomment cmt">Called on a event T type
+</p><div class="fullcomment"><div class="comment cmt"><p>Called on a event T type
+</p></div><dl class="paramcmts block"><dt class="param">event</dt><dd class="cmt"><p>the event</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../events/EventWrapperObserver.html" class="extype" name="it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver">EventWrapperObserver</a></dd></dl></div>
     </li></ol>
             </div>
 

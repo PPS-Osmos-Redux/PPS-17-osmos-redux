@@ -3,9 +3,9 @@
         <head>
           <meta http-equiv="X-UA-Compatible" content="IE=edge" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-          <title>osmos-redux 1.2.0 API  - it.unibo.osmos.redux.ecs.systems.sentientRule</title>
-          <meta name="description" content="osmos - redux 1.2.0 API - it.unibo.osmos.redux.ecs.systems.sentientRule" />
-          <meta name="keywords" content="osmos redux 1.2.0 API it.unibo.osmos.redux.ecs.systems.sentientRule" />
+          <title>osmos-redux 1.3.0 API  - it.unibo.osmos.redux.ecs.systems.sentientRule</title>
+          <meta name="description" content="osmos - redux 1.3.0 API - it.unibo.osmos.redux.ecs.systems.sentientRule" />
+          <meta name="keywords" content="osmos redux 1.3.0 API it.unibo.osmos.redux.ecs.systems.sentientRule" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../../../../../lib/index.css" media="screen" type="text/css" rel="stylesheet" />
@@ -28,7 +28,7 @@
         </head>
         <body>
       <div id="search">
-        <span id="doc-title">osmos-redux 1.2.0 API<span id="doc-version"></span></span>
+        <span id="doc-title">osmos-redux 1.3.0 API<span id="doc-version"></span></span>
         <span class="close-results"><span class="left">&lt;</span> Back</span>
         <div id="textfilter">
           <span class="input">
@@ -199,28 +199,24 @@
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../index.html" class="extype" name="it.unibo.osmos.redux.ecs.systems">systems</a></dd></dl></div>
     </li><li class="current-entities indented7">
                         <span class="separator"></span>
-                        <a class="class" href="EscapeFromBoundaryRule.html" title=""></a>
-                        <a href="EscapeFromBoundaryRule.html" title="">EscapeFromBoundaryRule</a>
+                        <a class="class" href="EscapeFromBoundaryRule.html" title="compute the acceleration to avoid the boundary in according with boundary collision rule"></a>
+                        <a href="EscapeFromBoundaryRule.html" title="compute the acceleration to avoid the boundary in according with boundary collision rule">EscapeFromBoundaryRule</a>
                       </li><li class="current-entities indented7">
                         <span class="separator"></span>
-                        <a class="class" href="EscapeFromEnemiesRule.html" title=""></a>
-                        <a href="EscapeFromEnemiesRule.html" title="">EscapeFromEnemiesRule</a>
+                        <a class="class" href="EscapeFromEnemiesRule.html" title="Rule to compute the acceleration to run away from enemies"></a>
+                        <a href="EscapeFromEnemiesRule.html" title="Rule to compute the acceleration to run away from enemies">EscapeFromEnemiesRule</a>
                       </li><li class="current-entities indented7">
                         <span class="separator"></span>
-                        <a class="class" href="FollowTargetRule.html" title=""></a>
-                        <a href="FollowTargetRule.html" title="">FollowTargetRule</a>
+                        <a class="class" href="FollowTargetRule.html" title="Rule to compute the acceleration to follow the target enemy"></a>
+                        <a href="FollowTargetRule.html" title="Rule to compute the acceleration to follow the target enemy">FollowTargetRule</a>
                       </li><li class="current-entities indented7">
                         <span class="separator"></span>
-                        <a class="class" href="RuleWithEnemies.html" title=""></a>
-                        <a href="RuleWithEnemies.html" title="">RuleWithEnemies</a>
+                        <a class="trait" href="SentientRule.html" title="Base rule for sentient entity"></a>
+                        <a href="SentientRule.html" title="Base rule for sentient entity">SentientRule</a>
                       </li><li class="current-entities indented7">
                         <span class="separator"></span>
-                        <a class="trait" href="SentientRule.html" title=""></a>
-                        <a href="SentientRule.html" title="">SentientRule</a>
-                      </li><li class="current-entities indented7">
-                        <span class="separator"></span>
-                        <a class="object" href="SentientUtils$.html" title=""></a>
-                        <a href="SentientUtils$.html" title="">SentientUtils</a>
+                        <a class="object" href="SentientUtils$.html" title="Utils for sentient system and rules"></a>
+                        <a href="SentientUtils$.html" title="Utils for sentient system and rules">SentientUtils</a>
                       </li><li name="it.unibo.osmos.redux.ecs.systems.victoryconditions" visbl="pub" class="indented7 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="victoryconditions"></a><a id="victoryconditions:victoryconditions"></a>
       <span class="permalink">
@@ -300,7 +296,7 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="it.unibo.osmos.redux.ecs.systems.sentientRule.EscapeFromBoundaryRule" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+              <ol><li name="it.unibo.osmos.redux.ecs.systems.sentientRule.EscapeFromBoundaryRule" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="EscapeFromBoundaryRuleextendsSentientRulewithProductwithSerializable"></a><a id="EscapeFromBoundaryRule:EscapeFromBoundaryRule"></a>
       <span class="permalink">
       <a href="../../../../../../../it/unibo/osmos/redux/ecs/systems/sentientRule/index.html#EscapeFromBoundaryRuleextendsSentientRulewithProductwithSerializable" title="Permalink">
@@ -312,14 +308,16 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="" href="EscapeFromBoundaryRule.html"><span class="name">EscapeFromBoundaryRule</span></a><span class="params">(<span name="levelInfo">levelInfo: <a href="../../../mvc/model/Level.html" class="extype" name="it.unibo.osmos.redux.mvc.model.Level">Level</a></span>)</span><span class="result"> extends <a href="SentientRule.html" class="extype" name="it.unibo.osmos.redux.ecs.systems.sentientRule.SentientRule">SentientRule</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="compute the acceleration to avoid the boundary in according with boundary collision rule" href="EscapeFromBoundaryRule.html"><span class="name">EscapeFromBoundaryRule</span></a><span class="params">(<span name="levelInfo">levelInfo: <a href="../../../mvc/controller/levels/structure/Level.html" class="extype" name="it.unibo.osmos.redux.mvc.controller.levels.structure.Level">Level</a></span>)</span><span class="result"> extends <a href="SentientRule.html" class="extype" name="it.unibo.osmos.redux.ecs.systems.sentientRule.SentientRule">SentientRule</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
-      
-    </li><li name="it.unibo.osmos.redux.ecs.systems.sentientRule.EscapeFromEnemiesRule" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="EscapeFromEnemiesRuleextendsRuleWithEnemieswithProductwithSerializable"></a><a id="EscapeFromEnemiesRule:EscapeFromEnemiesRule"></a>
+      <p class="shortcomment cmt">compute the acceleration to avoid the boundary in according with boundary collision rule
+</p><div class="fullcomment"><div class="comment cmt"><p>compute the acceleration to avoid the boundary in according with boundary collision rule
+</p></div><dl class="paramcmts block"><dt class="param">levelInfo</dt><dd class="cmt"><p>level that contain collision rule</p></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.ecs.systems.sentientRule.EscapeFromEnemiesRule" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="EscapeFromEnemiesRuleextendsSentientRulewithProductwithSerializable"></a><a id="EscapeFromEnemiesRule:EscapeFromEnemiesRule"></a>
       <span class="permalink">
-      <a href="../../../../../../../it/unibo/osmos/redux/ecs/systems/sentientRule/index.html#EscapeFromEnemiesRuleextendsRuleWithEnemieswithProductwithSerializable" title="Permalink">
+      <a href="../../../../../../../it/unibo/osmos/redux/ecs/systems/sentientRule/index.html#EscapeFromEnemiesRuleextendsSentientRulewithProductwithSerializable" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -328,14 +326,16 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="" href="EscapeFromEnemiesRule.html"><span class="name">EscapeFromEnemiesRule</span></a><span class="params">(<span name="enemies">enemies: <span class="extype" name="scala.collection.mutable.ListBuffer">ListBuffer</span>[<a href="../../entities/properties/composed/SentientEnemyProperty.html" class="extype" name="it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty">SentientEnemyProperty</a>]</span>)</span><span class="result"> extends <a href="RuleWithEnemies.html" class="extype" name="it.unibo.osmos.redux.ecs.systems.sentientRule.RuleWithEnemies">RuleWithEnemies</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="Rule to compute the acceleration to run away from enemies" href="EscapeFromEnemiesRule.html"><span class="name">EscapeFromEnemiesRule</span></a><span class="params">(<span name="enemies">enemies: <span class="extype" name="scala.collection.mutable.ListBuffer">ListBuffer</span>[<a href="../../entities/properties/composed/SentientEnemyProperty.html" class="extype" name="it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty">SentientEnemyProperty</a>]</span>)</span><span class="result"> extends <a href="SentientRule.html" class="extype" name="it.unibo.osmos.redux.ecs.systems.sentientRule.SentientRule">SentientRule</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
-      
-    </li><li name="it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="FollowTargetRuleextendsRuleWithEnemieswithProductwithSerializable"></a><a id="FollowTargetRule:FollowTargetRule"></a>
+      <p class="shortcomment cmt">Rule to compute the acceleration to run away from enemies
+</p><div class="fullcomment"><div class="comment cmt"><p>Rule to compute the acceleration to run away from enemies
+</p></div><dl class="paramcmts block"><dt class="param">enemies</dt><dd class="cmt"><p>list of possible enemies</p></dd></dl></div>
+    </li><li name="it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="FollowTargetRuleextendsSentientRulewithProductwithSerializable"></a><a id="FollowTargetRule:FollowTargetRule"></a>
       <span class="permalink">
-      <a href="../../../../../../../it/unibo/osmos/redux/ecs/systems/sentientRule/index.html#FollowTargetRuleextendsRuleWithEnemieswithProductwithSerializable" title="Permalink">
+      <a href="../../../../../../../it/unibo/osmos/redux/ecs/systems/sentientRule/index.html#FollowTargetRuleextendsSentientRulewithProductwithSerializable" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -344,26 +344,12 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="" href="FollowTargetRule.html"><span class="name">FollowTargetRule</span></a><span class="params">(<span name="enemies">enemies: <span class="extype" name="scala.collection.mutable.ListBuffer">ListBuffer</span>[<a href="../../entities/properties/composed/SentientEnemyProperty.html" class="extype" name="it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty">SentientEnemyProperty</a>]</span>)</span><span class="result"> extends <a href="RuleWithEnemies.html" class="extype" name="it.unibo.osmos.redux.ecs.systems.sentientRule.RuleWithEnemies">RuleWithEnemies</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="Rule to compute the acceleration to follow the target enemy" href="FollowTargetRule.html"><span class="name">FollowTargetRule</span></a><span class="params">(<span name="enemies">enemies: <span class="extype" name="scala.collection.mutable.ListBuffer">ListBuffer</span>[<a href="../../entities/properties/composed/SentientEnemyProperty.html" class="extype" name="it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty">SentientEnemyProperty</a>]</span>)</span><span class="result"> extends <a href="SentientRule.html" class="extype" name="it.unibo.osmos.redux.ecs.systems.sentientRule.SentientRule">SentientRule</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
-      
-    </li><li name="it.unibo.osmos.redux.ecs.systems.sentientRule.RuleWithEnemies" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="RuleWithEnemiesextendsSentientRule"></a><a id="RuleWithEnemies:RuleWithEnemies"></a>
-      <span class="permalink">
-      <a href="../../../../../../../it/unibo/osmos/redux/ecs/systems/sentientRule/index.html#RuleWithEnemiesextendsSentientRule" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">class</span>
-      </span>
-      <span class="symbol">
-        <a title="" href="RuleWithEnemies.html"><span class="name">RuleWithEnemies</span></a><span class="result"> extends <a href="SentientRule.html" class="extype" name="it.unibo.osmos.redux.ecs.systems.sentientRule.SentientRule">SentientRule</a></span>
-      </span>
-      
-      
+      <p class="shortcomment cmt">Rule to compute the acceleration to follow the target enemy
+</p><div class="fullcomment"><div class="comment cmt"><p>Rule to compute the acceleration to follow the target enemy
+</p></div><dl class="paramcmts block"><dt class="param">enemies</dt><dd class="cmt"><p>list of enemies from which choose the target enemy</p></dd></dl></div>
     </li><li name="it.unibo.osmos.redux.ecs.systems.sentientRule.SentientRule" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="SentientRuleextendsAnyRef"></a><a id="SentientRule:SentientRule"></a>
       <span class="permalink">
@@ -376,10 +362,10 @@
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <a title="" href="SentientRule.html"><span class="name">SentientRule</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <a title="Base rule for sentient entity" href="SentientRule.html"><span class="name">SentientRule</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       
-      
+      <p class="shortcomment cmt">Base rule for sentient entity</p>
     </li></ol>
             </div>
 
@@ -400,10 +386,10 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a title="" href="SentientUtils$.html"><span class="name">SentientUtils</span></a>
+        <a title="Utils for sentient system and rules" href="SentientUtils$.html"><span class="name">SentientUtils</span></a>
       </span>
       
-      
+      <p class="shortcomment cmt">Utils for sentient system and rules</p>
     </li>
               </ol>
             </div>

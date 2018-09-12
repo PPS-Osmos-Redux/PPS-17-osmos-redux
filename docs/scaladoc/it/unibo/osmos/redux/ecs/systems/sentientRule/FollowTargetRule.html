@@ -3,9 +3,9 @@
         <head>
           <meta http-equiv="X-UA-Compatible" content="IE=edge" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-          <title>osmos-redux 1.2.0 API  - it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule</title>
-          <meta name="description" content="osmos - redux 1.2.0 API - it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule" />
-          <meta name="keywords" content="osmos redux 1.2.0 API it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule" />
+          <title>osmos-redux 1.3.0 API  - it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule</title>
+          <meta name="description" content="osmos - redux 1.3.0 API - it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule" />
+          <meta name="keywords" content="osmos redux 1.3.0 API it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../../../../../lib/index.css" media="screen" type="text/css" rel="stylesheet" />
@@ -28,7 +28,7 @@
         </head>
         <body>
       <div id="search">
-        <span id="doc-title">osmos-redux 1.2.0 API<span id="doc-version"></span></span>
+        <span id="doc-title">osmos-redux 1.3.0 API<span id="doc-version"></span></span>
         <span class="close-results"><span class="left">&lt;</span> Back</span>
         <div id="textfilter">
           <span class="input">
@@ -183,28 +183,24 @@
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../index.html" class="extype" name="it.unibo.osmos.redux.ecs.systems">systems</a></dd></dl></div>
     </li><li class="current-entities indented7">
                         <span class="separator"></span>
-                        <a class="class" href="EscapeFromBoundaryRule.html" title=""></a>
-                        <a href="EscapeFromBoundaryRule.html" title="">EscapeFromBoundaryRule</a>
+                        <a class="class" href="EscapeFromBoundaryRule.html" title="compute the acceleration to avoid the boundary in according with boundary collision rule"></a>
+                        <a href="EscapeFromBoundaryRule.html" title="compute the acceleration to avoid the boundary in according with boundary collision rule">EscapeFromBoundaryRule</a>
                       </li><li class="current-entities indented7">
                         <span class="separator"></span>
-                        <a class="class" href="EscapeFromEnemiesRule.html" title=""></a>
-                        <a href="EscapeFromEnemiesRule.html" title="">EscapeFromEnemiesRule</a>
+                        <a class="class" href="EscapeFromEnemiesRule.html" title="Rule to compute the acceleration to run away from enemies"></a>
+                        <a href="EscapeFromEnemiesRule.html" title="Rule to compute the acceleration to run away from enemies">EscapeFromEnemiesRule</a>
                       </li><li class="current-entities indented7">
                         <span class="separator"></span>
-                        <a class="class" href="" title=""></a>
-                        <a href="" title="">FollowTargetRule</a>
+                        <a class="class" href="" title="Rule to compute the acceleration to follow the target enemy"></a>
+                        <a href="" title="Rule to compute the acceleration to follow the target enemy">FollowTargetRule</a>
                       </li><li class="current-entities indented7">
                         <span class="separator"></span>
-                        <a class="class" href="RuleWithEnemies.html" title=""></a>
-                        <a href="RuleWithEnemies.html" title="">RuleWithEnemies</a>
+                        <a class="trait" href="SentientRule.html" title="Base rule for sentient entity"></a>
+                        <a href="SentientRule.html" title="Base rule for sentient entity">SentientRule</a>
                       </li><li class="current-entities indented7">
                         <span class="separator"></span>
-                        <a class="trait" href="SentientRule.html" title=""></a>
-                        <a href="SentientRule.html" title="">SentientRule</a>
-                      </li><li class="current-entities indented7">
-                        <span class="separator"></span>
-                        <a class="object" href="SentientUtils$.html" title=""></a>
-                        <a href="SentientUtils$.html" title="">SentientUtils</a>
+                        <a class="object" href="SentientUtils$.html" title="Utils for sentient system and rules"></a>
+                        <a href="SentientUtils$.html" title="Utils for sentient system and rules">SentientUtils</a>
                       </li>
               </ul>
             </div>
@@ -228,16 +224,17 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">FollowTargetRule</span><span class="params">(<span name="enemies">enemies: <span class="extype" name="scala.collection.mutable.ListBuffer">ListBuffer</span>[<a href="../../entities/properties/composed/SentientEnemyProperty.html" class="extype" name="it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty">SentientEnemyProperty</a>]</span>)</span><span class="result"> extends <a href="RuleWithEnemies.html" class="extype" name="it.unibo.osmos.redux.ecs.systems.sentientRule.RuleWithEnemies">RuleWithEnemies</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">FollowTargetRule</span><span class="params">(<span name="enemies">enemies: <span class="extype" name="scala.collection.mutable.ListBuffer">ListBuffer</span>[<a href="../../entities/properties/composed/SentientEnemyProperty.html" class="extype" name="it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty">SentientEnemyProperty</a>]</span>)</span><span class="result"> extends <a href="SentientRule.html" class="extype" name="it.unibo.osmos.redux.ecs.systems.sentientRule.SentientRule">SentientRule</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
 
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Rule to compute the acceleration to follow the target enemy
+</p></div><dl class="paramcmts block"><dt class="param">enemies</dt><dd class="cmt"><p>list of enemies from which choose the target enemy</p></dd></dl><div class="toggleContainer block">
           <span class="toggle">
             Linear Supertypes
           </span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <a href="RuleWithEnemies.html" class="extype" name="it.unibo.osmos.redux.ecs.systems.sentientRule.RuleWithEnemies">RuleWithEnemies</a>, <a href="SentientRule.html" class="extype" name="it.unibo.osmos.redux.ecs.systems.sentientRule.SentientRule">SentientRule</a>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <a href="SentientRule.html" class="extype" name="it.unibo.osmos.redux.ecs.systems.sentientRule.SentientRule">SentientRule</a>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -263,7 +260,7 @@
                   <span class="filtertype">Inherited<br />
                   </span>
                   <ol id="linearization">
-                    <li class="in" name="it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule"><span>FollowTargetRule</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="it.unibo.osmos.redux.ecs.systems.sentientRule.RuleWithEnemies"><span>RuleWithEnemies</span></li><li class="in" name="it.unibo.osmos.redux.ecs.systems.sentientRule.SentientRule"><span>SentientRule</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                    <li class="in" name="it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule"><span>FollowTargetRule</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="it.unibo.osmos.redux.ecs.systems.sentientRule.SentientRule"><span>SentientRule</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                   </ol>
                 </div><div class="ancestors">
               <span class="filtertype"></span>
@@ -283,7 +280,7 @@
         <div id="allMembers">
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
-              <ol><li name="it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule#&lt;init&gt;" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+              <ol><li name="it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule#&lt;init&gt;" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="&lt;init&gt;(enemies:scala.collection.mutable.ListBuffer[it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty]):it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule"></a><a id="&lt;init&gt;:FollowTargetRule"></a>
       <span class="permalink">
       <a href="../../../../../../../it/unibo/osmos/redux/ecs/systems/sentientRule/FollowTargetRule.html#&lt;init&gt;(enemies:scala.collection.mutable.ListBuffer[it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty]):it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule" title="Permalink">
@@ -298,7 +295,7 @@
         <span class="name">FollowTargetRule</span><span class="params">(<span name="enemies">enemies: <span class="extype" name="scala.collection.mutable.ListBuffer">ListBuffer</span>[<a href="../../entities/properties/composed/SentientEnemyProperty.html" class="extype" name="it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty">SentientEnemyProperty</a>]</span>)</span>
       </span>
       
-      
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">enemies</dt><dd class="cmt"><p>list of enemies from which choose the target enemy</p></dd></dl></div>
     </li></ol>
             </div>
 
@@ -412,7 +409,9 @@
         <span class="name">computeRule</span><span class="params">(<span name="sentient">sentient: <a href="../../entities/properties/composed/SentientProperty.html" class="extype" name="it.unibo.osmos.redux.ecs.entities.properties.composed.SentientProperty">SentientProperty</a></span>, <span name="previousAcceleration">previousAcceleration: <a href="../../../utils/Vector.html" class="extype" name="it.unibo.osmos.redux.utils.Vector">Vector</a></span>)</span><span class="result">: <a href="../../../utils/Vector.html" class="extype" name="it.unibo.osmos.redux.utils.Vector">Vector</a></span>
       </span>
       
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule">FollowTargetRule</a> → <a href="SentientRule.html" class="extype" name="it.unibo.osmos.redux.ecs.systems.sentientRule.SentientRule">SentientRule</a></dd></dl></div>
+      <p class="shortcomment cmt">compute the acceleration to apply for this rule to the specified entity with the previous compute acceleration
+</p><div class="fullcomment"><div class="comment cmt"><p>compute the acceleration to apply for this rule to the specified entity with the previous compute acceleration
+</p></div><dl class="paramcmts block"><dt class="param">sentient</dt><dd class="cmt"><p>entity to apply the rule</p></dd><dt class="param">previousAcceleration</dt><dd class="cmt"><p>previous acceleration compute</p></dd><dt>returns</dt><dd class="cmt"><p>acceleration to apply this rule considered the previous acceleration</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule">FollowTargetRule</a> → <a href="SentientRule.html" class="extype" name="it.unibo.osmos.redux.ecs.systems.sentientRule.SentientRule">SentientRule</a></dd></dl></div>
     </li><li name="it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule#enemies" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="enemies:scala.collection.mutable.ListBuffer[it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty]"></a><a id="enemies:ListBuffer[SentientEnemyProperty]"></a>
       <span class="permalink">
@@ -658,8 +657,6 @@
               <h3>Inherited from <span class="extype" name="scala.Product">Product</span></h3>
             </div><div class="parent" name="scala.Equals">
               <h3>Inherited from <span class="extype" name="scala.Equals">Equals</span></h3>
-            </div><div class="parent" name="it.unibo.osmos.redux.ecs.systems.sentientRule.RuleWithEnemies">
-              <h3>Inherited from <a href="RuleWithEnemies.html" class="extype" name="it.unibo.osmos.redux.ecs.systems.sentientRule.RuleWithEnemies">RuleWithEnemies</a></h3>
             </div><div class="parent" name="it.unibo.osmos.redux.ecs.systems.sentientRule.SentientRule">
               <h3>Inherited from <a href="SentientRule.html" class="extype" name="it.unibo.osmos.redux.ecs.systems.sentientRule.SentientRule">SentientRule</a></h3>
             </div><div class="parent" name="scala.AnyRef">
