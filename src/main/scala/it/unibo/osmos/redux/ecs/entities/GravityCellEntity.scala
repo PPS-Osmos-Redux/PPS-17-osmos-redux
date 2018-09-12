@@ -1,7 +1,6 @@
 package it.unibo.osmos.redux.ecs.entities
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 import it.unibo.osmos.redux.ecs.entities.properties.basic.SpecificWeight
 import it.unibo.osmos.redux.ecs.entities.properties.composed.GravityProperty
 
@@ -21,11 +20,11 @@ object GravityCellEntity {
     GravityCellEntityImpl(CellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity),
       MassComponent(dimension, specificWeight), specificWeight)
 
+  def apply(builder: CellBuilder, specificWeight: SpecificWeightComponent): GravityCellEntity =
+    apply(builder.buildCellEntity(), specificWeight)
+
   def apply(cell: CellEntity, specificWeight: SpecificWeightComponent): GravityCellEntity =
     GravityCellEntityImpl(cell, MassComponent(cell.getDimensionComponent, specificWeight), specificWeight)
-
-  def apply(builder: CellBuilder, specificWeight: SpecificWeightComponent): GravityCellEntity =
-    apply(builder.build, specificWeight)
 
   private case class GravityCellEntityImpl(cellEntity: CellEntity, mass: MassComponent, specificWeight: SpecificWeightComponent) extends GravityCellEntity {
 
@@ -52,4 +51,5 @@ object GravityCellEntity {
 
     override def getSpecificWeightComponent: SpecificWeightComponent = specificWeight
   }
+
 }

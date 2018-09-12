@@ -2,8 +2,9 @@ package it.unibo.osmos.redux.ecs.systems
 
 import it.unibo.osmos.redux.ecs.entities.EntityType
 import it.unibo.osmos.redux.ecs.entities.properties.composed.{GravityProperty, MovableProperty}
-import it.unibo.osmos.redux.utils.{MathUtils, Point, Vector}
+import it.unibo.osmos.redux.utils.MathUtils
 
+/** System managing the gravity cell */
 case class GravitySystem() extends AbstractSystem2[MovableProperty, GravityProperty]() {
 
   override def update(): Unit = for (
@@ -17,14 +18,12 @@ case class GravitySystem() extends AbstractSystem2[MovableProperty, GravityPrope
   private def updateAcceleration(gravityProperty: GravityProperty, movableProperty: MovableProperty): Unit = {
     val gravityCenter = gravityProperty.getPositionComponent.point
     val entityCenter = movableProperty.getPositionComponent.point
-    val distance = Math.pow(MathUtils.euclideanDistance(gravityCenter, entityCenter), 2)
+    val distance = MathUtils.euclideanDistanceSq(gravityCenter, entityCenter)
     val typeOfForce = getTypeOfForce(gravityProperty.getTypeComponent.typeEntity)
     val gravityAcceleration = (gravityProperty.getMassComponent.mass / distance) * typeOfForce
-    val unitVector = MathUtils.normalizePoint(Point(gravityCenter.x - entityCenter.x, gravityCenter.y - entityCenter.y))
+    val unitVector = MathUtils.unitVector(gravityCenter, entityCenter)
     val acceleration = movableProperty.getAccelerationComponent
-    // TODO: acceleration.vector_(acceleration.vector.add(unitVector.multiply(gravityAcceleration)))
-    val v = Vector(acceleration.vector.x + unitVector.x * gravityAcceleration, acceleration.vector.y + unitVector.y * gravityAcceleration)
-    acceleration.vector_(v)
+    acceleration.vector_(acceleration.vector add (unitVector multiply gravityAcceleration))
   }
 
   private def getTypeOfForce(typeOfForce: EntityType.Value): Double = typeOfForce match {

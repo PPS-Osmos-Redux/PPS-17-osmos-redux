@@ -1,4 +1,20 @@
 {
+  "name": "2",
+  "victoryRule": {
+    "victoryRule": "Become the biggest"
+  },
+  "levelMap": {
+    "mapShape": {
+      "center": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "mapShape": "Rectangle",
+      "height": 400.0,
+      "base": 900.0
+    },
+    "collisionRule": "Bouncing"
+  },
   "entities": [{
     "acceleration": {
       "accelerationX": 0.0,
@@ -15,17 +31,17 @@
     },
     "position": {
       "point": {
-        "x": 10.0,
-        "y": 100.0
+        "x": 351.0,
+        "y": -1.0
       }
     },
     "cellType": "basicCell",
     "dimension": {
-      "radius": 50.0
+      "radius": 58.0
     },
     "speed": {
-      "speedX": 0.2,
-      "speedY": 0.1
+      "speedX": 0.0,
+      "speedY": 0.0
     }
   }, {
     "acceleration": {
@@ -43,17 +59,17 @@
     },
     "position": {
       "point": {
-        "x": 8.0,
-        "y": 80.0
+        "x": 125.0,
+        "y": 61.0
       }
     },
     "cellType": "basicCell",
     "dimension": {
-      "radius": 35.0
+      "radius": 46.0
     },
     "speed": {
-      "speedX": 0.3,
-      "speedY": 0.5
+      "speedX": 0.0,
+      "speedY": 0.0
     }
   }, {
     "acceleration": {
@@ -71,17 +87,17 @@
     },
     "position": {
       "point": {
-        "x": 40.0,
-        "y": 25.0
+        "x": -6.0,
+        "y": -85.0
       }
     },
     "cellType": "basicCell",
     "dimension": {
-      "radius": 10.0
+      "radius": 30.0
     },
     "speed": {
-      "speedX": 0.1,
-      "speedY": 0.99
+      "speedX": 0.0,
+      "speedY": 0.0
     }
   }, {
     "acceleration": {
@@ -99,17 +115,17 @@
     },
     "position": {
       "point": {
-        "x": 10.0,
-        "y": 30.0
+        "x": -212.0,
+        "y": 64.0
       }
     },
     "cellType": "basicCell",
     "dimension": {
-      "radius": 8.0
+      "radius": 22.0
     },
     "speed": {
-      "speedX": 0.3,
-      "speedY": 0.8
+      "speedX": 0.0,
+      "speedY": 0.0
     }
   }, {
     "acceleration": {
@@ -125,36 +141,215 @@
     "spawner": {
       "canSpawn": true
     },
-    "typeEntity": {
-      "componentType": "Controlled"
-    },
     "position": {
       "point": {
-        "x": 800.0,
-        "y": 500.0
+        "x": -346.0,
+        "y": -76.0
       }
     },
     "cellType": "playerCell",
     "dimension": {
-      "radius": 250.0
+      "radius": 40.0
     },
     "speed": {
       "speedX": 0.0,
       "speedY": 0.0
     }
-  }],
-  "name": "2",
-  "victoryRule": {
-    "victoryRule": "Become_the_biggest"
-  },
-  "levelMap": {
-    "mapShape": {
-      "mapShape": "Rectangle",
-      "height": 600.1,
-      "base": 500.6,
-      "centerX": 300.0,
-      "centerY": 300.0
+  }, {
+    "acceleration": {
+      "accelerationX": 0.0,
+      "accelerationY": 0.0
     },
-    "collisionRule": "Bouncing"
-  }
+    "visible": {
+      "visible": true
+    },
+    "collidable": {
+      "collidable": true
+    },
+    "typeEntity": {
+      "componentType": "AntiMatter"
+    },
+    "position": {
+      "point": {
+        "x": -187.0,
+        "y": -148.0
+      }
+    },
+    "cellType": "basicCell",
+    "dimension": {
+      "radius": 42.0
+    },
+    "speed": {
+      "speedX": 0.0,
+      "speedY": 0.0
+    }
+  }, {
+    "acceleration": {
+      "accelerationX": 0.0,
+      "accelerationY": 0.0
+    },
+    "visible": {
+      "visible": true
+    },
+    "collidable": {
+      "collidable": true
+    },
+    "typeEntity": {
+      "componentType": "AntiMatter"
+    },
+    "position": {
+      "point": {
+        "x": -58.0,
+        "y": 43.0
+      }
+    },
+    "cellType": "basicCell",
+    "dimension": {
+      "radius": 58.0
+    },
+    "speed": {
+      "speedX": 0.0,
+      "speedY": 0.0
+    }
+  }, {
+    "acceleration": {
+      "accelerationX": 0.0,
+      "accelerationY": 0.0
+    },
+    "visible": {
+      "visible": true
+    },
+    "collidable": {
+      "collidable": true
+    },
+    "typeEntity": {
+      "componentType": "AntiMatter"
+    },
+    "position": {
+      "point": {
+        "x": 211.0,
+        "y": -97.0
+      }
+    },
+    "cellType": "basicCell",
+    "dimension": {
+      "radius": 70.0
+    },
+    "speed": {
+      "speedX": 0.0,
+      "speedY": 0.0
+    }
+  }, {
+    "acceleration": {
+      "accelerationX": 0.0,
+      "accelerationY": 0.0
+    },
+    "visible": {
+      "visible": true
+    },
+    "collidable": {
+      "collidable": true
+    },
+    "typeEntity": {
+      "componentType": "AntiMatter"
+    },
+    "position": {
+      "point": {
+        "x": 253.0,
+        "y": 134.0
+      }
+    },
+    "cellType": "basicCell",
+    "dimension": {
+      "radius": 42.0
+    },
+    "speed": {
+      "speedX": 0.0,
+      "speedY": 0.0
+    }
+  }, {
+    "acceleration": {
+      "accelerationX": 0.0,
+      "accelerationY": 0.0
+    },
+    "visible": {
+      "visible": true
+    },
+    "collidable": {
+      "collidable": true
+    },
+    "typeEntity": {
+      "componentType": "AntiMatter"
+    },
+    "position": {
+      "point": {
+        "x": -373.0,
+        "y": 19.0
+      }
+    },
+    "cellType": "basicCell",
+    "dimension": {
+      "radius": 22.0
+    },
+    "speed": {
+      "speedX": 0.0,
+      "speedY": 0.0
+    }
+  }, {
+    "acceleration": {
+      "accelerationX": 0.0,
+      "accelerationY": 0.0
+    },
+    "visible": {
+      "visible": true
+    },
+    "collidable": {
+      "collidable": true
+    },
+    "typeEntity": {
+      "componentType": "AntiMatter"
+    },
+    "position": {
+      "point": {
+        "x": -360.0,
+        "y": 102.0
+      }
+    },
+    "cellType": "basicCell",
+    "dimension": {
+      "radius": 22.0
+    },
+    "speed": {
+      "speedX": 0.0,
+      "speedY": 0.0
+    }
+  }, {
+    "acceleration": {
+      "accelerationX": 0.0,
+      "accelerationY": 0.0
+    },
+    "visible": {
+      "visible": true
+    },
+    "collidable": {
+      "collidable": true
+    },
+    "typeEntity": {
+      "componentType": "AntiMatter"
+    },
+    "position": {
+      "point": {
+        "x": -296.0,
+        "y": 128.0
+      }
+    },
+    "cellType": "basicCell",
+    "dimension": {
+      "radius": 22.0
+    },
+    "speed": {
+      "speedX": 0.0,
+      "speedY": 0.0
+    }
+  }]
 }

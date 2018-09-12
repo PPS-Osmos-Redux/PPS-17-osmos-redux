@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.components.level
 
-import it.unibo.osmos.redux.mvc.controller.LevelInfo
+import it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo
 import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
 import scalafx.Includes._
 import scalafx.animation.{FadeTransition, Transition}
@@ -13,9 +13,9 @@ import scalafx.scene.paint.Color
 import scalafx.scene.text.Text
 import scalafx.util.Duration
 
-/**
-  * Basic abstract level node, consisting of a text, an image, a play button and a simulation button
-  * @param listener the LevelNodeListener
+/** Basic abstract level node, consisting of a text, an image, a play button and a simulation button
+  *
+  * @param listener  the LevelNodeListener
   * @param levelInfo the level info
   */
 abstract class AbstractLevelNode(val listener: LevelNodeListener, val levelInfo: LevelInfo) extends VBox {
@@ -23,9 +23,7 @@ abstract class AbstractLevelNode(val listener: LevelNodeListener, val levelInfo:
   alignment = Pos.Center
   padding = Insets(0, 30, 30, 30)
 
-  /**
-    * Lazy implementation of the basic component. They will be eventually overridden in a not abstract class. This let us implement the objects behaviour
-    */
+  /** Lazy implementation of the basic component. They will be eventually overridden in a not abstract class. This let us implement the objects behaviour */
   lazy val imageView: ImageView = new ImageView()
   lazy val text: Text = new Text()
   lazy val playButton: Button = new Button()
@@ -36,9 +34,7 @@ abstract class AbstractLevelNode(val listener: LevelNodeListener, val levelInfo:
       color = Color.Blue
     }
 
-    /**
-      * Button handlers, calling the listener
-      */
+    /** Button handlers, calling the listener */
     playButton.onAction = _ => listener.onLevelPlayClick(levelInfo, simulation = false)
     simulationButton.onAction = _ => listener.onLevelPlayClick(levelInfo, simulation = true)
 
@@ -50,14 +46,14 @@ abstract class AbstractLevelNode(val listener: LevelNodeListener, val levelInfo:
   }
 }
 
-/**
-  * Animated version of the base AbstractLevelNode, adding scaling and fading effects
-  * @param listener the LevelNodeListener
+/** Animated version of the base AbstractLevelNode, adding scaling and fading effects
+  *
+  * @param listener  the LevelNodeListener
   * @param levelInfo the level info
   */
 abstract class AnimatedAbstractLevelNode(override val listener: LevelNodeListener, override val levelInfo: LevelInfo) extends AbstractLevelNode(listener, levelInfo) {
 
-  /* Hover event handlers */
+  /** Hover event handlers */
   scaleX <== when(hover) choose 1.2 otherwise 1
   scaleY <== when(hover) choose 1.2 otherwise 1
 
@@ -73,45 +69,48 @@ abstract class AnimatedAbstractLevelNode(override val listener: LevelNodeListene
   }
 
   text.visible = false
+  text.fill = Color.White
 
-  /**
-    * Playing the fade animation when the image is hovered
-    */
-  imageView.onMouseEntered = _ => {text.visible = true; fadeInTransition.play()}
-  imageView.onMouseExited = _ => {fadeOutTransition.play()}
+  /** Playing the fade animation when the image is hovered */
+  imageView.onMouseEntered = _ => {
+    text.visible = true
+    fadeInTransition.play()
+  }
+  imageView.onMouseExited = _ => {
+    fadeOutTransition.play()
+  }
 
   playButton.visible <== hover
   simulationButton.visible <== hover
 
 }
 
-/**
-  * Trait which gets notified when a LevelNode event occurs
-  */
+/** Trait which gets notified when a LevelNode event occurs */
 trait LevelNodeListener {
 
-  /**
-    * This method gets called when an available level buttons get clicked
-    * @param levelInfo the levelInfo name
+  /** This method gets called when an available level buttons get clicked
+    *
+    * @param levelInfo  the levelInfo name
     * @param simulation true if the level must be started as a simulation, false otherwise
-    * @param custom true if the level is a custom one, false otherwise
+    * @param custom     true if the level is a custom one, false otherwise
     */
   def onLevelPlayClick(levelInfo: LevelInfo, simulation: Boolean, custom: Boolean = false)
 }
 
 
-/**
-  * This node represents a single selectable level from the menu
-  * @param listener the LevelNodeListener
+/** This node represents a single selectable level from the menu
+  *
+  * @param listener  the LevelNodeListener
   * @param levelInfo the level info
-  * @param index the level index in the selection screen
+  * @param index     the level index in the selection screen
   */
 class LevelNode(override val listener: LevelNodeListener, override val levelInfo: LevelInfo, val index: Int) extends AnimatedAbstractLevelNode(listener, levelInfo) {
 
-  /* The upper text */
+  /** The upper text */
   override lazy val text: Text = new Text() {
     margin = Insets(0, 0, 20, 0)
-    style = "-fx-font-size: 20pt"
+    style = "-fx-fx-font-size: 20pt"
+
     if (levelInfo.isAvailable) {
       text = "Level " + levelInfo.name
     } else {
@@ -122,7 +121,7 @@ class LevelNode(override val listener: LevelNodeListener, override val levelInfo
     }
   }
 
-  /* The level image */
+  /** The level image */
   override lazy val imageView: ImageView = new ImageView(ImageLoader.getImage("/textures/" + (index match {
     case 1 => "cell_green.png"
     case 2 => "cell_yellow.png"
@@ -134,10 +133,10 @@ class LevelNode(override val listener: LevelNodeListener, override val levelInfo
     margin = Insets(20)
   }
 
-  /* The button used to start the simulation in this level */
+  /** The button used to start the simulation in this level */
   override lazy val simulationButton: Button = new Button("Simulation")
 
-  /* The button used to start the level normally */
+  /** The button used to start the level normally */
   override lazy val playButton: Button = new Button("Play") {
     alignment = Pos.BottomLeft
   }

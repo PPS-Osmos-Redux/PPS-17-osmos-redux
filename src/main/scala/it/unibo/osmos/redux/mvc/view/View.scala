@@ -2,28 +2,22 @@ package it.unibo.osmos.redux.mvc.view
 
 import it.unibo.osmos.redux.ecs.entities.CellEntity
 import it.unibo.osmos.redux.mvc.controller.Controller
-import it.unibo.osmos.redux.mvc.controller.LevelInfo
-import it.unibo.osmos.redux.mvc.model.{CollisionRules, MapShape, VictoryRules}
+import it.unibo.osmos.redux.mvc.controller.levels.structure._
+import it.unibo.osmos.redux.mvc.view.components.custom.AlertFactory
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
 import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LobbyContext}
 import it.unibo.osmos.redux.mvc.view.stages.{OsmosReduxPrimaryStage, PrimaryStageListener}
 import it.unibo.osmos.redux.utils.GenericResponse
 import scalafx.application.{JFXApp, Platform}
-import scalafx.scene.control.Alert.AlertType
-import scalafx.scene.control.{Alert, Label, TextArea}
-import scalafx.scene.layout.VBox
 
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 import scala.util.{Failure, Success}
 
-/**
-  * View base trait
-  */
+/** View base trait */
 trait View {
 
 
-  /**
-    * Setter. This method sets the reference to the Controller instance
+  /** Setter. This method sets the reference to the Controller instance
     *
     * @param controller the Controller instance
     */
@@ -35,15 +29,15 @@ object View {
 
   def apply(app: JFXApp): View = new ViewImpl(app)
 
-  /**
-    * View implementation, holding the main stage and the current scene
+  /** View implementation, holding the main stage and the current scene
     *
     * @param app a reference to the JFXApp, necessary to the correct setup of the whole application
     */
   class ViewImpl(private val app: JFXApp) extends View with PrimaryStageListener {
 
+    /** Implicit executor */
     implicit val ec: ExecutionContextExecutor = ExecutionContext.global
-
+    /** Setting the primary stage */
     app.stage = OsmosReduxPrimaryStage(this)
     private var controller: Option[Controller] = Option.empty
 
@@ -51,17 +45,18 @@ object View {
       this.controller = Option(controller)
     }
 
-    /**
-      * Utility method that checks if controller is not empty and execute f() if that is the case
-      *
-      * @param f the function which will be executed if controller is not empty
-      */
-    private def checkController(f: () => Unit): Unit = controller match {
-      case Some(_) => f()
-      case _ =>
+    override def onLevelContextCreated(levelContext: LevelContext, level: String, isCustom: Boolean = false): Boolean = {
+      controller match {
+        case Some(c) =>
+          c.initLevel(levelContext, level, isCustom) match {
+            case Failure(t) =>
+              AlertFactory.createErrorAlert("Unable to start level", t.getMessage).showAndWait()
+              false
+            case _ => true
+          }
+        case None => false
+      }
     }
-
-    override def onLevelContextCreated(levelContext: LevelContext, level: String, isCustom: Boolean = false): Unit = checkController(() => controller.get.initLevel(levelContext, level, isCustom))
 
     override def getSingleLevels: List[LevelInfo] = controller match {
       case Some(c) => c.getSinglePlayerLevels
@@ -78,6 +73,11 @@ object View {
       case _ => List()
     }
 
+    override def getCampaignLevels: List[CampaignLevel] = controller match {
+      case Some(c) => c.getCampaignLevels
+      case _ => List()
+    }
+
     override def onSaveLevel(name: String,
                              map: MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value,
                              entities: Seq[CellEntity],
@@ -91,33 +91,11 @@ object View {
 
     override def onResumeLevel(): Unit = checkController(() => controller.get.resumeLevel())
 
-    override def onStopLevel(): Unit = checkController(() => controller.get.stopLevel())
+    override def onStopLevel(victory: Boolean): Unit = checkController(() => controller.get.stopLevel(victory))
 
-    override def onDisplayError(exception: Throwable): Unit = {
-      // TODO change for a better output
-      Platform.runLater {
-        val dialogPaneContent = new VBox()
+    override def onLevelSpeedChanged(increment: Boolean): Unit = checkController(() => controller.get.changeLevelSpeed(increment))
 
-        val label = new Label("Stack Trace:")
-
-        val textArea = new TextArea()
-        textArea.setText(exception.getMessage)
-
-        dialogPaneContent.getChildren.addAll(label, textArea)
-
-        val alert = new Alert(AlertType.Error) {
-          title = "Error Dialog"
-          headerText = None
-          graphic = null
-        }
-        // Set content for Dialog Pane
-        alert.getDialogPane.setContent(dialogPaneContent)
-        alert.showAndWait()
-      }
-    }
-
-    /**
-      * After checking the controller, we ask to enter the lobby asynchronously and call the callback function after the future result
+    /** After checking the controller, we ask to enter the lobby asynchronously and call the callback function after the future result
       *
       * @param user         the user requesting to enter the lobby
       * @param lobbyContext the lobby context, which may be used by the server to configure existing lobby users
@@ -126,13 +104,28 @@ object View {
     override def onLobbyRequest(user: User, levelInfo: Option[LevelInfo], lobbyContext: LobbyContext, callback: (User, Option[LevelInfo], LobbyContext, GenericResponse[Boolean]) => Unit): Unit =
       checkController(() => controller.get.initLobby(user, lobbyContext).future.onComplete {
         case Success(value) => callback(user, levelInfo, lobbyContext, value)
-        case Failure(e) => onDisplayError(e)
+        case Failure(e) => onDisplayError("Connection call succeeded but did not receive response")
       })
 
-    override def onStartMultiplayerGameClick(levelInfo: LevelInfo): Unit = checkController(() => controller.get.initMultiPlayerLevel(levelInfo).future.onComplete {
-      case Failure(e) => onDisplayError(e)
+    override def onStartMultiPlayerGameClick(levelInfo: LevelInfo): Unit = checkController(() => controller.get.initMultiPlayerLevel(levelInfo).future.onComplete {
+      case Failure(e) => onDisplayError("Failed controller init")
       case Success(_) => //do nothing
     })
+
+    /** Utility method that checks if controller is not empty and execute f() if that is the case
+      *
+      * @param f the function which will be executed if controller is not empty
+      */
+    private def checkController(f: () => Unit): Unit = controller match {
+      case Some(_) => f()
+      case _ =>
+    }
+
+    def onDisplayError(message: String): Unit = {
+      Platform.runLater {
+        AlertFactory.createErrorAlert("Error occurred", message).showAndWait()
+      }
+    }
 
   }
 

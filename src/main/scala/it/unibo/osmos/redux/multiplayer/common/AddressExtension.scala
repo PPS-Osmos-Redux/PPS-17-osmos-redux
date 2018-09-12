@@ -10,5 +10,6 @@ object AddressExtension extends ExtensionId[AddressExtension] {
   def createExtension(system: ExtendedActorSystem): AddressExtension = new AddressExtension(system)
 
   def hostOf(system: ActorSystem): String = AddressExtension(system).address.host.getOrElse("")
+
   def portOf(system: ActorSystem): Int = AddressExtension(system).address.port.getOrElse(0)
 }

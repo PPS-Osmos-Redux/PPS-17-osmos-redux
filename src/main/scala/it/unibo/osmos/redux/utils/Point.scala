@@ -36,9 +36,6 @@ trait Point {
     */
   def subtract(p: Point): Vector = Vector(x - p.x, y - p.y)
 
-  // TODO: remove
-  //def multiply(value: Double): Vector = Vector(x * value, y * value)
-
 }
 
 object Point {

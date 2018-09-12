@@ -1,8 +1,6 @@
 package it.unibo.osmos.redux
 
-import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.builders.{CellBuilder, PlayerCellBuilder}
-import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityManager}
+import it.unibo.osmos.redux.ecs.entities.{CellBuilder, EntityManager}
 import it.unibo.osmos.redux.ecs.systems.CellsEliminationSystem
 import org.scalatest.FunSuite
 
@@ -14,22 +12,30 @@ class CellEliminationSystemSpy() extends CellsEliminationSystem {
 }
 
 class TestCellsEliminationSystem extends FunSuite {
-  val spawner = SpawnerComponent(false)
-  val ce: CellEntity = new CellBuilder().withDimension(1).build
-  val pce = PlayerCellBuilder().withDimension(1).build
+
   test("Cell elimination") {
     val system = new CellEliminationSystemSpy()
-    pce.getDimensionComponent.radius_(system.radiusThreshold + 1)
-    ce.getDimensionComponent.radius_(system.radiusThreshold - 1)
+
+    val ce = CellBuilder().withDimension(system.radiusThreshold - 0.1).buildCellEntity()
+    val pce = CellBuilder().withDimension(system.radiusThreshold + 0.1).buildPlayerEntity()
+
     assert(system.entitiesSize == 0)
+
+    //Cell entity with radius less than threshold
     EntityManager.add(ce)
     system.update()
     assert(system.entitiesSize == 0)
+
+    //Cell entity with radius greater than threshold
     EntityManager.add(pce)
     system.update()
     assert(system.entitiesSize == 1)
+
+    //Update cell entity setting the radius value less than threshold
     pce.getDimensionComponent.radius_(system.radiusThreshold - 1)
     system.update()
     assert(system.entitiesSize == 0)
+
+    EntityManager.clear()
   }
 }

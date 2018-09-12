@@ -1,35 +1,56 @@
 package it.unibo.osmos.redux.mvc.view.scenes
-import it.unibo.osmos.redux.mvc.controller.LevelInfo
-import it.unibo.osmos.redux.mvc.view.context.{LevelContext, MultiPlayerLevelContext}
-import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
-import it.unibo.osmos.redux.utils.Point
-import javafx.scene.input.MouseEvent
+
+import it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo
+import it.unibo.osmos.redux.mvc.view.components.level.LevelScreen
+import it.unibo.osmos.redux.mvc.view.context.{LevelContext, MultiPlayerLevelContext, MultiPlayerLevelContextListener}
+import scalafx.animation.FadeTransition
+import scalafx.scene.paint.Color
 import scalafx.stage.Stage
+import scalafx.util.Duration
 
-class MultiPlayerLevelScene(override val parentStage: Stage, override val levelInfo: LevelInfo, override val listener: LevelSceneListener, override val upperSceneListener: UpperLevelSceneListener)
-  extends LevelScene(parentStage, levelInfo, listener, upperSceneListener) {
+/** This scene holds and manages a single level played in multiplayer mode
+  *
+  * @param parentStage       the parent stage
+  * @param levelInfo         the level info
+  * @param listener          the listener
+  * @param backClickListener the back click listener
+  */
+class MultiPlayerLevelScene(override val parentStage: Stage, override val levelInfo: LevelInfo, override val listener: LevelSceneListener, override val backClickListener: BackClickListener)
+  extends LevelScene(parentStage, levelInfo, listener, backClickListener) with MultiPlayerLevelContextListener {
 
-  /**
-    * The level context, created with the MultiPlayerLevelScene. It must be a MultiPlayerLevelContext
-    */
-  override def levelContext: Option[ _ <: LevelContext] = _levelContext
-  override def levelContext_= (levelContext: LevelContext): Unit = levelContext match {
+  /** The level context, created with the MultiPlayerLevelScene. It must be a MultiPlayerLevelContext */
+  override def levelContext: Option[_ <: LevelContext] = _levelContext
+
+  override def levelContext_=(levelContext: LevelContext): Unit = levelContext match {
     case mplc: MultiPlayerLevelContext => _levelContext = Option(mplc)
     case _ => throw new IllegalArgumentException("MultiPLayerLevelScene must use a MultiPlayerLevelContext")
   }
 
-  /**
-    * In multiplayer mode we must also send the level context UUID to let the serve discriminate between users
-    * @param mouseEvent the mouse event
-    */
-  override protected def sendMouseEvent(mouseEvent: MouseEvent): Unit = levelContext match {
-    case Some(mplc) => mplc notifyMouseEvent MouseEventWrapper(Point(mouseEvent.getX, mouseEvent.getY), mplc.getPlayerUUID)
-    case _ =>
-  }
+  onKeyPressed = _ => {}
 
-  /**
-    * Pause button should be disabled in multiplayer mode
-    */
-  override def onPause(): Unit = throw new UnsupportedOperationException("Users cannot pause the game in multiplayer mode")
-  override def onResume(): Unit = throw new UnsupportedOperationException("Users cannot resume the game in multiplayer mode")
+  /** Called when we lost as a server */
+  override def onLevelLostAsServer(): Unit = {
+    LevelState.inputEnabled = false
+
+    /** Creating an end screen with a button */
+    val endScreenAsServer = LevelScreen.Builder(this)
+      .withText("You lost, but other players are still playing. Please wait...", 50, Color.White)
+      .build()
+    endScreenAsServer.opacity = 0.0
+
+    /** Fade in/fade out transition */
+    new FadeTransition(Duration.apply(3000), canvas) {
+      fromValue = 1.0
+      toValue = 0.0
+      onFinished = _ => {
+        /** Remove all the contents and add the end screen */
+        content.clear()
+        content.add(endScreenAsServer)
+        new FadeTransition(Duration.apply(3000), endScreenAsServer) {
+          fromValue = 0.0
+          toValue = 1.0
+        }.play()
+      }
+    }.play()
+  }
 }

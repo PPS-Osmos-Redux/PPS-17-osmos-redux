@@ -1,9 +1,25 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
+    }
+}
+plugins {
+    id "org.scoverage" version "2.1.0"
+    id "com.github.maiflai.scalatest" version "0.21"
+}
+
 apply plugin: 'java'
 apply plugin: 'scala'
 apply plugin: 'idea'
 apply plugin: 'application'
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'org.scoverage'
+apply plugin: 'com.github.maiflai.scalatest'
 
-version '1.2.0'
+version '1.3.0'
 
 mainClassName = 'it.unibo.osmos.redux.main.AppLauncher'
 sourceCompatibility = 1.8
@@ -24,7 +40,12 @@ sourceSets {
             srcDirs = ["src/test/resources"]
         }
         scala {
-            srcDirs = ["src/test/scala/travis"]
+            if (project.hasProperty("travis")) {
+                // excluding test that travis can't run
+                srcDirs = ["src/test/scala/travis"]
+            } else {
+                srcDirs = ["src/test/scala"]
+            }
         }
     }
 }
@@ -40,7 +61,6 @@ dependencies {
     compile group: 'org.scalafx', name: 'scalafx_2.12', version: '8.0.144-R12'
 
     compile group: 'io.spray', name: 'spray-json_2.12', version: '1.3.4'
-    compile group: 'it.unibo.alice.tuprolog', name: 'tuprolog', version: '3.2.1'
 
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
 
@@ -53,10 +73,14 @@ dependencies {
     testCompile group: 'org.scalatest', name: 'scalatest_2.12', version: '3.0.5'
     testCompile group: 'org.scalamock', name: 'scalamock-scalatest-support_2.12', version: '3.6.0'
     testCompile group: 'com.typesafe.akka', name: 'akka-testkit_2.12', version: '2.5.14'
+
+    testRuntime 'org.pegdown:pegdown:1.4.2'
+    scoverage 'org.scoverage:scalac-scoverage-plugin_2.12:1.3.1'
+    scoverage 'org.scoverage:scalac-scoverage-runtime_2.12:1.3.1'
 }
 
 // running <<gradle test>> runs also scalaTests
-test.dependsOn('scalaTests')
+//test.dependsOn('scalaTests')
 
 // necessary for running scala tests without adding
 // @RunWith(classOf[JUnitRunner]) to each test class
@@ -66,30 +90,20 @@ task scalaTests(dependsOn: ['testClasses'], type: JavaExec) {
     classpath = sourceSets.test.runtimeClasspath
 }
 
-// jar will be saved to build/libs
-task fatJar(type: Jar, dependsOn: subprojects.compileJava) {
-    manifest {
-        attributes 'Implementation-Title': 'Osmos-Redux',
-            'Implementation-Version': rootProject.version,
-            'Main-Class': 'it.unibo.osmos.redux.main.AppLauncher'
-    }
-    baseName = "${rootProject.name}"
-    from(configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }) {
-        // remove all signature files
-        exclude "META-INF/*.SF"
-        exclude "META-INF/*.DSA"
-        exclude "META-INF/*.RSA"
-        exclude 'build'
-        exclude '.gradle'
-        exclude 'build.gradle'
-        exclude 'gradle'
-        exclude 'gradlew'
-        exclude 'gradlew.bat'
-    }
-    with jar
-    doLast {
-        println("fatJar created")
-    }
+// tests can't run parallely or build will fail
+test {
+    maxParallelForks = 1
 }
 
+// tests can't run parallely or build will fail
+testScoverage {
+    maxParallelForks = 1
+}
+
+shadowJar {
+    mergeServiceFiles('reference.conf')
+}
+
+// gradle scaladoc to generate doc
+// gradle reportScoverage to generate coverage
 defaultTasks 'clean', 'build'

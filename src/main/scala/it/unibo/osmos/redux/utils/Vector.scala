@@ -47,35 +47,12 @@ trait Vector {
     */
   def multiply(v: Double): Vector = Vector(x * v, y * v)
 
-  /** Vector-scalar division. Leaves this vector unchanged.
-    *
-    * @param v scalar
-    * @return division result as a new instance
-    */
-  def divide(v: Double): Vector = Vector(x / v, y / v)
-
   /** Vector dot product
     *
     * @param v vector to use for dot product
     * @return dot product
     */
   def dot(v: Vector): Double = (x * v.x) + (y * v.y)
-
-  /** Gets the magnitude (module) of the vector applying parallelogram law
-    *
-    * @return magnitude of this vector
-    */
-  def getMagnitude: Double = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))
-
-  /** Scales this vector magnitude (module) with the desired one
-    *
-    * @param desiredMagnitude desired vector magnitude
-    * @return a new vector with the specified module
-    */
-  def getNewMagnitude(desiredMagnitude: Double): Vector = {
-    val scale = desiredMagnitude / getMagnitude
-    Vector(x * scale, y * scale)
-  }
 
   /** Limits the vector's magnitude if it is greater than the given one
     *
@@ -90,6 +67,22 @@ trait Vector {
     }
   }
 
+  /** Scales this vector magnitude (module) with the desired one
+    *
+    * @param desiredMagnitude desired vector magnitude
+    * @return a new vector with the specified module
+    */
+  def getNewMagnitude(desiredMagnitude: Double): Vector = {
+    val scale = desiredMagnitude / getMagnitude
+    Vector(x * scale, y * scale)
+  }
+
+  /** Gets the magnitude (module) of the vector applying parallelogram law
+    *
+    * @return magnitude of this vector
+    */
+  def getMagnitude: Double = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))
+
   /** Gets the vector normalized
     *
     * @return a new normalized instance of this vector
@@ -102,6 +95,13 @@ trait Vector {
       Vector(x, y)
     }
   }
+
+  /** Vector-scalar division. Leaves this vector unchanged.
+    *
+    * @param v scalar
+    * @return division result as a new instance
+    */
+  def divide(v: Double): Vector = Vector(x / v, y / v)
 }
 
 object Vector {
@@ -109,11 +109,6 @@ object Vector {
 
   def zero(): Vector = VectorImpl(0, 0)
 
-  private case class VectorImpl(var _x: Double, var _y: Double) extends Vector {
-
-    override def x: Double = _x
-
-    override def y: Double = _y
-  }
+  private case class VectorImpl(override val x: Double, override val y: Double) extends Vector {}
 
 }

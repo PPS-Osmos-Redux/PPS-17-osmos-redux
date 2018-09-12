@@ -7,12 +7,11 @@ import it.unibo.osmos.redux.ecs.entities.properties.basic.Property
 import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
 
-/**
-  * Abstract system of generic entity
-  */
-abstract class AbstractSystem[T <:Property: ClassTag]() extends Observer with System {
+/** Abstract system of generic entity */
+abstract class AbstractSystem[T <: Property : ClassTag]() extends Observer with System {
 
-  protected var entities: ListBuffer[T] = ListBuffer()
+  /** The entity list with property of type T */
+  protected val entities: ListBuffer[T] = ListBuffer()
 
   EntityManager.subscribe(this, implicitly[ClassTag[T]].runtimeClass.asInstanceOf[Class[T]])
 

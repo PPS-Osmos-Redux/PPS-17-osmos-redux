@@ -1,7 +1,6 @@
 package it.unibo.osmos.redux.ecs.entities
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 import it.unibo.osmos.redux.ecs.entities.properties.basic.Spawner
 import it.unibo.osmos.redux.ecs.entities.properties.composed.InputProperty
 
@@ -19,11 +18,13 @@ object PlayerCellEntity {
             typeEntity: TypeComponent = TypeComponent(EntityType.Controlled)): PlayerCellEntity =
     PlayerCellEntityImpl(CellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity), spawner)
 
+  def apply(builder: CellBuilder, spawner: SpawnerComponent): PlayerCellEntity = apply(builder.buildCellEntity(), spawner)
+
   def apply(cell: CellEntity, spawner: SpawnerComponent): PlayerCellEntity = PlayerCellEntityImpl(cell, spawner)
 
-  def apply(builder: CellBuilder, spawner: SpawnerComponent): PlayerCellEntity = apply(builder.build, spawner)
-
   private case class PlayerCellEntityImpl(cellEntity: CellEntity, private val spawner: SpawnerComponent) extends PlayerCellEntity {
+
+    require(cellEntity.getTypeComponent.typeEntity == EntityType.Controlled)
 
     override def getUUID: String = cellEntity.getUUID
 
@@ -43,4 +44,5 @@ object PlayerCellEntity {
 
     override def getSpawnerComponent: SpawnerComponent = spawner
   }
+
 }

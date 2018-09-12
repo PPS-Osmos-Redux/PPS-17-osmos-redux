@@ -3,11 +3,10 @@ package it.unibo.osmos.redux.ecs.entities
 import java.util.UUID
 
 import it.unibo.osmos.redux.ecs.components._
-import it.unibo.osmos.redux.ecs.entities.builders.CellBuilder
 import it.unibo.osmos.redux.ecs.entities.properties.composed._
 
 /** Trait representing a CellEntity */
-trait CellEntity extends AbstractEntity with MovableProperty with CollidableProperty with DrawableProperty with DeathProperty with SentientEnemyProperty {}
+trait CellEntity extends MovableProperty with CollidableProperty with DrawableProperty with DeathProperty with SentientEnemyProperty {}
 
 object CellEntity {
   def apply(acceleration: AccelerationComponent,
@@ -18,11 +17,7 @@ object CellEntity {
             visible: VisibleComponent,
             typeEntity: TypeComponent): CellEntity = CellEntityImpl(acceleration, collidable, dimension, position, speed, visible, typeEntity)
 
-  def apply(builder: CellBuilder): CellEntity = {
-    val entity = builder.build
-    CellEntityImpl(entity.getAccelerationComponent, entity.getCollidableComponent, entity.getDimensionComponent,
-      entity.getPositionComponent, entity.getSpeedComponent, entity.getVisibleComponent, entity.getTypeComponent)
-  }
+  def apply(builder: CellBuilder): CellEntity = builder.buildCellEntity()
 
   private case class CellEntityImpl(private val acceleration: AccelerationComponent,
                                     private val collidable: CollidableComponent,

@@ -2,53 +2,48 @@ package it.unibo.osmos.redux.ecs.components
 
 import scala.collection.mutable
 
-/**
-  * Spawner Component
-  */
+/** Spawner Component */
 trait SpawnerComponent extends Component {
 
-  /**
-    * Stack
-    */
+  /** Stack */
   protected val actionQueue: mutable.Queue[SpawnAction] = mutable.Queue()
 
-  /**
-    * Getter. Defines whether the spawner can spawn new entities or not.
+  /** Getter. Defines whether the spawner can spawn new entities or not.
+    *
     * @return True, if the spawner can spawn; otherwise false.
     */
   def canSpawn: Boolean
 
-  /**
-    * Setter. Defines whether the spawner can spawn new entities or not.
+  /** Setter. Defines whether the spawner can spawn new entities or not.
+    *
     * @param value True, if the spawner can spawn; otherwise false.
     */
   def canSpawn_(value: Boolean): Unit
 
-  /**
-    * Enqueue one or more spawn action.
+  /** Enqueue one or more spawn action.
+    *
     * @param actions The spawn actions.
     */
   def enqueueActions(actions: SpawnAction*): Unit
 
-  /**
-    * Gets a spawn action to perform.
+  /** Gets a spawn action to perform.
+    *
     * @return The spawn action.
     */
   def dequeueAction(): Option[SpawnAction]
 
-  /**
-    * Gets all spawn actions to perform.
+  /** Gets all spawn actions to perform.
+    *
     * @return The spawn actions list.
     */
   def dequeueActions(): List[SpawnAction]
 
-  /**
-    * Clears all queued spawn actions.
+  /** Clears all queued spawn actions.
     */
   def clearActions(): Unit
 
-  /**
-    * Copy this instance.
+  /** Copy this instance.
+    *
     * @return A new spawner component.
     */
   def copy(): SpawnerComponent
@@ -59,11 +54,7 @@ object SpawnerComponent {
 
   private case class SpawnerComponentImpl(var _canSpawn: Boolean) extends SpawnerComponent {
 
-    override def canSpawn: Boolean = _canSpawn
-
     override def canSpawn_(canSpawn: Boolean): Unit = _canSpawn = canSpawn
-
-    override def enqueueActions(actions: SpawnAction*): Unit = actionQueue.enqueue(actions: _*)
 
     override def dequeueAction(): Option[SpawnAction] = if (actionQueue.nonEmpty) Some(actionQueue.dequeue()) else None
 
@@ -78,5 +69,10 @@ object SpawnerComponent {
       })
       copy
     }
+
+    override def canSpawn: Boolean = _canSpawn
+
+    override def enqueueActions(actions: SpawnAction*): Unit = actionQueue.enqueue(actions: _*)
   }
+
 }

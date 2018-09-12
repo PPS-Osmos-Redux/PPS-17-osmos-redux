@@ -8,7 +8,11 @@ import it.unibo.osmos.redux.utils.{MathUtils, Vector}
 
 import scala.collection.mutable.ListBuffer
 
-case class FollowTargetRule(enemies: ListBuffer[SentientEnemyProperty]) extends RuleWithEnemies(enemies) {
+/** Rule to compute the acceleration to follow the target enemy
+  *
+  * @param enemies list of enemies from which choose the target enemy
+  */
+case class FollowTargetRule(enemies: ListBuffer[SentientEnemyProperty]) extends SentientRule {
 
   override def computeRule(sentient: SentientProperty, previousAcceleration: Vector): Vector = {
     val escapeVelocity = sentient.getSpeedComponent.vector add previousAcceleration
@@ -18,8 +22,7 @@ case class FollowTargetRule(enemies: ListBuffer[SentientEnemyProperty]) extends 
     }
   }
 
-  /**
-    * apply a acceleration to the sentient to follow the target
+  /** apply a acceleration to the sentient to follow the target
     *
     * @param sentient sentient entity
     * @param target   target entity
@@ -30,7 +33,7 @@ case class FollowTargetRule(enemies: ListBuffer[SentientEnemyProperty]) extends 
     computeSteer(actualVelocity, unitVectorDesiredVelocity)
   }
 
-  /**
+  /** find the target enemy
     *
     * @param sentient sentient entity
     * @param enemies  list of entity
@@ -53,7 +56,7 @@ case class FollowTargetRule(enemies: ListBuffer[SentientEnemyProperty]) extends 
     }
   }
 
-  /**
+  /** compute the coefficient with lost radius
     *
     * @param sentient sentient entity
     * @param enemy    sentient enemy entity
@@ -63,11 +66,11 @@ case class FollowTargetRule(enemies: ListBuffer[SentientEnemyProperty]) extends 
     val nextPositionTarget = enemy.getPositionComponent.point.add(enemy.getSpeedComponent.vector)
     val unitVectorDesiredVelocity = MathUtils.unitVector(nextPositionTarget, sentient.getPositionComponent.point)
     val magnitudeOfRotation = computeUnlimitedSteer(escapeVelocity, unitVectorDesiredVelocity).getMagnitude
-    val lostRadiusPercentage = magnitudeOfRotation * PERCENTAGE_OF_LOST_RADIUS_FOR_MAGNITUDE_ACCELERATION
+    val lostRadiusPercentage = magnitudeOfRotation * PercentageOfLostRadiusForMagnitudeAcceleration
     enemy.getDimensionComponent.radius - (sentient.getDimensionComponent.radius * lostRadiusPercentage)
   }
 
-  /**
+  /** compute the coefficient without lost radius
     *
     * @param sentient sentient entity
     * @param enemy    sentient enemy entity

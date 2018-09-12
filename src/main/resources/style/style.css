@@ -1,4 +1,12 @@
+/* overrides the default background, so it is not necessary
+ * for each scene to set attribute .default-background */
 .root {
+  -fx-background-image: url("../textures/background.png");
+  -fx-background-position: center center;
+  -fx-background-size: cover;
+}
+
+.default-background {
   -fx-background-image: url("../textures/background.png");
   -fx-background-position: center center;
   -fx-background-size: cover;
@@ -26,32 +34,39 @@
   -fx-font-weight: bold;
 }
 
-.disabled-button-style {
-  -fx-background: #dddddd;
+/* multiplayer scene style */
+.multi-player-scene-label-style {
+  -fx-min-width: 170px;
 }
 
 .multi-player-lobby-table {
   -fx-font-size: 22px;
 }
 
-/* change it in custom tag */
-/*.table-row-cell {
-  -fx-font-size: 20px;
+/*.multi-player-scene-VBox-style {
+  -fx-background-color: white;
 }*/
 
-.multi-player-scene-label-style {
-  -fx-min-width: 170px;
+/* alert dialog style */
+.dialog-style {
+  /* set background to null so that the .root background style is override */
+  -fx-background-image: null;
+  -fx-font: 20 arial;
 }
 
-.multi-player-scene-VBox-style {
+/* settings scene style */
+.settings-vbox {
+  -fx-font-size: 20px;
   -fx-background-color: white;
 }
 
+/* volume slider style */
 .slider .axis {
   -fx-tick-label-fill: white;
 }
 
-.settings-vbox {
-  -fx-font-size: 20px;
+/* controls scene style */
+.controls-hbox {
+  -fx-font-size: 22px;
   -fx-background-color: white;
 }
