@@ -26,31 +26,6 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
                             val backClickListener: BackClickListener, val user: User)
   extends DefaultBackScene(parentStage, backClickListener) with LobbyContextListener {
 
-  /** The lobby context, created with the MultiPlayerLobbyScene. It still needs to be properly setup */
-  private var _lobbyContext: Option[LobbyContext] = Option.empty
-
-  def lobbyContext: Option[LobbyContext] = _lobbyContext
-
-  def lobbyContext_=(lobbyContext: LobbyContext): Unit = {
-    _lobbyContext = Option(lobbyContext)
-
-    /** Subscribe to lobby context events */
-    lobbyContext.setListener(this)
-
-    /** Fill table with existing users */
-    userList ++= lobbyContext.users.map(_.getUserWithProperty)
-  }
-
-  /** The level info, which may be empty if the user is a client */
-  private var _levelInfo: Option[LevelInfo] = Option.empty
-
-  def levelInfo_=(levelInfo: Option[LevelInfo]): Unit = _levelInfo = levelInfo
-
-  /** ObservableBuffer holding the current users */
-  private val userList = ObservableBuffer[UserWithProperties]()
-  /** BooleanProperty representing the visibility of the start button */
-  private val isStartGameDisabled = BooleanProperty(true)
-
   /** TableView linked with the user list */
   val usersTable: TableView[UserWithProperties] = new TableView[UserWithProperties](userList) {
     styleClass.add("multi-player-lobby-table")
@@ -68,25 +43,15 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
       }
     )
   }
-
+  /** ObservableBuffer holding the current users */
+  private val userList = ObservableBuffer[UserWithProperties]()
+  /** BooleanProperty representing the visibility of the start button */
+  private val isStartGameDisabled = BooleanProperty(true)
   private val container: VBox = new VBox(5.0) {
     maxWidth <== parentStage.width / 2
     alignment = Pos.Center
     children = Seq(usersTable)
   }
-
-  /** Back button */
-  setText("Exit Lobby")
-  setAdditionalAction(() => lobbyContext match {
-    /** We notify the lobby observer that we exited the lobby */
-    case Some(lc) =>
-      lc notifyLobbyEvent LobbyEventWrapper(AbortLobby, Some(user))
-      ActorSystemHolder.clearActors()
-      Logger.log("Notifying exit lobby")("MultiPlayerLobbyScene")
-
-    case _ =>
-  })
-
   /** Start game button */
   private val startGame = new Button("Start Game") {
     /** Only visible if the user is a server and there are at least two players */
@@ -102,7 +67,6 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
       visible = false
     }
   }
-
   /** Requesting a structured layout */
   private val rootLayout: BorderPane = new BorderPane {
     padding = Insets(130)
@@ -115,6 +79,36 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     if (user.isServer) bottomContainer.children.add(startGame)
     bottom = bottomContainer
   }
+  /** The lobby context, created with the MultiPlayerLobbyScene. It still needs to be properly setup */
+  private var _lobbyContext: Option[LobbyContext] = Option.empty
+  /** The level info, which may be empty if the user is a client */
+  private var _levelInfo: Option[LevelInfo] = Option.empty
+
+  def lobbyContext: Option[LobbyContext] = _lobbyContext
+
+  /** Back button */
+  setText("Exit Lobby")
+  setAdditionalAction(() => lobbyContext match {
+    /** We notify the lobby observer that we exited the lobby */
+    case Some(lc) =>
+      lc notifyLobbyEvent LobbyEventWrapper(AbortLobby, Some(user))
+      ActorSystemHolder.clearActors()
+      Logger.log("Notifying exit lobby")("MultiPlayerLobbyScene")
+
+    case _ =>
+  })
+
+  def lobbyContext_=(lobbyContext: LobbyContext): Unit = {
+    _lobbyContext = Option(lobbyContext)
+
+    /** Subscribe to lobby context events */
+    lobbyContext.setListener(this)
+
+    /** Fill table with existing users */
+    userList ++= lobbyContext.users.map(_.getUserWithProperty)
+  }
+
+  def levelInfo_=(levelInfo: Option[LevelInfo]): Unit = _levelInfo = levelInfo
 
   /** Enabling the layout */
   root = rootLayout
@@ -150,9 +144,7 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
 
 }
 
-/**
-  * Trait used by MultiPlayerLobbyScene to notify events which need to be managed by the View
-  */
+/** Trait used by MultiPlayerLobbyScene to notify events which need to be managed by the View */
 trait MultiPlayerLobbySceneListener extends LevelSceneListener {
 
   /** Called once per lobby. This will eventually lead to the server init. The server will eventually respond using the previously passed lobby context

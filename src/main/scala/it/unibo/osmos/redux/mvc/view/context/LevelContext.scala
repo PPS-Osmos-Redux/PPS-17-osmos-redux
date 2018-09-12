@@ -110,6 +110,8 @@ object LevelContext {
       gameCurrentState_=(event)
     }
 
+    def gameCurrentState: GameStateEventWrapper = _gameCurrentState
+
     def gameCurrentState_=(value: GameStateEventWrapper): Unit = {
       _gameCurrentState = value
       listener match {
@@ -124,8 +126,6 @@ object LevelContext {
       case GameLost => listener.onLevelEnd(false)
       case _ =>
     }
-
-    def gameCurrentState: GameStateEventWrapper = _gameCurrentState
   }
 
   /** Implementation of the MultiPlayerLevelContext trait, override LevelContextImpl */

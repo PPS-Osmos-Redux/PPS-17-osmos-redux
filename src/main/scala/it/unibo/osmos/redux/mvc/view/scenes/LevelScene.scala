@@ -41,40 +41,43 @@ import scalafx.util.Duration
 class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val listener: LevelSceneListener, val backClickListener: BackClickListener)
   extends DefaultBackScene(parentStage, backClickListener) with LevelContextListener {
 
-  /** The canvas which will draw the elements on the screen */
-  protected val canvas: Canvas = new Canvas {
-    width <== parentStage.width
-    height <== parentStage.height
-    cache = true
-    opacity = 0.0
+  /** Level images */
+  private object LevelDrawables {
+    val cellDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(CellTexture), canvas.graphicsContext2D)
+    val playerCellDrawable: CellDrawable = new CellWithSpeedDrawable(ImageLoader.getImage(PlayerCellTexture), canvas.graphicsContext2D)
+    val attractiveDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(AttractiveTexture), canvas.graphicsContext2D)
+    val repulsiveDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(RepulsiveTexture), canvas.graphicsContext2D)
+    val antiMatterDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(AntiMatterTexture), canvas.graphicsContext2D)
+    val sentientDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(SentientTexture), canvas.graphicsContext2D)
+    val controlledDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(ControllerTexture), canvas.graphicsContext2D)
+    val backgroundImage: Image = ImageLoader.getImage(BackgroundTexture)
   }
-  /** The splash screen showed when the game is paused */
-  private val splashScreen = LevelScreen.Builder(this)
-    .withText(if (levelInfo != null) levelInfo.victoryRule.toString.replace("_", " ") else "", 50, Color.White)
-    .build()
-  /** The screen showed when the game is paused (with a bound property) */
-  private val pauseScreen = LevelScreen.Builder(this)
-    .withText("Game paused", 30, Color.White)
-    .withButton("Resume", _ => onResume())
-    .withNode(goBack)
-    .build()
-  /** The speed screen displayed when speeding up or slowing down the game */
-  private val speedChangeScreen: VBox = new VBox() {
-    alignment = Pos.TopRight
-    alignmentInParent = Pos.TopRight
-    margin = Insets(20, 20, 20, 20)
-    opacity = 0.0
-    children = speedScreenText
+
+  /** Level state variables */
+  protected object LevelState {
+    /** The current game pending state: true if the game is paused */
+    var paused: BooleanProperty = BooleanProperty(false)
+    /** Value indicating when the user can execute actions like pausing the game or moving around */
+    var inputEnabled = false
   }
+
+  /** Level player variables */
+  private object LevelPlayer {
+    /** Player position x-coordinate */
+    val playerPosX: DoubleProperty = DoubleProperty(0.0)
+    /** Player position y-coordinate */
+    val playerPosY: DoubleProperty = DoubleProperty(0.0)
+  }
+
   /** The level context, created with the LevelScene */
   protected var _levelContext: Option[LevelContext] = Option.empty
+
+  def levelContext: Option[LevelContext] = _levelContext
+
+  def levelContext_=(levelContext: LevelContext): Unit = _levelContext = Option(levelContext)
+
   /** The level border */
   private var mapBorder: Shape = _
-  /** The speed screen text displayed when speeding up or slowing down the game */
-  private val speedScreenText: Text = new Text("") {
-    font = Font.font("Verdana", 30)
-    fill = Color.White
-  }
 
   /** Playing level music */
   MusicPlayer.play(SoundsType.level)
@@ -83,11 +86,202 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   setText("Return to Level Selection")
   setAdditionalAction(() => onExit())
 
+  /** The canvas which will draw the elements on the screen */
+  protected val canvas: Canvas = new Canvas {
+    width <== parentStage.width
+    height <== parentStage.height
+    cache = true
+    opacity = 0.0
+  }
+
+  /** The splash screen showed when the game is paused */
+  private val splashScreen = LevelScreen.Builder(this)
+    .withText(if (levelInfo != null) levelInfo.victoryRule.toString.replace("_", " ") else "", 50, Color.White)
+    .build()
+  splashScreen.opacity = 0.0
+
+  /** The screen showed when the game is paused (with a bound property) */
+  private val pauseScreen = LevelScreen.Builder(this)
+    .withText("Game paused", 30, Color.White)
+    .withButton("Resume", _ => onResume())
+    .withNode(goBack)
+    .build()
+  pauseScreen.visible <== LevelState.paused
+
+  /** The speed screen text displayed when speeding up or slowing down the game */
+  private var speedScreenText: Text = new Text("") {
+    font = Font.font("Verdana", 30)
+    fill = Color.White
+  }
+
+  /** The speed screen displayed when speeding up or slowing down the game */
+  private val speedChangeScreen: VBox = new VBox() {
+    alignment = Pos.TopRight
+    alignmentInParent = Pos.TopRight
+    margin = Insets(20, 20, 20, 20)
+    opacity = 0.0
+    children = speedScreenText
+  }
+
+  /** The content of the whole scene, using a stack pane as the main container */
+  content = new StackPane() {
+    children = Seq(canvas, speedChangeScreen, splashScreen, pauseScreen)
+  }
+
+  /** Method to start the level */
+  private def startLevel(): Unit = {
+    /** Splash screen animation, starting with a FadeIn */
+    new FadeTransition(Duration.apply(2000), splashScreen) {
+      fromValue = 0.0
+      toValue = 1.0
+      /** FadeOut */
+      onFinished = _ => new FadeTransition(Duration.apply(2000), splashScreen) {
+        fromValue = 1.0
+        toValue = 0.0
+        /** Showing the canvas */
+        onFinished = _ => {
+          canvas.opacity = 1.0
+          content.remove(splashScreen)
+
+          /** Adding the mapBorder */
+          content.add(mapBorder)
+          LevelState.inputEnabled = true
+
+          /** Removing the splash screen to reduce the load. Then the level is started */
+          listener.onStartLevel()
+        }
+      }.play()
+    }.play()
+  }
+
   def onPause(): Unit = {
     canvas.opacity = 0.3
     LevelState.paused.value = true
 
     listener.onPauseLevel()
+  }
+
+  protected def onResume(): Unit = {
+    canvas.opacity = 1
+    LevelState.paused.value = false
+
+    listener.onResumeLevel()
+  }
+
+  private def onExit(): Unit = {
+    MusicPlayer.play(SoundsType.menu)
+    listener.onStopLevel()
+  }
+
+  /** Called when the user has to go to the LevelSelectionScene */
+  private def goToPreviousScene(): Unit = {
+    MusicPlayer.play(SoundsType.menu)
+    backClickListener.onBackClick()
+  }
+
+  /** OnMouseClicked handler, reacting only if the game is not paused */
+  onMouseClicked = mouseEvent => if (!LevelState.paused.value && LevelState.inputEnabled) {
+    /** Creating a circle representing the player click */
+    val clickCircle = Circle(mouseEvent.getX, mouseEvent.getY, 2.0, DefaultPlayerColor)
+    content.add(clickCircle)
+    val fadeOutTransition = new FadeTransition(Duration.apply(2000), clickCircle) {
+      fromValue = 1.0
+      toValue = 0.0
+      onFinished = _ => content.remove(clickCircle)
+    }
+    fadeOutTransition.play()
+
+    /** Sending the event */
+    sendMouseEvent(mouseEvent)
+  }
+
+  /** OnScroll handler, managing the scale */
+  onScroll = scrollEvent => if (!LevelState.paused.value && LevelState.inputEnabled) {
+
+    /** Retrieving the current scale */
+    var scale = canvas.scaleY.value
+    if (scrollEvent.getDeltaY < 0) {
+      scale /= ScrollingDelta
+    } else {
+      scale *= ScrollingDelta
+    }
+
+    /** Limiting the scale */
+    scale = MathUtils.clamp(scale, MaxZoomOutScale, MaxZoomInScale)
+
+    /** Updating the canvas scale */
+    canvas.scaleX = scale
+    canvas.scaleY = scale
+
+    scrollEvent.consume()
+  }
+
+  /** This method updates the camera position
+    *
+    * @param x the translation x-coordinate
+    * @param y the translation y-coordinate
+    */
+  private def setCameraPivot(x: Double, y: Double): Unit = {
+    canvas.translateX = x
+    canvas.translateY = y
+  }
+
+  /** OnKeyPressed handler, reacting to esc, and arrow key press:
+    *  - the esc key pauses the game,
+    *  - the up and right keys speed up the game
+    *  - the down and left keys slow down the game
+    */
+  onKeyPressed = keyEvent => if (LevelState.inputEnabled) keyEvent.getCode match {
+    case KeyCode.ESCAPE =>
+      if (LevelState.paused.value) {
+        onResume()
+      } else {
+        onPause()
+      }
+    case KeyCode.UP | KeyCode.RIGHT =>
+      listener.onLevelSpeedChanged(true)
+      displaySpeedChange("Speed up ►►")
+    case KeyCode.DOWN | KeyCode.LEFT =>
+      listener.onLevelSpeedChanged()
+      displaySpeedChange("Speed down ◄◄")
+    case _ => //do nothing
+  }
+
+  /** This method shows the new speed value, called when the user changes it
+    *
+    * @param text the new speed screen text
+    */
+  private def displaySpeedChange(text: String): Unit = {
+    /** Changing the speed screen text */
+    speedScreenText.text = text
+
+    /** Splash screen animation, starting with a FadeIn */
+    new FadeTransition(Duration.apply(300), speedChangeScreen) {
+      fromValue = 0.0
+      toValue = 1.0
+      autoReverse = true
+      /** FadeOut */
+      onFinished = _ => new FadeTransition(Duration.apply(300), speedChangeScreen) {
+        fromValue = 1.0
+        toValue = 0.0
+        autoReverse = true
+      }.play()
+    }.play()
+  }
+
+  /** Sends a MouseEventWrapper to the LevelContextListener
+    *
+    * @param mouseEvent the mouse event
+    */
+  protected def sendMouseEvent(mouseEvent: MouseEvent): Unit = levelContext match {
+    case Some(lc) =>
+      if (!LevelState.paused.value && LevelState.inputEnabled) {
+        /** Transforming click coordinates considering window size and zoom */
+        val x = mouseEvent.getX - HalfWindowWidth - canvas.getTranslateX / canvas.getScaleX
+        val y = mouseEvent.getY - HalfWindowHeight - canvas.getTranslateY / canvas.getScaleY
+        lc notifyMouseEvent MouseEventWrapper(Point(x, y), lc.getPlayerUUID)
+      }
+    case _ =>
   }
 
   override def onLevelSetup(mapShape: MapShape): Unit = mapShape match {
@@ -134,34 +328,6 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
         startLevel()
       })
   }
-  splashScreen.opacity = 0.0
-
-  /** Method to start the level */
-  private def startLevel(): Unit = {
-    /** Splash screen animation, starting with a FadeIn */
-    new FadeTransition(Duration.apply(2000), splashScreen) {
-      fromValue = 0.0
-      toValue = 1.0
-      /** FadeOut */
-      onFinished = _ => new FadeTransition(Duration.apply(2000), splashScreen) {
-        fromValue = 1.0
-        toValue = 0.0
-        /** Showing the canvas */
-        onFinished = _ => {
-          canvas.opacity = 1.0
-          content.remove(splashScreen)
-
-          /** Adding the mapBorder */
-          content.add(mapBorder)
-          LevelState.inputEnabled = true
-
-          /** Removing the splash screen to reduce the load. Then the level is started */
-          listener.onStartLevel()
-        }
-      }.play()
-    }.play()
-  }
-  pauseScreen.visible <== LevelState.paused
 
   override def onDrawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = {
 
@@ -202,21 +368,6 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     })
   }
 
-  /** This method updates the camera position
-    *
-    * @param x the translation x-coordinate
-    * @param y the translation y-coordinate
-    */
-  private def setCameraPivot(x: Double, y: Double): Unit = {
-    canvas.translateX = x
-    canvas.translateY = y
-  }
-
-  /** The content of the whole scene, using a stack pane as the main container */
-  content = new StackPane() {
-    children = Seq(canvas, speedChangeScreen, splashScreen, pauseScreen)
-  }
-
   /** Used to draw the correct entity according to its type
     *
     * @param drawableWrapper the drawableWrapper
@@ -230,77 +381,6 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
       case EntityType.Sentient => LevelDrawables.sentientDrawable.draw(drawableWrapper, color)
       case EntityType.Controlled => LevelDrawables.controlledDrawable.draw(drawableWrapper, color)
       case _ => LevelDrawables.cellDrawable.draw(drawableWrapper, color)
-    }
-  }
-
-  /** This method calculates the color of the input entities, interpolating and normalizing it according to the entities size
-    *
-    * @param minColor the base lower Color
-    * @param maxColor the base upper Color
-    * @param entities the input entities
-    * @return the sequence of pair where the first field is the entity and the second is the color
-    */
-  private def calculateColorsWithoutPlayer(entities: Seq[DrawableWrapper], minColor: Color = Color.LightBlue, maxColor: Color = Color.DarkRed): Seq[(DrawableWrapper, Color)] = {
-    entities match {
-      case Nil => Seq()
-      case _ =>
-
-        /** Calculate the min and max radius among the entities */
-        val endRadius = getEntitiesExtremeRadiusValues(entities)
-
-        entities map (e => {
-          /** Normalize the entity radius */
-          val normalizedRadius = normalize(e.radius, endRadius._1, endRadius._2)
-
-          /** Create a pair where the second value is the interpolated color between the two base colors */
-          (e, minColor.interpolate(maxColor, normalizedRadius))
-        }) seq
-    }
-  }
-
-  /** This method returns a pair consisting of the min and the max radius found in the entities sequence
-    *
-    * @param entities a DrawableWrapper sequence
-    * @return a pair consisting of the min and the max radius found; an IllegalArgumentException on empty sequence
-    */
-  private def getEntitiesExtremeRadiusValues(entities: Seq[DrawableWrapper]): (Double, Double) = {
-    /** Sorting the entities */
-    val sorted = entities.sortWith(_.radius < _.radius)
-
-    /** Retrieving the min and the max radius values */
-    sorted match {
-      case head +: _ :+ tail => (head.radius, tail.radius)
-      case head +: _ => (head.radius, head.radius)
-      case _ => throw new IllegalArgumentException("Could not determine the min and max radius from an empty sequence of entities")
-    }
-  }
-
-  /** This method calculates the color of the input entities when the player is present
-    *
-    * @param entities     the input entities
-    * @param playerEntity the player entity
-    * @param minColor     the base lower Color
-    * @param maxColor     the base upper Color
-    * @param playerColor  the player Color
-    * @return the sequence of pair where the first field is the entity and the second is the color
-    */
-  private def calculateColors(entities: Seq[DrawableWrapper], playerEntity: DrawableWrapper,
-                              minColor: Color = ViewConstants.Entities.Colors.DefaultEntityMinColor, maxColor: Color = ViewConstants.Entities.Colors.DefaultEntityMaxColor,
-                              playerColor: Color = Color.Green): Seq[(DrawableWrapper, Color)] = {
-    entities match {
-      case Nil => Seq()
-      case _ =>
-
-        /** Calculate the min and max radius among the entities, considering the player */
-        entities map {
-          case e if e.radius == playerEntity.radius => (e, playerColor)
-
-          /** The entity is smaller than the player so it's color hue will approach the min one */
-          case e if e.radius < playerEntity.radius => (e, minColor)
-
-          /** The entity is larger than the player so it's color hue will approach the max one */
-          case e => (e, maxColor)
-        } seq
     }
   }
 
@@ -335,149 +415,75 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     }.play()
   }
 
-  /** OnMouseClicked handler, reacting only if the game is not paused */
-  onMouseClicked = mouseEvent => if (!LevelState.paused.value && LevelState.inputEnabled) {
-    /** Creating a circle representing the player click */
-    val clickCircle = Circle(mouseEvent.getX, mouseEvent.getY, 2.0, DefaultPlayerColor)
-    content.add(clickCircle)
-    val fadeOutTransition = new FadeTransition(Duration.apply(2000), clickCircle) {
-      fromValue = 1.0
-      toValue = 0.0
-      onFinished = _ => content.remove(clickCircle)
-    }
-    fadeOutTransition.play()
-
-    /** Sending the event */
-    sendMouseEvent(mouseEvent)
-  }
-
-  /** OnScroll handler, managing the scale */
-  onScroll = scrollEvent => if (!LevelState.paused.value && LevelState.inputEnabled) {
-
-    /** Retrieving the current scale */
-    var scale = canvas.scaleY.value
-    if (scrollEvent.getDeltaY < 0) {
-      scale /= ScrollingDelta
-    } else {
-      scale *= ScrollingDelta
-    }
-
-    /** Limiting the scale */
-    scale = MathUtils.clamp(scale, MaxZoomOutScale, MaxZoomInScale)
-
-    /** Updating the canvas scale */
-    canvas.scaleX = scale
-    canvas.scaleY = scale
-
-    scrollEvent.consume()
-  }
-
-  /** Called when the user has to go to the LevelSelectionScene */
-  private def goToPreviousScene(): Unit = {
-    MusicPlayer.play(SoundsType.menu)
-    backClickListener.onBackClick()
-  }
-
-  /** OnKeyPressed handler, reacting to esc, and arrow key press:
-    *  - the esc key pauses the game,
-    *  - the up and right keys speed up the game
-    *  - the down and left keys slow down the game
-    */
-  onKeyPressed = keyEvent => if (LevelState.inputEnabled) keyEvent.getCode match {
-    case KeyCode.ESCAPE =>
-      if (LevelState.paused.value) {
-        onResume()
-      } else {
-        onPause()
-      }
-    case KeyCode.UP | KeyCode.RIGHT =>
-      listener.onLevelSpeedChanged(true)
-      displaySpeedChange("Speed up ►►")
-    case KeyCode.DOWN | KeyCode.LEFT =>
-      listener.onLevelSpeedChanged()
-      displaySpeedChange("Speed down ◄◄")
-    case _ => //do nothing
-  }
-
-  protected def onResume(): Unit = {
-    canvas.opacity = 1
-    LevelState.paused.value = false
-
-    listener.onResumeLevel()
-  }
-
-  /** Sends a MouseEventWrapper to the LevelContextListener
+  /** This method calculates the color of the input entities, interpolating and normalizing it according to the entities size
     *
-    * @param mouseEvent the mouse event
+    * @param minColor the base lower Color
+    * @param maxColor the base upper Color
+    * @param entities the input entities
+    * @return the sequence of pair where the first field is the entity and the second is the color
     */
-  protected def sendMouseEvent(mouseEvent: MouseEvent): Unit = levelContext match {
-    case Some(lc) =>
-      if (!LevelState.paused.value && LevelState.inputEnabled) {
-        /** Transforming click coordinates considering window size and zoom */
-        val x = mouseEvent.getX - HalfWindowWidth - canvas.getTranslateX / canvas.getScaleX
-        val y = mouseEvent.getY - HalfWindowHeight - canvas.getTranslateY / canvas.getScaleY
-        lc notifyMouseEvent MouseEventWrapper(Point(x, y), lc.getPlayerUUID)
-      }
-    case _ =>
+  private def calculateColorsWithoutPlayer(entities: Seq[DrawableWrapper], minColor: Color = Color.LightBlue, maxColor: Color = Color.DarkRed): Seq[(DrawableWrapper, Color)] = {
+    entities match {
+      case Nil => Seq()
+      case _ =>
+
+        /** Calculate the min and max radius among the entities */
+        val endRadius = getEntitiesExtremeRadiusValues(entities)
+
+        entities map (e => {
+          /** Normalize the entity radius */
+          val normalizedRadius = normalize(e.radius, endRadius._1, endRadius._2)
+
+          /** Create a pair where the second value is the interpolated color between the two base colors */
+          (e, minColor.interpolate(maxColor, normalizedRadius))
+        }) seq
+    }
   }
 
-  def levelContext: Option[LevelContext] = _levelContext
-
-  def levelContext_=(levelContext: LevelContext): Unit = _levelContext = Option(levelContext)
-
-  private def onExit(): Unit = {
-    MusicPlayer.play(SoundsType.menu)
-    listener.onStopLevel()
-  }
-
-  /** This method shows the new speed value, called when the user changes it
+  /** This method calculates the color of the input entities when the player is present
     *
-    * @param text the new speed screen text
+    * @param entities     the input entities
+    * @param playerEntity the player entity
+    * @param minColor     the base lower Color
+    * @param maxColor     the base upper Color
+    * @param playerColor  the player Color
+    * @return the sequence of pair where the first field is the entity and the second is the color
     */
-  private def displaySpeedChange(text: String): Unit = {
-    /** Changing the speed screen text */
-    speedScreenText.text = text
+  private def calculateColors(entities: Seq[DrawableWrapper], playerEntity: DrawableWrapper,
+                              minColor: Color = ViewConstants.Entities.Colors.DefaultEntityMinColor, maxColor: Color = ViewConstants.Entities.Colors.DefaultEntityMaxColor,
+                              playerColor: Color = Color.Green): Seq[(DrawableWrapper, Color)] = {
+    entities match {
+      case Nil => Seq()
+      case _ =>
 
-    /** Splash screen animation, starting with a FadeIn */
-    new FadeTransition(Duration.apply(300), speedChangeScreen) {
-      fromValue = 0.0
-      toValue = 1.0
-      autoReverse = true
-      /** FadeOut */
-      onFinished = _ => new FadeTransition(Duration.apply(300), speedChangeScreen) {
-        fromValue = 1.0
-        toValue = 0.0
-        autoReverse = true
-      }.play()
-    }.play()
+        /** Calculate the min and max radius among the entities, considering the player */
+        entities map {
+          case e if e.radius == playerEntity.radius => (e, playerColor)
+
+          /** The entity is smaller than the player so it's color hue will approach the min one */
+          case e if e.radius < playerEntity.radius => (e, minColor)
+
+          /** The entity is larger than the player so it's color hue will approach the max one */
+          case e => (e, maxColor)
+        } seq
+    }
   }
 
-  /** Level state variables */
-  protected object LevelState {
-    /** The current game pending state: true if the game is paused */
-    var paused: BooleanProperty = BooleanProperty(false)
-    /** Value indicating when the user can execute actions like pausing the game or moving around */
-    var inputEnabled = false
-  }
+  /** This method returns a pair consisting of the min and the max radius found in the entities sequence
+    *
+    * @param entities a DrawableWrapper sequence
+    * @return a pair consisting of the min and the max radius found; an IllegalArgumentException on empty sequence
+    */
+  private def getEntitiesExtremeRadiusValues(entities: Seq[DrawableWrapper]): (Double, Double) = {
+    /** Sorting the entities */
+    val sorted = entities.sortWith(_.radius < _.radius)
 
-  /** Level images */
-  private object LevelDrawables {
-    val cellDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(CellTexture), canvas.graphicsContext2D)
-    val playerCellDrawable: CellDrawable = new CellWithSpeedDrawable(ImageLoader.getImage(PlayerCellTexture), canvas.graphicsContext2D)
-    val attractiveDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(AttractiveTexture), canvas.graphicsContext2D)
-    val repulsiveDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(RepulsiveTexture), canvas.graphicsContext2D)
-    val antiMatterDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(AntiMatterTexture), canvas.graphicsContext2D)
-    val sentientDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(SentientTexture), canvas.graphicsContext2D)
-    val controlledDrawable: CellDrawable = new CellDrawable(ImageLoader.getImage(ControllerTexture), canvas.graphicsContext2D)
-    val backgroundImage: Image = ImageLoader.getImage(BackgroundTexture)
-  }
-
-  /** Level player variables */
-  private object LevelPlayer {
-    /** Player position x-coordinate */
-    val playerPosX: DoubleProperty = DoubleProperty(0.0)
-    /** Player position y-coordinate */
-    val playerPosY: DoubleProperty = DoubleProperty(0.0)
+    /** Retrieving the min and the max radius values */
+    sorted match {
+      case head +: _ :+ tail => (head.radius, tail.radius)
+      case head +: _ => (head.radius, head.radius)
+      case _ => throw new IllegalArgumentException("Could not determine the min and max radius from an empty sequence of entities")
+    }
   }
 
 }

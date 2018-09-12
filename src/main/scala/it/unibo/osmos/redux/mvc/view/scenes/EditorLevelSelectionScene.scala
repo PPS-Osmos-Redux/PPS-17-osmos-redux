@@ -16,19 +16,20 @@ import scala.collection.mutable
 class EditorLevelSelectionScene(override val parentStage: Stage, override val listener: EditorLevelSelectionSceneListener, previousSceneListener: BackClickListener) extends LevelSelectionScene(parentStage, listener, previousSceneListener)
   with EditorLevelNodeListener {
 
-  /** Custom levels are always available */
-  override lazy val levels: mutable.Buffer[LevelInfo] = listener.getCustomLevels.toBuffer
-
   private val newLevelButton = new StyledButton("Create new level") {
     alignment = Pos.BottomCenter
     alignmentInParent = Pos.BottomCenter
     /** We open the editor. On level saved we recreate the scene */
     onAction = _ => parentStage.scene = new EditorScene(parentStage, listener, () => parentStage.scene = new EditorLevelSelectionScene(parentStage, listener, previousSceneListener))
   }
+
   /** Add newLevelButton before goBack button */
   buttonsContainer.children.add(buttonsContainer.children.size() - 1, newLevelButton)
 
   override def onLevelPlayClick(levelInfo: LevelInfo, simulation: Boolean, custom: Boolean = false): Unit = super.onLevelPlayClick(levelInfo, simulation, custom = true)
+
+  /** Custom levels are always available */
+  override lazy val levels: mutable.Buffer[LevelInfo] = listener.getCustomLevels.toBuffer
 
   override def loadLevels(): Unit = levels foreach (level => levelsContainer.children.add(new EditorLevelNode(this, level)))
 

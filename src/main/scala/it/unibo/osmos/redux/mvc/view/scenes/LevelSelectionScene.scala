@@ -23,6 +23,23 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
     * @return the list of levels as LevelInfo
     */
   lazy val levels: mutable.Buffer[LevelInfo] = listener.getSingleLevels.toBuffer
+
+  /** This method loads the level into the level container, thus letting the player choose them */
+  def loadLevels(): Unit = levels foreach (level => levelsContainer.children.add(new LevelNode(LevelSelectionScene.this, level, levels.indexOf(level))))
+
+  /** This method refreshes the level list to acquire the new LevelInfos */
+  protected def refreshLevels(): Unit = {
+    levels.clear()
+    levels.appendAll(listener.getSingleLevels)
+  }
+
+  /** This method refreshes the level list and reload the nodes */
+  private def reloadLevels(): Unit = {
+    refreshLevels()
+    levelsContainer.children.clear()
+    loadLevels()
+  }
+
   /** The central level container */
   protected val levelsContainer: TilePane = new TilePane() {
     alignmentInParent = Pos.Center
@@ -31,17 +48,22 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
     prefRows = 1
     prefHeight <== parentStage.height
   }
+
   protected val buttonsContainer: VBox = new VBox(10) {
     alignment = Pos.Center
     margin = Insets(0, 0, 40, 0)
     children = goBack
   }
+
   protected val container: VBox = new VBox(10) {
     alignment = Pos.Center
     /** Loading the levels */
     loadLevels()
     children = Seq(levelsContainer, buttonsContainer)
   }
+
+  /** Setting the root container */
+  root = container
 
   /** Called when the user want to play a level
     *
@@ -67,30 +89,9 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
     /** Notify the view the new context, if something goes bad, stay in this scene */
     if (!listener.onLevelContextCreated(levelContext, levelInfo.name, custom)) parentStage.scene = this
   }
-
-  /** This method refreshes the level list and reload the nodes */
-  private def reloadLevels(): Unit = {
-    refreshLevels()
-    levelsContainer.children.clear()
-    loadLevels()
-  }
-
-  /** This method loads the level into the level container, thus letting the player choose them */
-  def loadLevels(): Unit = levels foreach (level => levelsContainer.children.add(new LevelNode(LevelSelectionScene.this, level, levels.indexOf(level))))
-
-  /** Setting the root container */
-  root = container
-
-  /** This method refreshes the level list to acquire the new LevelInfos */
-  protected def refreshLevels(): Unit = {
-    levels.clear()
-    levels.appendAll(listener.getSingleLevels)
-  }
 }
 
-/**
-  * Trait which gets notified when a LevelSelectionScene event occurs
-  */
+/** Trait which gets notified when a LevelSelectionScene event occurs */
 trait LevelSelectionSceneListener extends LevelSceneListener {
 
   /** This method called when the level context has been created
