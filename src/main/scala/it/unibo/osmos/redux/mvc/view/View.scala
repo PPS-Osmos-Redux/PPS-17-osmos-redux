@@ -36,7 +36,8 @@ object View {
   class ViewImpl(private val app: JFXApp) extends View with PrimaryStageListener {
 
     /** Implicit executor */
-    implicit val ec: ExecutionContextExecutor = ExecutionContext.global
+    implicit val executionContextExecutor: ExecutionContextExecutor = ExecutionContext.global
+
     /** Setting the primary stage */
     app.stage = OsmosReduxPrimaryStage(this)
     private var controller: Option[Controller] = Option.empty
