@@ -69,10 +69,6 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
   }
   instructionScreen.visible <== controlsScreenVisible
 
-  override def backToMainMenu(): Unit = {}
-
-  override def onPlayClick(): Unit = listener.onPlayClick()
-
   onKeyPressed = key => key.getCode match {
     case KeyCode.C => changeControlsScreenState()
     case KeyCode.L => changeLegendScreenState()
@@ -81,16 +77,17 @@ class MainScene(override val parentStage: Stage, val listener: MainSceneListener
 
   content = Seq(background, rootLayout, instructionScreen, legendScreen)
 
+  override def backToMainMenu(): Unit = {}
+
+  override def onPlayClick(): Unit = listener.onPlayClick()
+
   override def onMultiPlayerClick(): Unit = listener.onMultiPlayerClick()
 
   override def onEditorClick(): Unit = listener.onEditorClick()
 
   override def onSettingsClick(): Unit = listener.onSettingsClick()
 
-  override def onExitClick(): Unit = {
-    ActorSystemHolder.kill()
-    System.exit(0)
-  }
+  override def onExitClick(): Unit = System.exit(0)
 
   override def onBackClick(): Unit = parentStage.scene = this
 
