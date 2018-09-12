@@ -80,7 +80,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
   /** The splash screen shown when the game is paused */
   private val splashScreen = LevelScreen.Builder(this)
-    .withText(if (levelInfo != null) levelInfo.victoryRule.toString.replace("_", " ") else "", 50, Color.White)
+    .withText(if (levelInfo != null) levelInfo.victoryRule.toString else "", 50, Color.White)
     .build()
   splashScreen.opacity = 0.0
 
