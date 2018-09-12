@@ -104,4 +104,6 @@ shadowJar {
     mergeServiceFiles('reference.conf')
 }
 
+// gradle scaladoc to generate doc
+// gradle reportScoverage to generate coverage
 defaultTasks 'clean', 'build'
