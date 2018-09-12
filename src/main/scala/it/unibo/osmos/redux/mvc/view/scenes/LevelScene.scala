@@ -5,7 +5,7 @@ import it.unibo.osmos.redux.mvc.controller.manager.sounds.{MusicPlayer, SoundsTy
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Colors._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Level._
 import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
-import it.unibo.osmos.redux.mvc.view.components.level.{LevelDrawer, LevelScreen}
+import it.unibo.osmos.redux.mvc.view.components.level.{LevelEntitiesDrawer, LevelScreen}
 import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextListener}
 import it.unibo.osmos.redux.mvc.view.drawables._
 import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
@@ -75,8 +75,8 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     opacity = 0.0
   }
 
-  /** The level drawer, which encapsulates all the method used to draw the scene*/
-  private val levelDrawer = new LevelDrawer(canvas)
+  /** The level entities drawer, which encapsulates all the method used to draw them*/
+  private val levelEntitiesDrawer = new LevelEntitiesDrawer(canvas)
 
   /** The splash screen shown when the game is paused */
   private val splashScreen = LevelScreen.Builder(this)
@@ -314,7 +314,7 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
 
   override def onDrawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = {
     /** Calling the level drawer */
-    levelDrawer.drawEntities(playerEntity, entities, (centerPoint) => {
+    levelEntitiesDrawer.drawEntities(playerEntity, entities, (centerPoint) => {
       /** Managing the callback, updating the camera position */
       if (canvas.getScaleY == 1.0) {
         LevelPlayer.playerPosX.value = 0.0

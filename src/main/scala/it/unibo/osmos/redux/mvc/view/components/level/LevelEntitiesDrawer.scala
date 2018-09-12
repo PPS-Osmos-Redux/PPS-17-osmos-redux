@@ -12,11 +12,11 @@ import scalafx.scene.canvas.Canvas
 import scalafx.scene.image.Image
 import scalafx.scene.paint.Color
 
-/** Class which encapsulates all the required methods and procedures to draw the level
+/** Class which encapsulates all the required methods and procedures to draw the level entities
   *
   * @param canvas the canvas on which the level entities will be drawn
   */
-class LevelDrawer(val canvas: Canvas) {
+class LevelEntitiesDrawer(val canvas: Canvas) {
 
   /** Level images */
   private object LevelDrawables {
