@@ -1,12 +1,18 @@
 Item,Sprint Task,Volunteer,Initial Estimate of Effort,Final Effort,Remaining Effort
-Gestione telecamera,"Creare supporto per telecamera, inizialmente fissa per le simulazioni",Marco Galassi + Giacomo Venturini,2,-,-
-,Fare in modo che la telecamera segua sempre la cellula del giocatore,Marco Galassi + Giacomo Venturini,2,-,-
-Definizione progressione giocatore tra livelli,Creazione dei livelli,Giacomo Venturini,2,-,-
-,Bilanciamento e testing valori di gioco,Giacomo Venturini,2,-,-
-Creazione animazioni,Aggiunta effetti grafici ai menù,Giacomo Venturini,1,-,-
-,Creazione di alert,Giacomo Venturini,1,-,-
-Gestione impostazioni di gioco,Salvataggio delle impostazioni scelte su file. Caricamento delle impostazioni salvate all'avvio del gioco.,Andrea Procucci,2,-,-
-,Creazione schermata per accedere alle impostazioni,Giacomo Venturini,2,-,-
-Statistiche di gioco,Refactoring gestione delle statistiche ,Andrea Procucci,3,-,-
-,Creazione schermata per visualizzare le statistiche,Giacomo Venturini,2,-,-
-Revisione finale,Refactoring + controllo di stile,Giacomo Venturini + Andrea Placuzzi,5,-,-
+Gestione telecamera,"Creare supporto per telecamera, inizialmente fissa per le simulazioni",Marco Galassi + Giacomo Venturini,10,10,0
+,Possibilità di fare lo zoom,Marco Galassi + Giacomo Venturini,7,7,0
+,Fare in modo che la telecamera segua sempre la cellula del giocatore,Marco Galassi + Giacomo Venturini,10,10,0
+Definizione progressione giocatore tra livelli,Creazione dei livelli,Andrea Procucci,2,2,0
+,Collegamento controller e view per gestione vittoria/sconfitta e aggiornamento/salvataggio progresso,Davide Giacomini,1,1,0
+,Bilanciamento e testing valori di gioco,Giacomo Venturini,2,2,0
+Creazione animazioni,Aggiunta effetti grafici ai menù,Giacomo Venturini,1,1,0
+,Creazione di alert,Giacomo Venturini,1,1,0
+Gestione impostazioni di gioco,Salvataggio delle impostazioni scelte su file. Caricamento delle impostazioni salvate all'avvio del gioco.,Andrea Procucci,2,2,0
+,Creazione schermata per accedere alle impostazioni,Giacomo Venturini,2,2,0
+Statistiche di gioco,Refactoring gestione delle statistiche ,Andrea Procucci,3,6,0
+,Creazione schermata/nodi per visualizzare le statistiche,Giacomo Venturini + Marco Galassi,5,5,0
+Revisione finale,Refactoring + controllo di stile,Giacomo Venturini + Andrea Placuzzi,5,7,0
+Gestione dinamica velocità di gioco,Modifica velocità di gioco tramite tasti Up e Down,Davide Giacomini,1,1,0
+Gestione luci e effetti,Aggiunta di luce che illumina fino alla fine del bordo del livello,Marco Galassi + Giacomo Venturini,2,,0
+Gestione errori caricamento livelli,Modifica view e controller per gestire e mostrare tutti gli errori durante il caricamento dei livelli,Davide Giacomini,2,2,0
+Manutenzione Multiplayer,"Revisione, testing e aggiornamento (se necessario causa refactor di altre parti del gioco base)",Davide Giacomini,10,20,0
