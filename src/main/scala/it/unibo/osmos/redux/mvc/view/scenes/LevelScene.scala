@@ -35,6 +35,12 @@ import scalafx.util.Duration
 class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val listener: LevelSceneListener, val backClickListener: BackClickListener)
   extends DefaultBackScene(parentStage, backClickListener) with LevelContextListener {
 
+  /** Playing level music */
+  MusicPlayer.play(SoundsType.level)
+  /** DefaultBackScene goBack button configurations */
+  setText("Return to Level Selection")
+  setAdditionalAction(() => onExit())
+
   /** Level state variables */
   protected object LevelState {
     /** The current game pending state: true if the game is paused */
@@ -61,16 +67,6 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
   /** The level border */
   private var mapBorder: Shape = _
 
-  /** The level drawer, which encapsulates all the method used to draw the scene*/
-  private val levelDrawer = new LevelDrawer(canvas)
-
-  /** Playing level music */
-  MusicPlayer.play(SoundsType.level)
-
-  /** DefaultBackScene goBack button configurations */
-  setText("Return to Level Selection")
-  setAdditionalAction(() => onExit())
-
   /** The canvas which will draw the elements on the screen */
   protected val canvas: Canvas = new Canvas {
     width <== parentStage.width
@@ -78,6 +74,9 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
     cache = true
     opacity = 0.0
   }
+
+  /** The level drawer, which encapsulates all the method used to draw the scene*/
+  private val levelDrawer = new LevelDrawer(canvas)
 
   /** The splash screen shown when the game is paused */
   private val splashScreen = LevelScreen.Builder(this)
