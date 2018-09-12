@@ -4,7 +4,7 @@ package it.unibo.osmos.redux.mvc.view.events
   *
   * @tparam T the EventWrapper class or subclass
   */
-trait EventWrapperObserver[T <: EventWrapper]{
+trait EventWrapperObserver[T <: EventWrapper] {
 
   /** Called on a event T type
     *

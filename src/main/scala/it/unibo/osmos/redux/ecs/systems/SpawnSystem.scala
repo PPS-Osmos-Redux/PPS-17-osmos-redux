@@ -7,7 +7,7 @@ import it.unibo.osmos.redux.ecs.entities.properties.basic.Spawner
 case class SpawnSystem() extends AbstractSystem[Spawner] {
 
   override def update(): Unit = {
-    entities foreach(e => {
+    entities foreach (e => {
       e.getSpawnerComponent.dequeueActions() foreach (a => {
         EntityManager.add(
           CellBuilder()

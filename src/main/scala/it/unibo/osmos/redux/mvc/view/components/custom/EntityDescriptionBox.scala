@@ -10,7 +10,7 @@ import scalafx.scene.text.{Font, Text, TextAlignment}
 
 /** View holding a entity image and its description in the game
   *
-  * @param image the entity image
+  * @param image       the entity image
   * @param description the entity description
   */
 class EntityDescriptionBox(val image: Image, val description: String) extends HBox(50.0) {
@@ -21,7 +21,7 @@ class EntityDescriptionBox(val image: Image, val description: String) extends HB
   /** The image view */
   private val imageView = new ImageView(image)
 
-  /** The image description text*/
+  /** The image description text */
   private val text = new Text(description) {
     textAlignment = TextAlignment.Left
     font = Font.font("Verdana", 20.0)

@@ -3,9 +3,7 @@ package it.unibo.osmos.redux.mvc.view
 import scalafx.scene.paint.Color
 import scalafx.stage.Screen
 
-/**
-  *  View constants
-  */
+/** View constants */
 object ViewConstants {
 
   /** Window constants */
@@ -18,7 +16,9 @@ object ViewConstants {
   }
 
   object Editor {
+
     import Window._
+
     val MaxLevelRadius: Double = 0.8 * (if (HalfWindowHeight < HalfWindowWidth) HalfWindowHeight else HalfWindowWidth)
     val StartingLevelRadius: Double = MaxLevelRadius / 2
     val MaxLevelWidth: Double = 0.8 * DefaultWindowWidth
@@ -38,12 +38,14 @@ object ViewConstants {
 
   /** Entities constants */
   object Entities {
+
     /** Colors constants */
     object Colors {
       val DefaultPlayerColor: Color = Color.Green
       val DefaultEntityMaxColor: Color = Color.DarkRed
       val DefaultEntityMinColor: Color = Color.LightBlue
     }
+
     /** Textures constants */
     object Textures {
       val TextureFolder: String = "/textures/"

@@ -5,19 +5,15 @@ import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
 import it.unibo.osmos.redux.mvc.view.scenes._
 import scalafx.application.JFXApp
 
-/**
-  * Primary stage which holds and manages all the different game scenes
-  */
+/** Primary stage which holds and manages all the different game scenes */
 trait OsmosReduxPrimaryStage extends JFXApp.PrimaryStage
 
-/**
-  * Companion object
-  */
+/** Companion object */
 object OsmosReduxPrimaryStage {
   /** Creates a new OsmosReduxPrimaryStage, the application root stage
     *
-    * @param listener the PrimaryStageListener
-    * @param windowWidth the window width (which is equal to the screen width by default)
+    * @param listener     the PrimaryStageListener
+    * @param windowWidth  the window width (which is equal to the screen width by default)
     * @param windowHeight the window width (which is equal to the screen width by default)
     * @return an OsmosReduxPrimaryStageImpl instance
     */
@@ -27,9 +23,9 @@ object OsmosReduxPrimaryStage {
 
   /** Primary stage implementation
     *
-    * @param listener          the primary stage listener
-    * @param windowWidth       the window width
-    * @param windowHeight      the window height
+    * @param listener     the primary stage listener
+    * @param windowWidth  the window width
+    * @param windowHeight the window height
     */
   class OsmosReduxPrimaryStageImpl(val listener: PrimaryStageListener, val windowWidth: Double, val windowHeight: Double) extends OsmosReduxPrimaryStage
     with MainSceneListener {
@@ -63,9 +59,7 @@ object OsmosReduxPrimaryStage {
 
 }
 
-/**
-  * Listener that manages all the events managed by the primary scene
-  */
+/** Listener that manages all the events managed by the primary scene */
 trait PrimaryStageListener extends LevelSelectionSceneListener with EditorLevelSelectionSceneListener
   with MultiPlayerSceneListener with MultiPlayerLobbySceneListener with MultiPlayerLevelSelectionSceneListener
   with SettingsSceneListener with StatsSceneListener

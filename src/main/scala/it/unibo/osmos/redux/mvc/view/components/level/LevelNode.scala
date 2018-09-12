@@ -23,9 +23,7 @@ abstract class AbstractLevelNode(val listener: LevelNodeListener, val levelInfo:
   alignment = Pos.Center
   padding = Insets(0, 30, 30, 30)
 
-  /**
-    * Lazy implementation of the basic component. They will be eventually overridden in a not abstract class. This let us implement the objects behaviour
-    */
+  /** Lazy implementation of the basic component. They will be eventually overridden in a not abstract class. This let us implement the objects behaviour */
   lazy val imageView: ImageView = new ImageView()
   lazy val text: Text = new Text()
   lazy val playButton: Button = new Button()
@@ -87,9 +85,7 @@ abstract class AnimatedAbstractLevelNode(override val listener: LevelNodeListene
 
 }
 
-/**
-  * Trait which gets notified when a LevelNode event occurs
-  */
+/** Trait which gets notified when a LevelNode event occurs */
 trait LevelNodeListener {
 
   /** This method gets called when an available level buttons get clicked

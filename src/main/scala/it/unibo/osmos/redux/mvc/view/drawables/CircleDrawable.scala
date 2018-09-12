@@ -11,7 +11,7 @@ class CircleDrawable(val graphicsContext: GraphicsContext) extends Drawable {
 
   /** Draws a circle on the canvas
     *
-    * @param dw the drawable wrapper containing the drawable info
+    * @param dw    the drawable wrapper containing the drawable info
     * @param color the color
     */
   def draw(dw: DrawableWrapper, color: Color): Unit = {

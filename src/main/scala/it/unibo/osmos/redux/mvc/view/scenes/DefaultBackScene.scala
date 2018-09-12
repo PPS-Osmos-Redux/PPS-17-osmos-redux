@@ -6,12 +6,12 @@ import scalafx.stage.Stage
 
 /** An implementation of BaseScene holding a Button with let back navigation
   *
-  * @param parentStage the parent stage
+  * @param parentStage       the parent stage
   * @param backClickListener the BackClickListener
-  * @param backText the button text
-  * @param additionalAction an additional function to be executed before calling the back click listener
+  * @param backText          the button text
+  * @param additionalAction  an additional function to be executed before calling the back click listener
   */
-class DefaultBackScene(override val parentStage: Stage, backClickListener: BackClickListener, backText: String = "Back",  var additionalAction: () => Unit = () => {})
+class DefaultBackScene(override val parentStage: Stage, backClickListener: BackClickListener, backText: String = "Back", var additionalAction: () => Unit = () => {})
   extends BaseScene(parentStage) {
 
   /** The back button */
@@ -39,13 +39,9 @@ class DefaultBackScene(override val parentStage: Stage, backClickListener: BackC
   }
 }
 
-/**
-  * Trait used by scenes directly reachable by MainScene to notify back event
-  */
+/** Trait used by scenes directly reachable by MainScene to notify back event */
 trait BackClickListener {
 
-  /**
-    * Called when the user wants to go back to the previous screen
-    */
+  /** Called when the user wants to go back to the previous screen */
   def onBackClick()
 }

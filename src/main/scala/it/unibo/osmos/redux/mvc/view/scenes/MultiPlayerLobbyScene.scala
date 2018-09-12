@@ -2,7 +2,6 @@ package it.unibo.osmos.redux.mvc.view.scenes
 
 import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
 import it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo
-import it.unibo.osmos.redux.mvc.view.components.custom.StyledButton
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.{User, UserWithProperties}
 import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, LobbyContextListener, MultiPlayerLevelContext}
 import it.unibo.osmos.redux.mvc.view.events.{AbortLobby, LobbyEventWrapper}
@@ -18,10 +17,10 @@ import scalafx.stage.Stage
 
 /** Lobby showing other clients or servers playing in multiplayer
   *
-  * @param parentStage           the parent stage
-  * @param listener              the MultiPlayerLobbySceneListener
-  * @param backClickListener     the BackClickListener
-  * @param user                  the user who requested to enter the lobby
+  * @param parentStage       the parent stage
+  * @param listener          the MultiPlayerLobbySceneListener
+  * @param backClickListener the BackClickListener
+  * @param user              the user who requested to enter the lobby
   */
 class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: MultiPlayerLobbySceneListener,
                             val backClickListener: BackClickListener, val user: User)
@@ -29,17 +28,22 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
 
   /** The lobby context, created with the MultiPlayerLobbyScene. It still needs to be properly setup */
   private var _lobbyContext: Option[LobbyContext] = Option.empty
+
   def lobbyContext: Option[LobbyContext] = _lobbyContext
+
   def lobbyContext_=(lobbyContext: LobbyContext): Unit = {
     _lobbyContext = Option(lobbyContext)
+
     /** Subscribe to lobby context events */
     lobbyContext.setListener(this)
+
     /** Fill table with existing users */
     userList ++= lobbyContext.users.map(_.getUserWithProperty)
   }
 
   /** The level info, which may be empty if the user is a client */
   private var _levelInfo: Option[LevelInfo] = Option.empty
+
   def levelInfo_=(levelInfo: Option[LevelInfo]): Unit = _levelInfo = levelInfo
 
   /** ObservableBuffer holding the current users */
@@ -85,7 +89,7 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
 
   /** Start game button */
   private val startGame = new Button("Start Game") {
-    /** Only visible if the user is a server and there are at least two players*/
+    /** Only visible if the user is a server and there are at least two players */
     styleClass.add("default-button-style")
     if (user.isServer) {
       disable <== isStartGameDisabled
@@ -118,6 +122,7 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
   override def updateUsers(users: Seq[User]): Unit = {
     userList clear()
     userList ++= users.map(_.getUserWithProperty)
+
     /** Updating the observable property */
     isStartGameDisabled.value_=(userList.size < 2)
     if (isStartGameDisabled.value) {
@@ -128,7 +133,7 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
   }
 
   override def onMultiPlayerGameStarted(multiPlayerLevelContext: MultiPlayerLevelContext, levelInfo: LevelInfo): Unit = {
-    /** Creating a multiplayer level*/
+    /** Creating a multiplayer level */
     val multiPlayerLevelScene = new MultiPlayerLevelScene(parentStage, levelInfo, listener, () => parentStage.scene = this)
 
     multiPlayerLevelContext.setListener(multiPlayerLevelScene)
@@ -139,7 +144,9 @@ class MultiPlayerLobbyScene(override val parentStage: Stage, val listener: Multi
     })
   }
 
-  override def onLobbyAborted(): Unit = Platform.runLater({backClickListener.onBackClick()})
+  override def onLobbyAborted(): Unit = Platform.runLater({
+    backClickListener.onBackClick()
+  })
 
 }
 

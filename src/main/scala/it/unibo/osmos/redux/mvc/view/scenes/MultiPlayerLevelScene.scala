@@ -10,10 +10,10 @@ import scalafx.util.Duration
 
 /** This scene holds and manages a single level played in multiplayer mode
   *
-  * @param parentStage        the parent stage
-  * @param levelInfo          the level info
-  * @param listener           the listener
-  * @param backClickListener  the back click listener
+  * @param parentStage       the parent stage
+  * @param levelInfo         the level info
+  * @param listener          the listener
+  * @param backClickListener the back click listener
   */
 class MultiPlayerLevelScene(override val parentStage: Stage, override val levelInfo: LevelInfo, override val listener: LevelSceneListener, override val backClickListener: BackClickListener)
   extends LevelScene(parentStage, levelInfo, listener, backClickListener) with MultiPlayerLevelContextListener {

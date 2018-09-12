@@ -1,12 +1,12 @@
 package it.unibo.osmos.redux.mvc.controller
 
-import it.unibo.osmos.redux.ecs.engine.{GameEngine, GameStatus}
+import it.unibo.osmos.redux.ecs.engine.GameEngine
 import it.unibo.osmos.redux.ecs.entities.{CellEntity, PlayerCellEntity}
 import it.unibo.osmos.redux.multiplayer.client.Client
 import it.unibo.osmos.redux.multiplayer.common.{ActorSystemHolder, MultiPlayerMode}
 import it.unibo.osmos.redux.multiplayer.server.{Server, ServerState}
-import it.unibo.osmos.redux.mvc.controller.levels.{MultiPlayerLevels, SinglePlayerLevels}
 import it.unibo.osmos.redux.mvc.controller.levels.structure._
+import it.unibo.osmos.redux.mvc.controller.levels.{MultiPlayerLevels, SinglePlayerLevels}
 import it.unibo.osmos.redux.mvc.controller.manager.files.{LevelFileManager, SoundFileManager, UserProgressFileManager}
 import it.unibo.osmos.redux.mvc.controller.manager.sounds.SoundsType
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
@@ -18,7 +18,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Promise
 import scala.util.{Failure, Success, Try}
 
-/**Controller base trait*/
+/** Controller base trait */
 trait Controller {
   type MultiPlayerMode = MultiPlayerMode.Value
   type LevelContextType = LevelContextType.Value
@@ -26,14 +26,14 @@ trait Controller {
   /** Initializes the level and the game engine.
     *
     * @param levelContext The level context.
-    * @param chosenLevel The name of the chosen level.
-    * @param isCustom True if the level is a custom one, false otherwise
+    * @param chosenLevel  The name of the chosen level.
+    * @param isCustom     True if the level is a custom one, false otherwise
     */
   def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): Try[Unit]
 
   /** Initializes the multi-player lobby and the server or client.
     *
-    * @param user The user config
+    * @param user         The user config
     * @param lobbyContext The lobby context
     * @return Promise that completes with true if the lobby is initialized successfully; otherwise false.
     */
@@ -46,7 +46,7 @@ trait Controller {
     */
   def initMultiPlayerLevel(levelInfo: LevelInfo): Promise[GenericResponse[Boolean]]
 
-  /**Starts the level.*/
+  /** Starts the level. */
   def startLevel(): Unit
 
   /** Stops the level.
@@ -55,10 +55,10 @@ trait Controller {
     */
   def stopLevel(victory: Boolean = false): Unit
 
-  /**Pauses the level.*/
+  /** Pauses the level. */
   def pauseLevel(): Unit
 
-  /**Resumes the level.*/
+  /** Resumes the level. */
   def resumeLevel(): Unit
 
   /** Changes the level speed by speeding up or slowing down depending on the input.
@@ -69,27 +69,27 @@ trait Controller {
 
   /** Saves a level.
     *
-    * @param name level name
-    * @param map level map shape MapShape
-    * @param victoryRules level victory rule VictoryRule.Value
+    * @param name           level name
+    * @param map            level map shape MapShape
+    * @param victoryRules   level victory rule VictoryRule.Value
     * @param collisionRules level collision rule CollisionRule.Value
-    * @param entities Seq of CellEntity
+    * @param entities       Seq of CellEntity
     * @return True, if the operation is successful; otherwise false.
-    **/
-  def saveLevel(name: String, map:MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value, entities: Seq[CellEntity]): Boolean
+    * */
+  def saveLevel(name: String, map: MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value, entities: Seq[CellEntity]): Boolean
 
   /** Delete from file a custom level
     *
     * @param name custom level name
     * @return true, if remove file is completed with success
     */
-  def removeLevel(name:String): Boolean
+  def removeLevel(name: String): Boolean
 
   /** Gets all the levels in the campaign.
     *
     * @return The list of LevelInfo.
     */
-  def getSinglePlayerLevels:List[LevelInfo] = SinglePlayerLevels.getLevelsInfo
+  def getSinglePlayerLevels: List[LevelInfo] = SinglePlayerLevels.getLevelsInfo
 
   /** Gets all multi-player levels.
     *
@@ -114,15 +114,15 @@ trait Controller {
     *
     * @return List[CampaignLevel].
     */
-  def getCampaignLevels:List[CampaignLevel] = SinglePlayerLevels.getCampaignLevels
+  def getCampaignLevels: List[CampaignLevel] = SinglePlayerLevels.getCampaignLevels
 }
 
 case class ControllerImpl() extends Controller {
 
   implicit val who: String = "Controller"
 
-  var lastLoadedLevel:Option[String] = None
-  var engine:Option[GameEngine] = None
+  var lastLoadedLevel: Option[String] = None
+  var engine: Option[GameEngine] = None
 
   //multi-player variables
   private var multiPlayerMode: Option[MultiPlayerMode] = None
@@ -131,7 +131,7 @@ case class ControllerImpl() extends Controller {
 
   override def initLevel(levelContext: LevelContext, chosenLevel: String, isCustom: Boolean = false): Try[Unit] = {
     val isSimulation = levelContext.levelContextType == LevelContextType.simulation
-    val loadedLevel:Option[Level] = loadLevel(chosenLevel, isCustom, isSimulation)
+    val loadedLevel: Option[Level] = loadLevel(chosenLevel, isCustom, isSimulation)
 
     Try(loadedLevel match {
       case Some(level) =>
@@ -156,6 +156,17 @@ case class ControllerImpl() extends Controller {
         throw new IllegalArgumentException(s"Unable to load level '$chosenLevel', because its definition was not found.")
     })
   }
+
+  private def loadLevel(chosenLevel: String, isCustom: Boolean, isSimulation: Boolean): Option[Level] =
+    if (isCustom) {
+      /*Because user campaign stats are not influenced by end game results of the custom levels*/
+      lastLoadedLevel = None
+      LevelFileManager.getCustomLevel(chosenLevel)
+    } else {
+      val loadedLevel = LevelFileManager.getLevelFromResource(chosenLevel)
+      if (isSimulation) lastLoadedLevel = None else lastLoadedLevel = Some(chosenLevel)
+      loadedLevel
+    }
 
   override def initLobby(user: User, lobbyContext: LobbyContext): Promise[GenericResponse[Boolean]] = {
     val promise = Promise[GenericResponse[Boolean]]()
@@ -282,6 +293,12 @@ case class ControllerImpl() extends Controller {
     }
   }
 
+  private def saveProgress(event: GameStateEventWrapper): Unit = lastLoadedLevel match {
+    case Some(lastLevel: String) => SinglePlayerLevels.newEndGameEvent(event, lastLevel)
+      UserProgressFileManager.saveUserProgress(SinglePlayerLevels.getCampaignLevels)
+    case _ =>
+  }
+
   override def pauseLevel(): Unit = {
     multiPlayerMode match {
       case None => if (engine.isDefined) engine.get.pause()
@@ -301,17 +318,17 @@ case class ControllerImpl() extends Controller {
     case SoundsType.level => Some(SoundFileManager.loadLevelMusic())
     case SoundsType.button => Some(SoundFileManager.loadButtonsSound())
     case _ => Logger.log("Sound type not managed!! [getSoundPath]")
-              None
+      None
   }
 
   override def getCustomLevels: List[LevelInfo] = LevelFileManager.getCustomLevelsInfo match {
     case Success(customLevels) => customLevels
     case Failure(_) => Logger.log("[Info] User doesn't have any saved custom level or custom level directory doesn't exists")
-                               List()
+      List()
   }
-  
+
   override def saveLevel(name: String, map: MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value, entities: Seq[CellEntity]): Boolean = {
-    val lv: Level = Level(LevelInfo(name, victoryRules) , LevelMap(map, collisionRules), entities.toList)
+    val lv: Level = Level(LevelInfo(name, victoryRules), LevelMap(map, collisionRules), entities.toList)
     lv.checkCellPosition()
     LevelFileManager.saveCustomLevel(lv)
   }
@@ -319,24 +336,7 @@ case class ControllerImpl() extends Controller {
   override def removeLevel(name: String): Boolean = LevelFileManager.deleteCustomLevel(name) match {
     case Success(_) => true
     case Failure(exception) => Logger.log("Error occurred removing custom level file" + exception.getMessage)
-                               false
+      false
   }
-
-  private def saveProgress(event: GameStateEventWrapper): Unit = lastLoadedLevel match {
-    case Some(lastLevel:String) => SinglePlayerLevels.newEndGameEvent(event, lastLevel)
-      UserProgressFileManager.saveUserProgress(SinglePlayerLevels.getCampaignLevels)
-    case _ =>
-  }
-
-  private def loadLevel(chosenLevel:String, isCustom:Boolean, isSimulation:Boolean): Option[Level] =
-    if (isCustom) {
-      /*Because user campaign stats are not influenced by end game results of the custom levels*/
-      lastLoadedLevel = None
-      LevelFileManager.getCustomLevel(chosenLevel)
-    } else {
-      val loadedLevel = LevelFileManager.getLevelFromResource(chosenLevel)
-      if (isSimulation) lastLoadedLevel = None else lastLoadedLevel = Some(chosenLevel)
-      loadedLevel
-    }
 }
 

@@ -1,7 +1,7 @@
 package it.unibo.osmos.redux.mvc.controller.levels.structure
 
 
-/**Level victory rules*/
+/** Level victory rules */
 object VictoryRules extends Enumeration {
   val becomeTheBiggest: VictoryRules.Value = Value("Become the biggest")
   val becomeHuge: VictoryRules.Value = Value("Become huge")

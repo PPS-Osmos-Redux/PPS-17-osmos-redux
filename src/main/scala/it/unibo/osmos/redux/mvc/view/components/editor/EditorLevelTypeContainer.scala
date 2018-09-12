@@ -13,7 +13,7 @@ import scalafx.scene.shape.{Circle, Rectangle, Shape}
 /** This class holds those variables and view components responsible to let the user choose the level type in the EditorScene
   *
   * @param editorLevelTypeContainerListener the listener
-  * @param isContainerVisible BooleanBinding which manages the panels visibility
+  * @param isContainerVisible               BooleanBinding which manages the panels visibility
   */
 class EditorLevelTypeContainer(editorLevelTypeContainerListener: EditorLevelTypeContainerListener, isContainerVisible: BooleanBinding) {
 
@@ -60,13 +60,6 @@ class EditorLevelTypeContainer(editorLevelTypeContainerListener: EditorLevelType
 
     children = List(levelTypeBox.root, verticalStackPane)
   }
-
-  /** Getter which returns the level type container node
-    *
-    * @return the level type container node
-    */
-  def levelTypeContainer: VBox = _levelTypeContainer
-
   /** The placeholder which models the circular level */
   private val circularLevelPlaceholder: Circle = new Circle() {
     centerX <== circularLevelBuilder.xCenter + HalfWindowWidth
@@ -78,7 +71,6 @@ class EditorLevelTypeContainer(editorLevelTypeContainerListener: EditorLevelType
     mouseTransparent = true
     visible <== isContainerVisible
   }
-
   /** The placeholder which models the rectangular level */
   private val rectangularLevelPlaceholder: Rectangle = new Rectangle() {
     width <== rectangularLevelBuilder.levelWidth
@@ -91,10 +83,14 @@ class EditorLevelTypeContainer(editorLevelTypeContainerListener: EditorLevelType
     mouseTransparent = true
     visible <== isContainerVisible
   }
-
-
   /** The currently visible level placeholder */
   var currentLevelPlaceholder: Shape = circularLevelPlaceholder
+
+  /** Getter which returns the level type container node
+    *
+    * @return the level type container node
+    */
+  def levelTypeContainer: VBox = _levelTypeContainer
 
   /** This method creates a MapShape based on the currently selected level type
     *

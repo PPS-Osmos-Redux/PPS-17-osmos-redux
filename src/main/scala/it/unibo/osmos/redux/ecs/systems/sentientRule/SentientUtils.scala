@@ -1,8 +1,8 @@
 package it.unibo.osmos.redux.ecs.systems.sentientRule
 
 import it.unibo.osmos.redux.ecs.entities.properties.composed.SentientProperty
-import it.unibo.osmos.redux.utils.Vector
 import it.unibo.osmos.redux.utils.Constants.Sentient._
+import it.unibo.osmos.redux.utils.Vector
 
 /** Utils for sentient system and rules */
 object SentientUtils {

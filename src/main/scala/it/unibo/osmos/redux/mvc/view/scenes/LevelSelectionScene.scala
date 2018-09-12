@@ -11,8 +11,8 @@ import scala.collection.mutable
 
 /** This scene lets the players choose which level they want to play
   *
-  * @param parentStage the parent stage
-  * @param listener the listener
+  * @param parentStage           the parent stage
+  * @param listener              the listener
   * @param previousSceneListener the back click listener
   */
 class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSelectionSceneListener, previousSceneListener: BackClickListener)
@@ -23,23 +23,6 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
     * @return the list of levels as LevelInfo
     */
   lazy val levels: mutable.Buffer[LevelInfo] = listener.getSingleLevels.toBuffer
-
-  /** This method loads the level into the level container, thus letting the player choose them */
-  def loadLevels(): Unit = levels foreach (level => levelsContainer.children.add(new LevelNode(LevelSelectionScene.this, level, levels.indexOf(level))))
-
-  /** This method refreshes the level list to acquire the new LevelInfos */
-  protected def refreshLevels() : Unit = {
-    levels.clear()
-    levels.appendAll(listener.getSingleLevels)
-  }
-
-  /** This method refreshes the level list and reload the nodes */
-  private def reloadLevels() : Unit = {
-    refreshLevels()
-    levelsContainer.children.clear()
-    loadLevels()
-  }
-
   /** The central level container */
   protected val levelsContainer: TilePane = new TilePane() {
     alignmentInParent = Pos.Center
@@ -48,22 +31,17 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
     prefRows = 1
     prefHeight <== parentStage.height
   }
-
   protected val buttonsContainer: VBox = new VBox(10) {
     alignment = Pos.Center
     margin = Insets(0, 0, 40, 0)
     children = goBack
   }
-
   protected val container: VBox = new VBox(10) {
     alignment = Pos.Center
     /** Loading the levels */
     loadLevels()
     children = Seq(levelsContainer, buttonsContainer)
   }
-
-  /** Setting the root container*/
-  root = container
 
   /** Called when the user want to play a level
     *
@@ -72,18 +50,41 @@ class LevelSelectionScene(override val parentStage: Stage, val listener: LevelSe
     * @param custom     true if the level is a custom one, false otherwise
     */
   def onLevelPlayClick(levelInfo: LevelInfo, simulation: Boolean, custom: Boolean = false): Unit = {
-    /** Creating a listener on the run*/
-    val upperLevelSceneListener: BackClickListener = () => {parentStage.scene = this; reloadLevels()}
+    /** Creating a listener on the run */
+    val upperLevelSceneListener: BackClickListener = () => {
+      parentStage.scene = this; reloadLevels()
+    }
     /** Creating a new level scene */
     val levelScene = new LevelScene(parentStage, levelInfo, listener, upperLevelSceneListener)
     /** Creating the level context */
     val levelContext = LevelContext(simulation)
     levelContext.setListener(levelScene)
     levelScene.levelContext = levelContext
+
     /** Changing scene scene */
     parentStage.scene = levelScene
+
     /** Notify the view the new context, if something goes bad, stay in this scene */
     if (!listener.onLevelContextCreated(levelContext, levelInfo.name, custom)) parentStage.scene = this
+  }
+
+  /** This method refreshes the level list and reload the nodes */
+  private def reloadLevels(): Unit = {
+    refreshLevels()
+    levelsContainer.children.clear()
+    loadLevels()
+  }
+
+  /** This method loads the level into the level container, thus letting the player choose them */
+  def loadLevels(): Unit = levels foreach (level => levelsContainer.children.add(new LevelNode(LevelSelectionScene.this, level, levels.indexOf(level))))
+
+  /** Setting the root container */
+  root = container
+
+  /** This method refreshes the level list to acquire the new LevelInfos */
+  protected def refreshLevels(): Unit = {
+    levels.clear()
+    levels.appendAll(listener.getSingleLevels)
   }
 }
 
@@ -97,7 +98,6 @@ trait LevelSelectionSceneListener extends LevelSceneListener {
     * @param levelContext the new level context
     * @param level        the new level name
     * @param isCustom     true if the level is custom, false otherwise
-    *
     * @return true if the controller level initialization goes fine; otherwise false
     */
   def onLevelContextCreated(levelContext: LevelContext, level: String, isCustom: Boolean = false): Boolean

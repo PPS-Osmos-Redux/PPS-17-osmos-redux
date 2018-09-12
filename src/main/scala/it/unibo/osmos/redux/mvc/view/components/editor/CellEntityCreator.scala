@@ -6,15 +6,8 @@ import scalafx.beans.property.{DoubleProperty, ObjectProperty}
 import scalafx.scene.control.{Label, TextField}
 import scalafx.scene.layout.{HBox, VBox}
 
-/**
-  * A panel showing input nodes which is also capable of providing the requested CellEntity
-  */
+/** A panel showing input nodes which is also capable of providing the requested CellEntity */
 class CellEntityCreator extends BaseEditorCreator[CellEntity] with EditorCellBuilderConfigurator {
-
-  private[this] var _entityType: EntityType.Value = EntityType.Matter
-  def entityType_=(value: EntityType.Value): Unit = {
-    _entityType = value
-  }
 
   /** Position node */
   val x: ObjectProperty[Double] = ObjectProperty(300)
@@ -26,14 +19,8 @@ class CellEntityCreator extends BaseEditorCreator[CellEntity] with EditorCellBui
     editable = false
     text <== y.asString()
   }))
-
-  /** Radius node*/
+  /** Radius node */
   val radius: ObjectProperty[Double] = ObjectProperty(50)
-  private val radiusNode = new HBox(new Label("Radius: "), new TextField() {
-    editable = false
-    text <== radius.asString()
-  })
-
   /** Speed node */
   val xSpeed: DoubleProperty = DoubleProperty(0.0)
   val ySpeed: DoubleProperty = DoubleProperty(0.0)
@@ -41,7 +28,6 @@ class CellEntityCreator extends BaseEditorCreator[CellEntity] with EditorCellBui
     new TitledDoubleField("x: ", xSpeed).innerNode,
     new TitledDoubleField("y: ", ySpeed).innerNode
   )
-
   /** Acceleration node */
   val xAcceleration: DoubleProperty = DoubleProperty(0.0)
   val yAcceleration: DoubleProperty = DoubleProperty(0.0)
@@ -49,8 +35,23 @@ class CellEntityCreator extends BaseEditorCreator[CellEntity] with EditorCellBui
     new TitledDoubleField("x: ", xAcceleration).innerNode,
     new TitledDoubleField("y: ", yAcceleration).innerNode
   )
+  private val radiusNode = new HBox(new Label("Radius: "), new TextField() {
+    editable = false
+    text <== radius.asString()
+  })
+  private[this] var _entityType: EntityType.Value = EntityType.Matter
+
+  def entityType_=(value: EntityType.Value): Unit = {
+    _entityType = value
+  }
 
   children = Seq(positionNode, radiusNode, speedNode, accelerationNode)
+
+  override def create(): CellEntity = {
+    val builder = CellBuilder()
+    configureBuilder(builder)
+    builder.buildCellEntity()
+  }
 
   /** Method that configures the basic cell builder. It may be overridden by other cell entity creators
     *
@@ -64,13 +65,7 @@ class CellEntityCreator extends BaseEditorCreator[CellEntity] with EditorCellBui
       .withDimension(radius.value)
       .withSpeed(xSpeed.value, ySpeed.value)
       .withAcceleration(xAcceleration.value, yAcceleration.value)
-      if (withEntityType) builder.withEntityType(_entityType)
-  }
-
-  override def create(): CellEntity = {
-    val builder = CellBuilder()
-    configureBuilder(builder)
-    builder.buildCellEntity()
+    if (withEntityType) builder.withEntityType(_entityType)
   }
 
 }

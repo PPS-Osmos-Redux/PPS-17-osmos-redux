@@ -10,6 +10,6 @@ case class CellsEliminationSystem() extends AbstractSystem[DeathProperty] {
 
   override def update(): Unit = {
     entities.filter(_.getDimensionComponent.radius < radiusThreshold)
-            .foreach(EntityManager.delete(_))
+      .foreach(EntityManager.delete(_))
   }
 }

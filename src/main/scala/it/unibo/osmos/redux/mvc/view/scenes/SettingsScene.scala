@@ -13,8 +13,8 @@ import scalafx.stage.Stage
 
 /** Scene where the user can configure in game settings
   *
-  * @param parentStage the parent stage
-  * @param listener the SettingsSceneListener
+  * @param parentStage           the parent stage
+  * @param listener              the SettingsSceneListener
   * @param previousSceneListener the BackClickListener
   */
 class SettingsScene(override val parentStage: Stage, listener: SettingsSceneListener, previousSceneListener: BackClickListener) extends DefaultBackScene(parentStage, previousSceneListener) {
@@ -33,15 +33,9 @@ class SettingsScene(override val parentStage: Stage, listener: SettingsSceneList
     minWidth = 480
     maxWidth <== parentStage.width / 4
   }
-  volumeSlider.valueProperty().addListener((_, _, newVal) => {
-    val valueToPlayerRange = newVal / 100
-    MusicPlayer.changeVolume(valueToPlayerRange)
-  })
-
   private val volumeLabel = new Label("Volume") {
     textFill = Color.web("#FFFFFF")
   }
-
   private val volumeCheckBox = new CheckBox() {
     selected = MusicPlayer.getMediaPlayerStatus match {
       case Some(PLAYING) =>
@@ -63,25 +57,27 @@ class SettingsScene(override val parentStage: Stage, listener: SettingsSceneList
       }
     }
   }
-
   private val volumeContainer = new HBox(25) {
     alignment = Pos.Center
     children = Seq(volumeLabel, volumeCheckBox)
   }
 
+  /** Adds save settings to goBack button */
+  setAdditionalAction(() => SettingsHolder.saveSettings())
   private val resetGameData = new StyledButton("Reset game data") {
     onAction = _ => AlertFactory.showConfirmationAlert(text.value + "?", "Your progresses will be lost", SinglePlayerLevels.reset(), {})
   }
 
-  /** Adds save settings to goBack button */
-  setAdditionalAction(() => SettingsHolder.saveSettings())
-
-  /**  The central container */
+  /** The central container */
   protected val container: VBox = new VBox(15) {
     alignment = Pos.Center
     children = Seq(volumeContainer, volumeSlider, resetGameData, goBack)
     styleClass.add("settings-vbox")
   }
+  volumeSlider.valueProperty().addListener((_, _, newVal) => {
+    val valueToPlayerRange = newVal / 100
+    MusicPlayer.changeVolume(valueToPlayerRange)
+  })
 
   /** Setting the root container */
   root = container

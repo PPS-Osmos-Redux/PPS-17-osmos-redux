@@ -2,7 +2,6 @@ package it.unibo.osmos.redux.mvc.view.components.menu
 
 import it.unibo.osmos.redux.mvc.view.components.custom.StyledButton
 import scalafx.geometry.Pos
-import scalafx.scene.control.Button
 import scalafx.scene.layout.VBox
 
 
@@ -37,43 +36,27 @@ class MainMenuCenterBox(val listener: MainMenuCenterBoxListener) extends VBox(20
   exitButton.onAction = _ => listener.onExitClick()
 }
 
-/**
-  * Trait which gets notified when a MainMenuCenterBox event occurs
-  */
+/** Trait which gets notified when a MainMenuCenterBox event occurs */
 trait MainMenuCenterBoxListener {
 
-  /**
-    * Called when the user clicks on the back to menu button
-    */
+  /** Called when the user clicks on the back to menu button */
   def backToMainMenu()
 
-  /**
-    * Called when the user clicks on the play button
-    */
+  /** Called when the user clicks on the play button */
   def onPlayClick()
 
-  /**
-    * Called when the user clicks on the multiplayer button
-    */
+  /** Called when the user clicks on the multiplayer button */
   def onMultiPlayerClick()
 
-  /**
-    * Called when the user clicks on the editor button
-    */
+  /** Called when the user clicks on the editor button */
   def onEditorClick()
 
-  /**
-    * Called when the user clicks on the stats button
-    */
+  /** Called when the user clicks on the stats button */
   def onStatsClick()
 
-  /**
-    * Called when the user clicks on the settings button
-    */
+  /** Called when the user clicks on the settings button */
   def onSettingsClick()
 
-  /**
-    * Called when the user clicks on the exit button
-    */
+  /** Called when the user clicks on the exit button */
   def onExitClick()
 }

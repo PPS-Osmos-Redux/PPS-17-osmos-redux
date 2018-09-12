@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.mvc.view.scenes
 
-import it.unibo.osmos.redux.multiplayer.common.{ActorSystemHolder, NetworkUtils}
+import it.unibo.osmos.redux.multiplayer.common.NetworkUtils
 import it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo
 import it.unibo.osmos.redux.mvc.view.components.custom._
 import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
@@ -24,6 +24,7 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
   /** Username */
   private val username: StringProperty = StringProperty("")
   private val usernameTextField = new TitledTextField("Username: ", username)
+  //label.setMinWidth(Region.USE_PREF_SIZE)
 
   /** Server address */
   private val addressTitle: StringProperty = StringProperty("Server address: ")
@@ -58,6 +59,64 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
       if (addressValue.isEmpty.get()) addressValue.setValue(NetworkUtils.getLocalIPAddress)
       portTextField.root.visible = false
   }, vertical = false)
+  private val proceedToNextScene = new StyledButton("Go To Lobby") {
+    text <== startButtonText
+    onAction = _ => if (username.value.isEmpty) {
+      /** Checking if the user name is empty */
+      AlertFactory.createErrorAlert("Error", "Your username cannot be empty").showAndWait()
+    } else if (!NetworkUtils.validateIPV4Address(addressValue.value)) {
+      /** Checking if the specified address is invalid */
+      AlertFactory.createErrorAlert("Error", "The declared address is invalid.").showAndWait()
+    } else {
+      /** We create the User */
+      val user = User(username.value, addressValue.value, portValue.value, isServer = mode.value)
+
+      if (mode.value) {
+        /** If we are the server, we must choose the level first. We ask for the lobby when the level is chosen */
+        parentStage.scene = new MultiPlayerLevelSelectionScene(parentStage, listener, levelInfo => goToLobby(user, Option(levelInfo)), user, () => parentStage.scene = MultiPlayerScene.this)
+      } else {
+        /** If we are the client */
+        goToLobby(user, Option.empty)
+      }
+    }
+  }
+  private val container: VBox = new VBox(5.0) {
+
+    maxWidth <== parentStage.width / 4
+    maxHeight <== parentStage.height / 4
+
+    alignment = Pos.Center
+
+    val childrenRoots = Seq(usernameTextField.root, modeComboBox.root, addressTextField.root, portTextField.root)
+    /* add to all labels the style, so that they have the same indentation */
+    childrenRoots.foreach(e => e.children.get(0).getStyleClass.add("multi-player-scene-label-style"))
+    children = childrenRoots
+
+    styleClass.add("default-font-size")
+  }
+  /** Requesting a structured layout */
+  private val rootLayout: BorderPane = new BorderPane {
+    padding = Insets(130)
+    alignmentInParent = Pos.Center
+    /** Setting the upper MenuBar */
+    center = container
+    bottom = new HBox(30.0, goBack, proceedToNextScene) {
+      alignment = Pos.Center
+    }
+  }
+
+  /** This method sends a request to enter the lobby
+    *
+    * @param user      the user
+    * @param levelInfo the level info, which may be not present if the user is a client
+    */
+  private def goToLobby(user: User, levelInfo: Option[LevelInfo]): Unit = {
+    /** We create the lobby context */
+    val lobbyContext = LobbyContext()
+
+    /** We ask to enter in the lobby */
+    listener.onLobbyRequest(user, levelInfo, lobbyContext, onLobbyEnterResult)
+  }
 
   /** Result parsing function.
     *
@@ -67,6 +126,7 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
     Platform.runLater({
       result match {
         case GenericResponse(true, _) =>
+
           /** If the lobby was successfully created, we link the resulting lobby context and go to the next scene */
           val multiPlayerLobbyScene = new MultiPlayerLobbyScene(parentStage, listener, () => parentStage.scene = MultiPlayerScene.this, user)
 
@@ -89,70 +149,12 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
     })
   }
 
-  private val proceedToNextScene = new StyledButton("Go To Lobby") {
-    text <== startButtonText
-    onAction = _ => if (username.value.isEmpty) {
-      /** Checking if the user name is empty */
-      AlertFactory.createErrorAlert("Error", "Your username cannot be empty").showAndWait()
-    } else {
-      /** We create the User */
-      val user = User(username.value, addressValue.value, portValue.value, isServer = mode.value)
-
-      if (mode.value) {
-        /** If we are the server, we must choose the level first. We ask for the lobby when the level is chosen */
-        parentStage.scene = new MultiPlayerLevelSelectionScene(parentStage, listener, levelInfo => goToLobby(user, Option(levelInfo)), user, () => parentStage.scene = MultiPlayerScene.this)
-      } else {
-        /** If we are the client */
-        goToLobby(user, Option.empty)
-      }
-
-    }
-  }
-
-  /** This method sends a request to enter the lobby
-    *
-    * @param user      the user
-    * @param levelInfo the level info, which may be not present if the user is a client
-    */
-  private def goToLobby(user: User, levelInfo: Option[LevelInfo]): Unit = {
-    /** We create the lobby context */
-    val lobbyContext = LobbyContext()
-
-    /** We ask to enter in the lobby */
-    listener.onLobbyRequest(user, levelInfo, lobbyContext, onLobbyEnterResult)
-  }
-
-  private val container: VBox = new VBox(5.0) {
-
-    maxWidth <== parentStage.width / 4
-    maxHeight <== parentStage.height / 4
-
-    alignment = Pos.Center
-
-    children = Seq(usernameTextField.root, modeComboBox.root, addressTextField.root, portTextField.root)
-
-    styleClass.addAll("default-font-size", "multi-player-scene-label-style")
-  }
-
-  /** Requesting a structured layout */
-  private val rootLayout: BorderPane = new BorderPane {
-    padding = Insets(130)
-    alignmentInParent = Pos.Center
-    /** Setting the upper MenuBar */
-    center = container
-    bottom = new HBox(30.0, goBack, proceedToNextScene) {
-      alignment = Pos.Center
-    }
-  }
-
   /** Enabling the layout */
   root = rootLayout
 
 }
 
-/**
-  * Trait used by MultiPlayerScene to notify events which need to be managed by the View
-  */
+/** Trait used by MultiPlayerScene to notify events which need to be managed by the View */
 trait MultiPlayerSceneListener extends MultiPlayerLobbySceneListener with MultiPlayerLevelSelectionSceneListener {
 
   /** Called when the user wants to go to the lobby

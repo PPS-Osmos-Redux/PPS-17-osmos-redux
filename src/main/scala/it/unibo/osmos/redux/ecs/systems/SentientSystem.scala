@@ -15,14 +15,8 @@ case class SentientSystem(levelInfo: Level) extends AbstractSystem2[SentientProp
 
   // The initial velocity of the lost mass
   private val lostMassInitialVelocity: Double = 4.0
-
-  private var radiusAmount = 0.0
-
   private val rules: List[SentientRule] = initRules()
-
-  private def initRules(): List[SentientRule] = {
-    EscapeFromBoundaryRule(levelInfo) :: EscapeFromEnemiesRule(entitiesSecondType) :: FollowTargetRule(entitiesSecondType) :: Nil
-  }
+  private var radiusAmount = 0.0
 
   override def update(): Unit = entities.filter(e => e.getCollidableComponent.isCollidable)
     .foreach(sentient => {
@@ -58,5 +52,9 @@ case class SentientSystem(levelInfo: Level) extends AbstractSystem2[SentientProp
         radiusAmount = 0.0
       }
     }
+  }
+
+  private def initRules(): List[SentientRule] = {
+    EscapeFromBoundaryRule(levelInfo) :: EscapeFromEnemiesRule(entitiesSecondType) :: FollowTargetRule(entitiesSecondType) :: Nil
   }
 }

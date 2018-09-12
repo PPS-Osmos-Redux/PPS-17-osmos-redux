@@ -11,8 +11,8 @@ import scalafx.stage.Stage
 
 /** Scene where the user can find his in game stats
   *
-  * @param parentStage the parent stage
-  * @param listener the StatsSceneListener
+  * @param parentStage           the parent stage
+  * @param listener              the StatsSceneListener
   * @param previousSceneListener the BackClickListener
   */
 class StatsScene(override val parentStage: Stage, listener: StatsSceneListener, previousSceneListener: BackClickListener) extends DefaultBackScene(parentStage, previousSceneListener) {
@@ -38,7 +38,7 @@ class StatsScene(override val parentStage: Stage, listener: StatsSceneListener, 
   private val statsTable = new TableView[CampaignLevel]() {
     maxWidth = ViewConstants.Window.HalfWindowWidth
     prefHeight = ViewConstants.Window.DefaultWindowHeight / 4
-    /** add the columns to table*/
+    /** add the columns to table */
     columns ++= List(levelNameColumn, victoryRuleColumn, victoriesColumn, defeatsColumn)
   }
 
@@ -58,7 +58,7 @@ class StatsScene(override val parentStage: Stage, listener: StatsSceneListener, 
     styleClass.add("settings-vbox")
   }
 
-  /** Setting the root container*/
+  /** Setting the root container */
   root = container
 }
 

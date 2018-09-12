@@ -13,9 +13,7 @@ import scalafx.application.{JFXApp, Platform}
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 import scala.util.{Failure, Success}
 
-/**
-  * View base trait
-  */
+/** View base trait */
 trait View {
 
 
@@ -45,15 +43,6 @@ object View {
 
     override def setController(controller: Controller): Unit = {
       this.controller = Option(controller)
-    }
-
-    /** Utility method that checks if controller is not empty and execute f() if that is the case
-      *
-      * @param f the function which will be executed if controller is not empty
-      */
-    private def checkController(f: () => Unit): Unit = controller match {
-      case Some(_) => f()
-      case _ =>
     }
 
     override def onLevelContextCreated(levelContext: LevelContext, level: String, isCustom: Boolean = false): Boolean = {
@@ -106,12 +95,6 @@ object View {
 
     override def onLevelSpeedChanged(increment: Boolean): Unit = checkController(() => controller.get.changeLevelSpeed(increment))
 
-    def onDisplayError(message: String): Unit = {
-      Platform.runLater {
-        AlertFactory.createErrorAlert("Error occurred", message).showAndWait()
-      }
-    }
-
     /** After checking the controller, we ask to enter the lobby asynchronously and call the callback function after the future result
       *
       * @param user         the user requesting to enter the lobby
@@ -128,6 +111,21 @@ object View {
       case Failure(e) => onDisplayError("Failed controller init")
       case Success(_) => //do nothing
     })
+
+    /** Utility method that checks if controller is not empty and execute f() if that is the case
+      *
+      * @param f the function which will be executed if controller is not empty
+      */
+    private def checkController(f: () => Unit): Unit = controller match {
+      case Some(_) => f()
+      case _ =>
+    }
+
+    def onDisplayError(message: String): Unit = {
+      Platform.runLater {
+        AlertFactory.createErrorAlert("Error occurred", message).showAndWait()
+      }
+    }
 
   }
 

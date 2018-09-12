@@ -5,9 +5,7 @@ import scalafx.scene.control.Alert
 import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.layout.Region
 
-/**
-  * A builder that provider useful method to create customizable alerts
-  */
+/** A builder that provider useful method to create customizable alerts */
 class AlertBuilder {
 
   private var alertType = AlertType.Error

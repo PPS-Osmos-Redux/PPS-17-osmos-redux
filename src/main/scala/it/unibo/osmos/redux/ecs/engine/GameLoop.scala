@@ -5,9 +5,9 @@ import java.util.concurrent.locks.ReentrantLock
 import it.unibo.osmos.redux.ecs.systems._
 import it.unibo.osmos.redux.utils.Logger
 
-/**
-  * Implementation of the game loop.
-  * @param engine The Game engine.
+/** Implementation of the game loop.
+  *
+  * @param engine  The Game engine.
   * @param systems The list of the systems of the game.
   */
 class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread {
@@ -57,9 +57,13 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
     status = GameStatus.Stopped
   }
 
-  /**
-    * Pauses the execution.
+  /** Gets the current tick time.
+    *
+    * @return The current tick time in milliseconds.
     */
+  private def getTickTime: Int = 1000 / engine.getFps
+
+  /** Pauses the execution. */
   def pause(): Unit = {
 
     if (status != GameStatus.Running) throw new IllegalStateException("Cannot pause the game if it's not running.")
@@ -68,9 +72,7 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
     status = GameStatus.Paused
   }
 
-  /**
-    * Resumes the execution.
-    */
+  /** Resumes the execution. */
   def unPause(): Unit = {
 
     if (status != GameStatus.Paused) throw new IllegalStateException("Cannot unpause the game if it's not paused.")
@@ -79,29 +81,13 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
     status = GameStatus.Running
   }
 
-  /**
-    * Kills the execution.
-    */
+  /** Kills the execution. */
   def kill(): Unit = {
     tryUnlock()
     stopFlag = true
   }
 
-  /**
-    * Gets the current status.
-    * @return The current game status
-    */
-  def getStatus: GameStatus = status
-
-  /**
-    * Gets the current tick time.
-    * @return The current tick time in milliseconds.
-    */
-  private def getTickTime: Int = 1000 / engine.getFps
-
-  /**
-    * Tries to unlock the lock, if it fails it does not halt the game.
-    */
+  /** Tries to unlock the lock, if it fails it does not halt the game. */
   private def tryUnlock(): Unit = {
     try {
       if (lock.isLocked) lock.unlock()
@@ -110,10 +96,16 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
     }
   }
 
-  /**
-    * Logs the runtime of a function.
+  /** Gets the current status.
+    *
+    * @return The current game status
+    */
+  def getStatus: GameStatus = status
+
+  /** Logs the runtime of a function.
+    *
     * @param who Who represents the function to log.
-    * @param f The function.
+    * @param f   The function.
     */
   private def logRunTime(who: String, f: () => Unit): Unit = {
     val start = System.currentTimeMillis()

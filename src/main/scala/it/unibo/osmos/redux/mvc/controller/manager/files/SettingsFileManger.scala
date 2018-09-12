@@ -8,7 +8,7 @@ import spray.json._
 
 import scala.util.{Failure, Success, Try}
 
-/**Defines operation on settings file*/
+/** Defines operation on settings file */
 object SettingsFileManger extends FileManager {
   override implicit val who: String = "SettingsFileManger"
 
@@ -16,7 +16,7 @@ object SettingsFileManger extends FileManager {
     *
     * @param settings List[Setting]
     */
-  def saveSettings(settings:List[Setting]): Unit = {
+  def saveSettings(settings: List[Setting]): Unit = {
     createDirectoriesTree(SettingFilePath)
     saveToFile(SettingFilePath + jsonExtension, settings.toJson.prettyPrint)
   }
@@ -25,7 +25,7 @@ object SettingsFileManger extends FileManager {
     *
     * @return List[Setting]
     */
-  def loadSettings():List[Setting] = loadFile(SettingFilePath + jsonExtension) match {
+  def loadSettings(): List[Setting] = loadFile(SettingFilePath + jsonExtension) match {
     case Some(settings) => Try(settings.parseJson.convertTo[List[Setting]]) match {
       case Success(value) => value
       case Failure(_) => List()
@@ -33,5 +33,9 @@ object SettingsFileManger extends FileManager {
     case None => List()
   }
 
+  /** Deletes settings file
+    *
+    * @return Try[Unit]
+    */
   def deleteSettingsFile(): Try[Unit] = deleteFile(SettingFilePath + jsonExtension)
 }

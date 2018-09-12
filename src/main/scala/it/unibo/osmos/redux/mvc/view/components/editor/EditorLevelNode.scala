@@ -10,9 +10,7 @@ import scalafx.scene.image.ImageView
 import scalafx.scene.paint.Color
 import scalafx.scene.text.Text
 
-/**
-  * Trait which gets notified when a LevelNode event occurs
-  */
+/** Trait which gets notified when a LevelNode event occurs */
 trait EditorLevelNodeListener extends LevelNodeListener {
 
   /** This method gets called when the user wants to delete a custom level
@@ -24,7 +22,7 @@ trait EditorLevelNodeListener extends LevelNodeListener {
 
 /** Level node representing a custom level created by the user
   *
-  * @param listener the EditorLevelNodeListener
+  * @param listener  the EditorLevelNodeListener
   * @param levelInfo the level info
   */
 class EditorLevelNode(override val listener: EditorLevelNodeListener, override val levelInfo: LevelInfo) extends AnimatedAbstractLevelNode(listener, levelInfo) {
