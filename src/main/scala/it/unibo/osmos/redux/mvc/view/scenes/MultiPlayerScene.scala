@@ -24,6 +24,7 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
   /** Username */
   private val username: StringProperty = StringProperty("")
   private val usernameTextField = new TitledTextField("Username: ", username)
+  //label.setMinWidth(Region.USE_PREF_SIZE)
 
   /** Server address */
   private val addressTitle: StringProperty = StringProperty("Server address: ")
@@ -84,9 +85,12 @@ class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlaye
 
     alignment = Pos.Center
 
-    children = Seq(usernameTextField.root, modeComboBox.root, addressTextField.root, portTextField.root)
+    val childrenRoots = Seq(usernameTextField.root, modeComboBox.root, addressTextField.root, portTextField.root)
+    /* add to all labels the style, so that they have the same indentation */
+    childrenRoots.foreach(e => e.children.get(0).getStyleClass.add("multi-player-scene-label-style"))
+    children = childrenRoots
 
-    styleClass.addAll("default-font-size", "multi-player-scene-label-style")
+    styleClass.add("default-font-size")
   }
   /** Requesting a structured layout */
   private val rootLayout: BorderPane = new BorderPane {

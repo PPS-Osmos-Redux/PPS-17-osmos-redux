@@ -34,38 +34,38 @@
   -fx-font-weight: bold;
 }
 
-.multi-player-lobby-table {
-  -fx-font-size: 22px;
-}
-
-/* change it in custom tag */
-/*.table-row-cell {
-  -fx-font-size: 20px;
-}*/
-
+/* multiplayer scene style */
 .multi-player-scene-label-style {
   -fx-min-width: 170px;
+}
+
+.multi-player-lobby-table {
+  -fx-font-size: 22px;
 }
 
 /*.multi-player-scene-VBox-style {
   -fx-background-color: white;
 }*/
 
+/* alert dialog style */
 .dialog-style {
   /* set background to null so that the .root background style is override */
   -fx-background-image: null;
   -fx-font: 20 arial;
 }
 
-.slider .axis {
-  -fx-tick-label-fill: white;
-}
-
+/* settings scene style */
 .settings-vbox {
   -fx-font-size: 20px;
   -fx-background-color: white;
 }
 
+/* volume slider style */
+.slider .axis {
+  -fx-tick-label-fill: white;
+}
+
+/* controls scene style */
 .controls-hbox {
   -fx-font-size: 22px;
   -fx-background-color: white;
