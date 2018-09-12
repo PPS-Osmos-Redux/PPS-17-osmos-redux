@@ -1,0 +1,1847 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/scenes/MainScene.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.scenes
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.controller.manager.sounds.{MusicPlayer, SoundsType}
+</span>5 <span style=''>import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.BackgroundTexture
+</span>6 <span style=''>import it.unibo.osmos.redux.mvc.view.components.instructions.{GameInstructionScreen, GameLegendScreen}
+</span>7 <span style=''>import it.unibo.osmos.redux.mvc.view.components.menu.{MainMenuCenterBox, MainMenuCenterBoxListener}
+</span>8 <span style=''>import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
+</span>9 <span style=''>import javafx.scene.input.KeyCode
+</span>10 <span style=''>import scalafx.beans.property.BooleanProperty
+</span>11 <span style=''>import scalafx.geometry.{Insets, Pos}
+</span>12 <span style=''>import scalafx.scene.effect.DropShadow
+</span>13 <span style=''>import scalafx.scene.image.ImageView
+</span>14 <span style=''>import scalafx.scene.layout._
+</span>15 <span style=''>import scalafx.scene.paint.Color
+</span>16 <span style=''>import scalafx.scene.text.Text
+</span>17 <span style=''>import scalafx.stage.Stage
+</span>18 <span style=''>
+</span>19 <span style=''>/** Opening scene, showing the menu and the menu bar
+</span>20 <span style=''>  *
+</span>21 <span style=''>  * @param parentStage the parent stage
+</span>22 <span style=''>  * @param listener    the MainSceneListener
+</span>23 <span style=''>  */
+</span>24 <span style=''>class MainScene(override val parentStage: Stage, val listener: MainSceneListener) extends BaseScene(parentStage)
+</span>25 <span style=''>  with MainMenuCenterBoxListener with BackClickListener {
+</span>26 <span style=''>
+</span>27 <span style=''>  </span><span style='background: #F0ADAD'>MusicPlayer.play(SoundsType.menu)</span><span style=''>
+</span>28 <span style=''>
+</span>29 <span style=''>  /** Background image when displaying controls */
+</span>30 <span style=''>  val background: ImageView = </span><span style='background: #F0ADAD'>new</span><span style=''> ImageView(ImageLoader.getImage(BackgroundTexture)) {
+</span>31 <span style=''>    </span><span style='background: #F0ADAD'>fitWidth &lt;== parentStage.width</span><span style=''>
+</span>32 <span style=''>    </span><span style='background: #F0ADAD'>fitHeight &lt;== parentStage.height</span><span style=''>
+</span>33 <span style=''>  }
+</span>34 <span style=''>
+</span>35 <span style=''>  /** Boolean binding with the legendScreen */
+</span>36 <span style=''>  private val legendScreenVisible: BooleanProperty = </span><span style='background: #F0ADAD'>BooleanProperty(false)</span><span style=''>
+</span>37 <span style=''>  /** The legend screen */
+</span>38 <span style=''>  private val legendScreen = </span><span style='background: #F0ADAD'>new GameLegendScreen(this).legendScreen</span><span style=''>
+</span>39 <span style=''>  </span><span style='background: #F0ADAD'>legendScreen.visible &lt;== legendScreenVisible</span><span style=''>
+</span>40 <span style=''>  /** Boolean binding with the instructionScreen */
+</span>41 <span style=''>  private val controlsScreenVisible: BooleanProperty = </span><span style='background: #F0ADAD'>BooleanProperty(false)</span><span style=''>
+</span>42 <span style=''>  /** The instruction screen */
+</span>43 <span style=''>  private val instructionScreen = </span><span style='background: #F0ADAD'>new GameInstructionScreen(this).instructionScreen</span><span style=''>
+</span>44 <span style=''>  /** Requesting a structured layout */
+</span>45 <span style=''>  private val rootLayout: BorderPane = </span><span style='background: #F0ADAD'>new</span><span style=''> BorderPane {
+</span>46 <span style=''>    </span><span style='background: #F0ADAD'>prefWidth &lt;== parentStage.width</span><span style=''>
+</span>47 <span style=''>    </span><span style='background: #F0ADAD'>prefHeight &lt;== parentStage.height</span><span style=''>
+</span>48 <span style=''>    </span><span style='background: #F0ADAD'>visible &lt;== !controlsScreenVisible and !legendScreenVisible</span><span style=''>
+</span>49 <span style=''>    /** Setting the upper MenuBar */
+</span>50 <span style=''>    </span><span style='background: #F0ADAD'>center = new MainMenuCenterBox(MainScene.this)</span><span style=''>
+</span>51 <span style=''>    </span><span style='background: #F0ADAD'>bottom = new VBox(4.0, new Text(&quot;Press [C] to show/hide the game controls&quot;) {
+</span>52 <span style=''></span><span style='background: #F0ADAD'>      style = &quot;-fx-font-size: 20pt&quot;
+</span>53 <span style=''></span><span style='background: #F0ADAD'>      fill = Color.White
+</span>54 <span style=''></span><span style='background: #F0ADAD'>      effect = new DropShadow {
+</span>55 <span style=''></span><span style='background: #F0ADAD'>        color = Color.Blue
+</span>56 <span style=''></span><span style='background: #F0ADAD'>      }
+</span>57 <span style=''></span><span style='background: #F0ADAD'>    }, new Text(&quot;Press [L] to show/hide the game legend&quot;) {
+</span>58 <span style=''></span><span style='background: #F0ADAD'>      style = &quot;-fx-font-size: 20pt&quot;
+</span>59 <span style=''></span><span style='background: #F0ADAD'>      fill = Color.White
+</span>60 <span style=''></span><span style='background: #F0ADAD'>      effect = new DropShadow {
+</span>61 <span style=''></span><span style='background: #F0ADAD'>        color = Color.Blue
+</span>62 <span style=''></span><span style='background: #F0ADAD'>      }
+</span>63 <span style=''></span><span style='background: #F0ADAD'>    }
+</span>64 <span style=''></span><span style='background: #F0ADAD'>    ) {
+</span>65 <span style=''></span><span style='background: #F0ADAD'>      margin = Insets(50.0)
+</span>66 <span style=''></span><span style='background: #F0ADAD'>      alignment = Pos.Center
+</span>67 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
+</span>68 <span style=''>    </span><span style='background: #F0ADAD'>styleClass.add(&quot;default-background&quot;)</span><span style=''>
+</span>69 <span style=''>  }
+</span>70 <span style=''>  </span><span style='background: #F0ADAD'>instructionScreen.visible &lt;== controlsScreenVisible</span><span style=''>
+</span>71 <span style=''>
+</span>72 <span style=''>  </span><span style='background: #F0ADAD'>onKeyPressed = key =&gt; key.getCode match {
+</span>73 <span style=''></span><span style='background: #F0ADAD'>    case KeyCode.C =&gt; changeControlsScreenState()
+</span>74 <span style=''></span><span style='background: #F0ADAD'>    case KeyCode.L =&gt; changeLegendScreenState()
+</span>75 <span style=''></span><span style='background: #F0ADAD'>    case _ =&gt;
+</span>76 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
+</span>77 <span style=''>
+</span>78 <span style=''>  </span><span style='background: #F0ADAD'>content = Seq(background, rootLayout, instructionScreen, legendScreen)</span><span style=''>
+</span>79 <span style=''>
+</span>80 <span style=''>  override def backToMainMenu(): Unit = </span><span style='background: #F0ADAD'>{}</span><span style=''>
+</span>81 <span style=''>
+</span>82 <span style=''>  override def onPlayClick(): Unit = </span><span style='background: #F0ADAD'>listener.onPlayClick()</span><span style=''>
+</span>83 <span style=''>
+</span>84 <span style=''>  override def onMultiPlayerClick(): Unit = </span><span style='background: #F0ADAD'>listener.onMultiPlayerClick()</span><span style=''>
+</span>85 <span style=''>
+</span>86 <span style=''>  override def onEditorClick(): Unit = </span><span style='background: #F0ADAD'>listener.onEditorClick()</span><span style=''>
+</span>87 <span style=''>
+</span>88 <span style=''>  override def onSettingsClick(): Unit = </span><span style='background: #F0ADAD'>listener.onSettingsClick()</span><span style=''>
+</span>89 <span style=''>
+</span>90 <span style=''>  override def onExitClick(): Unit = </span><span style='background: #F0ADAD'>System.exit(0)</span><span style=''>
+</span>91 <span style=''>
+</span>92 <span style=''>  override def onBackClick(): Unit = </span><span style='background: #F0ADAD'>parentStage.scene = this</span><span style=''>
+</span>93 <span style=''>
+</span>94 <span style=''>  override def onStatsClick(): Unit = </span><span style='background: #F0ADAD'>listener.onStatsClick()</span><span style=''>
+</span>95 <span style=''>
+</span>96 <span style=''>  /** This method makes the legend screen appear/disappear */
+</span>97 <span style=''>  private def changeLegendScreenState(): Unit = {
+</span>98 <span style=''>    if (</span><span style='background: #F0ADAD'>controlsScreenVisible.value</span><span style=''>) </span><span style='background: #F0ADAD'>controlsScreenVisible.value = false</span><span style=''>
+</span>99 <span style=''>    </span><span style='background: #F0ADAD'>legendScreenVisible.value = !legendScreenVisible.value</span><span style=''>
+</span>100 <span style=''>    </span><span style='background: #F0ADAD'>background.opacity = if (legendScreenVisible.value) 0.3 else 1.0</span><span style=''>
+</span>101 <span style=''>  }
+</span>102 <span style=''>
+</span>103 <span style=''>  /** This method makes the instruction screen appear/disappear */
+</span>104 <span style=''>  private def changeControlsScreenState(): Unit = {
+</span>105 <span style=''>    if (</span><span style='background: #F0ADAD'>legendScreenVisible.value</span><span style=''>) </span><span style='background: #F0ADAD'>legendScreenVisible.value = false</span><span style=''>
+</span>106 <span style=''>    </span><span style='background: #F0ADAD'>controlsScreenVisible.value = !controlsScreenVisible.value</span><span style=''>
+</span>107 <span style=''>    </span><span style='background: #F0ADAD'>background.opacity = if (controlsScreenVisible.value) 0.3 else 1.0</span><span style=''>
+</span>108 <span style=''>  }
+</span>109 <span style=''>}
+</span>110 <span style=''>
+</span>111 <span style=''>/** Trait which gets notified when a MainScene event occurs */
+</span>112 <span style=''>trait MainSceneListener {
+</span>113 <span style=''>
+</span>114 <span style=''>  /** Called when the user clicks on the play button */
+</span>115 <span style=''>  def onPlayClick()
+</span>116 <span style=''>
+</span>117 <span style=''>  /** Called when the user clicks on the play button */
+</span>118 <span style=''>  def onMultiPlayerClick()
+</span>119 <span style=''>
+</span>120 <span style=''>  /** Called when the user clicks on the editor button */
+</span>121 <span style=''>  def onEditorClick()
+</span>122 <span style=''>
+</span>123 <span style=''>  /** Called when the user clicks on the stats button */
+</span>124 <span style=''>  def onStatsClick()
+</span>125 <span style=''>
+</span>126 <span style=''>  /** Called when the user clicks on the settings button */
+</span>127 <span style=''>  def onSettingsClick()
+</span>128 <span style=''>
+</span>129 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          4936
+        </td>
+        <td>
+          1179
+          -
+          1212
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.play
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.play(it.unibo.osmos.redux.mvc.controller.manager.sounds.SoundsType.menu)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          4935
+        </td>
+        <td>
+          1196
+          -
+          1211
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.SoundsType.menu
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.SoundsType.menu
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          4941
+        </td>
+        <td>
+          1295
+          -
+          1298
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MainScene.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          4937
+        </td>
+        <td>
+          1369
+          -
+          1386
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.stage.Window.width
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.parentStage.width
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          4938
+        </td>
+        <td>
+          1356
+          -
+          1386
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.fitWidth.&lt;==(MainScene.this.parentStage.width)
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          4940
+        </td>
+        <td>
+          1391
+          -
+          1423
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.fitHeight.&lt;==(MainScene.this.parentStage.height)
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          4939
+        </td>
+        <td>
+          1405
+          -
+          1423
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.stage.Window.height
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.parentStage.height
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          4942
+        </td>
+        <td>
+          1529
+          -
+          1551
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.BooleanProperty.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.beans.property.BooleanProperty.apply(false)
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          4943
+        </td>
+        <td>
+          1608
+          -
+          1647
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.instructions.GameLegendScreen.legendScreen
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.components.instructions.GameLegendScreen(this).legendScreen
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          4945
+        </td>
+        <td>
+          1650
+          -
+          1694
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.legendScreen.visible.&lt;==(MainScene.this.legendScreenVisible)
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          4944
+        </td>
+        <td>
+          1675
+          -
+          1694
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MainScene.legendScreenVisible
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.legendScreenVisible
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          4946
+        </td>
+        <td>
+          1802
+          -
+          1824
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.BooleanProperty.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.beans.property.BooleanProperty.apply(false)
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          4947
+        </td>
+        <td>
+          1891
+          -
+          1940
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.instructions.GameInstructionScreen.instructionScreen
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.components.instructions.GameInstructionScreen(this).instructionScreen
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          4964
+        </td>
+        <td>
+          2020
+          -
+          2023
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MainScene.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          4949
+        </td>
+        <td>
+          2041
+          -
+          2072
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.prefWidth.&lt;==(MainScene.this.parentStage.width)
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          4948
+        </td>
+        <td>
+          2055
+          -
+          2072
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.stage.Window.width
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.parentStage.width
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          4951
+        </td>
+        <td>
+          2077
+          -
+          2110
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.prefHeight.&lt;==(MainScene.this.parentStage.height)
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          4950
+        </td>
+        <td>
+          2092
+          -
+          2110
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.stage.Window.height
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.parentStage.height
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          4954
+        </td>
+        <td>
+          2115
+          -
+          2174
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.visible.&lt;==(MainScene.this.controlsScreenVisible.unary_!().and(MainScene.this.legendScreenVisible.unary_!()))
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          4953
+        </td>
+        <td>
+          2127
+          -
+          2174
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.beans.binding.BooleanExpression.and
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.controlsScreenVisible.unary_!().and(MainScene.this.legendScreenVisible.unary_!())
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          4952
+        </td>
+        <td>
+          2154
+          -
+          2174
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.binding.BooleanExpression.unary_!
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.legendScreenVisible.unary_!()
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          4955
+        </td>
+        <td>
+          2225
+          -
+          2262
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.menu.MainMenuCenterBox.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.components.menu.MainMenuCenterBox(MainScene.this)
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          4956
+        </td>
+        <td>
+          2216
+          -
+          2262
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.BorderPane.center_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.center_=(new it.unibo.osmos.redux.mvc.view.components.menu.MainMenuCenterBox(MainScene.this))
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          4962
+        </td>
+        <td>
+          2267
+          -
+          2737
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.BorderPane.bottom_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.bottom_=({
+  final class $anon extends scalafx.scene.layout.VBox {
+    def &lt;init&gt;(): &lt;$anon: scalafx.scene.layout.VBox&gt; = {
+      $anon.super.&lt;init&gt;(4.0, {
+        final class $anon extends scalafx.scene.text.Text {
+          def &lt;init&gt;(): &lt;$anon: scalafx.scene.text.Text&gt; = {
+            $anon.super.&lt;init&gt;(&quot;Press [C] to show/hide the game controls&quot;);
+            ()
+          };
+          $anon.this.style_=(&quot;-fx-font-size: 20pt&quot;);
+          $anon.this.fill_=(scalafx.scene.paint.Color.White);
+          $anon.this.effect_=({
+            final class $anon extends scalafx.scene.effect.DropShadow {
+              def &lt;init&gt;(): &lt;$anon: scalafx.scene.effect.DropShadow&gt; = {
+                $anon.super.&lt;init&gt;(effect.this.DropShadow.&lt;init&gt;$default$1);
+                ()
+              };
+              $anon.this.color_=(scalafx.scene.paint.Color.Blue)
+            };
+            new $anon()
+          })
+        };
+        new $anon()
+      }, {
+        final class $anon extends scalafx.scene.text.Text {
+          def &lt;init&gt;(): &lt;$anon: scalafx.scene.text.Text&gt; = {
+            $anon.super.&lt;init&gt;(&quot;Press [L] to show/hide the game legend&quot;);
+            ()
+          };
+          $anon.this.style_=(&quot;-fx-font-size: 20pt&quot;);
+          $anon.this.fill_=(scalafx.scene.paint.Color.White);
+          $anon.this.effect_=({
+            final class $anon extends scalafx.scene.effect.DropShadow {
+              def &lt;init&gt;(): &lt;$anon: scalafx.scene.effect.DropShadow&gt; = {
+                $anon.super.&lt;init&gt;(effect.this.DropShadow.&lt;init&gt;$default$1);
+                ()
+              };
+              $anon.this.color_=(scalafx.scene.paint.Color.Blue)
+            };
+            new $anon()
+          })
+        };
+        new $anon()
+      });
+      ()
+    };
+    $anon.this.margin_=(scalafx.geometry.Insets.apply(50.0));
+    $anon.this.alignment_=(scalafx.geometry.Pos.Center)
+  };
+  new $anon()
+})
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          4961
+        </td>
+        <td>
+          2276
+          -
+          2279
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MainScene.$anon.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          4958
+        </td>
+        <td>
+          2681
+          -
+          2702
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.margin_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.margin_=(scalafx.geometry.Insets.apply(50.0))
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          4957
+        </td>
+        <td>
+          2690
+          -
+          2702
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.geometry.Insets.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.geometry.Insets.apply(50.0)
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          4960
+        </td>
+        <td>
+          2709
+          -
+          2731
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.delegate.AlignmentDelegate.alignment_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.alignment_=(scalafx.geometry.Pos.Center)
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          4959
+        </td>
+        <td>
+          2721
+          -
+          2731
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.geometry.Pos.Center
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.geometry.Pos.Center
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          4963
+        </td>
+        <td>
+          2742
+          -
+          2778
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.util.List.add
+        </td>
+        <td style="background: #F0ADAD">
+          collections.this.ObservableBuffer.observableBuffer2ObservableList[String]($anon.this.styleClass).add(&quot;default-background&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          70
+        </td>
+        <td>
+          4966
+        </td>
+        <td>
+          2785
+          -
+          2836
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.instructionScreen.visible.&lt;==(MainScene.this.controlsScreenVisible)
+        </td>
+      </tr><tr>
+        <td>
+          70
+        </td>
+        <td>
+          4965
+        </td>
+        <td>
+          2815
+          -
+          2836
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MainScene.controlsScreenVisible
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.controlsScreenVisible
+        </td>
+      </tr><tr>
+        <td>
+          72
+        </td>
+        <td>
+          4967
+        </td>
+        <td>
+          2862
+          -
+          2873
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.input.KeyEvent.getCode
+        </td>
+        <td style="background: #F0ADAD">
+          key.getCode()
+        </td>
+      </tr><tr>
+        <td>
+          72
+        </td>
+        <td>
+          4971
+        </td>
+        <td>
+          2840
+          -
+          2997
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Scene.onKeyPressed_=
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.onKeyPressed_=(((key: javafx.scene.input.KeyEvent) =&gt; key.getCode() match {
+  case C =&gt; MainScene.this.changeControlsScreenState()
+  case L =&gt; MainScene.this.changeLegendScreenState()
+  case _ =&gt; ()
+}))
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          4968
+        </td>
+        <td>
+          2904
+          -
+          2931
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MainScene.changeControlsScreenState
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.changeControlsScreenState()
+        </td>
+      </tr><tr>
+        <td>
+          74
+        </td>
+        <td>
+          4969
+        </td>
+        <td>
+          2954
+          -
+          2979
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MainScene.changeLegendScreenState
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.changeLegendScreenState()
+        </td>
+      </tr><tr>
+        <td>
+          75
+        </td>
+        <td>
+          4970
+        </td>
+        <td>
+          2991
+          -
+          2993
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          78
+        </td>
+        <td>
+          4973
+        </td>
+        <td>
+          3027
+          -
+          3037
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MainScene.rootLayout
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.rootLayout
+        </td>
+      </tr><tr>
+        <td>
+          78
+        </td>
+        <td>
+          4976
+        </td>
+        <td>
+          3011
+          -
+          3071
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.Seq.apply[scalafx.scene.Node](MainScene.this.background, MainScene.this.rootLayout, MainScene.this.instructionScreen, MainScene.this.legendScreen)
+        </td>
+      </tr><tr>
+        <td>
+          78
+        </td>
+        <td>
+          4975
+        </td>
+        <td>
+          3058
+          -
+          3070
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MainScene.legendScreen
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.legendScreen
+        </td>
+      </tr><tr>
+        <td>
+          78
+        </td>
+        <td>
+          4972
+        </td>
+        <td>
+          3015
+          -
+          3025
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MainScene.background
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.background
+        </td>
+      </tr><tr>
+        <td>
+          78
+        </td>
+        <td>
+          4974
+        </td>
+        <td>
+          3039
+          -
+          3056
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MainScene.instructionScreen
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.instructionScreen
+        </td>
+      </tr><tr>
+        <td>
+          78
+        </td>
+        <td>
+          4977
+        </td>
+        <td>
+          3001
+          -
+          3071
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Scene.content_=
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.content_=(scala.collection.Seq.apply[scalafx.scene.Node](MainScene.this.background, MainScene.this.rootLayout, MainScene.this.instructionScreen, MainScene.this.legendScreen))
+        </td>
+      </tr><tr>
+        <td>
+          80
+        </td>
+        <td>
+          4978
+        </td>
+        <td>
+          3113
+          -
+          3115
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          82
+        </td>
+        <td>
+          4979
+        </td>
+        <td>
+          3154
+          -
+          3176
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MainSceneListener.onPlayClick
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.listener.onPlayClick()
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          4980
+        </td>
+        <td>
+          3222
+          -
+          3251
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MainSceneListener.onMultiPlayerClick
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.listener.onMultiPlayerClick()
+        </td>
+      </tr><tr>
+        <td>
+          86
+        </td>
+        <td>
+          4981
+        </td>
+        <td>
+          3292
+          -
+          3316
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MainSceneListener.onEditorClick
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.listener.onEditorClick()
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          4982
+        </td>
+        <td>
+          3359
+          -
+          3385
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MainSceneListener.onSettingsClick
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.listener.onSettingsClick()
+        </td>
+      </tr><tr>
+        <td>
+          90
+        </td>
+        <td>
+          4983
+        </td>
+        <td>
+          3424
+          -
+          3438
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.System.exit
+        </td>
+        <td style="background: #F0ADAD">
+          java.lang.System.exit(0)
+        </td>
+      </tr><tr>
+        <td>
+          92
+        </td>
+        <td>
+          4984
+        </td>
+        <td>
+          3477
+          -
+          3501
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.stage.Stage.scene_=
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.parentStage.scene_=(this)
+        </td>
+      </tr><tr>
+        <td>
+          94
+        </td>
+        <td>
+          4985
+        </td>
+        <td>
+          3541
+          -
+          3564
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MainSceneListener.onStatsClick
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.listener.onStatsClick()
+        </td>
+      </tr><tr>
+        <td>
+          98
+        </td>
+        <td>
+          4987
+        </td>
+        <td>
+          3715
+          -
+          3750
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.BooleanProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.controlsScreenVisible.value_=(false)
+        </td>
+      </tr><tr>
+        <td>
+          98
+        </td>
+        <td>
+          4990
+        </td>
+        <td>
+          3682
+          -
+          3682
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          98
+        </td>
+        <td>
+          4989
+        </td>
+        <td>
+          3682
+          -
+          3682
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          98
+        </td>
+        <td>
+          4986
+        </td>
+        <td>
+          3686
+          -
+          3713
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyBooleanProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.controlsScreenVisible.value
+        </td>
+      </tr><tr>
+        <td>
+          98
+        </td>
+        <td>
+          4988
+        </td>
+        <td>
+          3715
+          -
+          3750
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          scalafx.beans.property.BooleanProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.controlsScreenVisible.value_=(false)
+        </td>
+      </tr><tr>
+        <td>
+          99
+        </td>
+        <td>
+          4991
+        </td>
+        <td>
+          3783
+          -
+          3809
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.legendScreenVisible.value.unary_!
+        </td>
+      </tr><tr>
+        <td>
+          99
+        </td>
+        <td>
+          4992
+        </td>
+        <td>
+          3755
+          -
+          3809
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.BooleanProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.legendScreenVisible.value_=(MainScene.this.legendScreenVisible.value.unary_!)
+        </td>
+      </tr><tr>
+        <td>
+          100
+        </td>
+        <td>
+          4993
+        </td>
+        <td>
+          3839
+          -
+          3864
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyBooleanProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.legendScreenVisible.value
+        </td>
+      </tr><tr>
+        <td>
+          100
+        </td>
+        <td>
+          4996
+        </td>
+        <td>
+          3875
+          -
+          3878
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          1.0
+        </td>
+      </tr><tr>
+        <td>
+          100
+        </td>
+        <td>
+          4998
+        </td>
+        <td>
+          3814
+          -
+          3878
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.opacity_=
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.background.opacity_=(if (MainScene.this.legendScreenVisible.value)
+  0.3
+else
+  1.0)
+        </td>
+      </tr><tr>
+        <td>
+          100
+        </td>
+        <td>
+          4995
+        </td>
+        <td>
+          3866
+          -
+          3869
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          0.3
+        </td>
+      </tr><tr>
+        <td>
+          100
+        </td>
+        <td>
+          4994
+        </td>
+        <td>
+          3866
+          -
+          3869
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          0.3
+        </td>
+      </tr><tr>
+        <td>
+          100
+        </td>
+        <td>
+          4997
+        </td>
+        <td>
+          3875
+          -
+          3878
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          1.0
+        </td>
+      </tr><tr>
+        <td>
+          105
+        </td>
+        <td>
+          5000
+        </td>
+        <td>
+          4038
+          -
+          4071
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.BooleanProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.legendScreenVisible.value_=(false)
+        </td>
+      </tr><tr>
+        <td>
+          105
+        </td>
+        <td>
+          4999
+        </td>
+        <td>
+          4011
+          -
+          4036
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyBooleanProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.legendScreenVisible.value
+        </td>
+      </tr><tr>
+        <td>
+          105
+        </td>
+        <td>
+          5002
+        </td>
+        <td>
+          4007
+          -
+          4007
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          105
+        </td>
+        <td>
+          5001
+        </td>
+        <td>
+          4038
+          -
+          4071
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          scalafx.beans.property.BooleanProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.legendScreenVisible.value_=(false)
+        </td>
+      </tr><tr>
+        <td>
+          105
+        </td>
+        <td>
+          5003
+        </td>
+        <td>
+          4007
+          -
+          4007
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          106
+        </td>
+        <td>
+          5005
+        </td>
+        <td>
+          4076
+          -
+          4134
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.BooleanProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.controlsScreenVisible.value_=(MainScene.this.controlsScreenVisible.value.unary_!)
+        </td>
+      </tr><tr>
+        <td>
+          106
+        </td>
+        <td>
+          5004
+        </td>
+        <td>
+          4106
+          -
+          4134
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.controlsScreenVisible.value.unary_!
+        </td>
+      </tr><tr>
+        <td>
+          107
+        </td>
+        <td>
+          5009
+        </td>
+        <td>
+          4202
+          -
+          4205
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          1.0
+        </td>
+      </tr><tr>
+        <td>
+          107
+        </td>
+        <td>
+          5008
+        </td>
+        <td>
+          4193
+          -
+          4196
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          0.3
+        </td>
+      </tr><tr>
+        <td>
+          107
+        </td>
+        <td>
+          5011
+        </td>
+        <td>
+          4139
+          -
+          4205
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.opacity_=
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.background.opacity_=(if (MainScene.this.controlsScreenVisible.value)
+  0.3
+else
+  1.0)
+        </td>
+      </tr><tr>
+        <td>
+          107
+        </td>
+        <td>
+          5007
+        </td>
+        <td>
+          4193
+          -
+          4196
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          0.3
+        </td>
+      </tr><tr>
+        <td>
+          107
+        </td>
+        <td>
+          5010
+        </td>
+        <td>
+          4202
+          -
+          4205
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          1.0
+        </td>
+      </tr><tr>
+        <td>
+          107
+        </td>
+        <td>
+          5006
+        </td>
+        <td>
+          4164
+          -
+          4191
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyBooleanProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.controlsScreenVisible.value
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

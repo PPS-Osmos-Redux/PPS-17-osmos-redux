@@ -1,0 +1,434 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/ecs/systems/AbstractSystem2.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.systems
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.ecs.entities.EMEvents.{EntityCreated, EntityDeleted}
+</span>4 <span style=''>import it.unibo.osmos.redux.ecs.entities._
+</span>5 <span style=''>import it.unibo.osmos.redux.ecs.entities.properties.basic.Property
+</span>6 <span style=''>
+</span>7 <span style=''>import scala.collection.mutable.ListBuffer
+</span>8 <span style=''>import scala.reflect.ClassTag
+</span>9 <span style=''>
+</span>10 <span style=''>/**
+</span>11 <span style=''>  * Abstract system with two type of generic entity.
+</span>12 <span style=''>  * The lists of entity are not exclusive
+</span>13 <span style=''>  */
+</span>14 <span style=''>abstract class AbstractSystem2[T &lt;: Property : ClassTag, R &lt;: Property : ClassTag]
+</span>15 <span style=''>  extends AbstractSystem[T] with Observer with System {
+</span>16 <span style=''>
+</span>17 <span style=''>  /** The entity list with property of type R.
+</span>18 <span style=''>    * An entity with property of type T could be also in this list
+</span>19 <span style=''>    */
+</span>20 <span style=''>  protected val entitiesSecondType: ListBuffer[R] = </span><span style='background: #AEF1AE'>ListBuffer()</span><span style=''>
+</span>21 <span style=''>
+</span>22 <span style=''>  </span><span style='background: #AEF1AE'>EntityManager.subscribe(this, implicitly[ClassTag[R]].runtimeClass.asInstanceOf[Class[R]])</span><span style=''>
+</span>23 <span style=''>
+</span>24 <span style=''>  override def notify(event: EMEvents.EntityManagerEvent): Unit = {
+</span>25 <span style=''>    </span><span style='background: #AEF1AE'>event.entity</span><span style=''> match {
+</span>26 <span style=''>      case _: R =&gt;
+</span>27 <span style=''>        event match {
+</span>28 <span style=''>          case event: EntityCreated if </span><span style='background: #AEF1AE'>!entitiesSecondType.contains(event.entity)</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>entitiesSecondType += event.entity.asInstanceOf[R]</span><span style=''>
+</span>29 <span style=''>          case event: EntityDeleted if </span><span style='background: #AEF1AE'>entitiesSecondType.contains(event.entity)</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>entitiesSecondType -= event.entity.asInstanceOf[R]</span><span style=''>
+</span>30 <span style=''>          //the event is already managed so the event is duplicated, perhaps it is for the other type of entity
+</span>31 <span style=''>          case _ =&gt; </span><span style='background: #AEF1AE'>super.notify(event)</span><span style=''>
+</span>32 <span style=''>        }
+</span>33 <span style=''>      case _ =&gt; </span><span style='background: #AEF1AE'>super.notify(event)</span><span style=''>
+</span>34 <span style=''>    }
+</span>35 <span style=''>  }
+</span>36 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          460
+        </td>
+        <td>
+          725
+          -
+          737
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.collection.mutable.ListBuffer.apply[R]()
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          463
+        </td>
+        <td>
+          741
+          -
+          831
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityManager.subscribe
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.entities.EntityManager.subscribe(this, scala.Predef.implicitly[scala.reflect.ClassTag[R]](AbstractSystem2.this.evidence$2).runtimeClass.asInstanceOf[Class[R]])
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          462
+        </td>
+        <td>
+          771
+          -
+          830
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.Any.asInstanceOf
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Predef.implicitly[scala.reflect.ClassTag[R]](AbstractSystem2.this.evidence$2).runtimeClass.asInstanceOf[Class[R]]
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          461
+        </td>
+        <td>
+          781
+          -
+          781
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.AbstractSystem2.evidence$2
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractSystem2.this.evidence$2
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          464
+        </td>
+        <td>
+          905
+          -
+          917
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EMEvents.EntityManagerEvent.entity
+        </td>
+        <td style="background: #AEF1AE">
+          event.entity
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          469
+        </td>
+        <td>
+          1071
+          -
+          1071
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          465
+        </td>
+        <td>
+          1035
+          -
+          1047
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EMEvents.EntityCreated.entity
+        </td>
+        <td style="background: #AEF1AE">
+          event.entity
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          468
+        </td>
+        <td>
+          1052
+          -
+          1102
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.mutable.ListBuffer.+=
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractSystem2.this.entitiesSecondType.+=(event.entity.asInstanceOf[R])
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          467
+        </td>
+        <td>
+          1074
+          -
+          1102
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.Any.asInstanceOf
+        </td>
+        <td style="background: #AEF1AE">
+          event.entity.asInstanceOf[R]
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          466
+        </td>
+        <td>
+          1006
+          -
+          1048
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractSystem2.this.entitiesSecondType.contains[it.unibo.osmos.redux.ecs.entities.properties.basic.Property](event.entity).unary_!
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          472
+        </td>
+        <td>
+          1209
+          -
+          1237
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.Any.asInstanceOf
+        </td>
+        <td style="background: #AEF1AE">
+          event.entity.asInstanceOf[R]
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          474
+        </td>
+        <td>
+          1206
+          -
+          1206
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          471
+        </td>
+        <td>
+          1142
+          -
+          1183
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.SeqForwarder.contains
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractSystem2.this.entitiesSecondType.contains[it.unibo.osmos.redux.ecs.entities.properties.basic.Property](event.entity)
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          470
+        </td>
+        <td>
+          1170
+          -
+          1182
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EMEvents.EntityDeleted.entity
+        </td>
+        <td style="background: #AEF1AE">
+          event.entity
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          473
+        </td>
+        <td>
+          1187
+          -
+          1237
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.mutable.ListBuffer.-=
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractSystem2.this.entitiesSecondType.-=(event.entity.asInstanceOf[R])
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          475
+        </td>
+        <td>
+          1370
+          -
+          1389
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.AbstractSystem.notify
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractSystem2.super.notify(event)
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          476
+        </td>
+        <td>
+          1416
+          -
+          1435
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.AbstractSystem.notify
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractSystem2.super.notify(event)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

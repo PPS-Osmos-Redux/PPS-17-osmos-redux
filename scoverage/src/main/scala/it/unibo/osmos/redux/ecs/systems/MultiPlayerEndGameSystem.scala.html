@@ -1,0 +1,1138 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/ecs/systems/MultiPlayerEndGameSystem.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.systems
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.ecs.entities.PlayerCellEntity
+</span>4 <span style=''>import it.unibo.osmos.redux.ecs.entities.properties.composed.DeathProperty
+</span>5 <span style=''>import it.unibo.osmos.redux.ecs.systems.victoryconditions.AbsorbAllOtherPlayersCondition
+</span>6 <span style=''>import it.unibo.osmos.redux.multiplayer.server.Server
+</span>7 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.VictoryRules
+</span>8 <span style=''>import it.unibo.osmos.redux.mvc.view.context.GameStateHolder
+</span>9 <span style=''>import it.unibo.osmos.redux.mvc.view.events.{GameLost, GameLostAsServer, GamePending, GameWon}
+</span>10 <span style=''>
+</span>11 <span style=''>/** System managing the level's ending rules for multi-player matches
+</span>12 <span style=''>  *
+</span>13 <span style=''>  * @param levelContext object to notify the view of the end game result
+</span>14 <span style=''>  * @param victoryRules enumeration representing the level's victory rules
+</span>15 <span style=''>  */
+</span>16 <span style=''>case class MultiPlayerEndGameSystem(server: Server, levelContext: GameStateHolder, victoryRules: VictoryRules.Value) extends AbstractSystem2[PlayerCellEntity, DeathProperty] {
+</span>17 <span style=''>
+</span>18 <span style=''>  private val victoryCondition = </span><span style='background: #F0ADAD'>victoryRules</span><span style=''> match {
+</span>19 <span style=''>    case VictoryRules.absorbAllOtherPlayers =&gt; </span><span style='background: #F0ADAD'>AbsorbAllOtherPlayersCondition()</span><span style=''>
+</span>20 <span style=''>    case _ =&gt; </span><span style='background: #F0ADAD'>throw new NotImplementedError()</span><span style=''>
+</span>21 <span style=''>  }
+</span>22 <span style=''>
+</span>23 <span style=''>  override def update(): Unit = {
+</span>24 <span style=''>    if (</span><span style='background: #F0ADAD'>isGameRunning</span><span style=''>) </span><span style='background: #F0ADAD'>{
+</span>25 <span style=''></span><span style='background: #F0ADAD'>      val (alivePlayers, deadPlayers) = server.getLobbyPlayers.filter(_.isAlive) partition (p =&gt; entities.map(_.getUUID) contains p.getUUID)
+</span>26 <span style=''></span><span style='background: #F0ADAD'>      val aliveCells = entitiesSecondType.filterNot(c =&gt; deadPlayers.map(_.getUUID) contains c.getUUID)
+</span>27 <span style=''></span><span style='background: #F0ADAD'>
+</span>28 <span style=''></span><span style='background: #F0ADAD'>      //check
+</span>29 <span style=''></span><span style='background: #F0ADAD'>      for (
+</span>30 <span style=''></span><span style='background: #F0ADAD'>        (player, _, isServer) &lt;- alivePlayers
+</span>31 <span style=''></span><span style='background: #F0ADAD'>          .map(i =&gt; (i, entities.find(_.getUUID == i.getUUID), i.getUUID == server.getUUID)) //get player, cell and isServer
+</span>32 <span style=''></span><span style='background: #F0ADAD'>          .filter(i =&gt; i._2.nonEmpty &amp;&amp; victoryCondition.check(i._2.get, aliveCells)) //filter only players that have won
+</span>33 <span style=''></span><span style='background: #F0ADAD'>        if isGameRunning //when a winner is found do not check other players
+</span>34 <span style=''></span><span style='background: #F0ADAD'>      ) yield {
+</span>35 <span style=''></span><span style='background: #F0ADAD'>        //DEBUG ONLY: Logger.log(s&quot;Victory detected for: ${player.getUsername} - ${player.getUUID} (server: $isServer)&quot;)(&quot;MultiPlayerEndGameSystem&quot;)
+</span>36 <span style=''></span><span style='background: #F0ADAD'>        if (isServer) {
+</span>37 <span style=''></span><span style='background: #F0ADAD'>          server.stopGame()
+</span>38 <span style=''></span><span style='background: #F0ADAD'>          levelContext.notify(GameWon)
+</span>39 <span style=''></span><span style='background: #F0ADAD'>        } else {
+</span>40 <span style=''></span><span style='background: #F0ADAD'>          server.stopGame(player.getUsername)
+</span>41 <span style=''></span><span style='background: #F0ADAD'>          levelContext.notify(GameLost)
+</span>42 <span style=''></span><span style='background: #F0ADAD'>        }
+</span>43 <span style=''></span><span style='background: #F0ADAD'>      }
+</span>44 <span style=''></span><span style='background: #F0ADAD'>
+</span>45 <span style=''></span><span style='background: #F0ADAD'>      //notify all dead players and remove them
+</span>46 <span style=''></span><span style='background: #F0ADAD'>      if (isGameRunning) {
+</span>47 <span style=''></span><span style='background: #F0ADAD'>        deadPlayers.foreach(p =&gt; {
+</span>48 <span style=''></span><span style='background: #F0ADAD'>          //check if the server died
+</span>49 <span style=''></span><span style='background: #F0ADAD'>          val isServer = p.getUsername == server.getUsername
+</span>50 <span style=''></span><span style='background: #F0ADAD'>          //remove player from game and notify it (only if it's not the server itself)
+</span>51 <span style=''></span><span style='background: #F0ADAD'>          server.removePlayerFromGame(p.getUsername, !isServer)
+</span>52 <span style=''></span><span style='background: #F0ADAD'>          //if the server lost show the alternate UI
+</span>53 <span style=''></span><span style='background: #F0ADAD'>          if (isServer) levelContext.notify(GameLostAsServer)
+</span>54 <span style=''></span><span style='background: #F0ADAD'>        })
+</span>55 <span style=''></span><span style='background: #F0ADAD'>      }
+</span>56 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
+</span>57 <span style=''>  }
+</span>58 <span style=''>
+</span>59 <span style=''>  private def isGameRunning: Boolean = </span><span style='background: #F0ADAD'>levelContext.gameCurrentState == GamePending || levelContext.gameCurrentState == GameLostAsServer</span><span style=''>
+</span>60 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          727
+        </td>
+        <td>
+          985
+          -
+          997
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.MultiPlayerEndGameSystem.victoryRules
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerEndGameSystem.this.victoryRules
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          728
+        </td>
+        <td>
+          1053
+          -
+          1085
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.victoryconditions.AbsorbAllOtherPlayersCondition.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.systems.victoryconditions.AbsorbAllOtherPlayersCondition.apply()
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          729
+        </td>
+        <td>
+          1100
+          -
+          1131
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.NotImplementedError()
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          768
+        </td>
+        <td>
+          1175
+          -
+          1175
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          767
+        </td>
+        <td>
+          1175
+          -
+          1175
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          766
+        </td>
+        <td>
+          1194
+          -
+          2714
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          {
+  &lt;synthetic&gt; &lt;artifact&gt; private[this] val x$3: (Seq[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer], Seq[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer]) = (MultiPlayerEndGameSystem.this.server.getLobbyPlayers.filter(((x$1: it.unibo.osmos.redux.multiplayer.players.ReferablePlayer) =&gt; x$1.isAlive)).partition(((p: it.unibo.osmos.redux.multiplayer.players.ReferablePlayer) =&gt; MultiPlayerEndGameSystem.this.entities.map[String, scala.collection.mutable.ListBuffer[String]](((x$2: it.unibo.osmos.redux.ecs.entities.PlayerCellEntity) =&gt; x$2.getUUID))(mutable.this.ListBuffer.canBuildFrom[String]).contains[String](p.getUUID))): (Seq[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer], Seq[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer]) @unchecked) match {
+    case (_1: Seq[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer], _2: Seq[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer])(Seq[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer], Seq[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer])((alivePlayers @ _), (deadPlayers @ _)) =&gt; scala.Tuple2.apply[Seq[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer], Seq[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer]](alivePlayers, deadPlayers)
+  };
+  val alivePlayers: Seq[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer] = x$3._1;
+  val deadPlayers: Seq[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer] = x$3._2;
+  val aliveCells: scala.collection.mutable.ListBuffer[it.unibo.osmos.redux.ecs.entities.properties.composed.DeathProperty] = MultiPlayerEndGameSystem.this.entitiesSecondType.filterNot(((c: it.unibo.osmos.redux.ecs.entities.properties.composed.DeathProperty) =&gt; deadPlayers.map[String, Seq[String]](((x$4: it.unibo.osmos.redux.multiplayer.players.ReferablePlayer) =&gt; x$4.getUUID))(collection.this.Seq.canBuildFrom[String]).contains[String](c.getUUID)));
+  alivePlayers.map[(it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean), Seq[(it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean)]](((i: it.unibo.osmos.redux.multiplayer.players.ReferablePlayer) =&gt; scala.Tuple3.apply[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean](i, MultiPlayerEndGameSystem.this.entities.find(((x$5: it.unibo.osmos.redux.ecs.entities.PlayerCellEntity) =&gt; x$5.getUUID.==(i.getUUID))), i.getUUID.==(MultiPlayerEndGameSystem.this.server.getUUID))))(collection.this.Seq.canBuildFrom[(it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean)]).filter(((i: (it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean)) =&gt; i._2.nonEmpty.&amp;&amp;(MultiPlayerEndGameSystem.this.victoryCondition.check(i._2.get, aliveCells)))).withFilter(((check$ifrefutable$1: (it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean)) =&gt; (check$ifrefutable$1: (it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean) @unchecked) match {
+  case (_1: it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, _2: Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], _3: Boolean)(it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean)((player @ _), _, (isServer @ _)) =&gt; true
+  case _ =&gt; false
+})).withFilter(((x$6: (it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean)) =&gt; (x$6: (it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean) @unchecked) match {
+  case (_1: it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, _2: Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], _3: Boolean)(it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean)((player @ _), _, (isServer @ _)) =&gt; MultiPlayerEndGameSystem.this.isGameRunning
+})).map[Unit, Seq[Unit]](((x$7: (it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean)) =&gt; (x$7: (it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean) @unchecked) match {
+    case (_1: it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, _2: Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], _3: Boolean)(it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean)((player @ _), _, (isServer @ _)) =&gt; if (isServer)
+      {
+        MultiPlayerEndGameSystem.this.server.stopGame(MultiPlayerEndGameSystem.this.server.stopGame$default$1);
+        MultiPlayerEndGameSystem.this.levelContext.notify(it.unibo.osmos.redux.mvc.view.events.GameWon)
+      }
+    else
+      {
+        MultiPlayerEndGameSystem.this.server.stopGame(player.getUsername);
+        MultiPlayerEndGameSystem.this.levelContext.notify(it.unibo.osmos.redux.mvc.view.events.GameLost)
+      }
+  }))(collection.this.Seq.canBuildFrom[Unit]);
+  if (MultiPlayerEndGameSystem.this.isGameRunning)
+    deadPlayers.foreach[Unit](((p: it.unibo.osmos.redux.multiplayer.players.ReferablePlayer) =&gt; {
+      val isServer: Boolean = p.getUsername.==(MultiPlayerEndGameSystem.this.server.getUsername);
+      MultiPlayerEndGameSystem.this.server.removePlayerFromGame(p.getUsername, isServer.unary_!);
+      if (isServer)
+        MultiPlayerEndGameSystem.this.levelContext.notify(it.unibo.osmos.redux.mvc.view.events.GameLostAsServer)
+      else
+        ()
+    }))
+  else
+    ()
+}
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          730
+        </td>
+        <td>
+          1179
+          -
+          1192
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.MultiPlayerEndGameSystem.isGameRunning
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerEndGameSystem.this.isGameRunning
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          732
+        </td>
+        <td>
+          1221
+          -
+          1221
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._2
+        </td>
+        <td style="background: #F0ADAD">
+          x$3._2
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          731
+        </td>
+        <td>
+          1207
+          -
+          1207
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._1
+        </td>
+        <td style="background: #F0ADAD">
+          x$3._1
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          735
+        </td>
+        <td>
+          1430
+          -
+          1439
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Property.getUUID
+        </td>
+        <td style="background: #F0ADAD">
+          c.getUUID
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          737
+        </td>
+        <td>
+          1360
+          -
+          1440
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.TraversableLike.filterNot
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerEndGameSystem.this.entitiesSecondType.filterNot(((c: it.unibo.osmos.redux.ecs.entities.properties.composed.DeathProperty) =&gt; deadPlayers.map[String, Seq[String]](((x$4: it.unibo.osmos.redux.multiplayer.players.ReferablePlayer) =&gt; x$4.getUUID))(collection.this.Seq.canBuildFrom[String]).contains[String](c.getUUID)))
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          734
+        </td>
+        <td>
+          1409
+          -
+          1409
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.Seq.canBuildFrom
+        </td>
+        <td style="background: #F0ADAD">
+          collection.this.Seq.canBuildFrom[String]
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          733
+        </td>
+        <td>
+          1410
+          -
+          1419
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.Referable.getUUID
+        </td>
+        <td style="background: #F0ADAD">
+          x$4.getUUID
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          736
+        </td>
+        <td>
+          1394
+          -
+          1439
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.SeqLike.contains
+        </td>
+        <td style="background: #F0ADAD">
+          deadPlayers.map[String, Seq[String]](((x$4: it.unibo.osmos.redux.multiplayer.players.ReferablePlayer) =&gt; x$4.getUUID))(collection.this.Seq.canBuildFrom[String]).contains[String](c.getUUID)
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          750
+        </td>
+        <td>
+          1462
+          -
+          2206
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.generic.FilterMonadic.map
+        </td>
+        <td style="background: #F0ADAD">
+          alivePlayers.map[(it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean), Seq[(it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean)]](((i: it.unibo.osmos.redux.multiplayer.players.ReferablePlayer) =&gt; scala.Tuple3.apply[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean](i, MultiPlayerEndGameSystem.this.entities.find(((x$5: it.unibo.osmos.redux.ecs.entities.PlayerCellEntity) =&gt; x$5.getUUID.==(i.getUUID))), i.getUUID.==(MultiPlayerEndGameSystem.this.server.getUUID))))(collection.this.Seq.canBuildFrom[(it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean)]).filter(((i: (it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean)) =&gt; i._2.nonEmpty.&amp;&amp;(MultiPlayerEndGameSystem.this.victoryCondition.check(i._2.get, aliveCells)))).withFilter(((check$ifrefutable$1: (it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean)) =&gt; (check$ifrefutable$1: (it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean) @unchecked) match {
+  case (_1: it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, _2: Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], _3: Boolean)(it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean)((player @ _), _, (isServer @ _)) =&gt; true
+  case _ =&gt; false
+})).withFilter(((x$6: (it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean)) =&gt; (x$6: (it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean) @unchecked) match {
+  case (_1: it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, _2: Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], _3: Boolean)(it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean)((player @ _), _, (isServer @ _)) =&gt; MultiPlayerEndGameSystem.this.isGameRunning
+})).map[Unit, Seq[Unit]](((x$7: (it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean)) =&gt; (x$7: (it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean) @unchecked) match {
+  case (_1: it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, _2: Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], _3: Boolean)(it.unibo.osmos.redux.multiplayer.players.ReferablePlayer, Option[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity], Boolean)((player @ _), _, (isServer @ _)) =&gt; if (isServer)
+    {
+      MultiPlayerEndGameSystem.this.server.stopGame(MultiPlayerEndGameSystem.this.server.stopGame$default$1);
+      MultiPlayerEndGameSystem.this.levelContext.notify(it.unibo.osmos.redux.mvc.view.events.GameWon)
+    }
+  else
+    {
+      MultiPlayerEndGameSystem.this.server.stopGame(player.getUsername);
+      MultiPlayerEndGameSystem.this.levelContext.notify(it.unibo.osmos.redux.mvc.view.events.GameLost)
+    }
+}))(collection.this.Seq.canBuildFrom[Unit])
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          749
+        </td>
+        <td>
+          1498
+          -
+          1498
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.Seq.canBuildFrom
+        </td>
+        <td style="background: #F0ADAD">
+          collection.this.Seq.canBuildFrom[Unit]
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          738
+        </td>
+        <td>
+          1772
+          -
+          1785
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.MultiPlayerEndGameSystem.isGameRunning
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerEndGameSystem.this.isGameRunning
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          743
+        </td>
+        <td>
+          2025
+          -
+          2103
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          {
+  MultiPlayerEndGameSystem.this.server.stopGame(MultiPlayerEndGameSystem.this.server.stopGame$default$1);
+  MultiPlayerEndGameSystem.this.levelContext.notify(it.unibo.osmos.redux.mvc.view.events.GameWon)
+}
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          740
+        </td>
+        <td>
+          2037
+          -
+          2054
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.stopGame
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerEndGameSystem.this.server.stopGame(MultiPlayerEndGameSystem.this.server.stopGame$default$1)
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          739
+        </td>
+        <td>
+          2044
+          -
+          2044
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.stopGame$default$1
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerEndGameSystem.this.server.stopGame$default$1
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          741
+        </td>
+        <td>
+          2085
+          -
+          2092
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.GameWon
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.events.GameWon
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          742
+        </td>
+        <td>
+          2065
+          -
+          2093
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver.notify
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerEndGameSystem.this.levelContext.notify(it.unibo.osmos.redux.mvc.view.events.GameWon)
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          748
+        </td>
+        <td>
+          2109
+          -
+          2206
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          {
+  MultiPlayerEndGameSystem.this.server.stopGame(player.getUsername);
+  MultiPlayerEndGameSystem.this.levelContext.notify(it.unibo.osmos.redux.mvc.view.events.GameLost)
+}
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          744
+        </td>
+        <td>
+          2137
+          -
+          2155
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.BasePlayer.getUsername
+        </td>
+        <td style="background: #F0ADAD">
+          player.getUsername
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          745
+        </td>
+        <td>
+          2121
+          -
+          2156
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.stopGame
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerEndGameSystem.this.server.stopGame(player.getUsername)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          747
+        </td>
+        <td>
+          2167
+          -
+          2196
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver.notify
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerEndGameSystem.this.levelContext.notify(it.unibo.osmos.redux.mvc.view.events.GameLost)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          746
+        </td>
+        <td>
+          2187
+          -
+          2195
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.GameLost
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.events.GameLost
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          765
+        </td>
+        <td>
+          2270
+          -
+          2270
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          764
+        </td>
+        <td>
+          2270
+          -
+          2270
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          751
+        </td>
+        <td>
+          2274
+          -
+          2287
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.MultiPlayerEndGameSystem.isGameRunning
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerEndGameSystem.this.isGameRunning
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          762
+        </td>
+        <td>
+          2299
+          -
+          2700
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.IterableLike.foreach
+        </td>
+        <td style="background: #F0ADAD">
+          deadPlayers.foreach[Unit](((p: it.unibo.osmos.redux.multiplayer.players.ReferablePlayer) =&gt; {
+  val isServer: Boolean = p.getUsername.==(MultiPlayerEndGameSystem.this.server.getUsername);
+  MultiPlayerEndGameSystem.this.server.removePlayerFromGame(p.getUsername, isServer.unary_!);
+  if (isServer)
+    MultiPlayerEndGameSystem.this.levelContext.notify(it.unibo.osmos.redux.mvc.view.events.GameLostAsServer)
+  else
+    ()
+}))
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          763
+        </td>
+        <td>
+          2299
+          -
+          2700
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          scala.collection.IterableLike.foreach
+        </td>
+        <td style="background: #F0ADAD">
+          deadPlayers.foreach[Unit](((p: it.unibo.osmos.redux.multiplayer.players.ReferablePlayer) =&gt; {
+  val isServer: Boolean = p.getUsername.==(MultiPlayerEndGameSystem.this.server.getUsername);
+  MultiPlayerEndGameSystem.this.server.removePlayerFromGame(p.getUsername, isServer.unary_!);
+  if (isServer)
+    MultiPlayerEndGameSystem.this.levelContext.notify(it.unibo.osmos.redux.mvc.view.events.GameLostAsServer)
+  else
+    ()
+}))
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          753
+        </td>
+        <td>
+          2388
+          -
+          2423
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.==
+        </td>
+        <td style="background: #F0ADAD">
+          p.getUsername.==(MultiPlayerEndGameSystem.this.server.getUsername)
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          752
+        </td>
+        <td>
+          2405
+          -
+          2423
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.getUsername
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerEndGameSystem.this.server.getUsername
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          756
+        </td>
+        <td>
+          2521
+          -
+          2574
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.removePlayerFromGame
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerEndGameSystem.this.server.removePlayerFromGame(p.getUsername, isServer.unary_!)
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          755
+        </td>
+        <td>
+          2564
+          -
+          2573
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #F0ADAD">
+          isServer.unary_!
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          754
+        </td>
+        <td>
+          2549
+          -
+          2562
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.BasePlayer.getUsername
+        </td>
+        <td style="background: #F0ADAD">
+          p.getUsername
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          759
+        </td>
+        <td>
+          2652
+          -
+          2689
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver.notify
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerEndGameSystem.this.levelContext.notify(it.unibo.osmos.redux.mvc.view.events.GameLostAsServer)
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          761
+        </td>
+        <td>
+          2638
+          -
+          2638
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          758
+        </td>
+        <td>
+          2652
+          -
+          2689
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver.notify
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerEndGameSystem.this.levelContext.notify(it.unibo.osmos.redux.mvc.view.events.GameLostAsServer)
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          757
+        </td>
+        <td>
+          2672
+          -
+          2688
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.GameLostAsServer
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.events.GameLostAsServer
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          760
+        </td>
+        <td>
+          2638
+          -
+          2638
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          771
+        </td>
+        <td>
+          2807
+          -
+          2856
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.==
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerEndGameSystem.this.levelContext.gameCurrentState.==(it.unibo.osmos.redux.mvc.view.events.GameLostAsServer)
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          770
+        </td>
+        <td>
+          2840
+          -
+          2856
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.GameLostAsServer
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.events.GameLostAsServer
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          769
+        </td>
+        <td>
+          2792
+          -
+          2803
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.GamePending
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.events.GamePending
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          772
+        </td>
+        <td>
+          2759
+          -
+          2856
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.||
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerEndGameSystem.this.levelContext.gameCurrentState.==(it.unibo.osmos.redux.mvc.view.events.GamePending).||(MultiPlayerEndGameSystem.this.levelContext.gameCurrentState.==(it.unibo.osmos.redux.mvc.view.events.GameLostAsServer))
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

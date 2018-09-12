@@ -1,0 +1,635 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/ecs/systems/EndGameSystem.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.systems
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.ecs.entities.properties.composed.DeathProperty
+</span>4 <span style=''>import it.unibo.osmos.redux.ecs.entities.{EntityType, PlayerCellEntity}
+</span>5 <span style=''>import it.unibo.osmos.redux.ecs.systems.victoryconditions.{AbsorbCellsWithTypeVictoryCondition, BecomeHugeVictoryCondition, BecomeTheBiggestVictoryCondition}
+</span>6 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.VictoryRules
+</span>7 <span style=''>import it.unibo.osmos.redux.mvc.view.context.GameStateHolder
+</span>8 <span style=''>import it.unibo.osmos.redux.mvc.view.events.{GameLost, GamePending, GameWon}
+</span>9 <span style=''>
+</span>10 <span style=''>/** System managing the level's ending rules
+</span>11 <span style=''>  *
+</span>12 <span style=''>  * @param levelContext object to notify the view of the end game result
+</span>13 <span style=''>  * @param victoryRules enumeration representing the level's victory rules
+</span>14 <span style=''>  */
+</span>15 <span style=''>case class EndGameSystem(levelContext: GameStateHolder, victoryRules: VictoryRules.Value) extends AbstractSystem2[PlayerCellEntity, DeathProperty] {
+</span>16 <span style=''>
+</span>17 <span style=''>  private val victoryCondition = </span><span style='background: #AEF1AE'>victoryRules</span><span style=''> match {
+</span>18 <span style=''>    case VictoryRules.becomeTheBiggest =&gt; </span><span style='background: #AEF1AE'>BecomeTheBiggestVictoryCondition()</span><span style=''>
+</span>19 <span style=''>    case VictoryRules.becomeHuge =&gt; </span><span style='background: #AEF1AE'>BecomeHugeVictoryCondition()</span><span style=''>
+</span>20 <span style=''>    case VictoryRules.absorbTheRepulsors =&gt; </span><span style='background: #F0ADAD'>AbsorbCellsWithTypeVictoryCondition(EntityType.Repulsive)</span><span style=''>
+</span>21 <span style=''>    case VictoryRules.absorbTheHostileCells =&gt; </span><span style='background: #AEF1AE'>AbsorbCellsWithTypeVictoryCondition(EntityType.Sentient)</span><span style=''>
+</span>22 <span style=''>    case _ =&gt; </span><span style='background: #F0ADAD'>throw new NotImplementedError()</span><span style=''>
+</span>23 <span style=''>  }
+</span>24 <span style=''>
+</span>25 <span style=''>  override def update(): Unit = {
+</span>26 <span style=''>    if (</span><span style='background: #AEF1AE'>levelContext.gameCurrentState == GamePending</span><span style=''>) {
+</span>27 <span style=''>      </span><span style='background: #AEF1AE'>if (entities isEmpty) {
+</span>28 <span style=''></span><span style='background: #AEF1AE'>        levelContext.notify(GameLost)
+</span>29 <span style=''></span><span style='background: #AEF1AE'>      } else {
+</span>30 <span style=''></span><span style='background: #AEF1AE'>        entities foreach (playerEntity =&gt; {
+</span>31 <span style=''></span><span style='background: #AEF1AE'>          if (victoryCondition.check(playerEntity, entitiesSecondType)) levelContext.notify(GameWon)
+</span>32 <span style=''></span><span style='background: #AEF1AE'>        })
+</span>33 <span style=''></span><span style='background: #AEF1AE'>      }</span><span style=''>
+</span>34 <span style=''>    }
+</span>35 <span style=''>  }
+</span>36 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          620
+        </td>
+        <td>
+          944
+          -
+          956
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.EndGameSystem.victoryRules
+        </td>
+        <td style="background: #AEF1AE">
+          EndGameSystem.this.victoryRules
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          621
+        </td>
+        <td>
+          1007
+          -
+          1041
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.victoryconditions.BecomeTheBiggestVictoryCondition.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.systems.victoryconditions.BecomeTheBiggestVictoryCondition.apply()
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          622
+        </td>
+        <td>
+          1078
+          -
+          1106
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.victoryconditions.BecomeHugeVictoryCondition.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.systems.victoryconditions.BecomeHugeVictoryCondition.apply()
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          624
+        </td>
+        <td>
+          1151
+          -
+          1208
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.victoryconditions.AbsorbCellsWithTypeVictoryCondition.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.systems.victoryconditions.AbsorbCellsWithTypeVictoryCondition.apply(it.unibo.osmos.redux.ecs.entities.EntityType.Repulsive)
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          623
+        </td>
+        <td>
+          1187
+          -
+          1207
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityType.Repulsive
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.entities.EntityType.Repulsive
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          626
+        </td>
+        <td>
+          1256
+          -
+          1312
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.victoryconditions.AbsorbCellsWithTypeVictoryCondition.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.systems.victoryconditions.AbsorbCellsWithTypeVictoryCondition.apply(it.unibo.osmos.redux.ecs.entities.EntityType.Sentient)
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          625
+        </td>
+        <td>
+          1292
+          -
+          1311
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityType.Sentient
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.entities.EntityType.Sentient
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          627
+        </td>
+        <td>
+          1327
+          -
+          1358
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.NotImplementedError()
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          645
+        </td>
+        <td>
+          1402
+          -
+          1402
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          644
+        </td>
+        <td>
+          1402
+          -
+          1402
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          629
+        </td>
+        <td>
+          1406
+          -
+          1450
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.==
+        </td>
+        <td style="background: #AEF1AE">
+          EndGameSystem.this.levelContext.gameCurrentState.==(it.unibo.osmos.redux.mvc.view.events.GamePending)
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          628
+        </td>
+        <td>
+          1439
+          -
+          1450
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.GamePending
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.view.events.GamePending
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          630
+        </td>
+        <td>
+          1464
+          -
+          1480
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.mutable.ListBuffer.isEmpty
+        </td>
+        <td style="background: #AEF1AE">
+          EndGameSystem.this.entities.isEmpty
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          643
+        </td>
+        <td>
+          1460
+          -
+          1700
+        </td>
+        <td>
+          If
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          if (EndGameSystem.this.entities.isEmpty)
+  EndGameSystem.this.levelContext.notify(it.unibo.osmos.redux.mvc.view.events.GameLost)
+else
+  EndGameSystem.this.entities.foreach[Unit](((playerEntity: it.unibo.osmos.redux.ecs.entities.PlayerCellEntity) =&gt; if (EndGameSystem.this.victoryCondition.check(playerEntity, EndGameSystem.this.entitiesSecondType))
+    EndGameSystem.this.levelContext.notify(it.unibo.osmos.redux.mvc.view.events.GameWon)
+  else
+    ()))
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          633
+        </td>
+        <td>
+          1492
+          -
+          1521
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver.notify
+        </td>
+        <td style="background: #AEF1AE">
+          EndGameSystem.this.levelContext.notify(it.unibo.osmos.redux.mvc.view.events.GameLost)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          632
+        </td>
+        <td>
+          1492
+          -
+          1521
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver.notify
+        </td>
+        <td style="background: #AEF1AE">
+          EndGameSystem.this.levelContext.notify(it.unibo.osmos.redux.mvc.view.events.GameLost)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          631
+        </td>
+        <td>
+          1512
+          -
+          1520
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.GameLost
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.view.events.GameLost
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          642
+        </td>
+        <td>
+          1545
+          -
+          1692
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          scala.collection.generic.TraversableForwarder.foreach
+        </td>
+        <td style="background: #AEF1AE">
+          EndGameSystem.this.entities.foreach[Unit](((playerEntity: it.unibo.osmos.redux.ecs.entities.PlayerCellEntity) =&gt; if (EndGameSystem.this.victoryCondition.check(playerEntity, EndGameSystem.this.entitiesSecondType))
+  EndGameSystem.this.levelContext.notify(it.unibo.osmos.redux.mvc.view.events.GameWon)
+else
+  ()))
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          641
+        </td>
+        <td>
+          1545
+          -
+          1692
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.TraversableForwarder.foreach
+        </td>
+        <td style="background: #AEF1AE">
+          EndGameSystem.this.entities.foreach[Unit](((playerEntity: it.unibo.osmos.redux.ecs.entities.PlayerCellEntity) =&gt; if (EndGameSystem.this.victoryCondition.check(playerEntity, EndGameSystem.this.entitiesSecondType))
+  EndGameSystem.this.levelContext.notify(it.unibo.osmos.redux.mvc.view.events.GameWon)
+else
+  ()))
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          636
+        </td>
+        <td>
+          1673
+          -
+          1680
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.GameWon
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.view.events.GameWon
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          639
+        </td>
+        <td>
+          1591
+          -
+          1591
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          635
+        </td>
+        <td>
+          1595
+          -
+          1651
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.victoryconditions.AbstractVictoryCondition.check
+        </td>
+        <td style="background: #AEF1AE">
+          EndGameSystem.this.victoryCondition.check(playerEntity, EndGameSystem.this.entitiesSecondType)
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          638
+        </td>
+        <td>
+          1653
+          -
+          1681
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver.notify
+        </td>
+        <td style="background: #AEF1AE">
+          EndGameSystem.this.levelContext.notify(it.unibo.osmos.redux.mvc.view.events.GameWon)
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          640
+        </td>
+        <td>
+          1591
+          -
+          1591
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          634
+        </td>
+        <td>
+          1632
+          -
+          1650
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.AbstractSystem2.entitiesSecondType
+        </td>
+        <td style="background: #AEF1AE">
+          EndGameSystem.this.entitiesSecondType
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          637
+        </td>
+        <td>
+          1653
+          -
+          1681
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver.notify
+        </td>
+        <td style="background: #AEF1AE">
+          EndGameSystem.this.levelContext.notify(it.unibo.osmos.redux.mvc.view.events.GameWon)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

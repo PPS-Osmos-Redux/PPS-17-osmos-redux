@@ -1,0 +1,1266 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/ecs/systems/SentientSystem.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.systems
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.ecs.components.{DimensionComponent, PositionComponent, SpawnAction, SpeedComponent}
+</span>4 <span style=''>import it.unibo.osmos.redux.ecs.entities.properties.composed.{SentientEnemyProperty, SentientProperty}
+</span>5 <span style=''>import it.unibo.osmos.redux.ecs.systems.sentientRule._
+</span>6 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.Level
+</span>7 <span style=''>import it.unibo.osmos.redux.utils.Constants.Sentient._
+</span>8 <span style=''>import it.unibo.osmos.redux.utils.{Point, Vector}
+</span>9 <span style=''>
+</span>10 <span style=''>/** System that apply sentient rule to each sentient cell */
+</span>11 <span style=''>case class SentientSystem(levelInfo: Level) extends AbstractSystem2[SentientProperty, SentientEnemyProperty] {
+</span>12 <span style=''>
+</span>13 <span style=''>  // The lost mass spawn point offset (starting from the perimeter of the entity, where to spawn lost mass due to movement)
+</span>14 <span style=''>  private val lostMassSpawnOffset: Double = </span><span style='background: #AEF1AE'>0.1</span><span style=''>
+</span>15 <span style=''>
+</span>16 <span style=''>  // The initial velocity of the lost mass
+</span>17 <span style=''>  private val lostMassInitialVelocity: Double = </span><span style='background: #AEF1AE'>4.0</span><span style=''>
+</span>18 <span style=''>  private val rules: List[SentientRule] = </span><span style='background: #AEF1AE'>initRules()</span><span style=''>
+</span>19 <span style=''>  private var radiusAmount = </span><span style='background: #AEF1AE'>0.0</span><span style=''>
+</span>20 <span style=''>
+</span>21 <span style=''>  override def update(): Unit = </span><span style='background: #AEF1AE'>entities.filter(e =&gt; e.getCollidableComponent.isCollidable)
+</span>22 <span style=''></span><span style='background: #AEF1AE'>    .foreach(sentient =&gt; {
+</span>23 <span style=''></span><span style='background: #AEF1AE'>      var totalAcceleration = rules.head.computeRule(sentient, sentient.getAccelerationComponent.vector)
+</span>24 <span style=''></span><span style='background: #AEF1AE'>      rules.tail.foreach(r =&gt; {
+</span>25 <span style=''></span><span style='background: #AEF1AE'>        totalAcceleration = totalAcceleration add r.computeRule(sentient, totalAcceleration)
+</span>26 <span style=''></span><span style='background: #AEF1AE'>      })
+</span>27 <span style=''></span><span style='background: #AEF1AE'>      applyAcceleration(sentient, totalAcceleration)
+</span>28 <span style=''></span><span style='background: #AEF1AE'>    })</span><span style=''>
+</span>29 <span style=''>
+</span>30 <span style=''>  private def applyAcceleration(sentient: SentientProperty, acceleration: Vector, accelerations: Vector*): Unit = {
+</span>31 <span style=''>    val totalAcceleration = </span><span style='background: #AEF1AE'>acceleration limit MaxAcceleration</span><span style=''>
+</span>32 <span style=''>    val accelerationSentient = </span><span style='background: #AEF1AE'>sentient.getAccelerationComponent</span><span style=''>
+</span>33 <span style=''>    </span><span style='background: #AEF1AE'>accelerationSentient.vector_(accelerationSentient.vector add totalAcceleration)</span><span style=''>
+</span>34 <span style=''>
+</span>35 <span style=''>    if (</span><span style='background: #AEF1AE'>SentientUtils.hasLostRadiusBehaviour(sentient) &amp;&amp; totalAcceleration.getMagnitude &gt; 0</span><span style=''>) </span><span style='background: #AEF1AE'>{
+</span>36 <span style=''></span><span style='background: #AEF1AE'>      val radiusSentient = sentient.getDimensionComponent
+</span>37 <span style=''></span><span style='background: #AEF1AE'>      val lostRadiusAmount = radiusSentient.radius * totalAcceleration.getMagnitude * PercentageOfLostRadiusForMagnitudeAcceleration
+</span>38 <span style=''></span><span style='background: #AEF1AE'>
+</span>39 <span style=''></span><span style='background: #AEF1AE'>      radiusSentient.radius_(radiusSentient.radius - lostRadiusAmount)
+</span>40 <span style=''></span><span style='background: #AEF1AE'>      radiusAmount = radiusAmount + lostRadiusAmount
+</span>41 <span style=''></span><span style='background: #AEF1AE'>      if (radiusAmount &gt; 1) </span><span style='background: #F0ADAD'>{
+</span>42 <span style=''></span><span style='background: #F0ADAD'>        // spawn
+</span>43 <span style=''></span><span style='background: #F0ADAD'>        val sentientPosition = sentient.getPositionComponent.point
+</span>44 <span style=''></span><span style='background: #F0ADAD'>        val directionVector = totalAcceleration multiply -1 normalized()
+</span>45 <span style=''></span><span style='background: #F0ADAD'>
+</span>46 <span style=''></span><span style='background: #F0ADAD'>        val spawnPoint = sentientPosition add (directionVector multiply (radiusSentient.radius + lostMassSpawnOffset + radiusAmount))
+</span>47 <span style=''></span><span style='background: #F0ADAD'>
+</span>48 <span style=''></span><span style='background: #F0ADAD'>        sentient.getSpawnerComponent.enqueueActions(SpawnAction(
+</span>49 <span style=''></span><span style='background: #F0ADAD'>          PositionComponent(Point(spawnPoint.x, spawnPoint.y)),
+</span>50 <span style=''></span><span style='background: #F0ADAD'>          DimensionComponent(radiusAmount),
+</span>51 <span style=''></span><span style='background: #F0ADAD'>          SpeedComponent(directionVector multiply lostMassInitialVelocity)))
+</span>52 <span style=''></span><span style='background: #F0ADAD'>        radiusAmount = 0.0
+</span>53 <span style=''></span><span style='background: #F0ADAD'>      }</span><span style='background: #AEF1AE'>
+</span>54 <span style=''></span><span style='background: #AEF1AE'>    }</span><span style=''>
+</span>55 <span style=''>  }
+</span>56 <span style=''>
+</span>57 <span style=''>  private def initRules(): List[SentientRule] = {
+</span>58 <span style=''>    EscapeFromBoundaryRule(levelInfo) </span><span style='background: #AEF1AE'>:: EscapeFromEnemiesRule(entitiesSecondType) :: FollowTargetRule(entitiesSecondType) :: Nil</span><span style=''>
+</span>59 <span style=''>  }
+</span>60 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          793
+        </td>
+        <td>
+          825
+          -
+          828
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          0.1
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          794
+        </td>
+        <td>
+          921
+          -
+          924
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          4.0
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          795
+        </td>
+        <td>
+          967
+          -
+          978
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.SentientSystem.initRules
+        </td>
+        <td style="background: #AEF1AE">
+          SentientSystem.this.initRules()
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          796
+        </td>
+        <td>
+          1008
+          -
+          1011
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          0.0
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          797
+        </td>
+        <td>
+          1066
+          -
+          1103
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.CollidableComponent.isCollidable
+        </td>
+        <td style="background: #AEF1AE">
+          e.getCollidableComponent.isCollidable
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          804
+        </td>
+        <td>
+          1045
+          -
+          1430
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.TraversableForwarder.foreach
+        </td>
+        <td style="background: #AEF1AE">
+          SentientSystem.this.entities.filter(((e: it.unibo.osmos.redux.ecs.entities.properties.composed.SentientProperty) =&gt; e.getCollidableComponent.isCollidable)).foreach[Unit](((sentient: it.unibo.osmos.redux.ecs.entities.properties.composed.SentientProperty) =&gt; {
+  var totalAcceleration: it.unibo.osmos.redux.utils.Vector = SentientSystem.this.rules.head.computeRule(sentient, sentient.getAccelerationComponent.vector);
+  SentientSystem.this.rules.tail.foreach[Unit](((r: it.unibo.osmos.redux.ecs.systems.sentientRule.SentientRule) =&gt; totalAcceleration = totalAcceleration.add(r.computeRule(sentient, totalAcceleration))));
+  SentientSystem.this.applyAcceleration(sentient, totalAcceleration)
+}))
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          799
+        </td>
+        <td>
+          1162
+          -
+          1236
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.sentientRule.SentientRule.computeRule
+        </td>
+        <td style="background: #AEF1AE">
+          SentientSystem.this.rules.head.computeRule(sentient, sentient.getAccelerationComponent.vector)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          798
+        </td>
+        <td>
+          1195
+          -
+          1235
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.VectorComponent.vector
+        </td>
+        <td style="background: #AEF1AE">
+          sentient.getAccelerationComponent.vector
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          802
+        </td>
+        <td>
+          1243
+          -
+          1370
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.foreach
+        </td>
+        <td style="background: #AEF1AE">
+          SentientSystem.this.rules.tail.foreach[Unit](((r: it.unibo.osmos.redux.ecs.systems.sentientRule.SentientRule) =&gt; totalAcceleration = totalAcceleration.add(r.computeRule(sentient, totalAcceleration))))
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          801
+        </td>
+        <td>
+          1297
+          -
+          1361
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.add
+        </td>
+        <td style="background: #AEF1AE">
+          totalAcceleration.add(r.computeRule(sentient, totalAcceleration))
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          800
+        </td>
+        <td>
+          1319
+          -
+          1361
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.sentientRule.SentientRule.computeRule
+        </td>
+        <td style="background: #AEF1AE">
+          r.computeRule(sentient, totalAcceleration)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          803
+        </td>
+        <td>
+          1377
+          -
+          1423
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.SentientSystem.applyAcceleration
+        </td>
+        <td style="background: #AEF1AE">
+          SentientSystem.this.applyAcceleration(sentient, totalAcceleration)
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          806
+        </td>
+        <td>
+          1576
+          -
+          1610
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.limit
+        </td>
+        <td style="background: #AEF1AE">
+          acceleration.limit(it.unibo.osmos.redux.utils.Constants.Sentient.MaxAcceleration)
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          805
+        </td>
+        <td>
+          1595
+          -
+          1610
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.Sentient.MaxAcceleration
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Constants.Sentient.MaxAcceleration
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          807
+        </td>
+        <td>
+          1642
+          -
+          1675
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Acceleration.getAccelerationComponent
+        </td>
+        <td style="background: #AEF1AE">
+          sentient.getAccelerationComponent
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          809
+        </td>
+        <td>
+          1680
+          -
+          1759
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.VectorComponent.vector_
+        </td>
+        <td style="background: #AEF1AE">
+          accelerationSentient.vector_(accelerationSentient.vector.add(totalAcceleration))
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          808
+        </td>
+        <td>
+          1709
+          -
+          1758
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.add
+        </td>
+        <td style="background: #AEF1AE">
+          accelerationSentient.vector.add(totalAcceleration)
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          810
+        </td>
+        <td>
+          1819
+          -
+          1853
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          totalAcceleration.getMagnitude.&gt;(0)
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          845
+        </td>
+        <td>
+          1765
+          -
+          1765
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          844
+        </td>
+        <td>
+          1765
+          -
+          1765
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          811
+        </td>
+        <td>
+          1769
+          -
+          1853
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.&amp;&amp;
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.hasLostRadiusBehaviour(sentient).&amp;&amp;(totalAcceleration.getMagnitude.&gt;(0))
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          843
+        </td>
+        <td>
+          1855
+          -
+          2786
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          {
+  val radiusSentient: it.unibo.osmos.redux.ecs.components.DimensionComponent = sentient.getDimensionComponent;
+  val lostRadiusAmount: Double = radiusSentient.radius.*(totalAcceleration.getMagnitude).*(it.unibo.osmos.redux.utils.Constants.Sentient.PercentageOfLostRadiusForMagnitudeAcceleration);
+  radiusSentient.radius_(radiusSentient.radius.-(lostRadiusAmount));
+  SentientSystem.this.radiusAmount_=(SentientSystem.this.radiusAmount.+(lostRadiusAmount));
+  if (SentientSystem.this.radiusAmount.&gt;(1))
+    {
+      val sentientPosition: it.unibo.osmos.redux.utils.Point = sentient.getPositionComponent.point;
+      val directionVector: it.unibo.osmos.redux.utils.Vector = totalAcceleration.multiply(-1.0).normalized();
+      val spawnPoint: it.unibo.osmos.redux.utils.Point = sentientPosition.add(directionVector.multiply(radiusSentient.radius.+(SentientSystem.this.lostMassSpawnOffset).+(SentientSystem.this.radiusAmount)));
+      sentient.getSpawnerComponent.enqueueActions(it.unibo.osmos.redux.ecs.components.SpawnAction.apply(it.unibo.osmos.redux.ecs.components.PositionComponent.apply(it.unibo.osmos.redux.utils.Point.apply(spawnPoint.x, spawnPoint.y)), it.unibo.osmos.redux.ecs.components.DimensionComponent.apply(SentientSystem.this.radiusAmount), it.unibo.osmos.redux.ecs.components.SpeedComponent.apply(directionVector.multiply(SentientSystem.this.lostMassInitialVelocity))));
+      SentientSystem.this.radiusAmount_=(0.0)
+    }
+  else
+    ()
+}
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          812
+        </td>
+        <td>
+          1884
+          -
+          1914
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Dimension.getDimensionComponent
+        </td>
+        <td style="background: #AEF1AE">
+          sentient.getDimensionComponent
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          813
+        </td>
+        <td>
+          1968
+          -
+          1998
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.getMagnitude
+        </td>
+        <td style="background: #AEF1AE">
+          totalAcceleration.getMagnitude
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          815
+        </td>
+        <td>
+          1944
+          -
+          2047
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.*
+        </td>
+        <td style="background: #AEF1AE">
+          radiusSentient.radius.*(totalAcceleration.getMagnitude).*(it.unibo.osmos.redux.utils.Constants.Sentient.PercentageOfLostRadiusForMagnitudeAcceleration)
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          814
+        </td>
+        <td>
+          2001
+          -
+          2047
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.Sentient.PercentageOfLostRadiusForMagnitudeAcceleration
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Constants.Sentient.PercentageOfLostRadiusForMagnitudeAcceleration
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          817
+        </td>
+        <td>
+          2055
+          -
+          2119
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.radius_
+        </td>
+        <td style="background: #AEF1AE">
+          radiusSentient.radius_(radiusSentient.radius.-(lostRadiusAmount))
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          816
+        </td>
+        <td>
+          2078
+          -
+          2118
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #AEF1AE">
+          radiusSentient.radius.-(lostRadiusAmount)
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          819
+        </td>
+        <td>
+          2126
+          -
+          2172
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.SentientSystem.radiusAmount_=
+        </td>
+        <td style="background: #AEF1AE">
+          SentientSystem.this.radiusAmount_=(SentientSystem.this.radiusAmount.+(lostRadiusAmount))
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          818
+        </td>
+        <td>
+          2141
+          -
+          2172
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.+
+        </td>
+        <td style="background: #AEF1AE">
+          SentientSystem.this.radiusAmount.+(lostRadiusAmount)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          842
+        </td>
+        <td>
+          2179
+          -
+          2179
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          820
+        </td>
+        <td>
+          2183
+          -
+          2199
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          SentientSystem.this.radiusAmount.&gt;(1)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          841
+        </td>
+        <td>
+          2179
+          -
+          2179
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          840
+        </td>
+        <td>
+          2201
+          -
+          2780
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          {
+  val sentientPosition: it.unibo.osmos.redux.utils.Point = sentient.getPositionComponent.point;
+  val directionVector: it.unibo.osmos.redux.utils.Vector = totalAcceleration.multiply(-1.0).normalized();
+  val spawnPoint: it.unibo.osmos.redux.utils.Point = sentientPosition.add(directionVector.multiply(radiusSentient.radius.+(SentientSystem.this.lostMassSpawnOffset).+(SentientSystem.this.radiusAmount)));
+  sentient.getSpawnerComponent.enqueueActions(it.unibo.osmos.redux.ecs.components.SpawnAction.apply(it.unibo.osmos.redux.ecs.components.PositionComponent.apply(it.unibo.osmos.redux.utils.Point.apply(spawnPoint.x, spawnPoint.y)), it.unibo.osmos.redux.ecs.components.DimensionComponent.apply(SentientSystem.this.radiusAmount), it.unibo.osmos.redux.ecs.components.SpeedComponent.apply(directionVector.multiply(SentientSystem.this.lostMassInitialVelocity))));
+  SentientSystem.this.radiusAmount_=(0.0)
+}
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          821
+        </td>
+        <td>
+          2251
+          -
+          2286
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.point
+        </td>
+        <td style="background: #F0ADAD">
+          sentient.getPositionComponent.point
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          822
+        </td>
+        <td>
+          2317
+          -
+          2359
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.normalized
+        </td>
+        <td style="background: #F0ADAD">
+          totalAcceleration.multiply(-1.0).normalized()
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          824
+        </td>
+        <td>
+          2480
+          -
+          2492
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.SentientSystem.radiusAmount
+        </td>
+        <td style="background: #F0ADAD">
+          SentientSystem.this.radiusAmount
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          827
+        </td>
+        <td>
+          2386
+          -
+          2494
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.add
+        </td>
+        <td style="background: #F0ADAD">
+          sentientPosition.add(directionVector.multiply(radiusSentient.radius.+(SentientSystem.this.lostMassSpawnOffset).+(SentientSystem.this.radiusAmount)))
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          826
+        </td>
+        <td>
+          2408
+          -
+          2493
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.multiply
+        </td>
+        <td style="background: #F0ADAD">
+          directionVector.multiply(radiusSentient.radius.+(SentientSystem.this.lostMassSpawnOffset).+(SentientSystem.this.radiusAmount))
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          823
+        </td>
+        <td>
+          2458
+          -
+          2477
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.SentientSystem.lostMassSpawnOffset
+        </td>
+        <td style="background: #F0ADAD">
+          SentientSystem.this.lostMassSpawnOffset
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          825
+        </td>
+        <td>
+          2434
+          -
+          2492
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.+
+        </td>
+        <td style="background: #F0ADAD">
+          radiusSentient.radius.+(SentientSystem.this.lostMassSpawnOffset).+(SentientSystem.this.radiusAmount)
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          837
+        </td>
+        <td>
+          2548
+          -
+          2744
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpawnAction.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.components.SpawnAction.apply(it.unibo.osmos.redux.ecs.components.PositionComponent.apply(it.unibo.osmos.redux.utils.Point.apply(spawnPoint.x, spawnPoint.y)), it.unibo.osmos.redux.ecs.components.DimensionComponent.apply(SentientSystem.this.radiusAmount), it.unibo.osmos.redux.ecs.components.SpeedComponent.apply(directionVector.multiply(SentientSystem.this.lostMassInitialVelocity)))
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          838
+        </td>
+        <td>
+          2504
+          -
+          2745
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpawnerComponent.enqueueActions
+        </td>
+        <td style="background: #F0ADAD">
+          sentient.getSpawnerComponent.enqueueActions(it.unibo.osmos.redux.ecs.components.SpawnAction.apply(it.unibo.osmos.redux.ecs.components.PositionComponent.apply(it.unibo.osmos.redux.utils.Point.apply(spawnPoint.x, spawnPoint.y)), it.unibo.osmos.redux.ecs.components.DimensionComponent.apply(SentientSystem.this.radiusAmount), it.unibo.osmos.redux.ecs.components.SpeedComponent.apply(directionVector.multiply(SentientSystem.this.lostMassInitialVelocity))))
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          828
+        </td>
+        <td>
+          2595
+          -
+          2607
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.x
+        </td>
+        <td style="background: #F0ADAD">
+          spawnPoint.x
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          831
+        </td>
+        <td>
+          2571
+          -
+          2623
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.components.PositionComponent.apply(it.unibo.osmos.redux.utils.Point.apply(spawnPoint.x, spawnPoint.y))
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          830
+        </td>
+        <td>
+          2589
+          -
+          2622
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Point.apply(spawnPoint.x, spawnPoint.y)
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          829
+        </td>
+        <td>
+          2609
+          -
+          2621
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.y
+        </td>
+        <td style="background: #F0ADAD">
+          spawnPoint.y
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          833
+        </td>
+        <td>
+          2635
+          -
+          2667
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.apply(SentientSystem.this.radiusAmount)
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          832
+        </td>
+        <td>
+          2654
+          -
+          2666
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.SentientSystem.radiusAmount
+        </td>
+        <td style="background: #F0ADAD">
+          SentientSystem.this.radiusAmount
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          836
+        </td>
+        <td>
+          2679
+          -
+          2743
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpeedComponent.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.components.SpeedComponent.apply(directionVector.multiply(SentientSystem.this.lostMassInitialVelocity))
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          835
+        </td>
+        <td>
+          2694
+          -
+          2742
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.multiply
+        </td>
+        <td style="background: #F0ADAD">
+          directionVector.multiply(SentientSystem.this.lostMassInitialVelocity)
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          834
+        </td>
+        <td>
+          2719
+          -
+          2742
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.SentientSystem.lostMassInitialVelocity
+        </td>
+        <td style="background: #F0ADAD">
+          SentientSystem.this.lostMassInitialVelocity
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          839
+        </td>
+        <td>
+          2754
+          -
+          2772
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.SentientSystem.radiusAmount_=
+        </td>
+        <td style="background: #F0ADAD">
+          SentientSystem.this.radiusAmount_=(0.0)
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          846
+        </td>
+        <td>
+          2880
+          -
+          2971
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.::
+        </td>
+        <td style="background: #AEF1AE">
+          {
+  &lt;synthetic&gt; &lt;artifact&gt; val x$2: it.unibo.osmos.redux.ecs.systems.sentientRule.EscapeFromEnemiesRule = it.unibo.osmos.redux.ecs.systems.sentientRule.EscapeFromEnemiesRule.apply(SentientSystem.this.entitiesSecondType);
+  {
+  &lt;synthetic&gt; &lt;artifact&gt; val x$1: it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule = it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule.apply(SentientSystem.this.entitiesSecondType);
+  scala.collection.immutable.Nil.::[it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule](x$1)
+}.::[Product with Serializable with it.unibo.osmos.redux.ecs.systems.sentientRule.SentientRule](x$2)
+}.::[Product with Serializable with it.unibo.osmos.redux.ecs.systems.sentientRule.SentientRule](x$3)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

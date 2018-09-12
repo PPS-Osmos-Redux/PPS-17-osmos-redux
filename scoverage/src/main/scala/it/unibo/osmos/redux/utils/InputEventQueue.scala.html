@@ -1,0 +1,286 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/utils/InputEventQueue.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.utils
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
+</span>4 <span style=''>
+</span>5 <span style=''>import scala.collection.mutable
+</span>6 <span style=''>
+</span>7 <span style=''>/** Singleton that stores all input events. */
+</span>8 <span style=''>object InputEventQueue {
+</span>9 <span style=''>
+</span>10 <span style=''>  var queue: mutable.Queue[MouseEventWrapper] = </span><span style='background: #AEF1AE'>mutable.Queue()</span><span style=''>
+</span>11 <span style=''>
+</span>12 <span style=''>  /** Enqueues one or more events into the queue.
+</span>13 <span style=''>    *
+</span>14 <span style=''>    * @param events The events to add
+</span>15 <span style=''>    */
+</span>16 <span style=''>  def enqueue(events: MouseEventWrapper*): Unit = {
+</span>17 <span style=''>    </span><span style='background: #AEF1AE'>queue.enqueue(events: _*)</span><span style=''>
+</span>18 <span style=''>  }
+</span>19 <span style=''>
+</span>20 <span style=''>  /** Dequeues one event from the queue.
+</span>21 <span style=''>    *
+</span>22 <span style=''>    * @return Optional of a event
+</span>23 <span style=''>    */
+</span>24 <span style=''>  def dequeue(): Option[MouseEventWrapper] = {
+</span>25 <span style=''>    if (</span><span style='background: #AEF1AE'>queue.nonEmpty</span><span style=''>) </span><span style='background: #AEF1AE'>Some(queue.dequeue())</span><span style=''> else </span><span style='background: #AEF1AE'>None</span><span style=''>
+</span>26 <span style=''>  }
+</span>27 <span style=''>
+</span>28 <span style=''>  /** Dequeue all events from the queue
+</span>29 <span style=''>    *
+</span>30 <span style=''>    * @return The list of all saved events
+</span>31 <span style=''>    */
+</span>32 <span style=''>  def dequeueAll(): Seq[MouseEventWrapper] = {
+</span>33 <span style=''>    </span><span style='background: #AEF1AE'>queue.dequeueAll(_ =&gt; true)</span><span style=''>
+</span>34 <span style=''>  }
+</span>35 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          5481
+        </td>
+        <td>
+          253
+          -
+          268
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.collection.mutable.Queue.apply[it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper]()
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          5482
+        </td>
+        <td>
+          427
+          -
+          452
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.mutable.Queue.enqueue
+        </td>
+        <td style="background: #AEF1AE">
+          InputEventQueue.this.queue.enqueue((events: _*))
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          5487
+        </td>
+        <td>
+          644
+          -
+          648
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #AEF1AE">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          5484
+        </td>
+        <td>
+          622
+          -
+          637
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.mutable.Queue.dequeue
+        </td>
+        <td style="background: #AEF1AE">
+          InputEventQueue.this.queue.dequeue()
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          5483
+        </td>
+        <td>
+          601
+          -
+          615
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.TraversableOnce.nonEmpty
+        </td>
+        <td style="background: #AEF1AE">
+          InputEventQueue.this.queue.nonEmpty
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          5486
+        </td>
+        <td>
+          617
+          -
+          638
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Some.apply[it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper](InputEventQueue.this.queue.dequeue())
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          5488
+        </td>
+        <td>
+          644
+          -
+          648
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #AEF1AE">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          5485
+        </td>
+        <td>
+          617
+          -
+          638
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Some.apply[it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper](InputEventQueue.this.queue.dequeue())
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          5490
+        </td>
+        <td>
+          801
+          -
+          828
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.mutable.Queue.dequeueAll
+        </td>
+        <td style="background: #AEF1AE">
+          InputEventQueue.this.queue.dequeueAll(((x$1: it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper) =&gt; true))
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          5489
+        </td>
+        <td>
+          823
+          -
+          827
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          true
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

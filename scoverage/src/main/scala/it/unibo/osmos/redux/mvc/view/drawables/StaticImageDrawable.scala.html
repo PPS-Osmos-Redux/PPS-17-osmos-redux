@@ -1,0 +1,229 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/drawables/StaticImageDrawable.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.drawables
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.utils.Point
+</span>4 <span style=''>import scalafx.scene.canvas.GraphicsContext
+</span>5 <span style=''>import scalafx.scene.image.Image
+</span>6 <span style=''>
+</span>7 <span style=''>/** Represent a static image
+</span>8 <span style=''>  *
+</span>9 <span style=''>  * @param image           the image
+</span>10 <span style=''>  * @param center          the center
+</span>11 <span style=''>  * @param width           the width
+</span>12 <span style=''>  * @param height          the height
+</span>13 <span style=''>  * @param graphicsContext the graphic context
+</span>14 <span style=''>  */
+</span>15 <span style=''>class StaticImageDrawable(override val image: Image, val center: Point, val width: Double, val height: Double, val graphicsContext: GraphicsContext) extends ImageDrawable {
+</span>16 <span style=''>
+</span>17 <span style=''>  /** Method which draws the image on the screen */
+</span>18 <span style=''>  def draw(): Unit = </span><span style='background: #F0ADAD'>graphicsContext.drawImage(image, center.x - width, center.y - height, width * 2, height * 2)</span><span style=''>
+</span>19 <span style=''>
+</span>20 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          4363
+        </td>
+        <td>
+          693
+          -
+          698
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.StaticImageDrawable.width
+        </td>
+        <td style="background: #F0ADAD">
+          StaticImageDrawable.this.width
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          4362
+        </td>
+        <td>
+          675
+          -
+          680
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.StaticImageDrawable.image
+        </td>
+        <td style="background: #F0ADAD">
+          StaticImageDrawable.this.image
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          4365
+        </td>
+        <td>
+          711
+          -
+          717
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.StaticImageDrawable.height
+        </td>
+        <td style="background: #F0ADAD">
+          StaticImageDrawable.this.height
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          4368
+        </td>
+        <td>
+          730
+          -
+          740
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.*
+        </td>
+        <td style="background: #F0ADAD">
+          StaticImageDrawable.this.height.*(2)
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          4364
+        </td>
+        <td>
+          682
+          -
+          698
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #F0ADAD">
+          StaticImageDrawable.this.center.x.-(StaticImageDrawable.this.width)
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          4367
+        </td>
+        <td>
+          719
+          -
+          728
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.*
+        </td>
+        <td style="background: #F0ADAD">
+          StaticImageDrawable.this.width.*(2)
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          4366
+        </td>
+        <td>
+          700
+          -
+          717
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #F0ADAD">
+          StaticImageDrawable.this.center.y.-(StaticImageDrawable.this.height)
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          4369
+        </td>
+        <td>
+          649
+          -
+          741
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.canvas.GraphicsContext.drawImage
+        </td>
+        <td style="background: #F0ADAD">
+          StaticImageDrawable.this.graphicsContext.drawImage(StaticImageDrawable.this.image, StaticImageDrawable.this.center.x.-(StaticImageDrawable.this.width), StaticImageDrawable.this.center.y.-(StaticImageDrawable.this.height), StaticImageDrawable.this.width.*(2), StaticImageDrawable.this.height.*(2))
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

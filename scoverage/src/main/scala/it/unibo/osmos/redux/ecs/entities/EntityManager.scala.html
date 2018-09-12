@@ -1,0 +1,777 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/ecs/entities/EntityManager.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.entities
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.ecs.entities.properties.basic.Property
+</span>4 <span style=''>import org.apache.commons.lang3.ClassUtils
+</span>5 <span style=''>
+</span>6 <span style=''>import scala.annotation.tailrec
+</span>7 <span style=''>import scala.collection.mutable
+</span>8 <span style=''>
+</span>9 <span style=''>/** EntityManager events */
+</span>10 <span style=''>object EMEvents {
+</span>11 <span style=''>
+</span>12 <span style=''>  /** Event of creation
+</span>13 <span style=''>    *
+</span>14 <span style=''>    * @param entity new entity created
+</span>15 <span style=''>    * @return the creation event
+</span>16 <span style=''>    */
+</span>17 <span style=''>  def entityCreated(entity: Property): EntityCreated = </span><span style='background: #AEF1AE'>EntityCreated(entity)</span><span style=''>
+</span>18 <span style=''>
+</span>19 <span style=''>  /** Event of cancellation
+</span>20 <span style=''>    *
+</span>21 <span style=''>    * @param entity the entity deleted
+</span>22 <span style=''>    * @return the delete event
+</span>23 <span style=''>    */
+</span>24 <span style=''>  def entityDeleted(entity: Property): EntityDeleted = </span><span style='background: #AEF1AE'>EntityDeleted(entity)</span><span style=''>
+</span>25 <span style=''>
+</span>26 <span style=''>  sealed trait EntityManagerEvent {
+</span>27 <span style=''>    val entity: Property
+</span>28 <span style=''>  }
+</span>29 <span style=''>
+</span>30 <span style=''>  case class EntityCreated(override val entity: Property) extends EntityManagerEvent
+</span>31 <span style=''>
+</span>32 <span style=''>  case class EntityDeleted(override val entity: Property) extends EntityManagerEvent
+</span>33 <span style=''>
+</span>34 <span style=''>}
+</span>35 <span style=''>
+</span>36 <span style=''>import it.unibo.osmos.redux.ecs.entities.EMEvents._
+</span>37 <span style=''>
+</span>38 <span style=''>/** Define an Observer interface for entity manager */
+</span>39 <span style=''>trait Observer {
+</span>40 <span style=''>  def notify(event: EntityManagerEvent): Unit
+</span>41 <span style=''>}
+</span>42 <span style=''>
+</span>43 <span style=''>/** Define an observable interface for entity manager */
+</span>44 <span style=''>trait Observable {
+</span>45 <span style=''>
+</span>46 <span style=''>  /** Adds new observer to the collection of observers
+</span>47 <span style=''>    *
+</span>48 <span style=''>    * @param observer        observer reference
+</span>49 <span style=''>    * @param managedEntities interface of managed entities
+</span>50 <span style=''>    */
+</span>51 <span style=''>  def subscribe(observer: Observer, managedEntities: EntityManager.ManagedEntity): Unit
+</span>52 <span style=''>}
+</span>53 <span style=''>
+</span>54 <span style=''>/** Define the methods for manage an entities collection */
+</span>55 <span style=''>trait EntityManager {
+</span>56 <span style=''>  type ManagedEntity = Class[_ &lt;: Property]
+</span>57 <span style=''>  type ObserverEntry = (Observer, ManagedEntity)
+</span>58 <span style=''>
+</span>59 <span style=''>  /** Adds the new entity to the collection
+</span>60 <span style=''>    *
+</span>61 <span style=''>    * @param entity the new entity
+</span>62 <span style=''>    */
+</span>63 <span style=''>  def add(entity: Property)
+</span>64 <span style=''>
+</span>65 <span style=''>  /** Removes the entity from the collection
+</span>66 <span style=''>    *
+</span>67 <span style=''>    * @param entity the entity to be eliminated
+</span>68 <span style=''>    */
+</span>69 <span style=''>  def delete(entity: Property)
+</span>70 <span style=''>
+</span>71 <span style=''>  /** Gives all the entities which extends managedEntity interface
+</span>72 <span style=''>    *
+</span>73 <span style=''>    * @param entityInterface target entity interface
+</span>74 <span style=''>    * @return a list of entities
+</span>75 <span style=''>    */
+</span>76 <span style=''>  def filterEntities(entityInterface: ManagedEntity): List[Property]
+</span>77 <span style=''>
+</span>78 <span style=''>  /** Clear internal collections for starting new level */
+</span>79 <span style=''>  def clear()
+</span>80 <span style=''>}
+</span>81 <span style=''>
+</span>82 <span style=''>import scala.collection.JavaConverters._
+</span>83 <span style=''>
+</span>84 <span style=''>/** Entity manager who manage the system entities and notify events to observers */
+</span>85 <span style=''>object EntityManager extends EntityManager with Observable {
+</span>86 <span style=''>  private var observers: List[ObserverEntry] = </span><span style='background: #AEF1AE'>List()</span><span style=''>
+</span>87 <span style=''>  private var entities: mutable.Set[Property] = </span><span style='background: #AEF1AE'>mutable.Set()</span><span style=''>
+</span>88 <span style=''>
+</span>89 <span style=''>  override def add(entity: Property): Unit = {
+</span>90 <span style=''>    </span><span style='background: #AEF1AE'>entities += entity</span><span style=''>
+</span>91 <span style=''>    </span><span style='background: #AEF1AE'>notifyEvent(observers, EMEvents.entityCreated(entity))</span><span style=''>
+</span>92 <span style=''>  }
+</span>93 <span style=''>
+</span>94 <span style=''>  override def delete(entity: Property): Unit = {
+</span>95 <span style=''>    </span><span style='background: #AEF1AE'>entities remove entity</span><span style=''>
+</span>96 <span style=''>    </span><span style='background: #AEF1AE'>notifyEvent(observers, EMEvents.entityDeleted(entity))</span><span style=''>
+</span>97 <span style=''>  }
+</span>98 <span style=''>
+</span>99 <span style=''>  override def subscribe(observer: Observer, managedEntities: ManagedEntity): Unit =
+</span>100 <span style=''>    </span><span style='background: #AEF1AE'>observers = (observer, managedEntities) :: observers</span><span style=''>
+</span>101 <span style=''>
+</span>102 <span style=''>  override def filterEntities(entityInterface: EntityManager.ManagedEntity): List[Property] =
+</span>103 <span style=''>    </span><span style='background: #AEF1AE'>entities.filter(ent =&gt; extendsInterface(ent, entityInterface)).toList</span><span style=''>
+</span>104 <span style=''>
+</span>105 <span style=''>  def extendsInterface(ent: Property, entityInt: EntityManager.ManagedEntity): Boolean =
+</span>106 <span style=''>    </span><span style='background: #AEF1AE'>getInterfaces(ent) contains entityInt</span><span style=''>
+</span>107 <span style=''>
+</span>108 <span style=''>  def getInterfaces(entity: Property): List[Class[_]] =
+</span>109 <span style=''>    </span><span style='background: #AEF1AE'>ClassUtils.getAllInterfaces(entity.getClass).asScala.toList</span><span style=''>
+</span>110 <span style=''>
+</span>111 <span style=''>  override def clear(): Unit = {
+</span>112 <span style=''>    </span><span style='background: #AEF1AE'>observers = List()</span><span style=''>
+</span>113 <span style=''>    </span><span style='background: #AEF1AE'>entities.clear()</span><span style=''>
+</span>114 <span style=''>  }
+</span>115 <span style=''>
+</span>116 <span style=''>  @tailrec
+</span>117 <span style=''>  private def notifyEvent(observers: List[ObserverEntry], emEvent: EntityManagerEvent): Unit =
+</span>118 <span style=''>    observers match {
+</span>119 <span style=''>      case Nil </span><span style='background: #AEF1AE'>=&gt;</span><span style=''>
+</span>120 <span style=''>      case (obs, entityInt) :: t if </span><span style='background: #AEF1AE'>extendsInterface(emEvent.entity, entityInt)</span><span style=''> =&gt;
+</span>121 <span style=''>        </span><span style='background: #AEF1AE'>obs.notify(emEvent)</span><span style=''>; </span><span style='background: #AEF1AE'>notifyEvent(t, emEvent)</span><span style=''>
+</span>122 <span style=''>      case _ :: t =&gt; </span><span style='background: #AEF1AE'>notifyEvent(t, emEvent)</span><span style=''>
+</span>123 <span style=''>    }
+</span>124 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          359
+        </td>
+        <td>
+          430
+          -
+          451
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EMEvents.EntityCreated.apply
+        </td>
+        <td style="background: #AEF1AE">
+          EMEvents.this.EntityCreated.apply(entity)
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          360
+        </td>
+        <td>
+          619
+          -
+          640
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EMEvents.EntityDeleted.apply
+        </td>
+        <td style="background: #AEF1AE">
+          EMEvents.this.EntityDeleted.apply(entity)
+        </td>
+      </tr><tr>
+        <td>
+          86
+        </td>
+        <td>
+          361
+        </td>
+        <td>
+          2381
+          -
+          2387
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.Nil
+        </td>
+        <td style="background: #AEF1AE">
+          scala.collection.immutable.Nil
+        </td>
+      </tr><tr>
+        <td>
+          87
+        </td>
+        <td>
+          362
+        </td>
+        <td>
+          2436
+          -
+          2449
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.collection.mutable.Set.apply[it.unibo.osmos.redux.ecs.entities.properties.basic.Property]()
+        </td>
+      </tr><tr>
+        <td>
+          90
+        </td>
+        <td>
+          363
+        </td>
+        <td>
+          2502
+          -
+          2520
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.mutable.SetLike.+=
+        </td>
+        <td style="background: #AEF1AE">
+          EntityManager.this.entities.+=(entity)
+        </td>
+      </tr><tr>
+        <td>
+          91
+        </td>
+        <td>
+          364
+        </td>
+        <td>
+          2537
+          -
+          2546
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityManager.observers
+        </td>
+        <td style="background: #AEF1AE">
+          EntityManager.this.observers
+        </td>
+      </tr><tr>
+        <td>
+          91
+        </td>
+        <td>
+          366
+        </td>
+        <td>
+          2525
+          -
+          2579
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityManager.notifyEvent
+        </td>
+        <td style="background: #AEF1AE">
+          EntityManager.this.notifyEvent(EntityManager.this.observers, EMEvents.entityCreated(entity))
+        </td>
+      </tr><tr>
+        <td>
+          91
+        </td>
+        <td>
+          365
+        </td>
+        <td>
+          2548
+          -
+          2578
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EMEvents.entityCreated
+        </td>
+        <td style="background: #AEF1AE">
+          EMEvents.entityCreated(entity)
+        </td>
+      </tr><tr>
+        <td>
+          95
+        </td>
+        <td>
+          367
+        </td>
+        <td>
+          2639
+          -
+          2661
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.mutable.SetLike.remove
+        </td>
+        <td style="background: #AEF1AE">
+          EntityManager.this.entities.remove(entity)
+        </td>
+      </tr><tr>
+        <td>
+          96
+        </td>
+        <td>
+          370
+        </td>
+        <td>
+          2666
+          -
+          2720
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityManager.notifyEvent
+        </td>
+        <td style="background: #AEF1AE">
+          EntityManager.this.notifyEvent(EntityManager.this.observers, EMEvents.entityDeleted(entity))
+        </td>
+      </tr><tr>
+        <td>
+          96
+        </td>
+        <td>
+          369
+        </td>
+        <td>
+          2689
+          -
+          2719
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EMEvents.entityDeleted
+        </td>
+        <td style="background: #AEF1AE">
+          EMEvents.entityDeleted(entity)
+        </td>
+      </tr><tr>
+        <td>
+          96
+        </td>
+        <td>
+          368
+        </td>
+        <td>
+          2678
+          -
+          2687
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityManager.observers
+        </td>
+        <td style="background: #AEF1AE">
+          EntityManager.this.observers
+        </td>
+      </tr><tr>
+        <td>
+          100
+        </td>
+        <td>
+          372
+        </td>
+        <td>
+          2815
+          -
+          2867
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityManager.observers_=
+        </td>
+        <td style="background: #AEF1AE">
+          EntityManager.this.observers_=({
+  &lt;synthetic&gt; &lt;artifact&gt; val x$1: (it.unibo.osmos.redux.ecs.entities.Observer, Class[_$1]) forSome { type _$1 &lt;: it.unibo.osmos.redux.ecs.entities.properties.basic.Property } = scala.Tuple2.apply[it.unibo.osmos.redux.ecs.entities.Observer, Class[_$1]](observer, managedEntities);
+  EntityManager.this.observers.::[it.unibo.osmos.redux.ecs.entities.EntityManager.ObserverEntry](x$1)
+})
+        </td>
+      </tr><tr>
+        <td>
+          100
+        </td>
+        <td>
+          371
+        </td>
+        <td>
+          2855
+          -
+          2867
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.::
+        </td>
+        <td style="background: #AEF1AE">
+          EntityManager.this.observers.::[it.unibo.osmos.redux.ecs.entities.EntityManager.ObserverEntry](x$1)
+        </td>
+      </tr><tr>
+        <td>
+          103
+        </td>
+        <td>
+          373
+        </td>
+        <td>
+          2990
+          -
+          3028
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityManager.extendsInterface
+        </td>
+        <td style="background: #AEF1AE">
+          EntityManager.this.extendsInterface(ent, entityInterface)
+        </td>
+      </tr><tr>
+        <td>
+          103
+        </td>
+        <td>
+          374
+        </td>
+        <td>
+          2967
+          -
+          3036
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.TraversableOnce.toList
+        </td>
+        <td style="background: #AEF1AE">
+          EntityManager.this.entities.filter(((ent: it.unibo.osmos.redux.ecs.entities.properties.basic.Property) =&gt; EntityManager.this.extendsInterface(ent, entityInterface))).toList
+        </td>
+      </tr><tr>
+        <td>
+          106
+        </td>
+        <td>
+          375
+        </td>
+        <td>
+          3131
+          -
+          3168
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.LinearSeqOptimized.contains
+        </td>
+        <td style="background: #AEF1AE">
+          EntityManager.this.getInterfaces(ent).contains[Class[_]](entityInt)
+        </td>
+      </tr><tr>
+        <td>
+          109
+        </td>
+        <td>
+          376
+        </td>
+        <td>
+          3258
+          -
+          3273
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.getClass
+        </td>
+        <td style="background: #AEF1AE">
+          entity.getClass()
+        </td>
+      </tr><tr>
+        <td>
+          109
+        </td>
+        <td>
+          378
+        </td>
+        <td>
+          3230
+          -
+          3289
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.TraversableOnce.toList
+        </td>
+        <td style="background: #AEF1AE">
+          scala.collection.JavaConverters.asScalaBufferConverter[Class[_]](org.apache.commons.lang3.ClassUtils.getAllInterfaces(entity.getClass())).asScala.toList
+        </td>
+      </tr><tr>
+        <td>
+          109
+        </td>
+        <td>
+          377
+        </td>
+        <td>
+          3230
+          -
+          3274
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          org.apache.commons.lang3.ClassUtils.getAllInterfaces
+        </td>
+        <td style="background: #AEF1AE">
+          org.apache.commons.lang3.ClassUtils.getAllInterfaces(entity.getClass())
+        </td>
+      </tr><tr>
+        <td>
+          112
+        </td>
+        <td>
+          379
+        </td>
+        <td>
+          3340
+          -
+          3346
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.Nil
+        </td>
+        <td style="background: #AEF1AE">
+          scala.collection.immutable.Nil
+        </td>
+      </tr><tr>
+        <td>
+          112
+        </td>
+        <td>
+          380
+        </td>
+        <td>
+          3328
+          -
+          3346
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityManager.observers_=
+        </td>
+        <td style="background: #AEF1AE">
+          EntityManager.this.observers_=(scala.collection.immutable.Nil)
+        </td>
+      </tr><tr>
+        <td>
+          113
+        </td>
+        <td>
+          381
+        </td>
+        <td>
+          3351
+          -
+          3367
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.mutable.SetLike.clear
+        </td>
+        <td style="background: #AEF1AE">
+          EntityManager.this.entities.clear()
+        </td>
+      </tr><tr>
+        <td>
+          119
+        </td>
+        <td>
+          382
+        </td>
+        <td>
+          3516
+          -
+          3518
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          120
+        </td>
+        <td>
+          384
+        </td>
+        <td>
+          3555
+          -
+          3598
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityManager.extendsInterface
+        </td>
+        <td style="background: #AEF1AE">
+          EntityManager.this.extendsInterface(emEvent.entity, entityInt)
+        </td>
+      </tr><tr>
+        <td>
+          120
+        </td>
+        <td>
+          383
+        </td>
+        <td>
+          3572
+          -
+          3586
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EMEvents.EntityManagerEvent.entity
+        </td>
+        <td style="background: #AEF1AE">
+          emEvent.entity
+        </td>
+      </tr><tr>
+        <td>
+          121
+        </td>
+        <td>
+          385
+        </td>
+        <td>
+          3610
+          -
+          3629
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.Observer.notify
+        </td>
+        <td style="background: #AEF1AE">
+          obs.notify(emEvent)
+        </td>
+      </tr><tr>
+        <td>
+          121
+        </td>
+        <td>
+          386
+        </td>
+        <td>
+          3631
+          -
+          3654
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityManager.notifyEvent
+        </td>
+        <td style="background: #AEF1AE">
+          EntityManager.this.notifyEvent(t, emEvent)
+        </td>
+      </tr><tr>
+        <td>
+          122
+        </td>
+        <td>
+          387
+        </td>
+        <td>
+          3676
+          -
+          3699
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityManager.notifyEvent
+        </td>
+        <td style="background: #AEF1AE">
+          EntityManager.this.notifyEvent(t, emEvent)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

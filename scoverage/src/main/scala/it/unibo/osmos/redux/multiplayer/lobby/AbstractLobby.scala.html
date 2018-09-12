@@ -1,0 +1,543 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/multiplayer/lobby/AbstractLobby.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.multiplayer.lobby
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.multiplayer.players.Player
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo
+</span>5 <span style=''>import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
+</span>6 <span style=''>import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, MultiPlayerLevelContext}
+</span>7 <span style=''>import it.unibo.osmos.redux.mvc.view.events._
+</span>8 <span style=''>
+</span>9 <span style=''>abstract class AbstractLobby[T &lt;: Player](private val lobbyContext: LobbyContext) extends Lobby[T] {
+</span>10 <span style=''>
+</span>11 <span style=''>  /** Notify to lobby context that the game is started passing the context of the level to play.
+</span>12 <span style=''>    *
+</span>13 <span style=''>    * @param levelContext The level context.
+</span>14 <span style=''>    * @param levelInfo    The level info.
+</span>15 <span style=''>    */
+</span>16 <span style=''>  def notifyGameStarted(levelContext: MultiPlayerLevelContext, levelInfo: LevelInfo): Unit = {
+</span>17 <span style=''>    </span><span style='background: #F0ADAD'>lobbyContext.notify(LobbyEventWrapper(StartGame(levelContext, levelInfo), None))</span><span style=''>
+</span>18 <span style=''>  }
+</span>19 <span style=''>
+</span>20 <span style=''>  /** Notify to lobby context that the lobby have been closed.
+</span>21 <span style=''>    *
+</span>22 <span style=''>    * @param byUser If the lobby have been closed by the user or not (optional, default true).
+</span>23 <span style=''>    */
+</span>24 <span style=''>  def notifyLobbyClosed(byUser: Boolean = true): Unit = {
+</span>25 <span style=''>    if (byUser) </span><span style='background: #F0ADAD'>lobbyContext.notifyLobbyEvent(LobbyEventWrapper(AbortLobby, None))</span><span style=''>
+</span>26 <span style=''>    else </span><span style='background: #F0ADAD'>lobbyContext.notify(LobbyEventWrapper(AbortLobby, None))</span><span style=''>
+</span>27 <span style=''>  }
+</span>28 <span style=''>
+</span>29 <span style=''>  /** Notify the lobby context that a new user have been added to the lobby.
+</span>30 <span style=''>    *
+</span>31 <span style=''>    * @param user The user.
+</span>32 <span style=''>    */
+</span>33 <span style=''>  def notifyUserAdded(user: User): Unit = </span><span style='background: #F0ADAD'>lobbyContext.notify(LobbyEventWrapper(UserAdded, Some(user)))</span><span style=''>
+</span>34 <span style=''>
+</span>35 <span style=''>  /** Notify the lobby context that a user have been removed from the lobby.
+</span>36 <span style=''>    *
+</span>37 <span style=''>    * @param user The user.
+</span>38 <span style=''>    */
+</span>39 <span style=''>  def notifyUserRemoved(user: User): Unit = </span><span style='background: #F0ADAD'>lobbyContext.notify(LobbyEventWrapper(UserRemoved, Some(user)))</span><span style=''>
+</span>40 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          1512
+        </td>
+        <td>
+          842
+          -
+          846
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #F0ADAD">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          1514
+        </td>
+        <td>
+          768
+          -
+          848
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver.notify
+        </td>
+        <td style="background: #F0ADAD">
+          AbstractLobby.this.lobbyContext.notify(it.unibo.osmos.redux.mvc.view.events.LobbyEventWrapper.apply(it.unibo.osmos.redux.mvc.view.events.StartGame.apply(levelContext, levelInfo), scala.None))
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          1511
+        </td>
+        <td>
+          806
+          -
+          840
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.StartGame.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.events.StartGame.apply(levelContext, levelInfo)
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          1513
+        </td>
+        <td>
+          788
+          -
+          847
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.LobbyEventWrapper.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.events.LobbyEventWrapper.apply(it.unibo.osmos.redux.mvc.view.events.StartGame.apply(levelContext, levelInfo), scala.None)
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          1519
+        </td>
+        <td>
+          1099
+          -
+          1165
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LobbyContext.notifyLobbyEvent
+        </td>
+        <td style="background: #F0ADAD">
+          AbstractLobby.this.lobbyContext.notifyLobbyEvent(it.unibo.osmos.redux.mvc.view.events.LobbyEventWrapper.apply(it.unibo.osmos.redux.mvc.view.events.AbortLobby, scala.None))
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          1518
+        </td>
+        <td>
+          1099
+          -
+          1165
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LobbyContext.notifyLobbyEvent
+        </td>
+        <td style="background: #F0ADAD">
+          AbstractLobby.this.lobbyContext.notifyLobbyEvent(it.unibo.osmos.redux.mvc.view.events.LobbyEventWrapper.apply(it.unibo.osmos.redux.mvc.view.events.AbortLobby, scala.None))
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          1515
+        </td>
+        <td>
+          1147
+          -
+          1157
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.AbortLobby
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.events.AbortLobby
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          1517
+        </td>
+        <td>
+          1129
+          -
+          1164
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.LobbyEventWrapper.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.events.LobbyEventWrapper.apply(it.unibo.osmos.redux.mvc.view.events.AbortLobby, scala.None)
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          1516
+        </td>
+        <td>
+          1159
+          -
+          1163
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #F0ADAD">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          1521
+        </td>
+        <td>
+          1225
+          -
+          1229
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #F0ADAD">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          1524
+        </td>
+        <td>
+          1175
+          -
+          1231
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver.notify
+        </td>
+        <td style="background: #F0ADAD">
+          AbstractLobby.this.lobbyContext.notify(it.unibo.osmos.redux.mvc.view.events.LobbyEventWrapper.apply(it.unibo.osmos.redux.mvc.view.events.AbortLobby, scala.None))
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          1523
+        </td>
+        <td>
+          1175
+          -
+          1231
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver.notify
+        </td>
+        <td style="background: #F0ADAD">
+          AbstractLobby.this.lobbyContext.notify(it.unibo.osmos.redux.mvc.view.events.LobbyEventWrapper.apply(it.unibo.osmos.redux.mvc.view.events.AbortLobby, scala.None))
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          1520
+        </td>
+        <td>
+          1213
+          -
+          1223
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.AbortLobby
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.events.AbortLobby
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          1522
+        </td>
+        <td>
+          1195
+          -
+          1230
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.LobbyEventWrapper.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.events.LobbyEventWrapper.apply(it.unibo.osmos.redux.mvc.view.events.AbortLobby, scala.None)
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          1528
+        </td>
+        <td>
+          1397
+          -
+          1458
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver.notify
+        </td>
+        <td style="background: #F0ADAD">
+          AbstractLobby.this.lobbyContext.notify(it.unibo.osmos.redux.mvc.view.events.LobbyEventWrapper.apply(it.unibo.osmos.redux.mvc.view.events.UserAdded, scala.Some.apply[it.unibo.osmos.redux.mvc.view.components.multiplayer.User](user)))
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          1527
+        </td>
+        <td>
+          1417
+          -
+          1457
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.LobbyEventWrapper.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.events.LobbyEventWrapper.apply(it.unibo.osmos.redux.mvc.view.events.UserAdded, scala.Some.apply[it.unibo.osmos.redux.mvc.view.components.multiplayer.User](user))
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          1526
+        </td>
+        <td>
+          1446
+          -
+          1456
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Some.apply[it.unibo.osmos.redux.mvc.view.components.multiplayer.User](user)
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          1525
+        </td>
+        <td>
+          1435
+          -
+          1444
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.UserAdded
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.events.UserAdded
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          1530
+        </td>
+        <td>
+          1673
+          -
+          1683
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Some.apply[it.unibo.osmos.redux.mvc.view.components.multiplayer.User](user)
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          1532
+        </td>
+        <td>
+          1622
+          -
+          1685
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver.notify
+        </td>
+        <td style="background: #F0ADAD">
+          AbstractLobby.this.lobbyContext.notify(it.unibo.osmos.redux.mvc.view.events.LobbyEventWrapper.apply(it.unibo.osmos.redux.mvc.view.events.UserRemoved, scala.Some.apply[it.unibo.osmos.redux.mvc.view.components.multiplayer.User](user)))
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          1529
+        </td>
+        <td>
+          1660
+          -
+          1671
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.UserRemoved
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.events.UserRemoved
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          1531
+        </td>
+        <td>
+          1642
+          -
+          1684
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.LobbyEventWrapper.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.events.LobbyEventWrapper.apply(it.unibo.osmos.redux.mvc.view.events.UserRemoved, scala.Some.apply[it.unibo.osmos.redux.mvc.view.components.multiplayer.User](user))
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

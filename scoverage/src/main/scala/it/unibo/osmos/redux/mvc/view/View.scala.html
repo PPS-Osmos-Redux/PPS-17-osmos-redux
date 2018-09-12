@@ -1,0 +1,1403 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/View.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.ecs.entities.CellEntity
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.controller.Controller
+</span>5 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure._
+</span>6 <span style=''>import it.unibo.osmos.redux.mvc.view.components.custom.AlertFactory
+</span>7 <span style=''>import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
+</span>8 <span style=''>import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LobbyContext}
+</span>9 <span style=''>import it.unibo.osmos.redux.mvc.view.stages.{OsmosReduxPrimaryStage, PrimaryStageListener}
+</span>10 <span style=''>import it.unibo.osmos.redux.utils.GenericResponse
+</span>11 <span style=''>import scalafx.application.{JFXApp, Platform}
+</span>12 <span style=''>
+</span>13 <span style=''>import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
+</span>14 <span style=''>import scala.util.{Failure, Success}
+</span>15 <span style=''>
+</span>16 <span style=''>/** View base trait */
+</span>17 <span style=''>trait View {
+</span>18 <span style=''>
+</span>19 <span style=''>
+</span>20 <span style=''>  /** Setter. This method sets the reference to the Controller instance
+</span>21 <span style=''>    *
+</span>22 <span style=''>    * @param controller the Controller instance
+</span>23 <span style=''>    */
+</span>24 <span style=''>  def setController(controller: Controller)
+</span>25 <span style=''>
+</span>26 <span style=''>}
+</span>27 <span style=''>
+</span>28 <span style=''>object View {
+</span>29 <span style=''>
+</span>30 <span style=''>  def apply(app: JFXApp): View = </span><span style='background: #F0ADAD'>new ViewImpl(app)</span><span style=''>
+</span>31 <span style=''>
+</span>32 <span style=''>  /** View implementation, holding the main stage and the current scene
+</span>33 <span style=''>    *
+</span>34 <span style=''>    * @param app a reference to the JFXApp, necessary to the correct setup of the whole application
+</span>35 <span style=''>    */
+</span>36 <span style=''>  class ViewImpl(private val app: JFXApp) extends View with PrimaryStageListener {
+</span>37 <span style=''>
+</span>38 <span style=''>    /** Implicit executor */
+</span>39 <span style=''>    implicit val ec: ExecutionContextExecutor = </span><span style='background: #F0ADAD'>ExecutionContext.global</span><span style=''>
+</span>40 <span style=''>    /** Setting the primary stage */
+</span>41 <span style=''>    </span><span style='background: #F0ADAD'>app.stage = OsmosReduxPrimaryStage(this)</span><span style=''>
+</span>42 <span style=''>    private var controller: Option[Controller] = </span><span style='background: #F0ADAD'>Option.empty</span><span style=''>
+</span>43 <span style=''>
+</span>44 <span style=''>    override def setController(controller: Controller): Unit = {
+</span>45 <span style=''>      </span><span style='background: #F0ADAD'>this.controller = Option(controller)</span><span style=''>
+</span>46 <span style=''>    }
+</span>47 <span style=''>
+</span>48 <span style=''>    override def onLevelContextCreated(levelContext: LevelContext, level: String, isCustom: Boolean = false): Boolean = {
+</span>49 <span style=''>      </span><span style='background: #F0ADAD'>controller</span><span style=''> match {
+</span>50 <span style=''>        case Some(c) =&gt;
+</span>51 <span style=''>          </span><span style='background: #F0ADAD'>c.initLevel(levelContext, level, isCustom)</span><span style=''> match {
+</span>52 <span style=''>            case Failure(t) =&gt;
+</span>53 <span style=''>              </span><span style='background: #F0ADAD'>AlertFactory.createErrorAlert(&quot;Unable to start level&quot;, t.getMessage).showAndWait()</span><span style=''>
+</span>54 <span style=''>              </span><span style='background: #F0ADAD'>false</span><span style=''>
+</span>55 <span style=''>            case _ =&gt; </span><span style='background: #F0ADAD'>true</span><span style=''>
+</span>56 <span style=''>          }
+</span>57 <span style=''>        case None =&gt; </span><span style='background: #F0ADAD'>false</span><span style=''>
+</span>58 <span style=''>      }
+</span>59 <span style=''>    }
+</span>60 <span style=''>
+</span>61 <span style=''>    override def getSingleLevels: List[LevelInfo] = </span><span style='background: #F0ADAD'>controller</span><span style=''> match {
+</span>62 <span style=''>      case Some(c) =&gt; </span><span style='background: #F0ADAD'>c.getSinglePlayerLevels</span><span style=''>
+</span>63 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>List()</span><span style=''>
+</span>64 <span style=''>    }
+</span>65 <span style=''>
+</span>66 <span style=''>    override def getCustomLevels: List[LevelInfo] = </span><span style='background: #F0ADAD'>controller</span><span style=''> match {
+</span>67 <span style=''>      case Some(c) =&gt; </span><span style='background: #F0ADAD'>c.getCustomLevels</span><span style=''>
+</span>68 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>List()</span><span style=''>
+</span>69 <span style=''>    }
+</span>70 <span style=''>
+</span>71 <span style=''>    override def getMultiPlayerLevels: List[LevelInfo] = </span><span style='background: #F0ADAD'>controller</span><span style=''> match {
+</span>72 <span style=''>      case Some(c) =&gt; </span><span style='background: #F0ADAD'>c.getMultiPlayerLevels</span><span style=''>
+</span>73 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>List()</span><span style=''>
+</span>74 <span style=''>    }
+</span>75 <span style=''>
+</span>76 <span style=''>    override def getCampaignLevels: List[CampaignLevel] = </span><span style='background: #F0ADAD'>controller</span><span style=''> match {
+</span>77 <span style=''>      case Some(c) =&gt; </span><span style='background: #F0ADAD'>c.getCampaignLevels</span><span style=''>
+</span>78 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>List()</span><span style=''>
+</span>79 <span style=''>    }
+</span>80 <span style=''>
+</span>81 <span style=''>    override def onSaveLevel(name: String,
+</span>82 <span style=''>                             map: MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value,
+</span>83 <span style=''>                             entities: Seq[CellEntity],
+</span>84 <span style=''>                             callback: Boolean =&gt; Unit): Unit = </span><span style='background: #F0ADAD'>checkController(() =&gt; callback(controller.get.saveLevel(name, map, victoryRules, collisionRules, entities)))</span><span style=''>
+</span>85 <span style=''>
+</span>86 <span style=''>    override def onDeleteLevel(level: String, callback: Boolean =&gt; Unit): Unit = </span><span style='background: #F0ADAD'>checkController(() =&gt; callback(controller.get.removeLevel(level)))</span><span style=''>
+</span>87 <span style=''>
+</span>88 <span style=''>    override def onStartLevel(): Unit = </span><span style='background: #F0ADAD'>checkController(() =&gt; controller.get.startLevel())</span><span style=''>
+</span>89 <span style=''>
+</span>90 <span style=''>    override def onPauseLevel(): Unit = </span><span style='background: #F0ADAD'>checkController(() =&gt; controller.get.pauseLevel())</span><span style=''>
+</span>91 <span style=''>
+</span>92 <span style=''>    override def onResumeLevel(): Unit = </span><span style='background: #F0ADAD'>checkController(() =&gt; controller.get.resumeLevel())</span><span style=''>
+</span>93 <span style=''>
+</span>94 <span style=''>    override def onStopLevel(victory: Boolean): Unit = </span><span style='background: #F0ADAD'>checkController(() =&gt; controller.get.stopLevel(victory))</span><span style=''>
+</span>95 <span style=''>
+</span>96 <span style=''>    override def onLevelSpeedChanged(increment: Boolean): Unit = </span><span style='background: #F0ADAD'>checkController(() =&gt; controller.get.changeLevelSpeed(increment))</span><span style=''>
+</span>97 <span style=''>
+</span>98 <span style=''>    /** After checking the controller, we ask to enter the lobby asynchronously and call the callback function after the future result
+</span>99 <span style=''>      *
+</span>100 <span style=''>      * @param user         the user requesting to enter the lobby
+</span>101 <span style=''>      * @param lobbyContext the lobby context, which may be used by the server to configure existing lobby users
+</span>102 <span style=''>      * @param callback     the callback
+</span>103 <span style=''>      */
+</span>104 <span style=''>    override def onLobbyRequest(user: User, levelInfo: Option[LevelInfo], lobbyContext: LobbyContext, callback: (User, Option[LevelInfo], LobbyContext, GenericResponse[Boolean]) =&gt; Unit): Unit =
+</span>105 <span style=''>      </span><span style='background: #F0ADAD'>checkController(() =&gt; controller.get.initLobby(user, lobbyContext).future.onComplete {
+</span>106 <span style=''></span><span style='background: #F0ADAD'>        case Success(value) =&gt; callback(user, levelInfo, lobbyContext, value)
+</span>107 <span style=''></span><span style='background: #F0ADAD'>        case Failure(e) =&gt; onDisplayError(&quot;Connection call succeeded but did not receive response&quot;)
+</span>108 <span style=''></span><span style='background: #F0ADAD'>      })</span><span style=''>
+</span>109 <span style=''>
+</span>110 <span style=''>    override def onStartMultiPlayerGameClick(levelInfo: LevelInfo): Unit = </span><span style='background: #F0ADAD'>checkController(() =&gt; controller.get.initMultiPlayerLevel(levelInfo).future.onComplete {
+</span>111 <span style=''></span><span style='background: #F0ADAD'>      case Failure(e) =&gt; onDisplayError(&quot;Failed controller init&quot;)
+</span>112 <span style=''></span><span style='background: #F0ADAD'>      case Success(_) =&gt; //do nothing
+</span>113 <span style=''></span><span style='background: #F0ADAD'>    })</span><span style=''>
+</span>114 <span style=''>
+</span>115 <span style=''>    /** Utility method that checks if controller is not empty and execute f() if that is the case
+</span>116 <span style=''>      *
+</span>117 <span style=''>      * @param f the function which will be executed if controller is not empty
+</span>118 <span style=''>      */
+</span>119 <span style=''>    private def checkController(f: () =&gt; Unit): Unit = </span><span style='background: #F0ADAD'>controller</span><span style=''> match {
+</span>120 <span style=''>      case Some(_) =&gt; </span><span style='background: #F0ADAD'>f()</span><span style=''>
+</span>121 <span style=''>      case _ </span><span style='background: #F0ADAD'>=&gt;</span><span style=''>
+</span>122 <span style=''>    }
+</span>123 <span style=''>
+</span>124 <span style=''>    def onDisplayError(message: String): Unit = {
+</span>125 <span style=''>      </span><span style='background: #F0ADAD'>Platform.runLater {
+</span>126 <span style=''></span><span style='background: #F0ADAD'>        AlertFactory.createErrorAlert(&quot;Error occurred&quot;, message).showAndWait()
+</span>127 <span style=''></span><span style='background: #F0ADAD'>      }</span><span style=''>
+</span>128 <span style=''>    }
+</span>129 <span style=''>
+</span>130 <span style=''>  }
+</span>131 <span style=''>
+</span>132 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          3305
+        </td>
+        <td>
+          976
+          -
+          993
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.View.ViewImpl.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new View.this.ViewImpl(app)
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          3306
+        </td>
+        <td>
+          1341
+          -
+          1364
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.concurrent.ExecutionContext.global
+        </td>
+        <td style="background: #F0ADAD">
+          scala.concurrent.ExecutionContext.global
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          3307
+        </td>
+        <td>
+          1418
+          -
+          1418
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply$default$2
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply$default$2
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          3310
+        </td>
+        <td>
+          1406
+          -
+          1446
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.application.JFXApp.stage_=
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.app.stage_=(it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply(this, it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply$default$2, it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply$default$3))
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          3309
+        </td>
+        <td>
+          1418
+          -
+          1446
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply(this, it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply$default$2, it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply$default$3)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          3308
+        </td>
+        <td>
+          1418
+          -
+          1418
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply$default$3
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply$default$3
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          3311
+        </td>
+        <td>
+          1496
+          -
+          1508
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.Option.empty
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Option.empty[Nothing]
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          3313
+        </td>
+        <td>
+          1581
+          -
+          1617
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.View.ViewImpl.controller_=
+        </td>
+        <td style="background: #F0ADAD">
+          this.controller_=(scala.Option.apply[it.unibo.osmos.redux.mvc.controller.Controller](controller))
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          3312
+        </td>
+        <td>
+          1599
+          -
+          1617
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Option.apply[it.unibo.osmos.redux.mvc.controller.Controller](controller)
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          3314
+        </td>
+        <td>
+          1753
+          -
+          1763
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.View.ViewImpl.controller
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.controller
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          3315
+        </td>
+        <td>
+          1806
+          -
+          1848
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.Controller.initLevel
+        </td>
+        <td style="background: #F0ADAD">
+          c.initLevel(levelContext, level, isCustom)
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          3316
+        </td>
+        <td>
+          1902
+          -
+          1984
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.Alert.showAndWait
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.components.custom.AlertFactory.createErrorAlert(&quot;Unable to start level&quot;, t.getMessage()).showAndWait()
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          3317
+        </td>
+        <td>
+          1999
+          -
+          2004
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          false
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          3318
+        </td>
+        <td>
+          2027
+          -
+          2031
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          3319
+        </td>
+        <td>
+          2065
+          -
+          2070
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          false
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          3320
+        </td>
+        <td>
+          2138
+          -
+          2148
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.View.ViewImpl.controller
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.controller
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          3321
+        </td>
+        <td>
+          2179
+          -
+          2202
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.Controller.getSinglePlayerLevels
+        </td>
+        <td style="background: #F0ADAD">
+          c.getSinglePlayerLevels
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          3322
+        </td>
+        <td>
+          2219
+          -
+          2225
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.Nil
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.immutable.Nil
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          3323
+        </td>
+        <td>
+          2285
+          -
+          2295
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.View.ViewImpl.controller
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.controller
+        </td>
+      </tr><tr>
+        <td>
+          67
+        </td>
+        <td>
+          3324
+        </td>
+        <td>
+          2326
+          -
+          2343
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.Controller.getCustomLevels
+        </td>
+        <td style="background: #F0ADAD">
+          c.getCustomLevels
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          3325
+        </td>
+        <td>
+          2360
+          -
+          2366
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.Nil
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.immutable.Nil
+        </td>
+      </tr><tr>
+        <td>
+          71
+        </td>
+        <td>
+          3326
+        </td>
+        <td>
+          2431
+          -
+          2441
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.View.ViewImpl.controller
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.controller
+        </td>
+      </tr><tr>
+        <td>
+          72
+        </td>
+        <td>
+          3327
+        </td>
+        <td>
+          2472
+          -
+          2494
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.Controller.getMultiPlayerLevels
+        </td>
+        <td style="background: #F0ADAD">
+          c.getMultiPlayerLevels
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          3328
+        </td>
+        <td>
+          2511
+          -
+          2517
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.Nil
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.immutable.Nil
+        </td>
+      </tr><tr>
+        <td>
+          76
+        </td>
+        <td>
+          3329
+        </td>
+        <td>
+          2583
+          -
+          2593
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.View.ViewImpl.controller
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.controller
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          3330
+        </td>
+        <td>
+          2624
+          -
+          2643
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.Controller.getCampaignLevels
+        </td>
+        <td style="background: #F0ADAD">
+          c.getCampaignLevels
+        </td>
+      </tr><tr>
+        <td>
+          78
+        </td>
+        <td>
+          3331
+        </td>
+        <td>
+          2660
+          -
+          2666
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.Nil
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.immutable.Nil
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          3334
+        </td>
+        <td>
+          2953
+          -
+          3061
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.View.ViewImpl.checkController
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.checkController((() =&gt; callback.apply(ViewImpl.this.controller.get.saveLevel(name, map, victoryRules, collisionRules, entities))))
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          3333
+        </td>
+        <td>
+          2975
+          -
+          3060
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Function1.apply
+        </td>
+        <td style="background: #F0ADAD">
+          callback.apply(ViewImpl.this.controller.get.saveLevel(name, map, victoryRules, collisionRules, entities))
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          3332
+        </td>
+        <td>
+          2984
+          -
+          3059
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.Controller.saveLevel
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.controller.get.saveLevel(name, map, victoryRules, collisionRules, entities)
+        </td>
+      </tr><tr>
+        <td>
+          86
+        </td>
+        <td>
+          3336
+        </td>
+        <td>
+          3166
+          -
+          3209
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Function1.apply
+        </td>
+        <td style="background: #F0ADAD">
+          callback.apply(ViewImpl.this.controller.get.removeLevel(level))
+        </td>
+      </tr><tr>
+        <td>
+          86
+        </td>
+        <td>
+          3335
+        </td>
+        <td>
+          3175
+          -
+          3208
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.Controller.removeLevel
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.controller.get.removeLevel(level)
+        </td>
+      </tr><tr>
+        <td>
+          86
+        </td>
+        <td>
+          3337
+        </td>
+        <td>
+          3144
+          -
+          3210
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.View.ViewImpl.checkController
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.checkController((() =&gt; callback.apply(ViewImpl.this.controller.get.removeLevel(level))))
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          3339
+        </td>
+        <td>
+          3252
+          -
+          3302
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.View.ViewImpl.checkController
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.checkController((() =&gt; ViewImpl.this.controller.get.startLevel()))
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          3338
+        </td>
+        <td>
+          3274
+          -
+          3301
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.Controller.startLevel
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.controller.get.startLevel()
+        </td>
+      </tr><tr>
+        <td>
+          90
+        </td>
+        <td>
+          3340
+        </td>
+        <td>
+          3366
+          -
+          3393
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.Controller.pauseLevel
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.controller.get.pauseLevel()
+        </td>
+      </tr><tr>
+        <td>
+          90
+        </td>
+        <td>
+          3341
+        </td>
+        <td>
+          3344
+          -
+          3394
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.View.ViewImpl.checkController
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.checkController((() =&gt; ViewImpl.this.controller.get.pauseLevel()))
+        </td>
+      </tr><tr>
+        <td>
+          92
+        </td>
+        <td>
+          3343
+        </td>
+        <td>
+          3437
+          -
+          3488
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.View.ViewImpl.checkController
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.checkController((() =&gt; ViewImpl.this.controller.get.resumeLevel()))
+        </td>
+      </tr><tr>
+        <td>
+          92
+        </td>
+        <td>
+          3342
+        </td>
+        <td>
+          3459
+          -
+          3487
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.Controller.resumeLevel
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.controller.get.resumeLevel()
+        </td>
+      </tr><tr>
+        <td>
+          94
+        </td>
+        <td>
+          3345
+        </td>
+        <td>
+          3545
+          -
+          3601
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.View.ViewImpl.checkController
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.checkController((() =&gt; ViewImpl.this.controller.get.stopLevel(victory)))
+        </td>
+      </tr><tr>
+        <td>
+          94
+        </td>
+        <td>
+          3344
+        </td>
+        <td>
+          3567
+          -
+          3600
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.Controller.stopLevel
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.controller.get.stopLevel(victory)
+        </td>
+      </tr><tr>
+        <td>
+          96
+        </td>
+        <td>
+          3347
+        </td>
+        <td>
+          3668
+          -
+          3733
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.View.ViewImpl.checkController
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.checkController((() =&gt; ViewImpl.this.controller.get.changeLevelSpeed(increment)))
+        </td>
+      </tr><tr>
+        <td>
+          96
+        </td>
+        <td>
+          3346
+        </td>
+        <td>
+          3690
+          -
+          3732
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.Controller.changeLevelSpeed
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.controller.get.changeLevelSpeed(increment)
+        </td>
+      </tr><tr>
+        <td>
+          105
+        </td>
+        <td>
+          3352
+        </td>
+        <td>
+          4309
+          -
+          4582
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.View.ViewImpl.checkController
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.checkController((() =&gt; ViewImpl.this.controller.get.initLobby(user, lobbyContext).future.onComplete[Unit](((x0$1: scala.util.Try[it.unibo.osmos.redux.utils.GenericResponse[Boolean]]) =&gt; x0$1 match {
+  case (value: it.unibo.osmos.redux.utils.GenericResponse[Boolean])scala.util.Success[it.unibo.osmos.redux.utils.GenericResponse[Boolean]]((value @ _)) =&gt; callback.apply(user, levelInfo, lobbyContext, value)
+  case (exception: Throwable)scala.util.Failure[it.unibo.osmos.redux.utils.GenericResponse[Boolean]]((e @ _)) =&gt; ViewImpl.this.onDisplayError(&quot;Connection call succeeded but did not receive response&quot;)
+}))(ViewImpl.this.ec)))
+        </td>
+      </tr><tr>
+        <td>
+          105
+        </td>
+        <td>
+          3351
+        </td>
+        <td>
+          4331
+          -
+          4581
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.concurrent.Future.onComplete
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.controller.get.initLobby(user, lobbyContext).future.onComplete[Unit](((x0$1: scala.util.Try[it.unibo.osmos.redux.utils.GenericResponse[Boolean]]) =&gt; x0$1 match {
+  case (value: it.unibo.osmos.redux.utils.GenericResponse[Boolean])scala.util.Success[it.unibo.osmos.redux.utils.GenericResponse[Boolean]]((value @ _)) =&gt; callback.apply(user, levelInfo, lobbyContext, value)
+  case (exception: Throwable)scala.util.Failure[it.unibo.osmos.redux.utils.GenericResponse[Boolean]]((e @ _)) =&gt; ViewImpl.this.onDisplayError(&quot;Connection call succeeded but did not receive response&quot;)
+}))(ViewImpl.this.ec)
+        </td>
+      </tr><tr>
+        <td>
+          105
+        </td>
+        <td>
+          3350
+        </td>
+        <td>
+          4394
+          -
+          4394
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.View.ViewImpl.ec
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.ec
+        </td>
+      </tr><tr>
+        <td>
+          106
+        </td>
+        <td>
+          3348
+        </td>
+        <td>
+          4427
+          -
+          4473
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Function4.apply
+        </td>
+        <td style="background: #F0ADAD">
+          callback.apply(user, levelInfo, lobbyContext, value)
+        </td>
+      </tr><tr>
+        <td>
+          107
+        </td>
+        <td>
+          3349
+        </td>
+        <td>
+          4501
+          -
+          4573
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.View.ViewImpl.onDisplayError
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.onDisplayError(&quot;Connection call succeeded but did not receive response&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          110
+        </td>
+        <td>
+          3357
+        </td>
+        <td>
+          4659
+          -
+          4858
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.View.ViewImpl.checkController
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.checkController((() =&gt; ViewImpl.this.controller.get.initMultiPlayerLevel(levelInfo).future.onComplete[Unit](((x0$2: scala.util.Try[it.unibo.osmos.redux.utils.GenericResponse[Boolean]]) =&gt; x0$2 match {
+  case (exception: Throwable)scala.util.Failure[it.unibo.osmos.redux.utils.GenericResponse[Boolean]]((e @ _)) =&gt; ViewImpl.this.onDisplayError(&quot;Failed controller init&quot;)
+  case (value: it.unibo.osmos.redux.utils.GenericResponse[Boolean])scala.util.Success[it.unibo.osmos.redux.utils.GenericResponse[Boolean]](_) =&gt; ()
+}))(ViewImpl.this.ec)))
+        </td>
+      </tr><tr>
+        <td>
+          110
+        </td>
+        <td>
+          3356
+        </td>
+        <td>
+          4681
+          -
+          4857
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.concurrent.Future.onComplete
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.controller.get.initMultiPlayerLevel(levelInfo).future.onComplete[Unit](((x0$2: scala.util.Try[it.unibo.osmos.redux.utils.GenericResponse[Boolean]]) =&gt; x0$2 match {
+  case (exception: Throwable)scala.util.Failure[it.unibo.osmos.redux.utils.GenericResponse[Boolean]]((e @ _)) =&gt; ViewImpl.this.onDisplayError(&quot;Failed controller init&quot;)
+  case (value: it.unibo.osmos.redux.utils.GenericResponse[Boolean])scala.util.Success[it.unibo.osmos.redux.utils.GenericResponse[Boolean]](_) =&gt; ()
+}))(ViewImpl.this.ec)
+        </td>
+      </tr><tr>
+        <td>
+          110
+        </td>
+        <td>
+          3355
+        </td>
+        <td>
+          4746
+          -
+          4746
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.View.ViewImpl.ec
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.ec
+        </td>
+      </tr><tr>
+        <td>
+          111
+        </td>
+        <td>
+          3353
+        </td>
+        <td>
+          4773
+          -
+          4813
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.View.ViewImpl.onDisplayError
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.onDisplayError(&quot;Failed controller init&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          112
+        </td>
+        <td>
+          3354
+        </td>
+        <td>
+          4836
+          -
+          4838
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          119
+        </td>
+        <td>
+          3358
+        </td>
+        <td>
+          5110
+          -
+          5120
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.View.ViewImpl.controller
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.controller
+        </td>
+      </tr><tr>
+        <td>
+          120
+        </td>
+        <td>
+          3359
+        </td>
+        <td>
+          5151
+          -
+          5154
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Function0.apply
+        </td>
+        <td style="background: #F0ADAD">
+          f.apply()
+        </td>
+      </tr><tr>
+        <td>
+          121
+        </td>
+        <td>
+          3360
+        </td>
+        <td>
+          5168
+          -
+          5170
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          125
+        </td>
+        <td>
+          3362
+        </td>
+        <td>
+          5234
+          -
+          5340
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.application.Platform.runLater
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.application.Platform.runLater[Option[scalafx.scene.control.ButtonType]](it.unibo.osmos.redux.mvc.view.components.custom.AlertFactory.createErrorAlert(&quot;Error occurred&quot;, message).showAndWait())
+        </td>
+      </tr><tr>
+        <td>
+          126
+        </td>
+        <td>
+          3361
+        </td>
+        <td>
+          5262
+          -
+          5332
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.Alert.showAndWait
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.components.custom.AlertFactory.createErrorAlert(&quot;Error occurred&quot;, message).showAndWait()
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

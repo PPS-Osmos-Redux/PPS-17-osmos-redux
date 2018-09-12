@@ -1,0 +1,255 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/controller/manager/files/StyleFileManager.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.controller.manager.files
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.utils.Constants.ResourcesPaths.StylePath
+</span>4 <span style=''>import it.unibo.osmos.redux.utils.Logger
+</span>5 <span style=''>
+</span>6 <span style=''>/** Defines operation on styles file */
+</span>7 <span style=''>object StyleFileManager extends FileManager {
+</span>8 <span style=''>
+</span>9 <span style=''>  override implicit val who: String = </span><span style='background: #F0ADAD'>&quot;StyleFileManager&quot;</span><span style=''>
+</span>10 <span style=''>// TODO:
+</span>11 <span style=''>  def getStyle: String = {
+</span>12 <span style=''>    try {
+</span>13 <span style=''>      </span><span style='background: #F0ADAD'>val url = getClass.getResource(StylePath)
+</span>14 <span style=''></span><span style='background: #F0ADAD'>      //println(&quot;style url: &quot; + url)
+</span>15 <span style=''></span><span style='background: #F0ADAD'>      url.toString</span><span style=''>
+</span>16 <span style=''>    } catch {
+</span>17 <span style=''>      case _: NullPointerException =&gt;
+</span>18 <span style=''>        </span><span style='background: #F0ADAD'>Logger.log(&quot;Error: style.css file not found&quot;)</span><span style=''>
+</span>19 <span style=''>        </span><span style='background: #F0ADAD'>throw new NullPointerException(&quot;style.css file not found&quot;)</span><span style=''>;
+</span>20 <span style=''>    }
+</span>21 <span style=''>  }
+</span>22 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          2603
+        </td>
+        <td>
+          295
+          -
+          313
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;StyleFileManager&quot;
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          2607
+        </td>
+        <td>
+          366
+          -
+          463
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          {
+  val url: java.net.URL = StyleFileManager.this.getClass().getResource(it.unibo.osmos.redux.utils.Constants.ResourcesPaths.StylePath);
+  url.toString()
+}
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          2604
+        </td>
+        <td>
+          397
+          -
+          406
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.ResourcesPaths.StylePath
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Constants.ResourcesPaths.StylePath
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          2605
+        </td>
+        <td>
+          376
+          -
+          407
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Class.getResource
+        </td>
+        <td style="background: #F0ADAD">
+          StyleFileManager.this.getClass().getResource(it.unibo.osmos.redux.utils.Constants.ResourcesPaths.StylePath)
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          2606
+        </td>
+        <td>
+          451
+          -
+          463
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.net.URL.toString
+        </td>
+        <td style="background: #F0ADAD">
+          url.toString()
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          2610
+        </td>
+        <td>
+          524
+          -
+          569
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Logger.log
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Logger.log(&quot;Error: style.css file not found&quot;)(StyleFileManager.this.who)
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          2609
+        </td>
+        <td>
+          534
+          -
+          534
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.StyleFileManager.who
+        </td>
+        <td style="background: #F0ADAD">
+          StyleFileManager.this.who
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          2608
+        </td>
+        <td>
+          535
+          -
+          568
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;Error: style.css file not found&quot;
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          2611
+        </td>
+        <td>
+          578
+          -
+          636
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.NullPointerException(&quot;style.css file not found&quot;)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

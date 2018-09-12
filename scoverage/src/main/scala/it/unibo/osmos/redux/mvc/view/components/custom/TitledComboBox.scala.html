@@ -1,0 +1,167 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/components/custom/TitledComboBox.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.components.custom
+</span>2 <span style=''>
+</span>3 <span style=''>import scalafx.beans.property.StringProperty
+</span>4 <span style=''>import scalafx.scene.control.ComboBox
+</span>5 <span style=''>
+</span>6 <span style=''>/** A box consisting in a generic combo box and a title
+</span>7 <span style=''>  *
+</span>8 <span style=''>  * @param title   the title, shown to the top
+</span>9 <span style=''>  * @param items   the items shown in the combobox
+</span>10 <span style=''>  * @param handler the handler called when an item gets selected
+</span>11 <span style=''>  * @tparam A the items type
+</span>12 <span style=''>  */
+</span>13 <span style=''>class TitledComboBox[A](title: String, val items: Seq[A], val handler: A =&gt; Unit, val vertical: Boolean = true) extends TitledNode[ComboBox[A]](StringProperty(title), vertical) {
+</span>14 <span style=''>
+</span>15 <span style=''>  override def innerNode: ComboBox[A] = </span><span style='background: #F0ADAD'>new</span><span style=''> ComboBox[A](items) {
+</span>16 <span style=''>
+</span>17 <span style=''>    </span><span style='background: #F0ADAD'>selectionModel.value.selectFirst()</span><span style=''>
+</span>18 <span style=''>    </span><span style='background: #F0ADAD'>onAction = _ =&gt; handler.apply(selectionModel.value.getSelectedItem)</span><span style=''>
+</span>19 <span style=''>
+</span>20 <span style=''>  }
+</span>21 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          3460
+        </td>
+        <td>
+          618
+          -
+          621
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledComboBox.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          3456
+        </td>
+        <td>
+          648
+          -
+          682
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.control.SingleSelectionModel.selectFirst
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.selectionModel.value.selectFirst()
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          3459
+        </td>
+        <td>
+          687
+          -
+          754
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.ComboBoxBase.onAction_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.onAction_=(((x$1: javafx.event.ActionEvent) =&gt; TitledComboBox.this.handler.apply($anon.this.selectionModel.value.getSelectedItem())))
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          3458
+        </td>
+        <td>
+          703
+          -
+          754
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Function1.apply
+        </td>
+        <td style="background: #F0ADAD">
+          TitledComboBox.this.handler.apply($anon.this.selectionModel.value.getSelectedItem())
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          3457
+        </td>
+        <td>
+          717
+          -
+          753
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.control.SelectionModel.getSelectedItem
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.selectionModel.value.getSelectedItem()
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

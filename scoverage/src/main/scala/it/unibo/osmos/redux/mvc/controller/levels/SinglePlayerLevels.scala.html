@@ -1,0 +1,2021 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/controller/levels/SinglePlayerLevels.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.controller.levels
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.{CampaignLevel, CampaignLevelStat, LevelInfo}
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.controller.manager.files.UserProgressFileManager
+</span>5 <span style=''>import it.unibo.osmos.redux.mvc.view.events.{GameLost, GameStateEventWrapper, GameWon}
+</span>6 <span style=''>import it.unibo.osmos.redux.utils.Logger
+</span>7 <span style=''>
+</span>8 <span style=''>/** Manages singlePlayer levels. */
+</span>9 <span style=''>object SinglePlayerLevels {
+</span>10 <span style=''>  implicit val who: String = </span><span style='background: #AEF1AE'>&quot;SinglePlayerLevels&quot;</span><span style=''>
+</span>11 <span style=''>  private var levels: List[CampaignLevel] = </span><span style='background: #AEF1AE'>List()</span><span style=''>
+</span>12 <span style=''>
+</span>13 <span style=''>  /** Initialize singleton with single player levels.
+</span>14 <span style=''>    *
+</span>15 <span style=''>    * @param levelsInfo List of Option[LevelInfo]
+</span>16 <span style=''>    */
+</span>17 <span style=''>  def init(levelsInfo: List[Option[LevelInfo]]): Unit = {
+</span>18 <span style=''>    </span><span style='background: #AEF1AE'>levels = levelsInfo.flatten.map(lvI =&gt; CampaignLevel(lvI.changeAvailability(), CampaignLevelStat()))</span><span style=''>
+</span>19 <span style=''>    </span><span style='background: #AEF1AE'>levels.head.levelInfo.isAvailable = true</span><span style=''>
+</span>20 <span style=''>  }
+</span>21 <span style=''>
+</span>22 <span style=''>  /** Return the last unlocked level.
+</span>23 <span style=''>    *
+</span>24 <span style=''>    * @return the last unlocked level.
+</span>25 <span style=''>    */
+</span>26 <span style=''>  def toDoLevel(campaignLevels: List[CampaignLevel] = levels): String = </span><span style='background: #AEF1AE'>searchLastAvailableLevel()</span><span style=''> match {
+</span>27 <span style=''>    case Some(levelName) =&gt; levelName
+</span>28 <span style=''>    case _ =&gt; </span><span style='background: #F0ADAD'>Logger.log(&quot;Error: campaign levels list is empty OR the last level had to be enabled&quot;)</span><span style=''>
+</span>29 <span style=''>      </span><span style='background: #F0ADAD'>&quot;&quot;</span><span style=''>
+</span>30 <span style=''>  }
+</span>31 <span style=''>
+</span>32 <span style=''>  /** Get the campaign levels info.
+</span>33 <span style=''>    *
+</span>34 <span style=''>    * @return List[LevelInfo]
+</span>35 <span style=''>    */
+</span>36 <span style=''>  def getLevelsInfo: List[LevelInfo] = </span><span style='background: #AEF1AE'>levels.map(lv =&gt; lv.levelInfo)</span><span style=''>
+</span>37 <span style=''>
+</span>38 <span style=''>  /** Get the campaign levels.
+</span>39 <span style=''>    *
+</span>40 <span style=''>    * @return List[CampaignLevel]
+</span>41 <span style=''>    */
+</span>42 <span style=''>  def getCampaignLevels: List[CampaignLevel] = </span><span style='background: #AEF1AE'>levels</span><span style=''>
+</span>43 <span style=''>
+</span>44 <span style=''>  /** Should be called when user win or lose a campaign level.
+</span>45 <span style=''>    *
+</span>46 <span style=''>    * @param endGame   end game result GameWon or GameLost.
+</span>47 <span style=''>    * @param levelName name of the played level.
+</span>48 <span style=''>    */
+</span>49 <span style=''>  def newEndGameEvent(endGame: GameStateEventWrapper, levelName: String): Unit = endGame match {
+</span>50 <span style=''>    case GameWon =&gt; </span><span style='background: #AEF1AE'>increaseVictories(levelName)</span><span style=''>
+</span>51 <span style=''>      if (</span><span style='background: #AEF1AE'>toDoLevel().equals(levelName)</span><span style=''>) </span><span style='background: #AEF1AE'>unlockNextLevel()</span><span style=''>
+</span>52 <span style=''>    case GameLost =&gt; </span><span style='background: #AEF1AE'>increaseDefeats(levelName)</span><span style=''>
+</span>53 <span style=''>    case _ =&gt; </span><span style='background: #F0ADAD'>Logger.log(&quot;End game state not managed!&quot;)</span><span style=''>
+</span>54 <span style=''>  }
+</span>55 <span style=''>
+</span>56 <span style=''>  /** Update campaign progress, should be called once when the game starts.
+</span>57 <span style=''>    *
+</span>58 <span style=''>    * @param campaignProgress campaign progress List[CampaignLevels]
+</span>59 <span style=''>    */
+</span>60 <span style=''>  def updateUserStat(campaignProgress: List[CampaignLevel]): Unit =
+</span>61 <span style=''>  /* if my values are less updated than the file ones */
+</span>62 <span style=''>    if (</span><span style='background: #F0ADAD'>isMostRecent(toDoLevel(campaignProgress))</span><span style=''>) </span><span style='background: #F0ADAD'>levels = campaignProgress</span><span style=''>
+</span>63 <span style=''>
+</span>64 <span style=''>  /** Reset the user progress. */
+</span>65 <span style=''>  def reset(): Unit = {
+</span>66 <span style=''>    </span><span style='background: #AEF1AE'>levels.head.levelStat = CampaignLevelStat()</span><span style=''>
+</span>67 <span style=''>    </span><span style='background: #AEF1AE'>levels.filter(lv =&gt; !lv.levelInfo.name.equals(levels.head.levelInfo.name)).foreach(lv =&gt; {
+</span>68 <span style=''></span><span style='background: #AEF1AE'>      lv.levelInfo.isAvailable = false
+</span>69 <span style=''></span><span style='background: #AEF1AE'>      lv.levelStat = CampaignLevelStat()
+</span>70 <span style=''></span><span style='background: #AEF1AE'>    })</span><span style=''>
+</span>71 <span style=''>    </span><span style='background: #AEF1AE'>UserProgressFileManager.saveUserProgress(levels)</span><span style=''>
+</span>72 <span style=''>    </span><span style='background: #AEF1AE'>Logger.log(&quot;reset done&quot;)</span><span style=''>
+</span>73 <span style=''>  }
+</span>74 <span style=''>
+</span>75 <span style=''>  /** Unlock the next level. */
+</span>76 <span style=''>  private def unlockNextLevel(): Unit = </span><span style='background: #AEF1AE'>levels.map(cLv =&gt; cLv.levelInfo).find(lv =&gt; !lv.isAvailable)</span><span style=''> match {
+</span>77 <span style=''>    case Some(nextLevel) =&gt; </span><span style='background: #AEF1AE'>nextLevel.isAvailable = true</span><span style=''>
+</span>78 <span style=''>    case _ =&gt; </span><span style='background: #AEF1AE'>Logger.log(&quot;All levels are unlocked&quot;)</span><span style=''>
+</span>79 <span style=''>  }
+</span>80 <span style=''>
+</span>81 <span style=''>  private def isMostRecent(loadedToDoLevelName: String) =
+</span>82 <span style=''>    </span><span style='background: #F0ADAD'>getIndexOfLevelByName(toDoLevel()) &lt;= getIndexOfLevelByName(loadedToDoLevelName)</span><span style=''>
+</span>83 <span style=''>
+</span>84 <span style=''>  private def getIndexOfLevelByName(levelName: String) = </span><span style='background: #F0ADAD'>levels.map(cLv =&gt; cLv.levelInfo.name).indexOf(levelName)</span><span style=''>
+</span>85 <span style=''>
+</span>86 <span style=''>  private def searchLastAvailableLevel(cLevels: List[LevelInfo] = getLevelsInfo): Option[String] = cLevels match {
+</span>87 <span style=''>    case LevelInfo(lv, _, av) :: LevelInfo(_, _, av2) :: _ if </span><span style='background: #AEF1AE'>av &amp;&amp; !av2</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>Some(lv)</span><span style=''>
+</span>88 <span style=''>    case List(LevelInfo(lv2, _, true)) =&gt; </span><span style='background: #AEF1AE'>Some(lv2)</span><span style=''>
+</span>89 <span style=''>    case _ :: t =&gt; </span><span style='background: #AEF1AE'>searchLastAvailableLevel(t)</span><span style=''>
+</span>90 <span style=''>    case _ =&gt; </span><span style='background: #F0ADAD'>None</span><span style=''>
+</span>91 <span style=''>  }
+</span>92 <span style=''>
+</span>93 <span style=''>  private def findLevelByName(levelName: String): Option[CampaignLevel] = </span><span style='background: #AEF1AE'>levels.find(cLv =&gt; cLv.levelInfo.name.equals(levelName))</span><span style=''>
+</span>94 <span style=''>
+</span>95 <span style=''>  private def increaseVictories(levelName: String): Unit = </span><span style='background: #AEF1AE'>findLevelByName(levelName)</span><span style=''> match {
+</span>96 <span style=''>    case Some(cLevel: CampaignLevel) =&gt; </span><span style='background: #AEF1AE'>cLevel.levelStat.victories += 1</span><span style=''>
+</span>97 <span style=''>    case None =&gt; </span><span style='background: #F0ADAD'>Logger.log(&quot;Error: level &quot; + levelName + &quot; doesn't exists [IncreaseVictories]&quot;)</span><span style=''>
+</span>98 <span style=''>  }
+</span>99 <span style=''>
+</span>100 <span style=''>  private def increaseDefeats(levelName: String): Unit = </span><span style='background: #AEF1AE'>findLevelByName(levelName)</span><span style=''> match {
+</span>101 <span style=''>    case Some(cLevel: CampaignLevel) =&gt; </span><span style='background: #AEF1AE'>cLevel.levelStat.defeats += 1</span><span style=''>
+</span>102 <span style=''>    case None =&gt; </span><span style='background: #F0ADAD'>Logger.log(&quot;Error: level &quot; + levelName + &quot; doesn't exists [IncreaseDefeats]&quot;)</span><span style=''>
+</span>103 <span style=''>  }
+</span>104 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          2245
+        </td>
+        <td>
+          461
+          -
+          481
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;SinglePlayerLevels&quot;
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          2246
+        </td>
+        <td>
+          526
+          -
+          532
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.Nil
+        </td>
+        <td style="background: #AEF1AE">
+          scala.collection.immutable.Nil
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          2251
+        </td>
+        <td>
+          792
+          -
+          792
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$2
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$2
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          2254
+        </td>
+        <td>
+          744
+          -
+          744
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.immutable.List.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          immutable.this.List.canBuildFrom[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel]
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          2248
+        </td>
+        <td>
+          770
+          -
+          770
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo.changeAvailability$default$1
+        </td>
+        <td style="background: #AEF1AE">
+          lvI.changeAvailability$default$1
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          2256
+        </td>
+        <td>
+          713
+          -
+          813
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.levels_=
+        </td>
+        <td style="background: #AEF1AE">
+          SinglePlayerLevels.this.levels_=(levelsInfo.flatten[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]({
+  ((xo: Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]) =&gt; scala.this.Option.option2Iterable[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo](xo))
+}).map[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel, List[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel]](((lvI: it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo) =&gt; it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel.apply(lvI.changeAvailability(lvI.changeAvailability$default$1), it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply(it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$1, it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$2))))(immutable.this.List.canBuildFrom[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel]))
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          2247
+        </td>
+        <td>
+          733
+          -
+          733
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.option2Iterable
+        </td>
+        <td style="background: #AEF1AE">
+          scala.this.Option.option2Iterable[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo](xo)
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          2250
+        </td>
+        <td>
+          792
+          -
+          792
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$1
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$1
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          2253
+        </td>
+        <td>
+          752
+          -
+          812
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel.apply(lvI.changeAvailability(lvI.changeAvailability$default$1), it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply(it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$1, it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$2))
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          2252
+        </td>
+        <td>
+          792
+          -
+          811
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply(it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$1, it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$2)
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          2255
+        </td>
+        <td>
+          722
+          -
+          813
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.immutable.List.map
+        </td>
+        <td style="background: #AEF1AE">
+          levelsInfo.flatten[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]({
+  ((xo: Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]) =&gt; scala.this.Option.option2Iterable[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo](xo))
+}).map[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel, List[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel]](((lvI: it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo) =&gt; it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel.apply(lvI.changeAvailability(lvI.changeAvailability$default$1), it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply(it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$1, it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$2))))(immutable.this.List.canBuildFrom[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel])
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          2249
+        </td>
+        <td>
+          766
+          -
+          790
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo.changeAvailability
+        </td>
+        <td style="background: #AEF1AE">
+          lvI.changeAvailability(lvI.changeAvailability$default$1)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          2257
+        </td>
+        <td>
+          818
+          -
+          858
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo.isAvailable_=
+        </td>
+        <td style="background: #AEF1AE">
+          SinglePlayerLevels.this.levels.head.levelInfo.isAvailable_=(true)
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          2259
+        </td>
+        <td>
+          1026
+          -
+          1052
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.searchLastAvailableLevel
+        </td>
+        <td style="background: #AEF1AE">
+          SinglePlayerLevels.this.searchLastAvailableLevel(SinglePlayerLevels.this.searchLastAvailableLevel$default$1)
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          2258
+        </td>
+        <td>
+          1026
+          -
+          1026
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.searchLastAvailableLevel$default$1
+        </td>
+        <td style="background: #AEF1AE">
+          SinglePlayerLevels.this.searchLastAvailableLevel$default$1
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          2260
+        </td>
+        <td>
+          1124
+          -
+          1198
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;Error: campaign levels list is empty OR the last level had to be enabled&quot;
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          2262
+        </td>
+        <td>
+          1113
+          -
+          1199
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Logger.log
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Logger.log(&quot;Error: campaign levels list is empty OR the last level had to be enabled&quot;)(SinglePlayerLevels.this.who)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          2261
+        </td>
+        <td>
+          1123
+          -
+          1123
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.who
+        </td>
+        <td style="background: #F0ADAD">
+          SinglePlayerLevels.this.who
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          2263
+        </td>
+        <td>
+          1206
+          -
+          1208
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;&quot;
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          2266
+        </td>
+        <td>
+          1332
+          -
+          1362
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.immutable.List.map
+        </td>
+        <td style="background: #AEF1AE">
+          SinglePlayerLevels.this.levels.map[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo, List[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]](((lv: it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel) =&gt; lv.levelInfo))(immutable.this.List.canBuildFrom[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo])
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          2265
+        </td>
+        <td>
+          1342
+          -
+          1342
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.immutable.List.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          immutable.this.List.canBuildFrom[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          2264
+        </td>
+        <td>
+          1349
+          -
+          1361
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel.levelInfo
+        </td>
+        <td style="background: #AEF1AE">
+          lv.levelInfo
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          2267
+        </td>
+        <td>
+          1489
+          -
+          1495
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.levels
+        </td>
+        <td style="background: #AEF1AE">
+          SinglePlayerLevels.this.levels
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          2268
+        </td>
+        <td>
+          1799
+          -
+          1827
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.increaseVictories
+        </td>
+        <td style="background: #AEF1AE">
+          SinglePlayerLevels.this.increaseVictories(levelName)
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          2269
+        </td>
+        <td>
+          1838
+          -
+          1867
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.equals
+        </td>
+        <td style="background: #AEF1AE">
+          SinglePlayerLevels.this.toDoLevel(SinglePlayerLevels.this.toDoLevel$default$1).equals(levelName)
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          2272
+        </td>
+        <td>
+          1834
+          -
+          1834
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          2271
+        </td>
+        <td>
+          1869
+          -
+          1886
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.unlockNextLevel
+        </td>
+        <td style="background: #AEF1AE">
+          SinglePlayerLevels.this.unlockNextLevel()
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          2270
+        </td>
+        <td>
+          1869
+          -
+          1886
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.unlockNextLevel
+        </td>
+        <td style="background: #AEF1AE">
+          SinglePlayerLevels.this.unlockNextLevel()
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          2273
+        </td>
+        <td>
+          1834
+          -
+          1834
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          2274
+        </td>
+        <td>
+          1908
+          -
+          1934
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.increaseDefeats
+        </td>
+        <td style="background: #AEF1AE">
+          SinglePlayerLevels.this.increaseDefeats(levelName)
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          2275
+        </td>
+        <td>
+          1960
+          -
+          1989
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;End game state not managed!&quot;
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          2277
+        </td>
+        <td>
+          1949
+          -
+          1990
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Logger.log
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Logger.log(&quot;End game state not managed!&quot;)(SinglePlayerLevels.this.who)
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          2276
+        </td>
+        <td>
+          1959
+          -
+          1959
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.who
+        </td>
+        <td style="background: #F0ADAD">
+          SinglePlayerLevels.this.who
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          2278
+        </td>
+        <td>
+          2300
+          -
+          2327
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.toDoLevel
+        </td>
+        <td style="background: #F0ADAD">
+          SinglePlayerLevels.this.toDoLevel(campaignProgress)
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          2281
+        </td>
+        <td>
+          2330
+          -
+          2355
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.levels_=
+        </td>
+        <td style="background: #F0ADAD">
+          SinglePlayerLevels.this.levels_=(campaignProgress)
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          2280
+        </td>
+        <td>
+          2330
+          -
+          2355
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.levels_=
+        </td>
+        <td style="background: #F0ADAD">
+          SinglePlayerLevels.this.levels_=(campaignProgress)
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          2283
+        </td>
+        <td>
+          2283
+          -
+          2283
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          2279
+        </td>
+        <td>
+          2287
+          -
+          2328
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.isMostRecent
+        </td>
+        <td style="background: #F0ADAD">
+          SinglePlayerLevels.this.isMostRecent(SinglePlayerLevels.this.toDoLevel(campaignProgress))
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          2282
+        </td>
+        <td>
+          2283
+          -
+          2283
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          2284
+        </td>
+        <td>
+          2443
+          -
+          2443
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$1
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$1
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          2287
+        </td>
+        <td>
+          2419
+          -
+          2462
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel.levelStat_=
+        </td>
+        <td style="background: #AEF1AE">
+          SinglePlayerLevels.this.levels.head.levelStat_=(it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply(it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$1, it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$2))
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          2286
+        </td>
+        <td>
+          2443
+          -
+          2462
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply(it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$1, it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$2)
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          2285
+        </td>
+        <td>
+          2443
+          -
+          2443
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$2
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$2
+        </td>
+      </tr><tr>
+        <td>
+          67
+        </td>
+        <td>
+          2289
+        </td>
+        <td>
+          2487
+          -
+          2540
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #AEF1AE">
+          lv.levelInfo.name.equals(SinglePlayerLevels.this.levels.head.levelInfo.name).unary_!
+        </td>
+      </tr><tr>
+        <td>
+          67
+        </td>
+        <td>
+          2295
+        </td>
+        <td>
+          2467
+          -
+          2644
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.foreach
+        </td>
+        <td style="background: #AEF1AE">
+          SinglePlayerLevels.this.levels.filter(((lv: it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel) =&gt; lv.levelInfo.name.equals(SinglePlayerLevels.this.levels.head.levelInfo.name).unary_!)).foreach[Unit](((lv: it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel) =&gt; {
+  lv.levelInfo.isAvailable_=(false);
+  lv.levelStat_=(it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply(it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$1, it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$2))
+}))
+        </td>
+      </tr><tr>
+        <td>
+          67
+        </td>
+        <td>
+          2288
+        </td>
+        <td>
+          2513
+          -
+          2539
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo.name
+        </td>
+        <td style="background: #AEF1AE">
+          SinglePlayerLevels.this.levels.head.levelInfo.name
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          2290
+        </td>
+        <td>
+          2564
+          -
+          2596
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo.isAvailable_=
+        </td>
+        <td style="background: #AEF1AE">
+          lv.levelInfo.isAvailable_=(false)
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          2293
+        </td>
+        <td>
+          2618
+          -
+          2637
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply(it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$1, it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$2)
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          2292
+        </td>
+        <td>
+          2618
+          -
+          2618
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$2
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$2
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          2294
+        </td>
+        <td>
+          2603
+          -
+          2637
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel.levelStat_=
+        </td>
+        <td style="background: #AEF1AE">
+          lv.levelStat_=(it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply(it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$1, it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$2))
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          2291
+        </td>
+        <td>
+          2618
+          -
+          2618
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$1
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.apply$default$1
+        </td>
+      </tr><tr>
+        <td>
+          71
+        </td>
+        <td>
+          2296
+        </td>
+        <td>
+          2690
+          -
+          2696
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.levels
+        </td>
+        <td style="background: #AEF1AE">
+          SinglePlayerLevels.this.levels
+        </td>
+      </tr><tr>
+        <td>
+          71
+        </td>
+        <td>
+          2297
+        </td>
+        <td>
+          2649
+          -
+          2697
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.UserProgressFileManager.saveUserProgress
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.controller.manager.files.UserProgressFileManager.saveUserProgress(SinglePlayerLevels.this.levels)
+        </td>
+      </tr><tr>
+        <td>
+          72
+        </td>
+        <td>
+          2299
+        </td>
+        <td>
+          2712
+          -
+          2712
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.who
+        </td>
+        <td style="background: #AEF1AE">
+          SinglePlayerLevels.this.who
+        </td>
+      </tr><tr>
+        <td>
+          72
+        </td>
+        <td>
+          2298
+        </td>
+        <td>
+          2713
+          -
+          2725
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;reset done&quot;
+        </td>
+      </tr><tr>
+        <td>
+          72
+        </td>
+        <td>
+          2300
+        </td>
+        <td>
+          2702
+          -
+          2726
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Logger.log
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Logger.log(&quot;reset done&quot;)(SinglePlayerLevels.this.who)
+        </td>
+      </tr><tr>
+        <td>
+          76
+        </td>
+        <td>
+          2302
+        </td>
+        <td>
+          2814
+          -
+          2814
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.immutable.List.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          immutable.this.List.canBuildFrom[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]
+        </td>
+      </tr><tr>
+        <td>
+          76
+        </td>
+        <td>
+          2301
+        </td>
+        <td>
+          2822
+          -
+          2835
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel.levelInfo
+        </td>
+        <td style="background: #AEF1AE">
+          cLv.levelInfo
+        </td>
+      </tr><tr>
+        <td>
+          76
+        </td>
+        <td>
+          2304
+        </td>
+        <td>
+          2804
+          -
+          2864
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.LinearSeqOptimized.find
+        </td>
+        <td style="background: #AEF1AE">
+          SinglePlayerLevels.this.levels.map[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo, List[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]](((cLv: it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel) =&gt; cLv.levelInfo))(immutable.this.List.canBuildFrom[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]).find(((lv: it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo) =&gt; lv.isAvailable.unary_!))
+        </td>
+      </tr><tr>
+        <td>
+          76
+        </td>
+        <td>
+          2303
+        </td>
+        <td>
+          2848
+          -
+          2863
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #AEF1AE">
+          lv.isAvailable.unary_!
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          2305
+        </td>
+        <td>
+          2901
+          -
+          2929
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo.isAvailable_=
+        </td>
+        <td style="background: #AEF1AE">
+          nextLevel.isAvailable_=(true)
+        </td>
+      </tr><tr>
+        <td>
+          78
+        </td>
+        <td>
+          2308
+        </td>
+        <td>
+          2944
+          -
+          2981
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Logger.log
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Logger.log(&quot;All levels are unlocked&quot;)(SinglePlayerLevels.this.who)
+        </td>
+      </tr><tr>
+        <td>
+          78
+        </td>
+        <td>
+          2307
+        </td>
+        <td>
+          2954
+          -
+          2954
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.who
+        </td>
+        <td style="background: #AEF1AE">
+          SinglePlayerLevels.this.who
+        </td>
+      </tr><tr>
+        <td>
+          78
+        </td>
+        <td>
+          2306
+        </td>
+        <td>
+          2955
+          -
+          2980
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;All levels are unlocked&quot;
+        </td>
+      </tr><tr>
+        <td>
+          82
+        </td>
+        <td>
+          2311
+        </td>
+        <td>
+          3087
+          -
+          3129
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.getIndexOfLevelByName
+        </td>
+        <td style="background: #F0ADAD">
+          SinglePlayerLevels.this.getIndexOfLevelByName(loadedToDoLevelName)
+        </td>
+      </tr><tr>
+        <td>
+          82
+        </td>
+        <td>
+          2310
+        </td>
+        <td>
+          3071
+          -
+          3082
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.toDoLevel
+        </td>
+        <td style="background: #F0ADAD">
+          SinglePlayerLevels.this.toDoLevel(SinglePlayerLevels.this.toDoLevel$default$1)
+        </td>
+      </tr><tr>
+        <td>
+          82
+        </td>
+        <td>
+          2312
+        </td>
+        <td>
+          3049
+          -
+          3129
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.&lt;=
+        </td>
+        <td style="background: #F0ADAD">
+          SinglePlayerLevels.this.getIndexOfLevelByName(SinglePlayerLevels.this.toDoLevel(SinglePlayerLevels.this.toDoLevel$default$1)).&lt;=(SinglePlayerLevels.this.getIndexOfLevelByName(loadedToDoLevelName))
+        </td>
+      </tr><tr>
+        <td>
+          82
+        </td>
+        <td>
+          2309
+        </td>
+        <td>
+          3071
+          -
+          3071
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.toDoLevel$default$1
+        </td>
+        <td style="background: #F0ADAD">
+          SinglePlayerLevels.this.toDoLevel$default$1
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          2313
+        </td>
+        <td>
+          3188
+          -
+          3244
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.GenSeqLike.indexOf
+        </td>
+        <td style="background: #F0ADAD">
+          SinglePlayerLevels.this.levels.map[String, List[String]](((cLv: it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel) =&gt; cLv.levelInfo.name))(immutable.this.List.canBuildFrom[String]).indexOf[String](levelName)
+        </td>
+      </tr><tr>
+        <td>
+          87
+        </td>
+        <td>
+          2314
+        </td>
+        <td>
+          3429
+          -
+          3433
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #AEF1AE">
+          av2.unary_!
+        </td>
+      </tr><tr>
+        <td>
+          87
+        </td>
+        <td>
+          2316
+        </td>
+        <td>
+          3437
+          -
+          3445
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Some.apply[String](lv)
+        </td>
+      </tr><tr>
+        <td>
+          87
+        </td>
+        <td>
+          2315
+        </td>
+        <td>
+          3423
+          -
+          3433
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.&amp;&amp;
+        </td>
+        <td style="background: #AEF1AE">
+          av.&amp;&amp;(av2.unary_!)
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          2317
+        </td>
+        <td>
+          3488
+          -
+          3497
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Some.apply[String](lv2)
+        </td>
+      </tr><tr>
+        <td>
+          89
+        </td>
+        <td>
+          2318
+        </td>
+        <td>
+          3517
+          -
+          3544
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.searchLastAvailableLevel
+        </td>
+        <td style="background: #AEF1AE">
+          SinglePlayerLevels.this.searchLastAvailableLevel(t)
+        </td>
+      </tr><tr>
+        <td>
+          90
+        </td>
+        <td>
+          2319
+        </td>
+        <td>
+          3559
+          -
+          3563
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #F0ADAD">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          93
+        </td>
+        <td>
+          2320
+        </td>
+        <td>
+          3662
+          -
+          3698
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.equals
+        </td>
+        <td style="background: #AEF1AE">
+          cLv.levelInfo.name.equals(levelName)
+        </td>
+      </tr><tr>
+        <td>
+          93
+        </td>
+        <td>
+          2321
+        </td>
+        <td>
+          3643
+          -
+          3699
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.LinearSeqOptimized.find
+        </td>
+        <td style="background: #AEF1AE">
+          SinglePlayerLevels.this.levels.find(((cLv: it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel) =&gt; cLv.levelInfo.name.equals(levelName)))
+        </td>
+      </tr><tr>
+        <td>
+          95
+        </td>
+        <td>
+          2322
+        </td>
+        <td>
+          3760
+          -
+          3786
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.findLevelByName
+        </td>
+        <td style="background: #AEF1AE">
+          SinglePlayerLevels.this.findLevelByName(levelName)
+        </td>
+      </tr><tr>
+        <td>
+          96
+        </td>
+        <td>
+          2323
+        </td>
+        <td>
+          3835
+          -
+          3866
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.+
+        </td>
+        <td style="background: #AEF1AE">
+          ev$1.victories.+(1)
+        </td>
+      </tr><tr>
+        <td>
+          96
+        </td>
+        <td>
+          2324
+        </td>
+        <td>
+          3835
+          -
+          3866
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.victories_=
+        </td>
+        <td style="background: #AEF1AE">
+          ev$1.victories_=(ev$1.victories.+(1))
+        </td>
+      </tr><tr>
+        <td>
+          97
+        </td>
+        <td>
+          2326
+        </td>
+        <td>
+          3894
+          -
+          3894
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.who
+        </td>
+        <td style="background: #F0ADAD">
+          SinglePlayerLevels.this.who
+        </td>
+      </tr><tr>
+        <td>
+          97
+        </td>
+        <td>
+          2325
+        </td>
+        <td>
+          3895
+          -
+          3962
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;Error: level &quot;.+(levelName).+(&quot; doesn\'t exists [IncreaseVictories]&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          97
+        </td>
+        <td>
+          2327
+        </td>
+        <td>
+          3884
+          -
+          3963
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Logger.log
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Logger.log(&quot;Error: level &quot;.+(levelName).+(&quot; doesn\'t exists [IncreaseVictories]&quot;))(SinglePlayerLevels.this.who)
+        </td>
+      </tr><tr>
+        <td>
+          100
+        </td>
+        <td>
+          2328
+        </td>
+        <td>
+          4026
+          -
+          4052
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.findLevelByName
+        </td>
+        <td style="background: #AEF1AE">
+          SinglePlayerLevels.this.findLevelByName(levelName)
+        </td>
+      </tr><tr>
+        <td>
+          101
+        </td>
+        <td>
+          2329
+        </td>
+        <td>
+          4101
+          -
+          4130
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.+
+        </td>
+        <td style="background: #AEF1AE">
+          ev$2.defeats.+(1)
+        </td>
+      </tr><tr>
+        <td>
+          101
+        </td>
+        <td>
+          2330
+        </td>
+        <td>
+          4101
+          -
+          4130
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.defeats_=
+        </td>
+        <td style="background: #AEF1AE">
+          ev$2.defeats_=(ev$2.defeats.+(1))
+        </td>
+      </tr><tr>
+        <td>
+          102
+        </td>
+        <td>
+          2332
+        </td>
+        <td>
+          4158
+          -
+          4158
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.who
+        </td>
+        <td style="background: #F0ADAD">
+          SinglePlayerLevels.this.who
+        </td>
+      </tr><tr>
+        <td>
+          102
+        </td>
+        <td>
+          2331
+        </td>
+        <td>
+          4159
+          -
+          4224
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;Error: level &quot;.+(levelName).+(&quot; doesn\'t exists [IncreaseDefeats]&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          102
+        </td>
+        <td>
+          2333
+        </td>
+        <td>
+          4148
+          -
+          4225
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Logger.log
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Logger.log(&quot;Error: level &quot;.+(levelName).+(&quot; doesn\'t exists [IncreaseDefeats]&quot;))(SinglePlayerLevels.this.who)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

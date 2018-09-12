@@ -1,0 +1,1289 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/utils/Vector.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.utils
+</span>2 <span style=''>
+</span>3 <span style=''>/** Mixin representing a 2D vector.
+</span>4 <span style=''>  *
+</span>5 <span style=''>  * The methods of this mixin won't alter
+</span>6 <span style=''>  * the values of the classes that extends it.
+</span>7 <span style=''>  */
+</span>8 <span style=''>trait Vector {
+</span>9 <span style=''>
+</span>10 <span style=''>  /** Getter for the vector x component
+</span>11 <span style=''>    *
+</span>12 <span style=''>    * @return x component
+</span>13 <span style=''>    */
+</span>14 <span style=''>  def x: Double
+</span>15 <span style=''>
+</span>16 <span style=''>  /** Getter for the vector y component
+</span>17 <span style=''>    *
+</span>18 <span style=''>    * @return y component
+</span>19 <span style=''>    */
+</span>20 <span style=''>  def y: Double
+</span>21 <span style=''>
+</span>22 <span style=''>  /** Vector addition. Leaves this vector unchanged.
+</span>23 <span style=''>    *
+</span>24 <span style=''>    * @param v vector to add
+</span>25 <span style=''>    * @return addition result as a new instance
+</span>26 <span style=''>    */
+</span>27 <span style=''>  def add(v: Vector): Vector = </span><span style='background: #AEF1AE'>Vector(x + v.x, y + v.y)</span><span style=''>
+</span>28 <span style=''>
+</span>29 <span style=''>  /** Vector subtraction. Leaves this vector unchanged.
+</span>30 <span style=''>    *
+</span>31 <span style=''>    * @param v vector to subtract
+</span>32 <span style=''>    * @return subtraction result as a new instance
+</span>33 <span style=''>    */
+</span>34 <span style=''>  def subtract(v: Vector): Vector = </span><span style='background: #AEF1AE'>Vector(x - v.x, y - v.y)</span><span style=''>
+</span>35 <span style=''>
+</span>36 <span style=''>  /** Vector multiplication. Leaves this vector unchanged.
+</span>37 <span style=''>    *
+</span>38 <span style=''>    * @param v vector to multiply
+</span>39 <span style=''>    * @return multiplication result as a new instance
+</span>40 <span style=''>    */
+</span>41 <span style=''>  def multiply(v: Vector): Vector = </span><span style='background: #F0ADAD'>Vector(x * v.x, y * v.y)</span><span style=''>
+</span>42 <span style=''>
+</span>43 <span style=''>  /** Vector-scalar multiplication. Leaves this vector unchanged.
+</span>44 <span style=''>    *
+</span>45 <span style=''>    * @param v scalar to multiply
+</span>46 <span style=''>    * @return multiplication mu result as a new instance
+</span>47 <span style=''>    */
+</span>48 <span style=''>  def multiply(v: Double): Vector = </span><span style='background: #AEF1AE'>Vector(x * v, y * v)</span><span style=''>
+</span>49 <span style=''>
+</span>50 <span style=''>  /** Vector dot product
+</span>51 <span style=''>    *
+</span>52 <span style=''>    * @param v vector to use for dot product
+</span>53 <span style=''>    * @return dot product
+</span>54 <span style=''>    */
+</span>55 <span style=''>  def dot(v: Vector): Double = </span><span style='background: #AEF1AE'>(x * v.x) + (y * v.y)</span><span style=''>
+</span>56 <span style=''>
+</span>57 <span style=''>  /** Limits the vector's magnitude if it is greater than the given one
+</span>58 <span style=''>    *
+</span>59 <span style=''>    * @param maxMagnitude the max magnitude of the vector
+</span>60 <span style=''>    * @return a new vector
+</span>61 <span style=''>    */
+</span>62 <span style=''>  def limit(maxMagnitude: Double): Vector = {
+</span>63 <span style=''>    if (</span><span style='background: #AEF1AE'>getMagnitude &gt; maxMagnitude</span><span style=''>) {
+</span>64 <span style=''>      </span><span style='background: #AEF1AE'>getNewMagnitude(maxMagnitude)</span><span style=''>
+</span>65 <span style=''>    } else {
+</span>66 <span style=''>      </span><span style='background: #AEF1AE'>Vector(x, y)</span><span style=''>
+</span>67 <span style=''>    }
+</span>68 <span style=''>  }
+</span>69 <span style=''>
+</span>70 <span style=''>  /** Scales this vector magnitude (module) with the desired one
+</span>71 <span style=''>    *
+</span>72 <span style=''>    * @param desiredMagnitude desired vector magnitude
+</span>73 <span style=''>    * @return a new vector with the specified module
+</span>74 <span style=''>    */
+</span>75 <span style=''>  def getNewMagnitude(desiredMagnitude: Double): Vector = {
+</span>76 <span style=''>    val scale = </span><span style='background: #AEF1AE'>desiredMagnitude / getMagnitude</span><span style=''>
+</span>77 <span style=''>    </span><span style='background: #AEF1AE'>Vector(x * scale, y * scale)</span><span style=''>
+</span>78 <span style=''>  }
+</span>79 <span style=''>
+</span>80 <span style=''>  /** Gets the magnitude (module) of the vector applying parallelogram law
+</span>81 <span style=''>    *
+</span>82 <span style=''>    * @return magnitude of this vector
+</span>83 <span style=''>    */
+</span>84 <span style=''>  def getMagnitude: Double = </span><span style='background: #AEF1AE'>Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))</span><span style=''>
+</span>85 <span style=''>
+</span>86 <span style=''>  /** Gets the vector normalized
+</span>87 <span style=''>    *
+</span>88 <span style=''>    * @return a new normalized instance of this vector
+</span>89 <span style=''>    */
+</span>90 <span style=''>  def normalized(): Vector = {
+</span>91 <span style=''>    val magnitude = </span><span style='background: #AEF1AE'>getMagnitude</span><span style=''>
+</span>92 <span style=''>    if (</span><span style='background: #AEF1AE'>magnitude != 0</span><span style=''>) {
+</span>93 <span style=''>      </span><span style='background: #AEF1AE'>this.divide(magnitude)</span><span style=''>
+</span>94 <span style=''>    } else {
+</span>95 <span style=''>      </span><span style='background: #AEF1AE'>Vector(x, y)</span><span style=''>
+</span>96 <span style=''>    }
+</span>97 <span style=''>  }
+</span>98 <span style=''>
+</span>99 <span style=''>  /** Vector-scalar division. Leaves this vector unchanged.
+</span>100 <span style=''>    *
+</span>101 <span style=''>    * @param v scalar
+</span>102 <span style=''>    * @return division result as a new instance
+</span>103 <span style=''>    */
+</span>104 <span style=''>  def divide(v: Double): Vector = </span><span style='background: #AEF1AE'>Vector(x / v, y / v)</span><span style=''>
+</span>105 <span style=''>}
+</span>106 <span style=''>
+</span>107 <span style=''>object Vector {
+</span>108 <span style=''>  def apply(x: Double, y: Double): Vector = </span><span style='background: #AEF1AE'>VectorImpl(x, y)</span><span style=''>
+</span>109 <span style=''>
+</span>110 <span style=''>  def zero(): Vector = </span><span style='background: #AEF1AE'>VectorImpl(0, 0)</span><span style=''>
+</span>111 <span style=''>
+</span>112 <span style=''>  private case class VectorImpl(override val x: Double, override val y: Double) extends Vector {}
+</span>113 <span style=''>
+</span>114 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          5550
+        </td>
+        <td>
+          572
+          -
+          575
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.y
+        </td>
+        <td style="background: #AEF1AE">
+          v.y
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          5552
+        </td>
+        <td>
+          552
+          -
+          576
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.apply
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.apply(Vector.this.x.+(v.x), Vector.this.y.+(v.y))
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          5549
+        </td>
+        <td>
+          559
+          -
+          566
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.+
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.this.x.+(v.x)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          5548
+        </td>
+        <td>
+          563
+          -
+          566
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.x
+        </td>
+        <td style="background: #AEF1AE">
+          v.x
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          5551
+        </td>
+        <td>
+          568
+          -
+          575
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.+
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.this.y.+(v.y)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          5556
+        </td>
+        <td>
+          784
+          -
+          791
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.this.y.-(v.y)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          5553
+        </td>
+        <td>
+          779
+          -
+          782
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.x
+        </td>
+        <td style="background: #AEF1AE">
+          v.x
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          5555
+        </td>
+        <td>
+          788
+          -
+          791
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.y
+        </td>
+        <td style="background: #AEF1AE">
+          v.y
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          5557
+        </td>
+        <td>
+          768
+          -
+          792
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.apply
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.apply(Vector.this.x.-(v.x), Vector.this.y.-(v.y))
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          5554
+        </td>
+        <td>
+          775
+          -
+          782
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.this.x.-(v.x)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          5559
+        </td>
+        <td>
+          997
+          -
+          1004
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.*
+        </td>
+        <td style="background: #F0ADAD">
+          Vector.this.x.*(v.x)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          5561
+        </td>
+        <td>
+          1006
+          -
+          1013
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.*
+        </td>
+        <td style="background: #F0ADAD">
+          Vector.this.y.*(v.y)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          5558
+        </td>
+        <td>
+          1001
+          -
+          1004
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.x
+        </td>
+        <td style="background: #F0ADAD">
+          v.x
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          5560
+        </td>
+        <td>
+          1010
+          -
+          1013
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.y
+        </td>
+        <td style="background: #F0ADAD">
+          v.y
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          5562
+        </td>
+        <td>
+          990
+          -
+          1014
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.apply
+        </td>
+        <td style="background: #F0ADAD">
+          Vector.apply(Vector.this.x.*(v.x), Vector.this.y.*(v.y))
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          5565
+        </td>
+        <td>
+          1222
+          -
+          1242
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.apply
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.apply(Vector.this.x.*(v), Vector.this.y.*(v))
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          5564
+        </td>
+        <td>
+          1236
+          -
+          1241
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.*
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.this.y.*(v)
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          5563
+        </td>
+        <td>
+          1229
+          -
+          1234
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.*
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.this.x.*(v)
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          5568
+        </td>
+        <td>
+          1397
+          -
+          1404
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.*
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.this.y.*(v.y)
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          5567
+        </td>
+        <td>
+          1401
+          -
+          1404
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.y
+        </td>
+        <td style="background: #AEF1AE">
+          v.y
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          5566
+        </td>
+        <td>
+          1389
+          -
+          1392
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.x
+        </td>
+        <td style="background: #AEF1AE">
+          v.x
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          5569
+        </td>
+        <td>
+          1384
+          -
+          1405
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.+
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.this.x.*(v.x).+(Vector.this.y.*(v.y))
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          5570
+        </td>
+        <td>
+          1631
+          -
+          1658
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.this.getMagnitude.&gt;(maxMagnitude)
+        </td>
+      </tr><tr>
+        <td>
+          64
+        </td>
+        <td>
+          5572
+        </td>
+        <td>
+          1668
+          -
+          1697
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.getNewMagnitude
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.this.getNewMagnitude(maxMagnitude)
+        </td>
+      </tr><tr>
+        <td>
+          64
+        </td>
+        <td>
+          5571
+        </td>
+        <td>
+          1668
+          -
+          1697
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.getNewMagnitude
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.this.getNewMagnitude(maxMagnitude)
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          5574
+        </td>
+        <td>
+          1727
+          -
+          1728
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.y
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.this.y
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          5576
+        </td>
+        <td>
+          1717
+          -
+          1729
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.apply
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.apply(Vector.this.x, Vector.this.y)
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          5573
+        </td>
+        <td>
+          1724
+          -
+          1725
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.x
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.this.x
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          5575
+        </td>
+        <td>
+          1717
+          -
+          1729
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.apply
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.apply(Vector.this.x, Vector.this.y)
+        </td>
+      </tr><tr>
+        <td>
+          76
+        </td>
+        <td>
+          5577
+        </td>
+        <td>
+          2022
+          -
+          2034
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.getMagnitude
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.this.getMagnitude
+        </td>
+      </tr><tr>
+        <td>
+          76
+        </td>
+        <td>
+          5578
+        </td>
+        <td>
+          2003
+          -
+          2034
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double./
+        </td>
+        <td style="background: #AEF1AE">
+          desiredMagnitude./(Vector.this.getMagnitude)
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          5579
+        </td>
+        <td>
+          2046
+          -
+          2055
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.*
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.this.x.*(scale)
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          5581
+        </td>
+        <td>
+          2039
+          -
+          2067
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.apply
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.apply(Vector.this.x.*(scale), Vector.this.y.*(scale))
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          5580
+        </td>
+        <td>
+          2057
+          -
+          2066
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.*
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.this.y.*(scale)
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          5583
+        </td>
+        <td>
+          2251
+          -
+          2252
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          2.0
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          5586
+        </td>
+        <td>
+          2256
+          -
+          2270
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Math.pow
+        </td>
+        <td style="background: #AEF1AE">
+          java.lang.Math.pow(Vector.this.y, 2.0)
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          5585
+        </td>
+        <td>
+          2268
+          -
+          2269
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          2.0
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          5588
+        </td>
+        <td>
+          2229
+          -
+          2271
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Math.sqrt
+        </td>
+        <td style="background: #AEF1AE">
+          java.lang.Math.sqrt(java.lang.Math.pow(Vector.this.x, 2.0).+(java.lang.Math.pow(Vector.this.y, 2.0)))
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          5582
+        </td>
+        <td>
+          2248
+          -
+          2249
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.x
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.this.x
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          5584
+        </td>
+        <td>
+          2265
+          -
+          2266
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.y
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.this.y
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          5587
+        </td>
+        <td>
+          2239
+          -
+          2270
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.+
+        </td>
+        <td style="background: #AEF1AE">
+          java.lang.Math.pow(Vector.this.x, 2.0).+(java.lang.Math.pow(Vector.this.y, 2.0))
+        </td>
+      </tr><tr>
+        <td>
+          91
+        </td>
+        <td>
+          5589
+        </td>
+        <td>
+          2425
+          -
+          2437
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.getMagnitude
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.this.getMagnitude
+        </td>
+      </tr><tr>
+        <td>
+          92
+        </td>
+        <td>
+          5590
+        </td>
+        <td>
+          2446
+          -
+          2460
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.!=
+        </td>
+        <td style="background: #AEF1AE">
+          magnitude.!=(0)
+        </td>
+      </tr><tr>
+        <td>
+          93
+        </td>
+        <td>
+          5592
+        </td>
+        <td>
+          2470
+          -
+          2492
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.divide
+        </td>
+        <td style="background: #AEF1AE">
+          this.divide(magnitude)
+        </td>
+      </tr><tr>
+        <td>
+          93
+        </td>
+        <td>
+          5591
+        </td>
+        <td>
+          2470
+          -
+          2492
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.divide
+        </td>
+        <td style="background: #AEF1AE">
+          this.divide(magnitude)
+        </td>
+      </tr><tr>
+        <td>
+          95
+        </td>
+        <td>
+          5595
+        </td>
+        <td>
+          2512
+          -
+          2524
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.apply
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.apply(Vector.this.x, Vector.this.y)
+        </td>
+      </tr><tr>
+        <td>
+          95
+        </td>
+        <td>
+          5594
+        </td>
+        <td>
+          2522
+          -
+          2523
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.y
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.this.y
+        </td>
+      </tr><tr>
+        <td>
+          95
+        </td>
+        <td>
+          5593
+        </td>
+        <td>
+          2519
+          -
+          2520
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.x
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.this.x
+        </td>
+      </tr><tr>
+        <td>
+          95
+        </td>
+        <td>
+          5596
+        </td>
+        <td>
+          2512
+          -
+          2524
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.apply
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.apply(Vector.this.x, Vector.this.y)
+        </td>
+      </tr><tr>
+        <td>
+          104
+        </td>
+        <td>
+          5597
+        </td>
+        <td>
+          2720
+          -
+          2725
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double./
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.this.x./(v)
+        </td>
+      </tr><tr>
+        <td>
+          104
+        </td>
+        <td>
+          5599
+        </td>
+        <td>
+          2713
+          -
+          2733
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.apply
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.apply(Vector.this.x./(v), Vector.this.y./(v))
+        </td>
+      </tr><tr>
+        <td>
+          104
+        </td>
+        <td>
+          5598
+        </td>
+        <td>
+          2727
+          -
+          2732
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double./
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.this.y./(v)
+        </td>
+      </tr><tr>
+        <td>
+          108
+        </td>
+        <td>
+          5600
+        </td>
+        <td>
+          2797
+          -
+          2813
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.VectorImpl.apply
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.this.VectorImpl.apply(x, y)
+        </td>
+      </tr><tr>
+        <td>
+          110
+        </td>
+        <td>
+          5601
+        </td>
+        <td>
+          2838
+          -
+          2854
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.VectorImpl.apply
+        </td>
+        <td style="background: #AEF1AE">
+          Vector.this.VectorImpl.apply(0.0, 0.0)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

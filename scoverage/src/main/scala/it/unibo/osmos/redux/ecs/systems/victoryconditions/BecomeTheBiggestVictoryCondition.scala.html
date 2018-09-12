@@ -1,0 +1,187 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/ecs/systems/victoryconditions/BecomeTheBiggestVictoryCondition.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.systems.victoryconditions
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.ecs.entities.EntityType
+</span>4 <span style=''>import it.unibo.osmos.redux.ecs.entities.properties.composed.DeathProperty
+</span>5 <span style=''>
+</span>6 <span style=''>import scala.collection.mutable.ListBuffer
+</span>7 <span style=''>
+</span>8 <span style=''>/** class implementing become the biggest victory condition
+</span>9 <span style=''>  *
+</span>10 <span style=''>  * victory is fulfilled when the player's radius is
+</span>11 <span style=''>  * greater than the other matter cells radius
+</span>12 <span style=''>  */
+</span>13 <span style=''>case class BecomeTheBiggestVictoryCondition() extends AbstractVictoryCondition {
+</span>14 <span style=''>
+</span>15 <span style=''>  override def check(playerCellEntity: DeathProperty, entityList: ListBuffer[DeathProperty]): Boolean = {
+</span>16 <span style=''>    val playerRadius = </span><span style='background: #AEF1AE'>playerCellEntity.getDimensionComponent.radius</span><span style=''>
+</span>17 <span style=''>    </span><span style='background: #AEF1AE'>entityList.filter(e =&gt; !e.getTypeComponent.typeEntity.equals(EntityType.AntiMatter) &amp;&amp; !e.eq(playerCellEntity))
+</span>18 <span style=''></span><span style='background: #AEF1AE'>      .forall(e =&gt; e.getDimensionComponent.radius &lt; playerRadius)</span><span style=''>
+</span>19 <span style=''>  }
+</span>20 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          1165
+        </td>
+        <td>
+          612
+          -
+          657
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.radius
+        </td>
+        <td style="background: #AEF1AE">
+          playerCellEntity.getDimensionComponent.radius
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          1168
+        </td>
+        <td>
+          685
+          -
+          772
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.&amp;&amp;
+        </td>
+        <td style="background: #AEF1AE">
+          e.getTypeComponent.typeEntity.equals(it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter).unary_!.&amp;&amp;(e.eq(playerCellEntity).unary_!)
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          1167
+        </td>
+        <td>
+          749
+          -
+          772
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #AEF1AE">
+          e.eq(playerCellEntity).unary_!
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          1166
+        </td>
+        <td>
+          723
+          -
+          744
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          1169
+        </td>
+        <td>
+          793
+          -
+          838
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.&lt;
+        </td>
+        <td style="background: #AEF1AE">
+          e.getDimensionComponent.radius.&lt;(playerRadius)
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          1170
+        </td>
+        <td>
+          662
+          -
+          839
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.TraversableForwarder.forall
+        </td>
+        <td style="background: #AEF1AE">
+          entityList.filter(((e: it.unibo.osmos.redux.ecs.entities.properties.composed.DeathProperty) =&gt; e.getTypeComponent.typeEntity.equals(it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter).unary_!.&amp;&amp;(e.eq(playerCellEntity).unary_!))).forall(((e: it.unibo.osmos.redux.ecs.entities.properties.composed.DeathProperty) =&gt; e.getDimensionComponent.radius.&lt;(playerRadius)))
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

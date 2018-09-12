@@ -1,0 +1,823 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/stages/OsmosReduxPrimaryStage.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.stages
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
+</span>5 <span style=''>import it.unibo.osmos.redux.mvc.view.scenes._
+</span>6 <span style=''>import scalafx.application.JFXApp
+</span>7 <span style=''>
+</span>8 <span style=''>/** Primary stage which holds and manages all the different game scenes */
+</span>9 <span style=''>trait OsmosReduxPrimaryStage extends JFXApp.PrimaryStage
+</span>10 <span style=''>
+</span>11 <span style=''>/** Companion object */
+</span>12 <span style=''>object OsmosReduxPrimaryStage {
+</span>13 <span style=''>  /** Creates a new OsmosReduxPrimaryStage, the application root stage
+</span>14 <span style=''>    *
+</span>15 <span style=''>    * @param listener     the PrimaryStageListener
+</span>16 <span style=''>    * @param windowWidth  the window width (which is equal to the screen width by default)
+</span>17 <span style=''>    * @param windowHeight the window width (which is equal to the screen width by default)
+</span>18 <span style=''>    * @return an OsmosReduxPrimaryStageImpl instance
+</span>19 <span style=''>    */
+</span>20 <span style=''>  def apply(listener: PrimaryStageListener,
+</span>21 <span style=''>            windowWidth: Double = DefaultWindowWidth,
+</span>22 <span style=''>            windowHeight: Double = DefaultWindowHeight): OsmosReduxPrimaryStageImpl = </span><span style='background: #F0ADAD'>new OsmosReduxPrimaryStageImpl(listener, windowWidth, windowHeight)</span><span style=''>
+</span>23 <span style=''>
+</span>24 <span style=''>  /** Primary stage implementation
+</span>25 <span style=''>    *
+</span>26 <span style=''>    * @param listener     the primary stage listener
+</span>27 <span style=''>    * @param windowWidth  the window width
+</span>28 <span style=''>    * @param windowHeight the window height
+</span>29 <span style=''>    */
+</span>30 <span style=''>  class OsmosReduxPrimaryStageImpl(val listener: PrimaryStageListener, val windowWidth: Double, val windowHeight: Double) extends OsmosReduxPrimaryStage
+</span>31 <span style=''>    with MainSceneListener {
+</span>32 <span style=''>
+</span>33 <span style=''>    </span><span style='background: #F0ADAD'>title = DefaultWindowTitle</span><span style=''>
+</span>34 <span style=''>    </span><span style='background: #F0ADAD'>resizable = false</span><span style=''>
+</span>35 <span style=''>    </span><span style='background: #F0ADAD'>width = windowWidth</span><span style=''>
+</span>36 <span style=''>    </span><span style='background: #F0ADAD'>height = windowHeight</span><span style=''>
+</span>37 <span style=''>
+</span>38 <span style=''>    private val mainScene = </span><span style='background: #F0ADAD'>new MainScene(this, this)</span><span style=''>
+</span>39 <span style=''>
+</span>40 <span style=''>    /** The scene field represents the scene currently shown to the screen */
+</span>41 <span style=''>    </span><span style='background: #F0ADAD'>scene = mainScene</span><span style=''>
+</span>42 <span style=''>
+</span>43 <span style=''>    override def onPlayClick(): Unit = </span><span style='background: #F0ADAD'>scene = new LevelSelectionScene(this, listener, mainScene)</span><span style=''>
+</span>44 <span style=''>
+</span>45 <span style=''>    override def onMultiPlayerClick(): Unit = </span><span style='background: #F0ADAD'>scene = new MultiPlayerScene(this, listener, mainScene)</span><span style=''>
+</span>46 <span style=''>
+</span>47 <span style=''>    override def onEditorClick(): Unit = </span><span style='background: #F0ADAD'>scene = new EditorLevelSelectionScene(this, listener, mainScene)</span><span style=''>
+</span>48 <span style=''>
+</span>49 <span style=''>    override def onStatsClick(): Unit = </span><span style='background: #F0ADAD'>scene = new StatsScene(this, listener, mainScene)</span><span style=''>
+</span>50 <span style=''>
+</span>51 <span style=''>    override def onSettingsClick(): Unit = </span><span style='background: #F0ADAD'>scene = new SettingsScene(this, listener, mainScene)</span><span style=''>
+</span>52 <span style=''>
+</span>53 <span style=''>    /** Stopping the game when the user closes the window */
+</span>54 <span style=''>    </span><span style='background: #F0ADAD'>onCloseRequest = _ =&gt; {
+</span>55 <span style=''></span><span style='background: #F0ADAD'>      ActorSystemHolder.kill()
+</span>56 <span style=''></span><span style='background: #F0ADAD'>      System.exit(0)
+</span>57 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
+</span>58 <span style=''>  }
+</span>59 <span style=''>
+</span>60 <span style=''>}
+</span>61 <span style=''>
+</span>62 <span style=''>/** Listener that manages all the events managed by the primary scene */
+</span>63 <span style=''>trait PrimaryStageListener extends LevelSelectionSceneListener with EditorLevelSelectionSceneListener
+</span>64 <span style=''>  with MultiPlayerSceneListener with MultiPlayerLobbySceneListener with MultiPlayerLevelSelectionSceneListener
+</span>65 <span style=''>  with SettingsSceneListener with StatsSceneListener
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          5394
+        </td>
+        <td>
+          995
+          -
+          1062
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.OsmosReduxPrimaryStageImpl.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new OsmosReduxPrimaryStage.this.OsmosReduxPrimaryStageImpl(listener, windowWidth, windowHeight)
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          5396
+        </td>
+        <td>
+          1439
+          -
+          1465
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.stage.Stage.title_=
+        </td>
+        <td style="background: #F0ADAD">
+          OsmosReduxPrimaryStageImpl.this.title_=(it.unibo.osmos.redux.mvc.view.ViewConstants.Window.DefaultWindowTitle)
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          5395
+        </td>
+        <td>
+          1447
+          -
+          1465
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.DefaultWindowTitle
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.DefaultWindowTitle
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          5397
+        </td>
+        <td>
+          1470
+          -
+          1487
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.stage.Stage.resizable_=
+        </td>
+        <td style="background: #F0ADAD">
+          OsmosReduxPrimaryStageImpl.this.resizable_=(false)
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          5399
+        </td>
+        <td>
+          1492
+          -
+          1511
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.stage.Window.width_=
+        </td>
+        <td style="background: #F0ADAD">
+          OsmosReduxPrimaryStageImpl.this.width_=(OsmosReduxPrimaryStageImpl.this.windowWidth)
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          5398
+        </td>
+        <td>
+          1500
+          -
+          1511
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.OsmosReduxPrimaryStageImpl.windowWidth
+        </td>
+        <td style="background: #F0ADAD">
+          OsmosReduxPrimaryStageImpl.this.windowWidth
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          5400
+        </td>
+        <td>
+          1525
+          -
+          1537
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.OsmosReduxPrimaryStageImpl.windowHeight
+        </td>
+        <td style="background: #F0ADAD">
+          OsmosReduxPrimaryStageImpl.this.windowHeight
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          5401
+        </td>
+        <td>
+          1516
+          -
+          1537
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.stage.Window.height_=
+        </td>
+        <td style="background: #F0ADAD">
+          OsmosReduxPrimaryStageImpl.this.height_=(OsmosReduxPrimaryStageImpl.this.windowHeight)
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          5402
+        </td>
+        <td>
+          1567
+          -
+          1592
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MainScene.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.scenes.MainScene(this, this)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          5403
+        </td>
+        <td>
+          1684
+          -
+          1693
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.OsmosReduxPrimaryStageImpl.mainScene
+        </td>
+        <td style="background: #F0ADAD">
+          OsmosReduxPrimaryStageImpl.this.mainScene
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          5404
+        </td>
+        <td>
+          1676
+          -
+          1693
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.stage.Stage.scene_=
+        </td>
+        <td style="background: #F0ADAD">
+          OsmosReduxPrimaryStageImpl.this.scene_=(OsmosReduxPrimaryStageImpl.this.mainScene)
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          5406
+        </td>
+        <td>
+          1782
+          -
+          1791
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.OsmosReduxPrimaryStageImpl.mainScene
+        </td>
+        <td style="background: #F0ADAD">
+          OsmosReduxPrimaryStageImpl.this.mainScene
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          5405
+        </td>
+        <td>
+          1772
+          -
+          1780
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.OsmosReduxPrimaryStageImpl.listener
+        </td>
+        <td style="background: #F0ADAD">
+          OsmosReduxPrimaryStageImpl.this.listener
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          5408
+        </td>
+        <td>
+          1734
+          -
+          1792
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.stage.Stage.scene_=
+        </td>
+        <td style="background: #F0ADAD">
+          OsmosReduxPrimaryStageImpl.this.scene_=(new it.unibo.osmos.redux.mvc.view.scenes.LevelSelectionScene(this, OsmosReduxPrimaryStageImpl.this.listener, OsmosReduxPrimaryStageImpl.this.mainScene))
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          5407
+        </td>
+        <td>
+          1742
+          -
+          1792
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.LevelSelectionScene.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.scenes.LevelSelectionScene(this, OsmosReduxPrimaryStageImpl.this.listener, OsmosReduxPrimaryStageImpl.this.mainScene)
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          5409
+        </td>
+        <td>
+          1875
+          -
+          1883
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.OsmosReduxPrimaryStageImpl.listener
+        </td>
+        <td style="background: #F0ADAD">
+          OsmosReduxPrimaryStageImpl.this.listener
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          5412
+        </td>
+        <td>
+          1840
+          -
+          1895
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.stage.Stage.scene_=
+        </td>
+        <td style="background: #F0ADAD">
+          OsmosReduxPrimaryStageImpl.this.scene_=(new it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerScene(this, OsmosReduxPrimaryStageImpl.this.listener, OsmosReduxPrimaryStageImpl.this.mainScene))
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          5411
+        </td>
+        <td>
+          1848
+          -
+          1895
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerScene.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerScene(this, OsmosReduxPrimaryStageImpl.this.listener, OsmosReduxPrimaryStageImpl.this.mainScene)
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          5410
+        </td>
+        <td>
+          1885
+          -
+          1894
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.OsmosReduxPrimaryStageImpl.mainScene
+        </td>
+        <td style="background: #F0ADAD">
+          OsmosReduxPrimaryStageImpl.this.mainScene
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          5415
+        </td>
+        <td>
+          1946
+          -
+          2002
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.EditorLevelSelectionScene.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.scenes.EditorLevelSelectionScene(this, OsmosReduxPrimaryStageImpl.this.listener, OsmosReduxPrimaryStageImpl.this.mainScene)
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          5414
+        </td>
+        <td>
+          1992
+          -
+          2001
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.OsmosReduxPrimaryStageImpl.mainScene
+        </td>
+        <td style="background: #F0ADAD">
+          OsmosReduxPrimaryStageImpl.this.mainScene
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          5413
+        </td>
+        <td>
+          1982
+          -
+          1990
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.OsmosReduxPrimaryStageImpl.listener
+        </td>
+        <td style="background: #F0ADAD">
+          OsmosReduxPrimaryStageImpl.this.listener
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          5416
+        </td>
+        <td>
+          1938
+          -
+          2002
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.stage.Stage.scene_=
+        </td>
+        <td style="background: #F0ADAD">
+          OsmosReduxPrimaryStageImpl.this.scene_=(new it.unibo.osmos.redux.mvc.view.scenes.EditorLevelSelectionScene(this, OsmosReduxPrimaryStageImpl.this.listener, OsmosReduxPrimaryStageImpl.this.mainScene))
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          5418
+        </td>
+        <td>
+          2083
+          -
+          2092
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.OsmosReduxPrimaryStageImpl.mainScene
+        </td>
+        <td style="background: #F0ADAD">
+          OsmosReduxPrimaryStageImpl.this.mainScene
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          5417
+        </td>
+        <td>
+          2073
+          -
+          2081
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.OsmosReduxPrimaryStageImpl.listener
+        </td>
+        <td style="background: #F0ADAD">
+          OsmosReduxPrimaryStageImpl.this.listener
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          5420
+        </td>
+        <td>
+          2044
+          -
+          2093
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.stage.Stage.scene_=
+        </td>
+        <td style="background: #F0ADAD">
+          OsmosReduxPrimaryStageImpl.this.scene_=(new it.unibo.osmos.redux.mvc.view.scenes.StatsScene(this, OsmosReduxPrimaryStageImpl.this.listener, OsmosReduxPrimaryStageImpl.this.mainScene))
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          5419
+        </td>
+        <td>
+          2052
+          -
+          2093
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.StatsScene.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.scenes.StatsScene(this, OsmosReduxPrimaryStageImpl.this.listener, OsmosReduxPrimaryStageImpl.this.mainScene)
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          5421
+        </td>
+        <td>
+          2170
+          -
+          2178
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.OsmosReduxPrimaryStageImpl.listener
+        </td>
+        <td style="background: #F0ADAD">
+          OsmosReduxPrimaryStageImpl.this.listener
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          5424
+        </td>
+        <td>
+          2138
+          -
+          2190
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.stage.Stage.scene_=
+        </td>
+        <td style="background: #F0ADAD">
+          OsmosReduxPrimaryStageImpl.this.scene_=(new it.unibo.osmos.redux.mvc.view.scenes.SettingsScene(this, OsmosReduxPrimaryStageImpl.this.listener, OsmosReduxPrimaryStageImpl.this.mainScene))
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          5423
+        </td>
+        <td>
+          2146
+          -
+          2190
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.SettingsScene.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.scenes.SettingsScene(this, OsmosReduxPrimaryStageImpl.this.listener, OsmosReduxPrimaryStageImpl.this.mainScene)
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          5422
+        </td>
+        <td>
+          2180
+          -
+          2189
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.OsmosReduxPrimaryStageImpl.mainScene
+        </td>
+        <td style="background: #F0ADAD">
+          OsmosReduxPrimaryStageImpl.this.mainScene
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          5427
+        </td>
+        <td>
+          2257
+          -
+          2338
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.stage.Window.onCloseRequest_=
+        </td>
+        <td style="background: #F0ADAD">
+          OsmosReduxPrimaryStageImpl.this.onCloseRequest_=(((x$1: javafx.stage.WindowEvent) =&gt; {
+  it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder.kill();
+  java.lang.System.exit(0)
+}))
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          5425
+        </td>
+        <td>
+          2287
+          -
+          2311
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder.kill
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder.kill()
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          5426
+        </td>
+        <td>
+          2318
+          -
+          2332
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.System.exit
+        </td>
+        <td style="background: #F0ADAD">
+          java.lang.System.exit(0)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

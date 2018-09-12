@@ -1,0 +1,582 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/components/custom/EntityDescriptionBox.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.components.custom
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
+</span>4 <span style=''>import scalafx.geometry.Pos
+</span>5 <span style=''>import scalafx.scene.image.{Image, ImageView}
+</span>6 <span style=''>import scalafx.scene.layout.{HBox, VBox}
+</span>7 <span style=''>import scalafx.scene.paint.Color
+</span>8 <span style=''>import scalafx.scene.text.{Font, Text, TextAlignment}
+</span>9 <span style=''>
+</span>10 <span style=''>
+</span>11 <span style=''>/** View holding a entity image and its description in the game
+</span>12 <span style=''>  *
+</span>13 <span style=''>  * @param image       the entity image
+</span>14 <span style=''>  * @param description the entity description
+</span>15 <span style=''>  */
+</span>16 <span style=''>class EntityDescriptionBox(val image: Image, val description: String) extends HBox(50.0) {
+</span>17 <span style=''>  </span><span style='background: #F0ADAD'>prefWidth = HalfWindowWidth</span><span style=''>
+</span>18 <span style=''>  </span><span style='background: #F0ADAD'>minWidth = HalfWindowWidth</span><span style=''>
+</span>19 <span style=''>  </span><span style='background: #F0ADAD'>maxWidth = HalfWindowWidth</span><span style=''>
+</span>20 <span style=''>
+</span>21 <span style=''>  /** The image view */
+</span>22 <span style=''>  private val imageView = </span><span style='background: #F0ADAD'>new ImageView(image)</span><span style=''>
+</span>23 <span style=''>
+</span>24 <span style=''>  /** The image description text */
+</span>25 <span style=''>  private val text = </span><span style='background: #F0ADAD'>new</span><span style=''> Text(description) {
+</span>26 <span style=''>    </span><span style='background: #F0ADAD'>textAlignment = TextAlignment.Left</span><span style=''>
+</span>27 <span style=''>    </span><span style='background: #F0ADAD'>font = Font.font(&quot;Verdana&quot;, 20.0)</span><span style=''>
+</span>28 <span style=''>    </span><span style='background: #F0ADAD'>fill = Color.White</span><span style=''>
+</span>29 <span style=''>  }
+</span>30 <span style=''>
+</span>31 <span style=''>  private val textContainer = </span><span style='background: #F0ADAD'>new</span><span style=''> VBox {
+</span>32 <span style=''>    </span><span style='background: #F0ADAD'>alignment = Pos.Center</span><span style=''>
+</span>33 <span style=''>    </span><span style='background: #F0ADAD'>children = text</span><span style=''>
+</span>34 <span style=''>  }
+</span>35 <span style=''>
+</span>36 <span style=''>  </span><span style='background: #F0ADAD'>children = Seq(imageView, textContainer)</span><span style=''>
+</span>37 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          3432
+        </td>
+        <td>
+          573
+          -
+          600
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Region.prefWidth_=
+        </td>
+        <td style="background: #F0ADAD">
+          EntityDescriptionBox.this.prefWidth_=(it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth)
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          3431
+        </td>
+        <td>
+          585
+          -
+          600
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          3434
+        </td>
+        <td>
+          603
+          -
+          629
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Region.minWidth_=
+        </td>
+        <td style="background: #F0ADAD">
+          EntityDescriptionBox.this.minWidth_=(it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth)
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          3433
+        </td>
+        <td>
+          614
+          -
+          629
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          3435
+        </td>
+        <td>
+          643
+          -
+          658
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          3436
+        </td>
+        <td>
+          632
+          -
+          658
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Region.maxWidth_=
+        </td>
+        <td style="background: #F0ADAD">
+          EntityDescriptionBox.this.maxWidth_=(it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth)
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          3438
+        </td>
+        <td>
+          710
+          -
+          730
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.image.ImageView.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new scalafx.scene.image.ImageView(EntityDescriptionBox.this.image)
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          3437
+        </td>
+        <td>
+          724
+          -
+          729
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox.image
+        </td>
+        <td style="background: #F0ADAD">
+          EntityDescriptionBox.this.image
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          3445
+        </td>
+        <td>
+          789
+          -
+          792
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          3439
+        </td>
+        <td>
+          833
+          -
+          851
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.scene.text.TextAlignment.Left
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.scene.text.TextAlignment.Left
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          3440
+        </td>
+        <td>
+          817
+          -
+          851
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.text.Text.textAlignment_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.textAlignment_=(scalafx.scene.text.TextAlignment.Left)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          3441
+        </td>
+        <td>
+          863
+          -
+          889
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.text.Font.font
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.scene.text.Font.font(&quot;Verdana&quot;, 20.0)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          3442
+        </td>
+        <td>
+          856
+          -
+          889
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.text.Text.font_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.font_=(scalafx.scene.text.Font.font(&quot;Verdana&quot;, 20.0))
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          3444
+        </td>
+        <td>
+          894
+          -
+          912
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.shape.Shape.fill_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.fill_=(scalafx.scene.paint.Color.White)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          3443
+        </td>
+        <td>
+          901
+          -
+          912
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.scene.paint.Color.White
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.scene.paint.Color.White
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          3450
+        </td>
+        <td>
+          948
+          -
+          951
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          3447
+        </td>
+        <td>
+          963
+          -
+          985
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.delegate.AlignmentDelegate.alignment_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.alignment_=(scalafx.geometry.Pos.Center)
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          3446
+        </td>
+        <td>
+          975
+          -
+          985
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.geometry.Pos.Center
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.geometry.Pos.Center
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          3449
+        </td>
+        <td>
+          990
+          -
+          1005
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Pane.children_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.children_=(EntityDescriptionBox.this.text)
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          3448
+        </td>
+        <td>
+          1001
+          -
+          1005
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox.text
+        </td>
+        <td style="background: #F0ADAD">
+          EntityDescriptionBox.this.text
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          3453
+        </td>
+        <td>
+          1024
+          -
+          1053
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.Seq.apply[scalafx.scene.Node](EntityDescriptionBox.this.imageView, EntityDescriptionBox.this.textContainer)
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          3452
+        </td>
+        <td>
+          1039
+          -
+          1052
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox.textContainer
+        </td>
+        <td style="background: #F0ADAD">
+          EntityDescriptionBox.this.textContainer
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          3451
+        </td>
+        <td>
+          1028
+          -
+          1037
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox.imageView
+        </td>
+        <td style="background: #F0ADAD">
+          EntityDescriptionBox.this.imageView
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          3454
+        </td>
+        <td>
+          1013
+          -
+          1053
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Pane.children_=
+        </td>
+        <td style="background: #F0ADAD">
+          EntityDescriptionBox.this.children_=(scala.collection.Seq.apply[scalafx.scene.Node](EntityDescriptionBox.this.imageView, EntityDescriptionBox.this.textContainer))
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

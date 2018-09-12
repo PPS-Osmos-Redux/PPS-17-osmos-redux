@@ -1,0 +1,197 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/components/multiplayer/MultiPlayerLevelNode.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.components.multiplayer
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.view.components.level.{AnimatedAbstractLevelNode, LevelNodeListener}
+</span>5 <span style=''>import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
+</span>6 <span style=''>import scalafx.geometry.Insets
+</span>7 <span style=''>import scalafx.scene.control.Button
+</span>8 <span style=''>import scalafx.scene.effect.DropShadow
+</span>9 <span style=''>import scalafx.scene.image.ImageView
+</span>10 <span style=''>import scalafx.scene.paint.Color
+</span>11 <span style=''>import scalafx.scene.text.Text
+</span>12 <span style=''>
+</span>13 <span style=''>/** Level node representing a multiplayer level
+</span>14 <span style=''>  *
+</span>15 <span style=''>  * @param listener  the LevelNodeListener
+</span>16 <span style=''>  * @param levelInfo the level info
+</span>17 <span style=''>  */
+</span>18 <span style=''>class MultiPlayerLevelNode(override val listener: LevelNodeListener, override val levelInfo: LevelInfo) extends AnimatedAbstractLevelNode(listener, levelInfo) {
+</span>19 <span style=''>
+</span>20 <span style=''>  </span><span style='background: #F0ADAD'>effect = new DropShadow {
+</span>21 <span style=''></span><span style='background: #F0ADAD'>    color = Color.DarkRed
+</span>22 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
+</span>23 <span style=''>
+</span>24 <span style=''>  /** The upper text */
+</span>25 <span style=''>  override lazy val text: Text = new Text() {
+</span>26 <span style=''>    margin = Insets(0, 0, 20, 0)
+</span>27 <span style=''>    style = &quot;-fx-font-size: 20pt&quot;
+</span>28 <span style=''>    text = &quot;Level &quot; + levelInfo.name
+</span>29 <span style=''>  }
+</span>30 <span style=''>
+</span>31 <span style=''>  /** The level image */
+</span>32 <span style=''>  override lazy val imageView: ImageView = new ImageView(ImageLoader.getImage(&quot;/textures/cell_blue.png&quot;)) {
+</span>33 <span style=''>    margin = Insets(20)
+</span>34 <span style=''>  }
+</span>35 <span style=''>
+</span>36 <span style=''>  /** The button used to start the level normally */
+</span>37 <span style=''>  override lazy val playButton: Button = new Button(&quot;Play&quot;) {}
+</span>38 <span style=''>
+</span>39 <span style=''>  /** We want to remove the simulation button */
+</span>40 <span style=''>  </span><span style='background: #F0ADAD'>children.remove(simulationButton)</span><span style=''>
+</span>41 <span style=''>
+</span>42 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          4219
+        </td>
+        <td>
+          798
+          -
+          853
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.effect_=
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerLevelNode.this.effect_=({
+  final class $anon extends scalafx.scene.effect.DropShadow {
+    def &lt;init&gt;(): &lt;$anon: scalafx.scene.effect.DropShadow&gt; = {
+      $anon.super.&lt;init&gt;(effect.this.DropShadow.&lt;init&gt;$default$1);
+      ()
+    };
+    $anon.this.color_=(scalafx.scene.paint.Color.DarkRed)
+  };
+  new $anon()
+})
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          4218
+        </td>
+        <td>
+          807
+          -
+          810
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.multiplayer.MultiPlayerLevelNode.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          4216
+        </td>
+        <td>
+          836
+          -
+          849
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.scene.paint.Color.DarkRed
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.scene.paint.Color.DarkRed
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          4217
+        </td>
+        <td>
+          828
+          -
+          849
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.effect.ColorDelegate.color_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.color_=(scalafx.scene.paint.Color.DarkRed)
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          4220
+        </td>
+        <td>
+          1364
+          -
+          1397
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.util.List.remove
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerLevelNode.this.children.remove(MultiPlayerLevelNode.this.simulationButton)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

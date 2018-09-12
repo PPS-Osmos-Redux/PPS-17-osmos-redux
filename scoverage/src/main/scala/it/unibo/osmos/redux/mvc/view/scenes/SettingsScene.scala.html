@@ -1,0 +1,1498 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/scenes/SettingsScene.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.scenes
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.mvc.controller.SettingsHolder
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels
+</span>5 <span style=''>import it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer
+</span>6 <span style=''>import it.unibo.osmos.redux.mvc.view.components.custom.{AlertFactory, StyledButton}
+</span>7 <span style=''>import javafx.scene.media.MediaPlayer.Status._
+</span>8 <span style=''>import scalafx.geometry.Pos
+</span>9 <span style=''>import scalafx.scene.control.{CheckBox, Label, Slider}
+</span>10 <span style=''>import scalafx.scene.layout._
+</span>11 <span style=''>import scalafx.scene.paint.Color
+</span>12 <span style=''>import scalafx.stage.Stage
+</span>13 <span style=''>
+</span>14 <span style=''>/** Scene where the user can configure in game settings
+</span>15 <span style=''>  *
+</span>16 <span style=''>  * @param parentStage           the parent stage
+</span>17 <span style=''>  * @param listener              the SettingsSceneListener
+</span>18 <span style=''>  * @param previousSceneListener the BackClickListener
+</span>19 <span style=''>  */
+</span>20 <span style=''>class SettingsScene(override val parentStage: Stage, listener: SettingsSceneListener, previousSceneListener: BackClickListener) extends DefaultBackScene(parentStage, previousSceneListener) {
+</span>21 <span style=''>
+</span>22 <span style=''>  private implicit def toDouble(number: Number): Double = </span><span style='background: #F0ADAD'>number.doubleValue()</span><span style=''>
+</span>23 <span style=''>
+</span>24 <span style=''>  private val volumeSlider = </span><span style='background: #F0ADAD'>new</span><span style=''> Slider() {
+</span>25 <span style=''>    </span><span style='background: #F0ADAD'>min = 0</span><span style=''>
+</span>26 <span style=''>    </span><span style='background: #F0ADAD'>max = 100</span><span style=''>
+</span>27 <span style=''>    </span><span style='background: #F0ADAD'>value = MusicPlayer.getVolume * 100</span><span style=''>
+</span>28 <span style=''>    </span><span style='background: #F0ADAD'>showTickLabels = true</span><span style=''>
+</span>29 <span style=''>    </span><span style='background: #F0ADAD'>showTickMarks = true</span><span style=''>
+</span>30 <span style=''>    </span><span style='background: #F0ADAD'>majorTickUnit = 50</span><span style=''>
+</span>31 <span style=''>    </span><span style='background: #F0ADAD'>minorTickCount = 5</span><span style=''>
+</span>32 <span style=''>    </span><span style='background: #F0ADAD'>blockIncrement = 10</span><span style=''>
+</span>33 <span style=''>    </span><span style='background: #F0ADAD'>minWidth = 480</span><span style=''>
+</span>34 <span style=''>    </span><span style='background: #F0ADAD'>maxWidth &lt;== parentStage.width / 4</span><span style=''>
+</span>35 <span style=''>  }
+</span>36 <span style=''>  </span><span style='background: #F0ADAD'>volumeSlider.valueProperty().addListener((_, _, newVal) =&gt; {
+</span>37 <span style=''></span><span style='background: #F0ADAD'>    val valueToPlayerRange = newVal / 100
+</span>38 <span style=''></span><span style='background: #F0ADAD'>    MusicPlayer.changeVolume(valueToPlayerRange)
+</span>39 <span style=''></span><span style='background: #F0ADAD'>  })</span><span style=''>
+</span>40 <span style=''>
+</span>41 <span style=''>  private val volumeLabel = </span><span style='background: #F0ADAD'>new</span><span style=''> Label(&quot;Volume&quot;) {
+</span>42 <span style=''>    </span><span style='background: #F0ADAD'>textFill = Color.web(&quot;#FFFFFF&quot;)</span><span style=''>
+</span>43 <span style=''>  }
+</span>44 <span style=''>
+</span>45 <span style=''>  private val volumeCheckBox = </span><span style='background: #F0ADAD'>new</span><span style=''> CheckBox() {
+</span>46 <span style=''>    </span><span style='background: #F0ADAD'>selected = MusicPlayer.getMediaPlayerStatus match {
+</span>47 <span style=''></span><span style='background: #F0ADAD'>      case Some(PLAYING) =&gt;
+</span>48 <span style=''></span><span style='background: #F0ADAD'>        volumeSlider.disable = false
+</span>49 <span style=''></span><span style='background: #F0ADAD'>        true
+</span>50 <span style=''></span><span style='background: #F0ADAD'>      case _ =&gt;
+</span>51 <span style=''></span><span style='background: #F0ADAD'>        volumeSlider.disable = true
+</span>52 <span style=''></span><span style='background: #F0ADAD'>        false
+</span>53 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
+</span>54 <span style=''>    </span><span style='background: #F0ADAD'>onAction = _ =&gt; {
+</span>55 <span style=''></span><span style='background: #F0ADAD'>      MusicPlayer.getMediaPlayerStatus match {
+</span>56 <span style=''></span><span style='background: #F0ADAD'>        case Some(PLAYING) =&gt;
+</span>57 <span style=''></span><span style='background: #F0ADAD'>          MusicPlayer.pause()
+</span>58 <span style=''></span><span style='background: #F0ADAD'>          volumeSlider.disable = true
+</span>59 <span style=''></span><span style='background: #F0ADAD'>        case Some(PAUSED) =&gt;
+</span>60 <span style=''></span><span style='background: #F0ADAD'>          MusicPlayer.resume()
+</span>61 <span style=''></span><span style='background: #F0ADAD'>          volumeSlider.disable = false
+</span>62 <span style=''></span><span style='background: #F0ADAD'>        case _ =&gt;
+</span>63 <span style=''></span><span style='background: #F0ADAD'>      }
+</span>64 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
+</span>65 <span style=''>  }
+</span>66 <span style=''>
+</span>67 <span style=''>  private val volumeContainer = </span><span style='background: #F0ADAD'>new</span><span style=''> HBox(25) {
+</span>68 <span style=''>    </span><span style='background: #F0ADAD'>alignment = Pos.Center</span><span style=''>
+</span>69 <span style=''>    </span><span style='background: #F0ADAD'>children = Seq(volumeLabel, volumeCheckBox)</span><span style=''>
+</span>70 <span style=''>  }
+</span>71 <span style=''>
+</span>72 <span style=''>  private val resetGameData = </span><span style='background: #F0ADAD'>new</span><span style=''> StyledButton(&quot;Reset game data&quot;) {
+</span>73 <span style=''>    </span><span style='background: #F0ADAD'>onAction = _ =&gt; AlertFactory.showConfirmationAlert(text.value + &quot;?&quot;, &quot;Your progresses will be lost&quot;, SinglePlayerLevels.reset(), {})</span><span style=''>
+</span>74 <span style=''>  }
+</span>75 <span style=''>
+</span>76 <span style=''>  /** Adds save settings to goBack button */
+</span>77 <span style=''>  </span><span style='background: #F0ADAD'>setAdditionalAction(() =&gt; SettingsHolder.saveSettings())</span><span style=''>
+</span>78 <span style=''>
+</span>79 <span style=''>  /** The central container */
+</span>80 <span style=''>  protected val container: VBox = </span><span style='background: #F0ADAD'>new</span><span style=''> VBox(15) {
+</span>81 <span style=''>    </span><span style='background: #F0ADAD'>alignment = Pos.Center</span><span style=''>
+</span>82 <span style=''>    </span><span style='background: #F0ADAD'>children = Seq(volumeContainer, volumeSlider, resetGameData, goBack)</span><span style=''>
+</span>83 <span style=''>    </span><span style='background: #F0ADAD'>styleClass.add(&quot;settings-vbox&quot;)</span><span style=''>
+</span>84 <span style=''>  }
+</span>85 <span style=''>
+</span>86 <span style=''>  /** Setting the root container */
+</span>87 <span style=''>  </span><span style='background: #F0ADAD'>root = container</span><span style=''>
+</span>88 <span style=''>}
+</span>89 <span style=''>
+</span>90 <span style=''>/** Trait which gets notified when a SettingsScene event occurs */
+</span>91 <span style=''>trait SettingsSceneListener
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          5268
+        </td>
+        <td>
+          1027
+          -
+          1047
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Number.doubleValue
+        </td>
+        <td style="background: #F0ADAD">
+          number.doubleValue()
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          5282
+        </td>
+        <td>
+          1078
+          -
+          1081
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.SettingsScene.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          5269
+        </td>
+        <td>
+          1097
+          -
+          1104
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.Slider.min_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.min_=(0.0)
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          5270
+        </td>
+        <td>
+          1109
+          -
+          1118
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.Slider.max_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.max_=(100.0)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          5272
+        </td>
+        <td>
+          1123
+          -
+          1158
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.Slider.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.value_=(it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.getVolume.*(100))
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          5271
+        </td>
+        <td>
+          1131
+          -
+          1158
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.*
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.getVolume.*(100)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          5273
+        </td>
+        <td>
+          1163
+          -
+          1184
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.Slider.showTickLabels_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.showTickLabels_=(true)
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          5274
+        </td>
+        <td>
+          1189
+          -
+          1209
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.Slider.showTickMarks_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.showTickMarks_=(true)
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          5275
+        </td>
+        <td>
+          1214
+          -
+          1232
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.Slider.majorTickUnit_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.majorTickUnit_=(50.0)
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          5276
+        </td>
+        <td>
+          1237
+          -
+          1255
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.Slider.minorTickCount_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.minorTickCount_=(5)
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          5277
+        </td>
+        <td>
+          1260
+          -
+          1279
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.Slider.blockIncrement_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.blockIncrement_=(10.0)
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          5278
+        </td>
+        <td>
+          1284
+          -
+          1298
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Region.minWidth_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.minWidth_=(480.0)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          5281
+        </td>
+        <td>
+          1303
+          -
+          1337
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.maxWidth.&lt;==(binding.this.NumberBinding.sfxNumberBinding2jfx(SettingsScene.this.parentStage.width./(4)))
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          5280
+        </td>
+        <td>
+          1316
+          -
+          1337
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.beans.binding.NumberBinding.sfxNumberBinding2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          binding.this.NumberBinding.sfxNumberBinding2jfx(SettingsScene.this.parentStage.width./(4))
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          5279
+        </td>
+        <td>
+          1316
+          -
+          1337
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.binding.NumberExpression./
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsScene.this.parentStage.width./(4)
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          5283
+        </td>
+        <td>
+          1344
+          -
+          1356
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.SettingsScene.volumeSlider
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsScene.this.volumeSlider
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          5286
+        </td>
+        <td>
+          1344
+          -
+          1500
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.beans.value.ObservableValue.addListener
+        </td>
+        <td style="background: #F0ADAD">
+          control.this.Slider.sfxSlider2jfx(SettingsScene.this.volumeSlider).valueProperty().addListener(((x$1: javafx.beans.value.ObservableValue[_ &lt;: Number], x$2: Number, newVal: Number) =&gt; {
+  val valueToPlayerRange: Double = SettingsScene.this.toDouble(newVal)./(100);
+  it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.changeVolume(valueToPlayerRange)
+}))
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          5284
+        </td>
+        <td>
+          1434
+          -
+          1446
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double./
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsScene.this.toDouble(newVal)./(100)
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          5285
+        </td>
+        <td>
+          1451
+          -
+          1495
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.changeVolume
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.changeVolume(valueToPlayerRange)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          5289
+        </td>
+        <td>
+          1530
+          -
+          1533
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.SettingsScene.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          5287
+        </td>
+        <td>
+          1567
+          -
+          1587
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.paint.Color.web
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.scene.paint.Color.web(&quot;#FFFFFF&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          5288
+        </td>
+        <td>
+          1556
+          -
+          1587
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.Labeled.textFill_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.textFill_=(scalafx.scene.paint.Color.web(&quot;#FFFFFF&quot;))
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          5303
+        </td>
+        <td>
+          1624
+          -
+          1627
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.SettingsScene.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          5290
+        </td>
+        <td>
+          1656
+          -
+          1688
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.getMediaPlayerStatus
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.getMediaPlayerStatus
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          5295
+        </td>
+        <td>
+          1645
+          -
+          1846
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.CheckBox.selected_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.selected_=(it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.getMediaPlayerStatus match {
+  case (value: javafx.scene.media.MediaPlayer.Status)Some[javafx.scene.media.MediaPlayer.Status](PLAYING) =&gt; {
+    SettingsScene.this.volumeSlider.disable_=(false);
+    true
+  }
+  case _ =&gt; {
+    SettingsScene.this.volumeSlider.disable_=(true);
+    false
+  }
+})
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          5291
+        </td>
+        <td>
+          1733
+          -
+          1761
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.disable_=
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsScene.this.volumeSlider.disable_=(false)
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          5292
+        </td>
+        <td>
+          1770
+          -
+          1774
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          5293
+        </td>
+        <td>
+          1799
+          -
+          1826
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.disable_=
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsScene.this.volumeSlider.disable_=(true)
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          5294
+        </td>
+        <td>
+          1835
+          -
+          1840
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          false
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          5302
+        </td>
+        <td>
+          1851
+          -
+          2144
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.ButtonBase.onAction_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.onAction_=(((x$3: javafx.event.ActionEvent) =&gt; it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.getMediaPlayerStatus match {
+  case (value: javafx.scene.media.MediaPlayer.Status)Some[javafx.scene.media.MediaPlayer.Status](PLAYING) =&gt; {
+    it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.pause();
+    SettingsScene.this.volumeSlider.disable_=(true)
+  }
+  case (value: javafx.scene.media.MediaPlayer.Status)Some[javafx.scene.media.MediaPlayer.Status](PAUSED) =&gt; {
+    it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.resume();
+    SettingsScene.this.volumeSlider.disable_=(false)
+  }
+  case _ =&gt; ()
+}))
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          5296
+        </td>
+        <td>
+          1875
+          -
+          1907
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.getMediaPlayerStatus
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.getMediaPlayerStatus
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          5297
+        </td>
+        <td>
+          1956
+          -
+          1975
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.pause
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.pause()
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          5298
+        </td>
+        <td>
+          1986
+          -
+          2013
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.disable_=
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsScene.this.volumeSlider.disable_=(true)
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          5299
+        </td>
+        <td>
+          2053
+          -
+          2073
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.resume
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.resume()
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          5300
+        </td>
+        <td>
+          2084
+          -
+          2112
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.disable_=
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsScene.this.volumeSlider.disable_=(false)
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          5301
+        </td>
+        <td>
+          2128
+          -
+          2130
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          67
+        </td>
+        <td>
+          5310
+        </td>
+        <td>
+          2182
+          -
+          2185
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.SettingsScene.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          5305
+        </td>
+        <td>
+          2201
+          -
+          2223
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.delegate.AlignmentDelegate.alignment_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.alignment_=(scalafx.geometry.Pos.Center)
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          5304
+        </td>
+        <td>
+          2213
+          -
+          2223
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.geometry.Pos.Center
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.geometry.Pos.Center
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          5307
+        </td>
+        <td>
+          2256
+          -
+          2270
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.SettingsScene.volumeCheckBox
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsScene.this.volumeCheckBox
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          5306
+        </td>
+        <td>
+          2243
+          -
+          2254
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.SettingsScene.volumeLabel
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsScene.this.volumeLabel
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          5309
+        </td>
+        <td>
+          2228
+          -
+          2271
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Pane.children_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.children_=(scala.collection.Seq.apply[scalafx.scene.control.Labeled](SettingsScene.this.volumeLabel, SettingsScene.this.volumeCheckBox))
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          5308
+        </td>
+        <td>
+          2239
+          -
+          2271
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.Seq.apply[scalafx.scene.control.Labeled](SettingsScene.this.volumeLabel, SettingsScene.this.volumeCheckBox)
+        </td>
+      </tr><tr>
+        <td>
+          72
+        </td>
+        <td>
+          5317
+        </td>
+        <td>
+          2307
+          -
+          2310
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.SettingsScene.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          5314
+        </td>
+        <td>
+          2478
+          -
+          2480
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          5316
+        </td>
+        <td>
+          2349
+          -
+          2481
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.ButtonBase.onAction_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.onAction_=(((x$4: javafx.event.ActionEvent) =&gt; it.unibo.osmos.redux.mvc.view.components.custom.AlertFactory.showConfirmationAlert($anon.this.text.value.+(&quot;?&quot;), &quot;Your progresses will be lost&quot;, it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.reset(), ())))
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          5313
+        </td>
+        <td>
+          2450
+          -
+          2476
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.reset
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.reset()
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          5312
+        </td>
+        <td>
+          2418
+          -
+          2448
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;Your progresses will be lost&quot;
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          5315
+        </td>
+        <td>
+          2365
+          -
+          2481
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.AlertFactory.showConfirmationAlert
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.components.custom.AlertFactory.showConfirmationAlert($anon.this.text.value.+(&quot;?&quot;), &quot;Your progresses will be lost&quot;, it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.reset(), ())
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          5311
+        </td>
+        <td>
+          2400
+          -
+          2416
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.text.value.+(&quot;?&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          5319
+        </td>
+        <td>
+          2534
+          -
+          2590
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.DefaultBackScene.setAdditionalAction
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsScene.this.setAdditionalAction((() =&gt; it.unibo.osmos.redux.mvc.controller.SettingsHolder.saveSettings()))
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          5318
+        </td>
+        <td>
+          2560
+          -
+          2589
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.SettingsHolder.saveSettings
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.SettingsHolder.saveSettings()
+        </td>
+      </tr><tr>
+        <td>
+          80
+        </td>
+        <td>
+          5329
+        </td>
+        <td>
+          2657
+          -
+          2660
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.SettingsScene.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          81
+        </td>
+        <td>
+          5321
+        </td>
+        <td>
+          2676
+          -
+          2698
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.delegate.AlignmentDelegate.alignment_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.alignment_=(scalafx.geometry.Pos.Center)
+        </td>
+      </tr><tr>
+        <td>
+          81
+        </td>
+        <td>
+          5320
+        </td>
+        <td>
+          2688
+          -
+          2698
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.geometry.Pos.Center
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.geometry.Pos.Center
+        </td>
+      </tr><tr>
+        <td>
+          82
+        </td>
+        <td>
+          5323
+        </td>
+        <td>
+          2735
+          -
+          2747
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.SettingsScene.volumeSlider
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsScene.this.volumeSlider
+        </td>
+      </tr><tr>
+        <td>
+          82
+        </td>
+        <td>
+          5322
+        </td>
+        <td>
+          2718
+          -
+          2733
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.SettingsScene.volumeContainer
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsScene.this.volumeContainer
+        </td>
+      </tr><tr>
+        <td>
+          82
+        </td>
+        <td>
+          5325
+        </td>
+        <td>
+          2764
+          -
+          2770
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.DefaultBackScene.goBack
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsScene.this.goBack
+        </td>
+      </tr><tr>
+        <td>
+          82
+        </td>
+        <td>
+          5324
+        </td>
+        <td>
+          2749
+          -
+          2762
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.SettingsScene.resetGameData
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsScene.this.resetGameData
+        </td>
+      </tr><tr>
+        <td>
+          82
+        </td>
+        <td>
+          5327
+        </td>
+        <td>
+          2703
+          -
+          2771
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Pane.children_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.children_=(scala.collection.Seq.apply[scalafx.scene.layout.Region](SettingsScene.this.volumeContainer, SettingsScene.this.volumeSlider, SettingsScene.this.resetGameData, SettingsScene.this.goBack))
+        </td>
+      </tr><tr>
+        <td>
+          82
+        </td>
+        <td>
+          5326
+        </td>
+        <td>
+          2714
+          -
+          2771
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.Seq.apply[scalafx.scene.layout.Region](SettingsScene.this.volumeContainer, SettingsScene.this.volumeSlider, SettingsScene.this.resetGameData, SettingsScene.this.goBack)
+        </td>
+      </tr><tr>
+        <td>
+          83
+        </td>
+        <td>
+          5328
+        </td>
+        <td>
+          2776
+          -
+          2807
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.util.List.add
+        </td>
+        <td style="background: #F0ADAD">
+          collections.this.ObservableBuffer.observableBuffer2ObservableList[String]($anon.this.styleClass).add(&quot;settings-vbox&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          87
+        </td>
+        <td>
+          5331
+        </td>
+        <td>
+          2851
+          -
+          2867
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Scene.root_=
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsScene.this.root_=(SettingsScene.this.container)
+        </td>
+      </tr><tr>
+        <td>
+          87
+        </td>
+        <td>
+          5330
+        </td>
+        <td>
+          2858
+          -
+          2867
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.SettingsScene.container
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsScene.this.container
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

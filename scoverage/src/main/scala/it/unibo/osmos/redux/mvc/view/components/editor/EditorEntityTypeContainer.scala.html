@@ -1,0 +1,3228 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/components/editor/EditorEntityTypeContainer.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.components.editor
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.ecs.entities.{CellEntity, EntityType}
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
+</span>5 <span style=''>import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
+</span>6 <span style=''>import it.unibo.osmos.redux.mvc.view.components.custom.TitledComboBox
+</span>7 <span style=''>import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
+</span>8 <span style=''>import javafx.scene.input.MouseEvent
+</span>9 <span style=''>import javafx.scene.paint.ImagePattern
+</span>10 <span style=''>import scalafx.beans.property.ObjectProperty
+</span>11 <span style=''>import scalafx.geometry.Insets
+</span>12 <span style=''>import scalafx.scene.layout.{StackPane, VBox}
+</span>13 <span style=''>import scalafx.scene.shape.{Circle, Shape}
+</span>14 <span style=''>
+</span>15 <span style=''>/** This class holds those variables and view components responsible to let the user choose and create the entity type in the EditorScene
+</span>16 <span style=''>  *
+</span>17 <span style=''>  * @param editorEntityTypeContainerListener the listener
+</span>18 <span style=''>  */
+</span>19 <span style=''>class EditorEntityTypeContainer(editorEntityTypeContainerListener: EditorEntityTypeContainerListener) {
+</span>20 <span style=''>
+</span>21 <span style=''>  /** Entity Type */
+</span>22 <span style=''>  private val entityType: ObjectProperty[EntityType.Value] = </span><span style='background: #F0ADAD'>ObjectProperty(EntityType.Matter)</span><span style=''>
+</span>23 <span style=''>  private val entityComboBox = </span><span style='background: #F0ADAD'>new TitledComboBox[EntityType.Value](&quot;Entity Type:&quot;, EntityType.values.toSeq, et =&gt; {
+</span>24 <span style=''></span><span style='background: #F0ADAD'>    entityType.value = et
+</span>25 <span style=''></span><span style='background: #F0ADAD'>  })</span><span style=''>
+</span>26 <span style=''>
+</span>27 <span style=''>  /** Pane containing the field to configure the entities */
+</span>28 <span style=''>  private val cellEntityCreator: CellEntityCreator = </span><span style='background: #F0ADAD'>new CellEntityCreator</span><span style=''>
+</span>29 <span style=''>  /** Pane containing the field to configure the gravity entities */
+</span>30 <span style=''>  private val gravityCellEntityCreator: GravityCellEntityCreator = </span><span style='background: #F0ADAD'>new</span><span style=''> GravityCellEntityCreator {
+</span>31 <span style=''>    </span><span style='background: #F0ADAD'>weight.value = 1.0</span><span style=''>
+</span>32 <span style=''>    </span><span style='background: #F0ADAD'>visible = false</span><span style=''>
+</span>33 <span style=''>  }
+</span>34 <span style=''>  /** Pane containing the field to configure the sentient entities */
+</span>35 <span style=''>  private val sentientCellEntityCreator: CellEntityCreator = </span><span style='background: #F0ADAD'>new</span><span style=''> SentientCellEntityCreator {
+</span>36 <span style=''>    </span><span style='background: #F0ADAD'>visible = false</span><span style=''>
+</span>37 <span style=''>  }
+</span>38 <span style=''>  /** Pane containing the field to configure the player entities */
+</span>39 <span style=''>  private val playerCellEntityCreator: CellEntityCreator = </span><span style='background: #F0ADAD'>new</span><span style=''> PlayerCellEntityCreator {
+</span>40 <span style=''>    </span><span style='background: #F0ADAD'>visible = false</span><span style=''>
+</span>41 <span style=''>  }
+</span>42 <span style=''>
+</span>43 <span style=''>  /** The entity builders */
+</span>44 <span style=''>  private val entityBuilders = </span><span style='background: #F0ADAD'>Seq(cellEntityCreator, gravityCellEntityCreator, sentientCellEntityCreator, playerCellEntityCreator)</span><span style=''>
+</span>45 <span style=''>  /** The entity container */
+</span>46 <span style=''>  private val _entityContainer: VBox = </span><span style='background: #F0ADAD'>new</span><span style=''> VBox(1.0) {
+</span>47 <span style=''>    </span><span style='background: #F0ADAD'>margin = Insets(10.0)</span><span style=''>
+</span>48 <span style=''>
+</span>49 <span style=''>    /** Left builder seq */
+</span>50 <span style=''>    private val builderSeq = </span><span style='background: #F0ADAD'>entityBuilders</span><span style=''>
+</span>51 <span style=''>
+</span>52 <span style=''>    /** Putting the builder one on top of the other */
+</span>53 <span style=''>    private val verticalStackPane = </span><span style='background: #F0ADAD'>new</span><span style=''> StackPane() {
+</span>54 <span style=''>      </span><span style='background: #F0ADAD'>children = builderSeq</span><span style=''>
+</span>55 <span style=''>      </span><span style='background: #F0ADAD'>entityType.onChange({
+</span>56 <span style=''></span><span style='background: #F0ADAD'>        builderSeq.foreach(cellBuilder =&gt; cellBuilder.visible = false)
+</span>57 <span style=''></span><span style='background: #F0ADAD'>        entityType.value match {
+</span>58 <span style=''></span><span style='background: #F0ADAD'>          case EntityType.Matter =&gt; cellEntityCreator.visible = true; cellEntityCreator.entityType_=(EntityType.Matter)
+</span>59 <span style=''></span><span style='background: #F0ADAD'>          case EntityType.AntiMatter =&gt; cellEntityCreator.visible = true; cellEntityCreator.entityType_=(EntityType.AntiMatter)
+</span>60 <span style=''></span><span style='background: #F0ADAD'>          case EntityType.Attractive =&gt; gravityCellEntityCreator.visible = true; gravityCellEntityCreator.entityType_=(EntityType.Attractive)
+</span>61 <span style=''></span><span style='background: #F0ADAD'>          case EntityType.Repulsive =&gt; gravityCellEntityCreator.visible = true; gravityCellEntityCreator.entityType_=(EntityType.Repulsive)
+</span>62 <span style=''></span><span style='background: #F0ADAD'>          case EntityType.Sentient =&gt; sentientCellEntityCreator.visible = true; sentientCellEntityCreator.entityType_=(EntityType.Sentient)
+</span>63 <span style=''></span><span style='background: #F0ADAD'>          case EntityType.Controlled =&gt; playerCellEntityCreator.visible = true; playerCellEntityCreator.entityType_=(EntityType.Controlled)
+</span>64 <span style=''></span><span style='background: #F0ADAD'>          case _ =&gt; cellEntityCreator.visible = true; cellEntityCreator.entityType_=(EntityType.Matter)
+</span>65 <span style=''></span><span style='background: #F0ADAD'>        }
+</span>66 <span style=''></span><span style='background: #F0ADAD'>      })</span><span style=''>
+</span>67 <span style=''>    }
+</span>68 <span style=''>
+</span>69 <span style=''>    </span><span style='background: #F0ADAD'>children = List(entityComboBox.root, verticalStackPane)</span><span style=''>
+</span>70 <span style=''>  }
+</span>71 <span style=''>  /** The placeholder which follows the user mouse and changes appearance on EntityType change */
+</span>72 <span style=''>  private val _entityPlaceholder: Circle = </span><span style='background: #F0ADAD'>new</span><span style=''> Circle() {
+</span>73 <span style=''>    </span><span style='background: #F0ADAD'>fill.value = new ImagePattern(ImageLoader.getImage(CellTexture))</span><span style=''>
+</span>74 <span style=''>    </span><span style='background: #F0ADAD'>radius = getVisibleCellBuilder.radius.value</span><span style=''>
+</span>75 <span style=''>
+</span>76 <span style=''>    /** We set a min and max for the size */
+</span>77 <span style=''>    </span><span style='background: #F0ADAD'>onScroll = scroll =&gt; {
+</span>78 <span style=''></span><span style='background: #F0ADAD'>      radius = radius.value + (scroll.getDeltaY / 10) min 150 max 10
+</span>79 <span style=''></span><span style='background: #F0ADAD'>      getVisibleCellBuilder.radius.value = radius.value
+</span>80 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
+</span>81 <span style=''>    /** Showing a different image for different types */
+</span>82 <span style=''>    </span><span style='background: #F0ADAD'>entityType.onChange(entityType.value match {
+</span>83 <span style=''></span><span style='background: #F0ADAD'>      case EntityType.Matter =&gt; fill.value = new ImagePattern(ImageLoader.getImage(CellTexture))
+</span>84 <span style=''></span><span style='background: #F0ADAD'>      case EntityType.AntiMatter =&gt; fill.value = new ImagePattern(ImageLoader.getImage(AntiMatterTexture))
+</span>85 <span style=''></span><span style='background: #F0ADAD'>      case EntityType.Attractive =&gt; fill.value = new ImagePattern(ImageLoader.getImage(AttractiveTexture))
+</span>86 <span style=''></span><span style='background: #F0ADAD'>      case EntityType.Repulsive =&gt; fill.value = new ImagePattern(ImageLoader.getImage(RepulsiveTexture))
+</span>87 <span style=''></span><span style='background: #F0ADAD'>      case EntityType.Sentient =&gt; fill.value = new ImagePattern(ImageLoader.getImage(SentientTexture))
+</span>88 <span style=''></span><span style='background: #F0ADAD'>      case EntityType.Controlled =&gt; fill.value = new ImagePattern(ImageLoader.getImage(ControllerTexture))
+</span>89 <span style=''></span><span style='background: #F0ADAD'>      case _ =&gt; fill.value = new ImagePattern(ImageLoader.getImage(CellTexture))
+</span>90 <span style=''></span><span style='background: #F0ADAD'>    })</span><span style=''>
+</span>91 <span style=''>  }
+</span>92 <span style=''>
+</span>93 <span style=''>  /** Getter which returns the entity type container node
+</span>94 <span style=''>    *
+</span>95 <span style=''>    * @return the entity type container node
+</span>96 <span style=''>    */
+</span>97 <span style=''>  def entityContainer: VBox = </span><span style='background: #F0ADAD'>_entityContainer</span><span style=''>
+</span>98 <span style=''>
+</span>99 <span style=''>  /** This method changes the entity placeholder visibility
+</span>100 <span style=''>    *
+</span>101 <span style=''>    * @param visible true if the entity placeholder must turn visible, false otherwise
+</span>102 <span style=''>    */
+</span>103 <span style=''>  def setEntityPlaceholderVisibility(visible: Boolean): Unit = </span><span style='background: #F0ADAD'>_entityPlaceholder.visible.value = visible</span><span style=''>
+</span>104 <span style=''>
+</span>105 <span style=''>  /** This method toggles the entity placeholder visibility */
+</span>106 <span style=''>  def toggleEntityPlaceholder(): Unit = </span><span style='background: #F0ADAD'>_entityPlaceholder.visible = !_entityPlaceholder.visible.value</span><span style=''>
+</span>107 <span style=''>
+</span>108 <span style=''>  /** This method manages the mouse moved event, updating the placeholder position and the currently visible builder values
+</span>109 <span style=''>    *
+</span>110 <span style=''>    * @param event the mouse event
+</span>111 <span style=''>    */
+</span>112 <span style=''>  def manageMouseMovedEvent(event: MouseEvent): Unit = {
+</span>113 <span style=''>    </span><span style='background: #F0ADAD'>entityPlaceholder.centerX.value = event.getX</span><span style=''>
+</span>114 <span style=''>    </span><span style='background: #F0ADAD'>entityPlaceholder.centerY.value = event.getY</span><span style=''>
+</span>115 <span style=''>    val visibleBuilder = </span><span style='background: #F0ADAD'>getVisibleCellBuilder</span><span style=''>
+</span>116 <span style=''>    </span><span style='background: #F0ADAD'>visibleBuilder.x.value = event.getX - HalfWindowWidth</span><span style=''>
+</span>117 <span style=''>    </span><span style='background: #F0ADAD'>visibleBuilder.y.value = event.getY - HalfWindowHeight</span><span style=''>
+</span>118 <span style=''>  }
+</span>119 <span style=''>
+</span>120 <span style=''>  /** This method manages the mouse clicked event, creating a new shape (visible by the user) and a new entity before calling the listener
+</span>121 <span style=''>    *
+</span>122 <span style=''>    * @param event the mouse event
+</span>123 <span style=''>    */
+</span>124 <span style=''>  def manageMouseClickedEvent(event: MouseEvent): Unit = if (</span><span style='background: #F0ADAD'>entityPlaceholder.visible.value</span><span style=''>) </span><span style='background: #F0ADAD'>{
+</span>125 <span style=''></span><span style='background: #F0ADAD'>    /** Creating the new shape which will be shown to the user */
+</span>126 <span style=''></span><span style='background: #F0ADAD'>    val newShape: Shape = new Circle {
+</span>127 <span style=''></span><span style='background: #F0ADAD'>      fill.value_=(entityPlaceholder.fill.value)
+</span>128 <span style=''></span><span style='background: #F0ADAD'>      centerX = entityPlaceholder.centerX.value
+</span>129 <span style=''></span><span style='background: #F0ADAD'>      centerY = entityPlaceholder.centerY.value
+</span>130 <span style=''></span><span style='background: #F0ADAD'>      radius = entityPlaceholder.radius.value
+</span>131 <span style=''></span><span style='background: #F0ADAD'>      effect.value_=(entityPlaceholder.effect.value)
+</span>132 <span style=''></span><span style='background: #F0ADAD'>    }
+</span>133 <span style=''></span><span style='background: #F0ADAD'>    /** Creating the new editor which will be part of the new level configuration */
+</span>134 <span style=''></span><span style='background: #F0ADAD'>    val newCellEntity = getVisibleCellBuilder create()
+</span>135 <span style=''></span><span style='background: #F0ADAD'>
+</span>136 <span style=''></span><span style='background: #F0ADAD'>    /** Notify the listener */
+</span>137 <span style=''></span><span style='background: #F0ADAD'>    editorEntityTypeContainerListener.onEntityCreated(newShape, newCellEntity)
+</span>138 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
+</span>139 <span style=''>
+</span>140 <span style=''>  /** This method returns the currently visible cell entity creator
+</span>141 <span style=''>    *
+</span>142 <span style=''>    * @return the currently visible cell entity creator
+</span>143 <span style=''>    */
+</span>144 <span style=''>  private def getVisibleCellBuilder: CellEntityCreator = </span><span style='background: #F0ADAD'>entityBuilders.filter((b) =&gt; b.visible.value).head</span><span style=''>
+</span>145 <span style=''>
+</span>146 <span style=''>  /** Getter which returns the entity placeholder node
+</span>147 <span style=''>    *
+</span>148 <span style=''>    * @return the entity placeholder node
+</span>149 <span style=''>    */
+</span>150 <span style=''>  def entityPlaceholder: Circle = </span><span style='background: #F0ADAD'>_entityPlaceholder</span><span style=''>
+</span>151 <span style=''>
+</span>152 <span style=''>}
+</span>153 <span style=''>
+</span>154 <span style=''>/**
+</span>155 <span style=''>  * Trait used to notify EditorEntityTypeContainer events
+</span>156 <span style=''>  */
+</span>157 <span style=''>trait EditorEntityTypeContainerListener {
+</span>158 <span style=''>
+</span>159 <span style=''>  /** This method tells the listener to update the currently visible entities
+</span>160 <span style=''>    *
+</span>161 <span style=''>    * @param newShape  a new enity shape, visible by the user
+</span>162 <span style=''>    * @param newEntity a new built cell entity
+</span>163 <span style=''>    */
+</span>164 <span style=''>  def onEntityCreated(newShape: Shape, newEntity: CellEntity): Unit
+</span>165 <span style=''>
+</span>166 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          3699
+        </td>
+        <td>
+          1030
+          -
+          1047
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityType.Matter
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.entities.EntityType.Matter
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          3700
+        </td>
+        <td>
+          1015
+          -
+          1048
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.ObjectProperty.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.beans.property.ObjectProperty.apply[it.unibo.osmos.redux.ecs.entities.EntityType.Value](it.unibo.osmos.redux.ecs.entities.EntityType.Matter)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          3702
+        </td>
+        <td>
+          1133
+          -
+          1156
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.SetLike.toSeq
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.entities.EntityType.values.toSeq
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          3701
+        </td>
+        <td>
+          1117
+          -
+          1131
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;Entity Type:&quot;
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          3704
+        </td>
+        <td>
+          1080
+          -
+          1080
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledComboBox.&lt;init&gt;$default$4
+        </td>
+        <td style="background: #F0ADAD">
+          custom.this.TitledComboBox.&lt;init&gt;$default$4[it.unibo.osmos.redux.ecs.entities.EntityType.Value]
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          3705
+        </td>
+        <td>
+          1080
+          -
+          1196
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledComboBox.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.components.custom.TitledComboBox[it.unibo.osmos.redux.ecs.entities.EntityType.Value](&quot;Entity Type:&quot;, it.unibo.osmos.redux.ecs.entities.EntityType.values.toSeq, ((et: it.unibo.osmos.redux.ecs.entities.EntityType.Value) =&gt; EditorEntityTypeContainer.this.entityType.value_=(et)), custom.this.TitledComboBox.&lt;init&gt;$default$4[it.unibo.osmos.redux.ecs.entities.EntityType.Value])
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          3703
+        </td>
+        <td>
+          1170
+          -
+          1191
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.ObjectProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.entityType.value_=(et)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          3706
+        </td>
+        <td>
+          1312
+          -
+          1333
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new CellEntityCreator()
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          3709
+        </td>
+        <td>
+          1470
+          -
+          1473
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorEntityTypeContainer.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          3707
+        </td>
+        <td>
+          1505
+          -
+          1523
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.DoubleProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.weight.value_=(1.0)
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          3708
+        </td>
+        <td>
+          1528
+          -
+          1543
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.visible_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.visible_=(false)
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          3711
+        </td>
+        <td>
+          1679
+          -
+          1682
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorEntityTypeContainer.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          3710
+        </td>
+        <td>
+          1715
+          -
+          1730
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.visible_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.visible_=(false)
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          3713
+        </td>
+        <td>
+          1862
+          -
+          1865
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorEntityTypeContainer.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          3712
+        </td>
+        <td>
+          1896
+          -
+          1911
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.visible_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.visible_=(false)
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          3717
+        </td>
+        <td>
+          2053
+          -
+          2076
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorEntityTypeContainer.playerCellEntityCreator
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.playerCellEntityCreator
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          3716
+        </td>
+        <td>
+          2026
+          -
+          2051
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorEntityTypeContainer.sentientCellEntityCreator
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.sentientCellEntityCreator
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          3715
+        </td>
+        <td>
+          2000
+          -
+          2024
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorEntityTypeContainer.gravityCellEntityCreator
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.gravityCellEntityCreator
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          3718
+        </td>
+        <td>
+          1977
+          -
+          2077
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.Seq.apply[it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator](EditorEntityTypeContainer.this.cellEntityCreator, EditorEntityTypeContainer.this.gravityCellEntityCreator, EditorEntityTypeContainer.this.sentientCellEntityCreator, EditorEntityTypeContainer.this.playerCellEntityCreator)
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          3714
+        </td>
+        <td>
+          1981
+          -
+          1998
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorEntityTypeContainer.cellEntityCreator
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.cellEntityCreator
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          3754
+        </td>
+        <td>
+          2147
+          -
+          2150
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorEntityTypeContainer.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          3719
+        </td>
+        <td>
+          2176
+          -
+          2188
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.geometry.Insets.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.geometry.Insets.apply(10.0)
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          3720
+        </td>
+        <td>
+          2167
+          -
+          2188
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.margin_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.margin_=(scalafx.geometry.Insets.apply(10.0))
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          3721
+        </td>
+        <td>
+          2247
+          -
+          2261
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorEntityTypeContainer.entityBuilders
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.entityBuilders
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          3749
+        </td>
+        <td>
+          2354
+          -
+          2357
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorEntityTypeContainer.$anon.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          3722
+        </td>
+        <td>
+          2389
+          -
+          2399
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorEntityTypeContainer.$anon.builderSeq
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.builderSeq
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          3723
+        </td>
+        <td>
+          2378
+          -
+          2399
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Pane.children_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.children_=($anon.this.builderSeq)
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          3748
+        </td>
+        <td>
+          2406
+          -
+          3464
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.value.ObservableValue.onChange
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.entityType.onChange[it.unibo.osmos.redux.ecs.entities.EntityType.Value]({
+  $anon.this.builderSeq.foreach[Unit](((cellBuilder: it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator) =&gt; cellBuilder.visible_=(false)));
+  EditorEntityTypeContainer.this.entityType.value match {
+    case it.unibo.osmos.redux.ecs.entities.EntityType.Matter =&gt; {
+      EditorEntityTypeContainer.this.cellEntityCreator.visible_=(true);
+      EditorEntityTypeContainer.this.cellEntityCreator.entityType_=(it.unibo.osmos.redux.ecs.entities.EntityType.Matter)
+    }
+    case it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter =&gt; {
+      EditorEntityTypeContainer.this.cellEntityCreator.visible_=(true);
+      EditorEntityTypeContainer.this.cellEntityCreator.entityType_=(it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter)
+    }
+    case it.unibo.osmos.redux.ecs.entities.EntityType.Attractive =&gt; {
+      EditorEntityTypeContainer.this.gravityCellEntityCreator.visible_=(true);
+      EditorEntityTypeContainer.this.gravityCellEntityCreator.entityType_=(it.unibo.osmos.redux.ecs.entities.EntityType.Attractive)
+    }
+    case it.unibo.osmos.redux.ecs.entities.EntityType.Repulsive =&gt; {
+      EditorEntityTypeContainer.this.gravityCellEntityCreator.visible_=(true);
+      EditorEntityTypeContainer.this.gravityCellEntityCreator.entityType_=(it.unibo.osmos.redux.ecs.entities.EntityType.Repulsive)
+    }
+    case it.unibo.osmos.redux.ecs.entities.EntityType.Sentient =&gt; {
+      EditorEntityTypeContainer.this.sentientCellEntityCreator.visible_=(true);
+      EditorEntityTypeContainer.this.sentientCellEntityCreator.entityType_=(it.unibo.osmos.redux.ecs.entities.EntityType.Sentient)
+    }
+    case it.unibo.osmos.redux.ecs.entities.EntityType.Controlled =&gt; {
+      EditorEntityTypeContainer.this.playerCellEntityCreator.visible_=(true);
+      EditorEntityTypeContainer.this.playerCellEntityCreator.entityType_=(it.unibo.osmos.redux.ecs.entities.EntityType.Controlled)
+    }
+    case _ =&gt; {
+      EditorEntityTypeContainer.this.cellEntityCreator.visible_=(true);
+      EditorEntityTypeContainer.this.cellEntityCreator.entityType_=(it.unibo.osmos.redux.ecs.entities.EntityType.Matter)
+    }
+  }
+})
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          3725
+        </td>
+        <td>
+          2436
+          -
+          2498
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.IterableLike.foreach
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.builderSeq.foreach[Unit](((cellBuilder: it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator) =&gt; cellBuilder.visible_=(false)))
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          3724
+        </td>
+        <td>
+          2470
+          -
+          2497
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.visible_=
+        </td>
+        <td style="background: #F0ADAD">
+          cellBuilder.visible_=(false)
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          3726
+        </td>
+        <td>
+          2507
+          -
+          2523
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyObjectProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.entityType.value
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          3728
+        </td>
+        <td>
+          2633
+          -
+          2650
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityType.Matter
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.entities.EntityType.Matter
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          3727
+        </td>
+        <td>
+          2568
+          -
+          2600
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.visible_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.cellEntityCreator.visible_=(true)
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          3729
+        </td>
+        <td>
+          2602
+          -
+          2651
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator.entityType_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.cellEntityCreator.entityType_=(it.unibo.osmos.redux.ecs.entities.EntityType.Matter)
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          3731
+        </td>
+        <td>
+          2757
+          -
+          2778
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          3730
+        </td>
+        <td>
+          2692
+          -
+          2724
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.visible_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.cellEntityCreator.visible_=(true)
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          3732
+        </td>
+        <td>
+          2726
+          -
+          2779
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator.entityType_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.cellEntityCreator.entityType_=(it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter)
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          3735
+        </td>
+        <td>
+          2861
+          -
+          2921
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator.entityType_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.gravityCellEntityCreator.entityType_=(it.unibo.osmos.redux.ecs.entities.EntityType.Attractive)
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          3734
+        </td>
+        <td>
+          2899
+          -
+          2920
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityType.Attractive
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.entities.EntityType.Attractive
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          3733
+        </td>
+        <td>
+          2820
+          -
+          2859
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.visible_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.gravityCellEntityCreator.visible_=(true)
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          3737
+        </td>
+        <td>
+          3040
+          -
+          3060
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityType.Repulsive
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.entities.EntityType.Repulsive
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          3736
+        </td>
+        <td>
+          2961
+          -
+          3000
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.visible_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.gravityCellEntityCreator.visible_=(true)
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          3738
+        </td>
+        <td>
+          3002
+          -
+          3061
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator.entityType_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.gravityCellEntityCreator.entityType_=(it.unibo.osmos.redux.ecs.entities.EntityType.Repulsive)
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          3740
+        </td>
+        <td>
+          3181
+          -
+          3200
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityType.Sentient
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.entities.EntityType.Sentient
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          3739
+        </td>
+        <td>
+          3100
+          -
+          3140
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.visible_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.sentientCellEntityCreator.visible_=(true)
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          3741
+        </td>
+        <td>
+          3142
+          -
+          3201
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator.entityType_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.sentientCellEntityCreator.entityType_=(it.unibo.osmos.redux.ecs.entities.EntityType.Sentient)
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          3744
+        </td>
+        <td>
+          3282
+          -
+          3341
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator.entityType_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.playerCellEntityCreator.entityType_=(it.unibo.osmos.redux.ecs.entities.EntityType.Controlled)
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          3743
+        </td>
+        <td>
+          3319
+          -
+          3340
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityType.Controlled
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.entities.EntityType.Controlled
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          3742
+        </td>
+        <td>
+          3242
+          -
+          3280
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.visible_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.playerCellEntityCreator.visible_=(true)
+        </td>
+      </tr><tr>
+        <td>
+          64
+        </td>
+        <td>
+          3746
+        </td>
+        <td>
+          3427
+          -
+          3444
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityType.Matter
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.entities.EntityType.Matter
+        </td>
+      </tr><tr>
+        <td>
+          64
+        </td>
+        <td>
+          3745
+        </td>
+        <td>
+          3362
+          -
+          3394
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.visible_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.cellEntityCreator.visible_=(true)
+        </td>
+      </tr><tr>
+        <td>
+          64
+        </td>
+        <td>
+          3747
+        </td>
+        <td>
+          3396
+          -
+          3445
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator.entityType_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.cellEntityCreator.entityType_=(it.unibo.osmos.redux.ecs.entities.EntityType.Matter)
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          3753
+        </td>
+        <td>
+          3476
+          -
+          3531
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Pane.children_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.children_=(scala.collection.immutable.List.apply[scalafx.scene.layout.Pane](EditorEntityTypeContainer.this.entityComboBox.root, $anon.this.verticalStackPane))
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          3752
+        </td>
+        <td>
+          3487
+          -
+          3531
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.immutable.List.apply[scalafx.scene.layout.Pane](EditorEntityTypeContainer.this.entityComboBox.root, $anon.this.verticalStackPane)
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          3751
+        </td>
+        <td>
+          3513
+          -
+          3530
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorEntityTypeContainer.$anon.verticalStackPane
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.verticalStackPane
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          3750
+        </td>
+        <td>
+          3492
+          -
+          3511
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledNode.root
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.entityComboBox.root
+        </td>
+      </tr><tr>
+        <td>
+          72
+        </td>
+        <td>
+          3804
+        </td>
+        <td>
+          3677
+          -
+          3680
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorEntityTypeContainer.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          3755
+        </td>
+        <td>
+          3747
+          -
+          3758
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          3758
+        </td>
+        <td>
+          3709
+          -
+          3760
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.paint.ImagePattern.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new javafx.scene.paint.ImagePattern(image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture)))
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          3757
+        </td>
+        <td>
+          3726
+          -
+          3759
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.scene.image.Image.sfxImage2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture))
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          3756
+        </td>
+        <td>
+          3726
+          -
+          3759
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture)
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          3759
+        </td>
+        <td>
+          3696
+          -
+          3760
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.ObjectProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.fill.value_=(new javafx.scene.paint.ImagePattern(image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture))))
+        </td>
+      </tr><tr>
+        <td>
+          74
+        </td>
+        <td>
+          3761
+        </td>
+        <td>
+          3765
+          -
+          3808
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.shape.Circle.radius_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.radius_=(EditorEntityTypeContainer.this.getVisibleCellBuilder.radius.value)
+        </td>
+      </tr><tr>
+        <td>
+          74
+        </td>
+        <td>
+          3760
+        </td>
+        <td>
+          3774
+          -
+          3808
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyObjectProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.getVisibleCellBuilder.radius.value
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          3766
+        </td>
+        <td>
+          3859
+          -
+          4012
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.onScroll_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.onScroll_=(((scroll: javafx.scene.input.ScrollEvent) =&gt; {
+  $anon.this.radius_=(scala.Predef.doubleWrapper(scala.Predef.doubleWrapper($anon.this.radius.value.+(scroll.getDeltaY()./(10))).min(150.0)).max(10.0));
+  EditorEntityTypeContainer.this.getVisibleCellBuilder.radius.value_=($anon.this.radius.value)
+}))
+        </td>
+      </tr><tr>
+        <td>
+          78
+        </td>
+        <td>
+          3762
+        </td>
+        <td>
+          3897
+          -
+          3950
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.runtime.RichDouble.max
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Predef.doubleWrapper(scala.Predef.doubleWrapper($anon.this.radius.value.+(scroll.getDeltaY()./(10))).min(150.0)).max(10.0)
+        </td>
+      </tr><tr>
+        <td>
+          78
+        </td>
+        <td>
+          3763
+        </td>
+        <td>
+          3888
+          -
+          3950
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.shape.Circle.radius_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.radius_=(scala.Predef.doubleWrapper(scala.Predef.doubleWrapper($anon.this.radius.value.+(scroll.getDeltaY()./(10))).min(150.0)).max(10.0))
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          3764
+        </td>
+        <td>
+          3994
+          -
+          4006
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyDoubleProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.radius.value
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          3765
+        </td>
+        <td>
+          3957
+          -
+          4006
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.ObjectProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.getVisibleCellBuilder.radius.value_=($anon.this.radius.value)
+        </td>
+      </tr><tr>
+        <td>
+          82
+        </td>
+        <td>
+          3803
+        </td>
+        <td>
+          4074
+          -
+          4832
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.value.ObservableValue.onChange
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.entityType.onChange[it.unibo.osmos.redux.ecs.entities.EntityType.Value](EditorEntityTypeContainer.this.entityType.value match {
+  case it.unibo.osmos.redux.ecs.entities.EntityType.Matter =&gt; $anon.this.fill.value_=(new javafx.scene.paint.ImagePattern(image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture))))
+  case it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter =&gt; $anon.this.fill.value_=(new javafx.scene.paint.ImagePattern(image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AntiMatterTexture))))
+  case it.unibo.osmos.redux.ecs.entities.EntityType.Attractive =&gt; $anon.this.fill.value_=(new javafx.scene.paint.ImagePattern(image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AttractiveTexture))))
+  case it.unibo.osmos.redux.ecs.entities.EntityType.Repulsive =&gt; $anon.this.fill.value_=(new javafx.scene.paint.ImagePattern(image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.RepulsiveTexture))))
+  case it.unibo.osmos.redux.ecs.entities.EntityType.Sentient =&gt; $anon.this.fill.value_=(new javafx.scene.paint.ImagePattern(image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.SentientTexture))))
+  case it.unibo.osmos.redux.ecs.entities.EntityType.Controlled =&gt; $anon.this.fill.value_=(new javafx.scene.paint.ImagePattern(image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.ControllerTexture))))
+  case _ =&gt; $anon.this.fill.value_=(new javafx.scene.paint.ImagePattern(image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture))))
+})
+        </td>
+      </tr><tr>
+        <td>
+          82
+        </td>
+        <td>
+          3767
+        </td>
+        <td>
+          4094
+          -
+          4110
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyObjectProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.entityType.value
+        </td>
+      </tr><tr>
+        <td>
+          83
+        </td>
+        <td>
+          3770
+        </td>
+        <td>
+          4181
+          -
+          4214
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.scene.image.Image.sfxImage2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture))
+        </td>
+      </tr><tr>
+        <td>
+          83
+        </td>
+        <td>
+          3769
+        </td>
+        <td>
+          4181
+          -
+          4214
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture)
+        </td>
+      </tr><tr>
+        <td>
+          83
+        </td>
+        <td>
+          3772
+        </td>
+        <td>
+          4151
+          -
+          4215
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.ObjectProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.fill.value_=(new javafx.scene.paint.ImagePattern(image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture))))
+        </td>
+      </tr><tr>
+        <td>
+          83
+        </td>
+        <td>
+          3771
+        </td>
+        <td>
+          4164
+          -
+          4215
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.paint.ImagePattern.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new javafx.scene.paint.ImagePattern(image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture)))
+        </td>
+      </tr><tr>
+        <td>
+          83
+        </td>
+        <td>
+          3768
+        </td>
+        <td>
+          4202
+          -
+          4213
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          3773
+        </td>
+        <td>
+          4303
+          -
+          4320
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AntiMatterTexture
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AntiMatterTexture
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          3776
+        </td>
+        <td>
+          4265
+          -
+          4322
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.paint.ImagePattern.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new javafx.scene.paint.ImagePattern(image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AntiMatterTexture)))
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          3775
+        </td>
+        <td>
+          4282
+          -
+          4321
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.scene.image.Image.sfxImage2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AntiMatterTexture))
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          3774
+        </td>
+        <td>
+          4282
+          -
+          4321
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AntiMatterTexture)
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          3777
+        </td>
+        <td>
+          4252
+          -
+          4322
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.ObjectProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.fill.value_=(new javafx.scene.paint.ImagePattern(image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AntiMatterTexture))))
+        </td>
+      </tr><tr>
+        <td>
+          85
+        </td>
+        <td>
+          3779
+        </td>
+        <td>
+          4389
+          -
+          4428
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AttractiveTexture)
+        </td>
+      </tr><tr>
+        <td>
+          85
+        </td>
+        <td>
+          3782
+        </td>
+        <td>
+          4359
+          -
+          4429
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.ObjectProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.fill.value_=(new javafx.scene.paint.ImagePattern(image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AttractiveTexture))))
+        </td>
+      </tr><tr>
+        <td>
+          85
+        </td>
+        <td>
+          3778
+        </td>
+        <td>
+          4410
+          -
+          4427
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AttractiveTexture
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AttractiveTexture
+        </td>
+      </tr><tr>
+        <td>
+          85
+        </td>
+        <td>
+          3781
+        </td>
+        <td>
+          4372
+          -
+          4429
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.paint.ImagePattern.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new javafx.scene.paint.ImagePattern(image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AttractiveTexture)))
+        </td>
+      </tr><tr>
+        <td>
+          85
+        </td>
+        <td>
+          3780
+        </td>
+        <td>
+          4389
+          -
+          4428
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.scene.image.Image.sfxImage2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AttractiveTexture))
+        </td>
+      </tr><tr>
+        <td>
+          86
+        </td>
+        <td>
+          3785
+        </td>
+        <td>
+          4495
+          -
+          4533
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.scene.image.Image.sfxImage2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.RepulsiveTexture))
+        </td>
+      </tr><tr>
+        <td>
+          86
+        </td>
+        <td>
+          3784
+        </td>
+        <td>
+          4495
+          -
+          4533
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.RepulsiveTexture)
+        </td>
+      </tr><tr>
+        <td>
+          86
+        </td>
+        <td>
+          3787
+        </td>
+        <td>
+          4465
+          -
+          4534
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.ObjectProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.fill.value_=(new javafx.scene.paint.ImagePattern(image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.RepulsiveTexture))))
+        </td>
+      </tr><tr>
+        <td>
+          86
+        </td>
+        <td>
+          3783
+        </td>
+        <td>
+          4516
+          -
+          4532
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.RepulsiveTexture
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.RepulsiveTexture
+        </td>
+      </tr><tr>
+        <td>
+          86
+        </td>
+        <td>
+          3786
+        </td>
+        <td>
+          4478
+          -
+          4534
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.paint.ImagePattern.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new javafx.scene.paint.ImagePattern(image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.RepulsiveTexture)))
+        </td>
+      </tr><tr>
+        <td>
+          87
+        </td>
+        <td>
+          3788
+        </td>
+        <td>
+          4620
+          -
+          4635
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.SentientTexture
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.SentientTexture
+        </td>
+      </tr><tr>
+        <td>
+          87
+        </td>
+        <td>
+          3791
+        </td>
+        <td>
+          4582
+          -
+          4637
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.paint.ImagePattern.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new javafx.scene.paint.ImagePattern(image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.SentientTexture)))
+        </td>
+      </tr><tr>
+        <td>
+          87
+        </td>
+        <td>
+          3790
+        </td>
+        <td>
+          4599
+          -
+          4636
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.scene.image.Image.sfxImage2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.SentientTexture))
+        </td>
+      </tr><tr>
+        <td>
+          87
+        </td>
+        <td>
+          3789
+        </td>
+        <td>
+          4599
+          -
+          4636
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.SentientTexture)
+        </td>
+      </tr><tr>
+        <td>
+          87
+        </td>
+        <td>
+          3792
+        </td>
+        <td>
+          4569
+          -
+          4637
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.ObjectProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.fill.value_=(new javafx.scene.paint.ImagePattern(image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.SentientTexture))))
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          3794
+        </td>
+        <td>
+          4704
+          -
+          4743
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.ControllerTexture)
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          3797
+        </td>
+        <td>
+          4674
+          -
+          4744
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.ObjectProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.fill.value_=(new javafx.scene.paint.ImagePattern(image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.ControllerTexture))))
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          3793
+        </td>
+        <td>
+          4725
+          -
+          4742
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.ControllerTexture
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.ControllerTexture
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          3796
+        </td>
+        <td>
+          4687
+          -
+          4744
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.paint.ImagePattern.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new javafx.scene.paint.ImagePattern(image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.ControllerTexture)))
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          3795
+        </td>
+        <td>
+          4704
+          -
+          4743
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.scene.image.Image.sfxImage2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.ControllerTexture))
+        </td>
+      </tr><tr>
+        <td>
+          89
+        </td>
+        <td>
+          3800
+        </td>
+        <td>
+          4791
+          -
+          4824
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.scene.image.Image.sfxImage2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture))
+        </td>
+      </tr><tr>
+        <td>
+          89
+        </td>
+        <td>
+          3802
+        </td>
+        <td>
+          4761
+          -
+          4825
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.ObjectProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.fill.value_=(new javafx.scene.paint.ImagePattern(image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture))))
+        </td>
+      </tr><tr>
+        <td>
+          89
+        </td>
+        <td>
+          3799
+        </td>
+        <td>
+          4791
+          -
+          4824
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture)
+        </td>
+      </tr><tr>
+        <td>
+          89
+        </td>
+        <td>
+          3798
+        </td>
+        <td>
+          4812
+          -
+          4823
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture
+        </td>
+      </tr><tr>
+        <td>
+          89
+        </td>
+        <td>
+          3801
+        </td>
+        <td>
+          4774
+          -
+          4825
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.paint.ImagePattern.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new javafx.scene.paint.ImagePattern(image.this.Image.sfxImage2jfx(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture)))
+        </td>
+      </tr><tr>
+        <td>
+          97
+        </td>
+        <td>
+          3805
+        </td>
+        <td>
+          4984
+          -
+          5000
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorEntityTypeContainer._entityContainer
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this._entityContainer
+        </td>
+      </tr><tr>
+        <td>
+          103
+        </td>
+        <td>
+          3806
+        </td>
+        <td>
+          5225
+          -
+          5267
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.BooleanProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this._entityPlaceholder.visible.value_=(visible)
+        </td>
+      </tr><tr>
+        <td>
+          106
+        </td>
+        <td>
+          3808
+        </td>
+        <td>
+          5372
+          -
+          5434
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.visible_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this._entityPlaceholder.visible_=(EditorEntityTypeContainer.this._entityPlaceholder.visible.value.unary_!)
+        </td>
+      </tr><tr>
+        <td>
+          106
+        </td>
+        <td>
+          3807
+        </td>
+        <td>
+          5401
+          -
+          5434
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this._entityPlaceholder.visible.value.unary_!
+        </td>
+      </tr><tr>
+        <td>
+          113
+        </td>
+        <td>
+          3809
+        </td>
+        <td>
+          5703
+          -
+          5713
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.input.MouseEvent.getX
+        </td>
+        <td style="background: #F0ADAD">
+          event.getX()
+        </td>
+      </tr><tr>
+        <td>
+          113
+        </td>
+        <td>
+          3810
+        </td>
+        <td>
+          5669
+          -
+          5713
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.DoubleProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.entityPlaceholder.centerX.value_=(event.getX())
+        </td>
+      </tr><tr>
+        <td>
+          114
+        </td>
+        <td>
+          3812
+        </td>
+        <td>
+          5718
+          -
+          5762
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.DoubleProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.entityPlaceholder.centerY.value_=(event.getY())
+        </td>
+      </tr><tr>
+        <td>
+          114
+        </td>
+        <td>
+          3811
+        </td>
+        <td>
+          5752
+          -
+          5762
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.input.MouseEvent.getY
+        </td>
+        <td style="background: #F0ADAD">
+          event.getY()
+        </td>
+      </tr><tr>
+        <td>
+          115
+        </td>
+        <td>
+          3813
+        </td>
+        <td>
+          5788
+          -
+          5809
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorEntityTypeContainer.getVisibleCellBuilder
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.getVisibleCellBuilder
+        </td>
+      </tr><tr>
+        <td>
+          116
+        </td>
+        <td>
+          3815
+        </td>
+        <td>
+          5839
+          -
+          5867
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #F0ADAD">
+          event.getX().-(it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth)
+        </td>
+      </tr><tr>
+        <td>
+          116
+        </td>
+        <td>
+          3814
+        </td>
+        <td>
+          5852
+          -
+          5867
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth
+        </td>
+      </tr><tr>
+        <td>
+          116
+        </td>
+        <td>
+          3816
+        </td>
+        <td>
+          5814
+          -
+          5867
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.ObjectProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          visibleBuilder.x.value_=(event.getX().-(it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth))
+        </td>
+      </tr><tr>
+        <td>
+          117
+        </td>
+        <td>
+          3818
+        </td>
+        <td>
+          5897
+          -
+          5926
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #F0ADAD">
+          event.getY().-(it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowHeight)
+        </td>
+      </tr><tr>
+        <td>
+          117
+        </td>
+        <td>
+          3817
+        </td>
+        <td>
+          5910
+          -
+          5926
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowHeight
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowHeight
+        </td>
+      </tr><tr>
+        <td>
+          117
+        </td>
+        <td>
+          3819
+        </td>
+        <td>
+          5872
+          -
+          5926
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.ObjectProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          visibleBuilder.y.value_=(event.getY().-(it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowHeight))
+        </td>
+      </tr><tr>
+        <td>
+          124
+        </td>
+        <td>
+          3836
+        </td>
+        <td>
+          6176
+          -
+          6176
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          124
+        </td>
+        <td>
+          3835
+        </td>
+        <td>
+          6176
+          -
+          6176
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          124
+        </td>
+        <td>
+          3820
+        </td>
+        <td>
+          6180
+          -
+          6211
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyBooleanProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.entityPlaceholder.visible.value
+        </td>
+      </tr><tr>
+        <td>
+          124
+        </td>
+        <td>
+          3834
+        </td>
+        <td>
+          6213
+          -
+          6824
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          {
+  val newShape: scalafx.scene.shape.Shape = {
+    final class $anon extends scalafx.scene.shape.Circle {
+      def &lt;init&gt;(): &lt;$anon: scalafx.scene.shape.Circle&gt; = {
+        $anon.super.&lt;init&gt;(shape.this.Circle.&lt;init&gt;$default$1);
+        ()
+      };
+      $anon.this.fill.value_=(EditorEntityTypeContainer.this.entityPlaceholder.fill.value);
+      $anon.this.centerX_=(EditorEntityTypeContainer.this.entityPlaceholder.centerX.value);
+      $anon.this.centerY_=(EditorEntityTypeContainer.this.entityPlaceholder.centerY.value);
+      $anon.this.radius_=(EditorEntityTypeContainer.this.entityPlaceholder.radius.value);
+      $anon.this.effect.value_=(EditorEntityTypeContainer.this.entityPlaceholder.effect.value)
+    };
+    new $anon()
+  };
+  val newCellEntity: it.unibo.osmos.redux.ecs.entities.CellEntity = EditorEntityTypeContainer.this.getVisibleCellBuilder.create();
+  EditorEntityTypeContainer.this.editorEntityTypeContainerListener.onEntityCreated(newShape, newCellEntity)
+}
+        </td>
+      </tr><tr>
+        <td>
+          126
+        </td>
+        <td>
+          3831
+        </td>
+        <td>
+          6307
+          -
+          6310
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorEntityTypeContainer.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          127
+        </td>
+        <td>
+          3821
+        </td>
+        <td>
+          6339
+          -
+          6367
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyObjectProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.entityPlaceholder.fill.value
+        </td>
+      </tr><tr>
+        <td>
+          127
+        </td>
+        <td>
+          3822
+        </td>
+        <td>
+          6326
+          -
+          6368
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.ObjectProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.fill.value_=(EditorEntityTypeContainer.this.entityPlaceholder.fill.value)
+        </td>
+      </tr><tr>
+        <td>
+          128
+        </td>
+        <td>
+          3824
+        </td>
+        <td>
+          6375
+          -
+          6416
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.shape.Circle.centerX_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.centerX_=(EditorEntityTypeContainer.this.entityPlaceholder.centerX.value)
+        </td>
+      </tr><tr>
+        <td>
+          128
+        </td>
+        <td>
+          3823
+        </td>
+        <td>
+          6385
+          -
+          6416
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyDoubleProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.entityPlaceholder.centerX.value
+        </td>
+      </tr><tr>
+        <td>
+          129
+        </td>
+        <td>
+          3826
+        </td>
+        <td>
+          6423
+          -
+          6464
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.shape.Circle.centerY_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.centerY_=(EditorEntityTypeContainer.this.entityPlaceholder.centerY.value)
+        </td>
+      </tr><tr>
+        <td>
+          129
+        </td>
+        <td>
+          3825
+        </td>
+        <td>
+          6433
+          -
+          6464
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyDoubleProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.entityPlaceholder.centerY.value
+        </td>
+      </tr><tr>
+        <td>
+          130
+        </td>
+        <td>
+          3827
+        </td>
+        <td>
+          6480
+          -
+          6510
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyDoubleProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.entityPlaceholder.radius.value
+        </td>
+      </tr><tr>
+        <td>
+          130
+        </td>
+        <td>
+          3828
+        </td>
+        <td>
+          6471
+          -
+          6510
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.shape.Circle.radius_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.radius_=(EditorEntityTypeContainer.this.entityPlaceholder.radius.value)
+        </td>
+      </tr><tr>
+        <td>
+          131
+        </td>
+        <td>
+          3830
+        </td>
+        <td>
+          6517
+          -
+          6563
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.ObjectProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.effect.value_=(EditorEntityTypeContainer.this.entityPlaceholder.effect.value)
+        </td>
+      </tr><tr>
+        <td>
+          131
+        </td>
+        <td>
+          3829
+        </td>
+        <td>
+          6532
+          -
+          6562
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyObjectProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.entityPlaceholder.effect.value
+        </td>
+      </tr><tr>
+        <td>
+          134
+        </td>
+        <td>
+          3832
+        </td>
+        <td>
+          6679
+          -
+          6709
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator.create
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.getVisibleCellBuilder.create()
+        </td>
+      </tr><tr>
+        <td>
+          137
+        </td>
+        <td>
+          3833
+        </td>
+        <td>
+          6746
+          -
+          6820
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorEntityTypeContainerListener.onEntityCreated
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.editorEntityTypeContainerListener.onEntityCreated(newShape, newCellEntity)
+        </td>
+      </tr><tr>
+        <td>
+          144
+        </td>
+        <td>
+          3838
+        </td>
+        <td>
+          7020
+          -
+          7070
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.IterableLike.head
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this.entityBuilders.filter(((b: it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator) =&gt; b.visible.value)).head
+        </td>
+      </tr><tr>
+        <td>
+          144
+        </td>
+        <td>
+          3837
+        </td>
+        <td>
+          7049
+          -
+          7064
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyBooleanProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          b.visible.value
+        </td>
+      </tr><tr>
+        <td>
+          150
+        </td>
+        <td>
+          3839
+        </td>
+        <td>
+          7216
+          -
+          7234
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorEntityTypeContainer._entityPlaceholder
+        </td>
+        <td style="background: #F0ADAD">
+          EditorEntityTypeContainer.this._entityPlaceholder
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

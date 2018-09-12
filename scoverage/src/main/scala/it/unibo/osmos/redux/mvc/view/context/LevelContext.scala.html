@@ -1,0 +1,1100 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/context/LevelContext.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.context
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.view.drawables.{DrawableWrapper, EntitiesDrawer}
+</span>5 <span style=''>import it.unibo.osmos.redux.mvc.view.events._
+</span>6 <span style=''>import it.unibo.osmos.redux.utils.Logger
+</span>7 <span style=''>
+</span>8 <span style=''>/** Trait modelling the context of a level */
+</span>9 <span style=''>trait LevelContext extends EventWrapperObservable[MouseEventWrapper] with EntitiesDrawer with GameStateHolder {
+</span>10 <span style=''>
+</span>11 <span style=''>  /** The level context type */
+</span>12 <span style=''>  val levelContextType: LevelContextType.Value
+</span>13 <span style=''>
+</span>14 <span style=''>  /** Called once at the beginning at the level. Manages the context setup
+</span>15 <span style=''>    *
+</span>16 <span style=''>    * @param mapShape the level shape
+</span>17 <span style=''>    */
+</span>18 <span style=''>  def setupLevel(mapShape: MapShape)
+</span>19 <span style=''>
+</span>20 <span style=''>  /** Setter. Sets the level context listener
+</span>21 <span style=''>    *
+</span>22 <span style=''>    * @param levelContextListener the level context listener
+</span>23 <span style=''>    */
+</span>24 <span style=''>  def setListener(levelContextListener: LevelContextListener)
+</span>25 <span style=''>
+</span>26 <span style=''>  /** Called when the LevelContext gets a mouse event from the scene
+</span>27 <span style=''>    *
+</span>28 <span style=''>    * @param event the mouse event
+</span>29 <span style=''>    */
+</span>30 <span style=''>  def notifyMouseEvent(event: MouseEventWrapper)
+</span>31 <span style=''>
+</span>32 <span style=''>  /** The UUID of the current player, used to discriminate between different users
+</span>33 <span style=''>    *
+</span>34 <span style=''>    * @return Some(uuid) if it's defined and the current game mode is not simulation; otherwise None.
+</span>35 <span style=''>    */
+</span>36 <span style=''>  override def getPlayerUUID: String
+</span>37 <span style=''>
+</span>38 <span style=''>  /** Sets the current player uuid. */
+</span>39 <span style=''>  def setPlayerUUID(playerUUID: String): Unit
+</span>40 <span style=''>}
+</span>41 <span style=''>
+</span>42 <span style=''>/** LevelContext used in multplayer sessions */
+</span>43 <span style=''>trait MultiPlayerLevelContext extends LevelContext {}
+</span>44 <span style=''>
+</span>45 <span style=''>/** Companion object */
+</span>46 <span style=''>object LevelContext {
+</span>47 <span style=''>
+</span>48 <span style=''>  /** Apply method to create a new single-player level context
+</span>49 <span style=''>    *
+</span>50 <span style=''>    * @param isSimulation If it's a simulation or not.
+</span>51 <span style=''>    * @return A new instance of a LevelContext
+</span>52 <span style=''>    */
+</span>53 <span style=''>  def apply(isSimulation: Boolean): LevelContext =
+</span>54 <span style=''>    </span><span style='background: #AEF1AE'>new LevelContextImpl(levelContextType = if (isSimulation) </span><span style='background: #F0ADAD'>LevelContextType.simulation</span><span style='background: #AEF1AE'> else LevelContextType.normal)</span><span style=''>
+</span>55 <span style=''>
+</span>56 <span style=''>  /** Apply method to create a new multi-player level context
+</span>57 <span style=''>    *
+</span>58 <span style=''>    * @param playerUUID The current player UUID
+</span>59 <span style=''>    * @return A new instance of a MultiPlayerLevelContext
+</span>60 <span style=''>    */
+</span>61 <span style=''>  def apply(playerUUID: String): MultiPlayerLevelContext = </span><span style='background: #F0ADAD'>new MultiPlayerLevelContextImpl(playerUUID)</span><span style=''>
+</span>62 <span style=''>
+</span>63 <span style=''>  /**
+</span>64 <span style=''>    * Base abstract implementation of the LevelContext trait
+</span>65 <span style=''>    */
+</span>66 <span style=''>  private abstract class AbstractLevelContext(override val levelContextType: LevelContextType.Value = LevelContextType.normal) extends LevelContext {
+</span>67 <span style=''>
+</span>68 <span style=''>    /** The level context listener */
+</span>69 <span style=''>    protected var listener: Option[LevelContextListener] = </span><span style='background: #AEF1AE'>Option.empty</span><span style=''>
+</span>70 <span style=''>    /** A reference to the mouse event listener */
+</span>71 <span style=''>    private var mouseEventObserver: Option[EventWrapperObserver[MouseEventWrapper]] = </span><span style='background: #AEF1AE'>Option.empty</span><span style=''>
+</span>72 <span style=''>
+</span>73 <span style=''>    override def setListener(levelContextListener: LevelContextListener): Unit = </span><span style='background: #F0ADAD'>listener = Option(levelContextListener)</span><span style=''>
+</span>74 <span style=''>
+</span>75 <span style=''>    override def setupLevel(mapShape: MapShape): Unit = </span><span style='background: #F0ADAD'>listener</span><span style=''> match {
+</span>76 <span style=''>      case Some(l) =&gt; </span><span style='background: #F0ADAD'>l.onLevelSetup(mapShape)</span><span style=''>
+</span>77 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>Logger.log(&quot;Cannot setup level because listener is not set&quot;)(&quot;LevelContext&quot;)</span><span style=''>
+</span>78 <span style=''>    }
+</span>79 <span style=''>
+</span>80 <span style=''>    override def notifyMouseEvent(event: MouseEventWrapper): Unit = </span><span style='background: #F0ADAD'>mouseEventObserver</span><span style=''> match {
+</span>81 <span style=''>      case Some(meo) =&gt; </span><span style='background: #F0ADAD'>meo.notify(event)</span><span style=''>
+</span>82 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>Logger.log(&quot;Cannot notify mouse event because listener is not set&quot;)(&quot;LevelContext&quot;)</span><span style=''>
+</span>83 <span style=''>    }
+</span>84 <span style=''>
+</span>85 <span style=''>    override def drawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper]): Unit = </span><span style='background: #F0ADAD'>listener</span><span style=''> match {
+</span>86 <span style=''>      case Some(l) =&gt; </span><span style='background: #F0ADAD'>l.onDrawEntities(playerEntity, entities)</span><span style=''>
+</span>87 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>Logger.log(&quot;Cannot draw entities because listener is not set&quot;)(&quot;LevelContext&quot;)</span><span style=''>
+</span>88 <span style=''>    }
+</span>89 <span style=''>
+</span>90 <span style=''>    override def subscribe(eventObserver: EventWrapperObserver[MouseEventWrapper]): Unit = </span><span style='background: #F0ADAD'>mouseEventObserver = Option(eventObserver)</span><span style=''>
+</span>91 <span style=''>
+</span>92 <span style=''>    override def unsubscribe(eventObserver: EventWrapperObserver[MouseEventWrapper]): Unit = </span><span style='background: #F0ADAD'>mouseEventObserver = Option.empty</span><span style=''>
+</span>93 <span style=''>  }
+</span>94 <span style=''>
+</span>95 <span style=''>  /** Implementation of the LevelContext trait */
+</span>96 <span style=''>  private class LevelContextImpl(private var playerUUID: String = &quot;&quot;, override val levelContextType: LevelContextType.Value = LevelContextType.normal) extends AbstractLevelContext(levelContextType) {
+</span>97 <span style=''>
+</span>98 <span style=''>    /** The current game state */
+</span>99 <span style=''>    private[this] var _gameCurrentState: GameStateEventWrapper = </span><span style='background: #AEF1AE'>GamePending</span><span style=''>
+</span>100 <span style=''>
+</span>101 <span style=''>    override def getPlayerUUID: String = </span><span style='background: #F0ADAD'>playerUUID</span><span style=''>
+</span>102 <span style=''>
+</span>103 <span style=''>    override def setPlayerUUID(playerUUID: String): Unit = </span><span style='background: #F0ADAD'>this.playerUUID = playerUUID</span><span style=''>
+</span>104 <span style=''>
+</span>105 <span style=''>    /** Called on a event T type
+</span>106 <span style=''>      *
+</span>107 <span style=''>      * @param event the event
+</span>108 <span style=''>      */
+</span>109 <span style=''>    override def notify(event: GameStateEventWrapper): Unit = {
+</span>110 <span style=''>      </span><span style='background: #AEF1AE'>gameCurrentState_=(event)</span><span style=''>
+</span>111 <span style=''>    }
+</span>112 <span style=''>
+</span>113 <span style=''>    def gameCurrentState: GameStateEventWrapper = </span><span style='background: #AEF1AE'>_gameCurrentState</span><span style=''>
+</span>114 <span style=''>
+</span>115 <span style=''>    def gameCurrentState_=(value: GameStateEventWrapper): Unit = {
+</span>116 <span style=''>      _gameCurrentState = value
+</span>117 <span style=''>      </span><span style='background: #AEF1AE'>listener</span><span style=''> match {
+</span>118 <span style=''>        case Some(l) =&gt; </span><span style='background: #F0ADAD'>manageGameCurrentState(l)</span><span style=''>
+</span>119 <span style=''>        case _ </span><span style='background: #AEF1AE'>=&gt;</span><span style=''>
+</span>120 <span style=''>      }
+</span>121 <span style=''>    }
+</span>122 <span style=''>
+</span>123 <span style=''>    /** This method manages the current game state */
+</span>124 <span style=''>    protected def manageGameCurrentState(listener: LevelContextListener): Unit = </span><span style='background: #F0ADAD'>gameCurrentState</span><span style=''> match {
+</span>125 <span style=''>      case GameWon =&gt; </span><span style='background: #F0ADAD'>listener.onLevelEnd(true)</span><span style=''>
+</span>126 <span style=''>      case GameLost =&gt; </span><span style='background: #F0ADAD'>listener.onLevelEnd(false)</span><span style=''>
+</span>127 <span style=''>      case _ </span><span style='background: #F0ADAD'>=&gt;</span><span style=''>
+</span>128 <span style=''>    }
+</span>129 <span style=''>  }
+</span>130 <span style=''>
+</span>131 <span style=''>  /** Implementation of the MultiPlayerLevelContext trait, override LevelContextImpl */
+</span>132 <span style=''>  private class MultiPlayerLevelContextImpl(private val playerUUID: String) extends LevelContextImpl(playerUUID, LevelContextType.multiplayer) with MultiPlayerLevelContext {
+</span>133 <span style=''>
+</span>134 <span style=''>    /** The multiplayer level context listener */
+</span>135 <span style=''>    override def setListener(levelContextListener: LevelContextListener): Unit = levelContextListener match {
+</span>136 <span style=''>      case mplcl: MultiPlayerLevelContextListener =&gt; </span><span style='background: #F0ADAD'>listener = Option(mplcl)</span><span style=''>
+</span>137 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>throw new IllegalArgumentException(&quot;MultiPlayerLevelContext must use a MultiPlayerLevelContextListener&quot;)</span><span style=''>
+</span>138 <span style=''>    }
+</span>139 <span style=''>
+</span>140 <span style=''>    /** Managing the multiplayer dedicated events */
+</span>141 <span style=''>    override protected def manageGameCurrentState(listener: LevelContextListener): Unit = </span><span style='background: #F0ADAD'>gameCurrentState</span><span style=''> match {
+</span>142 <span style=''>      case GameLostAsServer =&gt; </span><span style='background: #F0ADAD'>listener.asInstanceOf[MultiPlayerLevelContextListener].onLevelLostAsServer()</span><span style=''>
+</span>143 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>super.manageGameCurrentState(listener)</span><span style=''>
+</span>144 <span style=''>    }
+</span>145 <span style=''>
+</span>146 <span style=''>  }
+</span>147 <span style=''>
+</span>148 <span style=''>}
+</span>149 <span style=''>
+</span>150 <span style=''>/** Trait which gets notified when a LevelContext event occurs */
+</span>151 <span style=''>trait LevelContextListener {
+</span>152 <span style=''>  /** Called when the LevelContext retrieve a collection of entities that must be drawn on the scene
+</span>153 <span style=''>    *
+</span>154 <span style=''>    * @param playerEntity the player entity. It may be empty
+</span>155 <span style=''>    * @param entities     the other entities
+</span>156 <span style=''>    */
+</span>157 <span style=''>  def onDrawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper])
+</span>158 <span style=''>
+</span>159 <span style=''>  /** Called once. Manages the context setup communicating the level shape
+</span>160 <span style=''>    *
+</span>161 <span style=''>    * @param mapShape the level shape
+</span>162 <span style=''>    */
+</span>163 <span style=''>  def onLevelSetup(mapShape: MapShape)
+</span>164 <span style=''>
+</span>165 <span style=''>  /** Called once when the level ends.
+</span>166 <span style=''>    *
+</span>167 <span style=''>    * @param levelResult true if the player has won, false otherwise
+</span>168 <span style=''>    */
+</span>169 <span style=''>  def onLevelEnd(levelResult: Boolean)
+</span>170 <span style=''>}
+</span>171 <span style=''>
+</span>172 <span style=''>/** Trait which gets notified when a LevelContext event occurs */
+</span>173 <span style=''>trait MultiPlayerLevelContextListener extends LevelContextListener {
+</span>174 <span style=''>
+</span>175 <span style=''>  /** Called once when the level ends with a loss and we are the server. */
+</span>176 <span style=''>  def onLevelLostAsServer()
+</span>177 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          4240
+        </td>
+        <td>
+          1803
+          -
+          1830
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContextType.simulation
+        </td>
+        <td style="background: #F0ADAD">
+          LevelContextType.simulation
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          4243
+        </td>
+        <td>
+          1836
+          -
+          1859
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContextType.normal
+        </td>
+        <td style="background: #AEF1AE">
+          LevelContextType.normal
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          4242
+        </td>
+        <td>
+          1836
+          -
+          1859
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContextType.normal
+        </td>
+        <td style="background: #AEF1AE">
+          LevelContextType.normal
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          4245
+        </td>
+        <td>
+          1745
+          -
+          1860
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContext.LevelContextImpl.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new LevelContext.this.LevelContextImpl(x$2, x$1)
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          4241
+        </td>
+        <td>
+          1803
+          -
+          1830
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContextType.simulation
+        </td>
+        <td style="background: #F0ADAD">
+          LevelContextType.simulation
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          4244
+        </td>
+        <td>
+          1745
+          -
+          1745
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContext.LevelContextImpl.&lt;init&gt;$default$1
+        </td>
+        <td style="background: #AEF1AE">
+          LevelContext.this.LevelContextImpl.&lt;init&gt;$default$1
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          4246
+        </td>
+        <td>
+          2102
+          -
+          2145
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContext.MultiPlayerLevelContextImpl.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new LevelContext.this.MultiPlayerLevelContextImpl(playerUUID)
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          4247
+        </td>
+        <td>
+          2469
+          -
+          2481
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.Option.empty
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Option.empty[Nothing]
+        </td>
+      </tr><tr>
+        <td>
+          71
+        </td>
+        <td>
+          4248
+        </td>
+        <td>
+          2619
+          -
+          2631
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.Option.empty
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Option.empty[Nothing]
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          4249
+        </td>
+        <td>
+          2725
+          -
+          2753
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Option.apply[it.unibo.osmos.redux.mvc.view.context.LevelContextListener](levelContextListener)
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          4250
+        </td>
+        <td>
+          2714
+          -
+          2753
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContext.AbstractLevelContext.listener_=
+        </td>
+        <td style="background: #F0ADAD">
+          AbstractLevelContext.this.listener_=(scala.Option.apply[it.unibo.osmos.redux.mvc.view.context.LevelContextListener](levelContextListener))
+        </td>
+      </tr><tr>
+        <td>
+          75
+        </td>
+        <td>
+          4251
+        </td>
+        <td>
+          2811
+          -
+          2819
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContext.AbstractLevelContext.listener
+        </td>
+        <td style="background: #F0ADAD">
+          AbstractLevelContext.this.listener
+        </td>
+      </tr><tr>
+        <td>
+          76
+        </td>
+        <td>
+          4252
+        </td>
+        <td>
+          2850
+          -
+          2874
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContextListener.onLevelSetup
+        </td>
+        <td style="background: #F0ADAD">
+          l.onLevelSetup(mapShape)
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          4253
+        </td>
+        <td>
+          2891
+          -
+          2967
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Logger.log
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Logger.log(&quot;Cannot setup level because listener is not set&quot;)(&quot;LevelContext&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          80
+        </td>
+        <td>
+          4254
+        </td>
+        <td>
+          3043
+          -
+          3061
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContext.AbstractLevelContext.mouseEventObserver
+        </td>
+        <td style="background: #F0ADAD">
+          AbstractLevelContext.this.mouseEventObserver
+        </td>
+      </tr><tr>
+        <td>
+          81
+        </td>
+        <td>
+          4255
+        </td>
+        <td>
+          3094
+          -
+          3111
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver.notify
+        </td>
+        <td style="background: #F0ADAD">
+          meo.notify(event)
+        </td>
+      </tr><tr>
+        <td>
+          82
+        </td>
+        <td>
+          4256
+        </td>
+        <td>
+          3128
+          -
+          3211
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Logger.log
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Logger.log(&quot;Cannot notify mouse event because listener is not set&quot;)(&quot;LevelContext&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          85
+        </td>
+        <td>
+          4257
+        </td>
+        <td>
+          3328
+          -
+          3336
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContext.AbstractLevelContext.listener
+        </td>
+        <td style="background: #F0ADAD">
+          AbstractLevelContext.this.listener
+        </td>
+      </tr><tr>
+        <td>
+          86
+        </td>
+        <td>
+          4258
+        </td>
+        <td>
+          3367
+          -
+          3407
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContextListener.onDrawEntities
+        </td>
+        <td style="background: #F0ADAD">
+          l.onDrawEntities(playerEntity, entities)
+        </td>
+      </tr><tr>
+        <td>
+          87
+        </td>
+        <td>
+          4259
+        </td>
+        <td>
+          3424
+          -
+          3502
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Logger.log
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Logger.log(&quot;Cannot draw entities because listener is not set&quot;)(&quot;LevelContext&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          90
+        </td>
+        <td>
+          4261
+        </td>
+        <td>
+          3601
+          -
+          3643
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContext.AbstractLevelContext.mouseEventObserver_=
+        </td>
+        <td style="background: #F0ADAD">
+          AbstractLevelContext.this.mouseEventObserver_=(scala.Option.apply[it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver[it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper]](eventObserver))
+        </td>
+      </tr><tr>
+        <td>
+          90
+        </td>
+        <td>
+          4260
+        </td>
+        <td>
+          3622
+          -
+          3643
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Option.apply[it.unibo.osmos.redux.mvc.view.events.EventWrapperObserver[it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper]](eventObserver)
+        </td>
+      </tr><tr>
+        <td>
+          92
+        </td>
+        <td>
+          4263
+        </td>
+        <td>
+          3738
+          -
+          3771
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContext.AbstractLevelContext.mouseEventObserver_=
+        </td>
+        <td style="background: #F0ADAD">
+          AbstractLevelContext.this.mouseEventObserver_=(scala.Option.empty[Nothing])
+        </td>
+      </tr><tr>
+        <td>
+          92
+        </td>
+        <td>
+          4262
+        </td>
+        <td>
+          3759
+          -
+          3771
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.Option.empty
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Option.empty[Nothing]
+        </td>
+      </tr><tr>
+        <td>
+          99
+        </td>
+        <td>
+          4264
+        </td>
+        <td>
+          4127
+          -
+          4138
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.GamePending
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.view.events.GamePending
+        </td>
+      </tr><tr>
+        <td>
+          101
+        </td>
+        <td>
+          4265
+        </td>
+        <td>
+          4181
+          -
+          4191
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContext.LevelContextImpl.playerUUID
+        </td>
+        <td style="background: #F0ADAD">
+          LevelContextImpl.this.playerUUID
+        </td>
+      </tr><tr>
+        <td>
+          103
+        </td>
+        <td>
+          4266
+        </td>
+        <td>
+          4252
+          -
+          4280
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContext.LevelContextImpl.playerUUID_=
+        </td>
+        <td style="background: #F0ADAD">
+          this.playerUUID_=(playerUUID)
+        </td>
+      </tr><tr>
+        <td>
+          110
+        </td>
+        <td>
+          4267
+        </td>
+        <td>
+          4433
+          -
+          4458
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContext.LevelContextImpl.gameCurrentState_=
+        </td>
+        <td style="background: #AEF1AE">
+          LevelContextImpl.this.gameCurrentState_=(event)
+        </td>
+      </tr><tr>
+        <td>
+          113
+        </td>
+        <td>
+          4268
+        </td>
+        <td>
+          4516
+          -
+          4533
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContext.LevelContextImpl._gameCurrentState
+        </td>
+        <td style="background: #AEF1AE">
+          LevelContextImpl.this._gameCurrentState
+        </td>
+      </tr><tr>
+        <td>
+          117
+        </td>
+        <td>
+          4269
+        </td>
+        <td>
+          4640
+          -
+          4648
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContext.AbstractLevelContext.listener
+        </td>
+        <td style="background: #AEF1AE">
+          LevelContextImpl.this.listener
+        </td>
+      </tr><tr>
+        <td>
+          118
+        </td>
+        <td>
+          4270
+        </td>
+        <td>
+          4681
+          -
+          4706
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContext.LevelContextImpl.manageGameCurrentState
+        </td>
+        <td style="background: #F0ADAD">
+          LevelContextImpl.this.manageGameCurrentState(l)
+        </td>
+      </tr><tr>
+        <td>
+          119
+        </td>
+        <td>
+          4271
+        </td>
+        <td>
+          4722
+          -
+          4724
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          124
+        </td>
+        <td>
+          4272
+        </td>
+        <td>
+          4875
+          -
+          4891
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContext.LevelContextImpl.gameCurrentState
+        </td>
+        <td style="background: #F0ADAD">
+          LevelContextImpl.this.gameCurrentState
+        </td>
+      </tr><tr>
+        <td>
+          125
+        </td>
+        <td>
+          4273
+        </td>
+        <td>
+          4922
+          -
+          4947
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContextListener.onLevelEnd
+        </td>
+        <td style="background: #F0ADAD">
+          listener.onLevelEnd(true)
+        </td>
+      </tr><tr>
+        <td>
+          126
+        </td>
+        <td>
+          4274
+        </td>
+        <td>
+          4971
+          -
+          4997
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContextListener.onLevelEnd
+        </td>
+        <td style="background: #F0ADAD">
+          listener.onLevelEnd(false)
+        </td>
+      </tr><tr>
+        <td>
+          127
+        </td>
+        <td>
+          4275
+        </td>
+        <td>
+          5011
+          -
+          5013
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          136
+        </td>
+        <td>
+          4276
+        </td>
+        <td>
+          5512
+          -
+          5525
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Option.apply[it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContextListener](mplcl)
+        </td>
+      </tr><tr>
+        <td>
+          136
+        </td>
+        <td>
+          4277
+        </td>
+        <td>
+          5501
+          -
+          5525
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContext.AbstractLevelContext.listener_=
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerLevelContextImpl.this.listener_=(scala.Option.apply[it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContextListener](mplcl))
+        </td>
+      </tr><tr>
+        <td>
+          137
+        </td>
+        <td>
+          4278
+        </td>
+        <td>
+          5542
+          -
+          5646
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.IllegalArgumentException(&quot;MultiPlayerLevelContext must use a MultiPlayerLevelContextListener&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          141
+        </td>
+        <td>
+          4279
+        </td>
+        <td>
+          5797
+          -
+          5813
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContext.LevelContextImpl.gameCurrentState
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerLevelContextImpl.this.gameCurrentState
+        </td>
+      </tr><tr>
+        <td>
+          142
+        </td>
+        <td>
+          4280
+        </td>
+        <td>
+          5853
+          -
+          5929
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContextListener.onLevelLostAsServer
+        </td>
+        <td style="background: #F0ADAD">
+          listener.asInstanceOf[it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContextListener].onLevelLostAsServer()
+        </td>
+      </tr><tr>
+        <td>
+          143
+        </td>
+        <td>
+          4281
+        </td>
+        <td>
+          5946
+          -
+          5984
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContext.LevelContextImpl.manageGameCurrentState
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerLevelContextImpl.super.manageGameCurrentState(listener)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

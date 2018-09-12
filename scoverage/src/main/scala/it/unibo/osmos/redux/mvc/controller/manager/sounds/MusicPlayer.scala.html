@@ -1,0 +1,2752 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/controller/manager/sounds/MusicPlayer.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.controller.manager.sounds
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.mvc.controller._
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.controller.manager.files.SoundFileManager
+</span>5 <span style=''>import it.unibo.osmos.redux.utils.Logger
+</span>6 <span style=''>import javafx.scene.media.MediaPlayer.Status
+</span>7 <span style=''>import javafx.scene.media.MediaPlayer.Status._
+</span>8 <span style=''>import javafx.util
+</span>9 <span style=''>
+</span>10 <span style=''>/** Sound types. */
+</span>11 <span style=''>object SoundsType extends Enumeration {
+</span>12 <span style=''>  val menu, level, button = </span><span style='background: #F0ADAD'>Value</span><span style=''>
+</span>13 <span style=''>}
+</span>14 <span style=''>
+</span>15 <span style=''>/** Manages application sounds. */
+</span>16 <span style=''>object MusicPlayer extends Observable {
+</span>17 <span style=''>
+</span>18 <span style=''>  import scalafx.scene.media.{AudioClip, Media, MediaPlayer}
+</span>19 <span style=''>
+</span>20 <span style=''>  implicit val who: String = </span><span style='background: #F0ADAD'>&quot;MusicPlayer&quot;</span><span style=''>
+</span>21 <span style=''>  val MinVolume = </span><span style='background: #F0ADAD'>0</span><span style=''>
+</span>22 <span style=''>  val MaxVolume = </span><span style='background: #F0ADAD'>1</span><span style=''>
+</span>23 <span style=''>  private var controller: Option[Controller] = </span><span style='background: #F0ADAD'>None</span><span style=''>
+</span>24 <span style=''>  private var mediaPlayer: Option[MediaPlayer] = </span><span style='background: #F0ADAD'>None</span><span style=''>
+</span>25 <span style=''>  private var lastLoadedSound: Option[String] = </span><span style='background: #F0ADAD'>None</span><span style=''>
+</span>26 <span style=''>  private var buttonAudioClip: Option[AudioClip] = </span><span style='background: #F0ADAD'>None</span><span style=''>
+</span>27 <span style=''>  private var generalVolume: Double = </span><span style='background: #F0ADAD'>MaxVolume</span><span style=''>
+</span>28 <span style=''>  private var settingObs: List[SettingsEventObserver] = </span><span style='background: #F0ADAD'>List(SettingsHolder)</span><span style=''>
+</span>29 <span style=''>
+</span>30 <span style=''>  /** Set controller. */
+</span>31 <span style=''>  def setController(controller: Controller): Unit = </span><span style='background: #F0ADAD'>this.controller = Some(controller)</span><span style=''>
+</span>32 <span style=''>
+</span>33 <span style=''>  /** Play a sound.
+</span>34 <span style=''>    *
+</span>35 <span style=''>    * @param sound the sound to play
+</span>36 <span style=''>    */
+</span>37 <span style=''>  def play(sound: SoundsType.Value): Unit = </span><span style='background: #F0ADAD'>controller</span><span style=''> match {
+</span>38 <span style=''>    case Some(_) =&gt;
+</span>39 <span style=''>      </span><span style='background: #F0ADAD'>getMediaPlayerStatus</span><span style=''> match {
+</span>40 <span style=''>        case Some(PAUSED) </span><span style='background: #F0ADAD'>=&gt;</span><span style=''>
+</span>41 <span style=''>        case _ =&gt;
+</span>42 <span style=''>          val soundPath = </span><span style='background: #F0ADAD'>controller.get.getSoundPath(sound)</span><span style=''>
+</span>43 <span style=''>          if (</span><span style='background: #F0ADAD'>soundPath.isDefined</span><span style=''>) {
+</span>44 <span style=''>            </span><span style='background: #F0ADAD'>sound match {
+</span>45 <span style=''></span><span style='background: #F0ADAD'>              case s if s.equals(SoundsType.level) || s.equals(SoundsType.menu) =&gt; checkMediaPlayerStatus(soundPath.get)
+</span>46 <span style=''></span><span style='background: #F0ADAD'>              case SoundsType.button =&gt; playButtonSound(soundPath.get)
+</span>47 <span style=''></span><span style='background: #F0ADAD'>              case _ =&gt; Logger.log(&quot;Sound not managed! [play]&quot;)
+</span>48 <span style=''></span><span style='background: #F0ADAD'>            }</span><span style=''>
+</span>49 <span style=''>          }
+</span>50 <span style=''>      }
+</span>51 <span style=''>    case _ =&gt; </span><span style='background: #F0ADAD'>Logger.log(&quot;Error: controller is not defined [play]&quot;)</span><span style=''>
+</span>52 <span style=''>  }
+</span>53 <span style=''>
+</span>54 <span style=''>  /** Pause the music. */
+</span>55 <span style=''>  def pause(): Unit = if (</span><span style='background: #F0ADAD'>canApplyStateChange(List(Status.PLAYING))</span><span style=''>) </span><span style='background: #F0ADAD'>{
+</span>56 <span style=''></span><span style='background: #F0ADAD'>    mediaPlayer.get.pause(); sendMusicEvent(true)
+</span>57 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
+</span>58 <span style=''>
+</span>59 <span style=''>  /** Resume the music if it is in pause state. */
+</span>60 <span style=''>  def resume(): Unit = if (</span><span style='background: #F0ADAD'>canApplyStateChange(List(Status.PAUSED))</span><span style=''>) </span><span style='background: #F0ADAD'>mediaPlayer.get.play()</span><span style=''>
+</span>61 <span style=''>
+</span>62 <span style=''>  private def canApplyStateChange(allowedStates: List[Status]): Boolean = </span><span style='background: #F0ADAD'>mediaPlayer</span><span style=''> match {
+</span>63 <span style=''>    case Some(mp) if </span><span style='background: #F0ADAD'>allowedStates.contains(mp.getStatus)</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>true</span><span style=''>
+</span>64 <span style=''>    case _ =&gt; </span><span style='background: #F0ADAD'>false</span><span style=''>
+</span>65 <span style=''>  }
+</span>66 <span style=''>
+</span>67 <span style=''>  /** Change music and audio effects volume.
+</span>68 <span style=''>    *
+</span>69 <span style=''>    * @param volume double value for volume, range 0 to 1
+</span>70 <span style=''>    */
+</span>71 <span style=''>  def changeVolume(volume: Double): Unit = {
+</span>72 <span style=''>    volume match {
+</span>73 <span style=''>      case v if </span><span style='background: #F0ADAD'>v &lt;= MinVolume</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>generalVolume = MinVolume</span><span style=''>
+</span>74 <span style=''>      case v if </span><span style='background: #F0ADAD'>v &gt;= MaxVolume</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>generalVolume = MaxVolume</span><span style=''>
+</span>75 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>generalVolume = volume</span><span style=''>
+</span>76 <span style=''>    }
+</span>77 <span style=''>    </span><span style='background: #F0ADAD'>sendMusicEvent()</span><span style=''>
+</span>78 <span style=''>    </span><span style='background: #F0ADAD'>updateMPVolume()</span><span style=''>
+</span>79 <span style=''>  }
+</span>80 <span style=''>
+</span>81 <span style=''>  private def updateMPVolume(): Unit = if (</span><span style='background: #F0ADAD'>mediaPlayer.isDefined</span><span style=''>) </span><span style='background: #F0ADAD'>mediaPlayer.get.setVolume(generalVolume)</span><span style=''>
+</span>82 <span style=''>
+</span>83 <span style=''>  private def sendMusicEvent(isMute: Boolean = false): Unit =
+</span>84 <span style=''>    </span><span style='background: #F0ADAD'>settingObs.foreach(_.notify(MusicPlayerEvent(Volume(if (isMute) MinVolume else generalVolume))))</span><span style=''>
+</span>85 <span style=''>
+</span>86 <span style=''>  /** Get volume.
+</span>87 <span style=''>    *
+</span>88 <span style=''>    * @return application volume
+</span>89 <span style=''>    */
+</span>90 <span style=''>  def getVolume: Double = </span><span style='background: #F0ADAD'>generalVolume</span><span style=''>
+</span>91 <span style=''>
+</span>92 <span style=''>  /** Return current media player status
+</span>93 <span style=''>    *
+</span>94 <span style=''>    * @return Option of MediaPlayer.Status
+</span>95 <span style=''>    */
+</span>96 <span style=''>  def getMediaPlayerStatus: Option[Status] = </span><span style='background: #F0ADAD'>mediaPlayer</span><span style=''> match {
+</span>97 <span style=''>    case Some(mp) =&gt; </span><span style='background: #F0ADAD'>Option(mp.getStatus)</span><span style=''>
+</span>98 <span style=''>    case _ =&gt; </span><span style='background: #F0ADAD'>None</span><span style=''>
+</span>99 <span style=''>  }
+</span>100 <span style=''>
+</span>101 <span style=''>  override def subscribe(observer: SettingsEventObserver): Unit = </span><span style='background: #F0ADAD'>settingObs = observer :: settingObs</span><span style=''>
+</span>102 <span style=''>
+</span>103 <span style=''>  private def playButtonSound(sound: String): Unit = </span><span style='background: #F0ADAD'>buttonAudioClip</span><span style=''> match {
+</span>104 <span style=''>    case Some(bac) =&gt; </span><span style='background: #F0ADAD'>bac.play(generalVolume)</span><span style=''>
+</span>105 <span style=''>    case _ =&gt; </span><span style='background: #F0ADAD'>buttonAudioClip = Some(new AudioClip(SoundFileManager.loadButtonsSound()))</span><span style=''>; </span><span style='background: #F0ADAD'>playButtonSound(sound)</span><span style=''>
+</span>106 <span style=''>  }
+</span>107 <span style=''>
+</span>108 <span style=''>  private def setupAndPlayMedia(sound: String): Unit = {
+</span>109 <span style=''>    /* 1) Sto media player */
+</span>110 <span style=''>    if (</span><span style='background: #F0ADAD'>mediaPlayer.isDefined</span><span style=''>) </span><span style='background: #F0ADAD'>mediaPlayer.get.stop()</span><span style=''>
+</span>111 <span style=''>    /* 2)Change music */
+</span>112 <span style=''>    </span><span style='background: #F0ADAD'>mediaPlayer = Some(new MediaPlayer(new Media(sound)))</span><span style=''>
+</span>113 <span style=''>    /* 3)Set behaviour at the end of media as loop */
+</span>114 <span style=''>    </span><span style='background: #F0ADAD'>mediaPlayer.get.setOnEndOfMedia(() =&gt; mediaPlayer.get.seek(util.Duration.ZERO))</span><span style=''>
+</span>115 <span style=''>    </span><span style='background: #F0ADAD'>lastLoadedSound = Some(sound)</span><span style=''>
+</span>116 <span style=''>    </span><span style='background: #F0ADAD'>updateMPVolume()</span><span style=''>
+</span>117 <span style=''>    </span><span style='background: #F0ADAD'>mediaPlayer.get.play()</span><span style=''>
+</span>118 <span style=''>  }
+</span>119 <span style=''>
+</span>120 <span style=''>  private def checkMediaPlayerStatus(sound: String): Unit = {
+</span>121 <span style=''>    if (</span><span style='background: #F0ADAD'>canApplyStateChange(List(Status.STOPPED, Status.PAUSED)) &amp;&amp; lastLoadedSound.get.equals(sound)</span><span style=''>) {
+</span>122 <span style=''>      </span><span style='background: #F0ADAD'>mediaPlayer.get.play()</span><span style=''>
+</span>123 <span style=''>    } else {
+</span>124 <span style=''>      </span><span style='background: #F0ADAD'>setupAndPlayMedia(sound)</span><span style=''>
+</span>125 <span style=''>    }
+</span>126 <span style=''>  }
+</span>127 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          2640
+        </td>
+        <td>
+          420
+          -
+          420
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Enumeration.Value
+        </td>
+        <td style="background: #F0ADAD">
+          SoundsType.this.Value
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          2642
+        </td>
+        <td>
+          420
+          -
+          425
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Enumeration.Value
+        </td>
+        <td style="background: #F0ADAD">
+          SoundsType.this.Value
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          2641
+        </td>
+        <td>
+          420
+          -
+          420
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Enumeration.Value
+        </td>
+        <td style="background: #F0ADAD">
+          SoundsType.this.Value
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          2643
+        </td>
+        <td>
+          596
+          -
+          609
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;MusicPlayer&quot;
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          2644
+        </td>
+        <td>
+          628
+          -
+          629
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          0
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          2645
+        </td>
+        <td>
+          648
+          -
+          649
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          1
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          2646
+        </td>
+        <td>
+          697
+          -
+          701
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #F0ADAD">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          2647
+        </td>
+        <td>
+          751
+          -
+          755
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #F0ADAD">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          2648
+        </td>
+        <td>
+          804
+          -
+          808
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #F0ADAD">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          2649
+        </td>
+        <td>
+          860
+          -
+          864
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #F0ADAD">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          2650
+        </td>
+        <td>
+          903
+          -
+          912
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Int.toDouble
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.MaxVolume.toDouble
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          2652
+        </td>
+        <td>
+          969
+          -
+          989
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.immutable.List.apply[it.unibo.osmos.redux.mvc.controller.SettingsHolder.type](it.unibo.osmos.redux.mvc.controller.SettingsHolder)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          2651
+        </td>
+        <td>
+          974
+          -
+          988
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.SettingsHolder
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.SettingsHolder
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          2654
+        </td>
+        <td>
+          1068
+          -
+          1102
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.controller_=
+        </td>
+        <td style="background: #F0ADAD">
+          this.controller_=(scala.Some.apply[it.unibo.osmos.redux.mvc.controller.Controller](controller))
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          2653
+        </td>
+        <td>
+          1086
+          -
+          1102
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Some.apply[it.unibo.osmos.redux.mvc.controller.Controller](controller)
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          2655
+        </td>
+        <td>
+          1218
+          -
+          1228
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.controller
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.controller
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          2656
+        </td>
+        <td>
+          1263
+          -
+          1283
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.getMediaPlayerStatus
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.getMediaPlayerStatus
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          2657
+        </td>
+        <td>
+          1318
+          -
+          1320
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          2658
+        </td>
+        <td>
+          1365
+          -
+          1399
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.Controller.getSoundPath
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.controller.get.getSoundPath(sound)
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          2673
+        </td>
+        <td>
+          1410
+          -
+          1410
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          2672
+        </td>
+        <td>
+          1410
+          -
+          1410
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          2659
+        </td>
+        <td>
+          1414
+          -
+          1433
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.isDefined
+        </td>
+        <td style="background: #F0ADAD">
+          soundPath.isDefined
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          2671
+        </td>
+        <td>
+          1449
+          -
+          1732
+        </td>
+        <td>
+          Match
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          sound match {
+  case (s @ _) if s.equals(SoundsType.level).||(s.equals(SoundsType.menu)) =&gt; MusicPlayer.this.checkMediaPlayerStatus(soundPath.get)
+  case SoundsType.button =&gt; MusicPlayer.this.playButtonSound(soundPath.get)
+  case _ =&gt; it.unibo.osmos.redux.utils.Logger.log(&quot;Sound not managed! [play]&quot;)(MusicPlayer.this.who)
+}
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          2661
+        </td>
+        <td>
+          1526
+          -
+          1541
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.SoundsType.menu
+        </td>
+        <td style="background: #F0ADAD">
+          SoundsType.menu
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          2664
+        </td>
+        <td>
+          1569
+          -
+          1582
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.get
+        </td>
+        <td style="background: #F0ADAD">
+          soundPath.get
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          2663
+        </td>
+        <td>
+          1487
+          -
+          1542
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.||
+        </td>
+        <td style="background: #F0ADAD">
+          s.equals(SoundsType.level).||(s.equals(SoundsType.menu))
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          2660
+        </td>
+        <td>
+          1496
+          -
+          1512
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.SoundsType.level
+        </td>
+        <td style="background: #F0ADAD">
+          SoundsType.level
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          2662
+        </td>
+        <td>
+          1517
+          -
+          1542
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Enumeration.Value.equals
+        </td>
+        <td style="background: #F0ADAD">
+          s.equals(SoundsType.menu)
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          2665
+        </td>
+        <td>
+          1546
+          -
+          1583
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.checkMediaPlayerStatus
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.checkMediaPlayerStatus(soundPath.get)
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          2667
+        </td>
+        <td>
+          1624
+          -
+          1654
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.playButtonSound
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.playButtonSound(soundPath.get)
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          2666
+        </td>
+        <td>
+          1640
+          -
+          1653
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.get
+        </td>
+        <td style="background: #F0ADAD">
+          soundPath.get
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          2670
+        </td>
+        <td>
+          1679
+          -
+          1718
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Logger.log
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Logger.log(&quot;Sound not managed! [play]&quot;)(MusicPlayer.this.who)
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          2669
+        </td>
+        <td>
+          1689
+          -
+          1689
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.who
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.who
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          2668
+        </td>
+        <td>
+          1690
+          -
+          1717
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;Sound not managed! [play]&quot;
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          2676
+        </td>
+        <td>
+          1767
+          -
+          1820
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Logger.log
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Logger.log(&quot;Error: controller is not defined [play]&quot;)(MusicPlayer.this.who)
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          2675
+        </td>
+        <td>
+          1777
+          -
+          1777
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.who
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.who
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          2674
+        </td>
+        <td>
+          1778
+          -
+          1819
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;Error: controller is not defined [play]&quot;
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          2682
+        </td>
+        <td>
+          1874
+          -
+          1874
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          2681
+        </td>
+        <td>
+          1921
+          -
+          1976
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          {
+  media.this.MediaPlayer.sfxMediaPlayer2jfx(MusicPlayer.this.mediaPlayer.get).pause();
+  MusicPlayer.this.sendMusicEvent(true)
+}
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          2678
+        </td>
+        <td>
+          1878
+          -
+          1919
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.canApplyStateChange
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.canApplyStateChange(scala.collection.immutable.List.apply[javafx.scene.media.MediaPlayer.Status](PLAYING))
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          2677
+        </td>
+        <td>
+          1898
+          -
+          1918
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.immutable.List.apply[javafx.scene.media.MediaPlayer.Status](PLAYING)
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          2683
+        </td>
+        <td>
+          1874
+          -
+          1874
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          2679
+        </td>
+        <td>
+          1927
+          -
+          1950
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.media.MediaPlayer.pause
+        </td>
+        <td style="background: #F0ADAD">
+          media.this.MediaPlayer.sfxMediaPlayer2jfx(MusicPlayer.this.mediaPlayer.get).pause()
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          2680
+        </td>
+        <td>
+          1952
+          -
+          1972
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.sendMusicEvent
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.sendMusicEvent(true)
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          2685
+        </td>
+        <td>
+          2056
+          -
+          2096
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.canApplyStateChange
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.canApplyStateChange(scala.collection.immutable.List.apply[javafx.scene.media.MediaPlayer.Status](PAUSED))
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          2688
+        </td>
+        <td>
+          2052
+          -
+          2052
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          2684
+        </td>
+        <td>
+          2076
+          -
+          2095
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.immutable.List.apply[javafx.scene.media.MediaPlayer.Status](PAUSED)
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          2687
+        </td>
+        <td>
+          2098
+          -
+          2120
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          javafx.scene.media.MediaPlayer.play
+        </td>
+        <td style="background: #F0ADAD">
+          media.this.MediaPlayer.sfxMediaPlayer2jfx(MusicPlayer.this.mediaPlayer.get).play()
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          2686
+        </td>
+        <td>
+          2098
+          -
+          2120
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.media.MediaPlayer.play
+        </td>
+        <td style="background: #F0ADAD">
+          media.this.MediaPlayer.sfxMediaPlayer2jfx(MusicPlayer.this.mediaPlayer.get).play()
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          2689
+        </td>
+        <td>
+          2052
+          -
+          2052
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          2690
+        </td>
+        <td>
+          2196
+          -
+          2207
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.mediaPlayer
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.mediaPlayer
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          2693
+        </td>
+        <td>
+          2277
+          -
+          2281
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          2692
+        </td>
+        <td>
+          2237
+          -
+          2273
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.LinearSeqOptimized.contains
+        </td>
+        <td style="background: #F0ADAD">
+          allowedStates.contains[javafx.scene.media.MediaPlayer.Status](media.this.MediaPlayer.sfxMediaPlayer2jfx(mp).getStatus())
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          2691
+        </td>
+        <td>
+          2260
+          -
+          2272
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.media.MediaPlayer.getStatus
+        </td>
+        <td style="background: #F0ADAD">
+          media.this.MediaPlayer.sfxMediaPlayer2jfx(mp).getStatus()
+        </td>
+      </tr><tr>
+        <td>
+          64
+        </td>
+        <td>
+          2694
+        </td>
+        <td>
+          2296
+          -
+          2301
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          false
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          2697
+        </td>
+        <td>
+          2537
+          -
+          2546
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Int.toDouble
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.MinVolume.toDouble
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          2696
+        </td>
+        <td>
+          2503
+          -
+          2517
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.&lt;=
+        </td>
+        <td style="background: #F0ADAD">
+          v.&lt;=(MusicPlayer.this.MinVolume)
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          2695
+        </td>
+        <td>
+          2508
+          -
+          2517
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.MinVolume
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.MinVolume
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          2698
+        </td>
+        <td>
+          2521
+          -
+          2546
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.generalVolume_=
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.generalVolume_=(MusicPlayer.this.MinVolume.toDouble)
+        </td>
+      </tr><tr>
+        <td>
+          74
+        </td>
+        <td>
+          2699
+        </td>
+        <td>
+          2568
+          -
+          2577
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.MaxVolume
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.MaxVolume
+        </td>
+      </tr><tr>
+        <td>
+          74
+        </td>
+        <td>
+          2702
+        </td>
+        <td>
+          2581
+          -
+          2606
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.generalVolume_=
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.generalVolume_=(MusicPlayer.this.MaxVolume.toDouble)
+        </td>
+      </tr><tr>
+        <td>
+          74
+        </td>
+        <td>
+          2701
+        </td>
+        <td>
+          2597
+          -
+          2606
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Int.toDouble
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.MaxVolume.toDouble
+        </td>
+      </tr><tr>
+        <td>
+          74
+        </td>
+        <td>
+          2700
+        </td>
+        <td>
+          2563
+          -
+          2577
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.&gt;=
+        </td>
+        <td style="background: #F0ADAD">
+          v.&gt;=(MusicPlayer.this.MaxVolume)
+        </td>
+      </tr><tr>
+        <td>
+          75
+        </td>
+        <td>
+          2703
+        </td>
+        <td>
+          2623
+          -
+          2645
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.generalVolume_=
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.generalVolume_=(volume)
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          2705
+        </td>
+        <td>
+          2656
+          -
+          2672
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.sendMusicEvent
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.sendMusicEvent(MusicPlayer.this.sendMusicEvent$default$1)
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          2704
+        </td>
+        <td>
+          2656
+          -
+          2656
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.sendMusicEvent$default$1
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.sendMusicEvent$default$1
+        </td>
+      </tr><tr>
+        <td>
+          78
+        </td>
+        <td>
+          2706
+        </td>
+        <td>
+          2677
+          -
+          2693
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.updateMPVolume
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.updateMPVolume()
+        </td>
+      </tr><tr>
+        <td>
+          81
+        </td>
+        <td>
+          2712
+        </td>
+        <td>
+          2738
+          -
+          2738
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          81
+        </td>
+        <td>
+          2708
+        </td>
+        <td>
+          2765
+          -
+          2780
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.get
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.mediaPlayer.get
+        </td>
+      </tr><tr>
+        <td>
+          81
+        </td>
+        <td>
+          2711
+        </td>
+        <td>
+          2765
+          -
+          2805
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          javafx.scene.media.MediaPlayer.setVolume
+        </td>
+        <td style="background: #F0ADAD">
+          media.this.MediaPlayer.sfxMediaPlayer2jfx(MusicPlayer.this.mediaPlayer.get).setVolume(MusicPlayer.this.generalVolume)
+        </td>
+      </tr><tr>
+        <td>
+          81
+        </td>
+        <td>
+          2713
+        </td>
+        <td>
+          2738
+          -
+          2738
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          81
+        </td>
+        <td>
+          2707
+        </td>
+        <td>
+          2742
+          -
+          2763
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.isDefined
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.mediaPlayer.isDefined
+        </td>
+      </tr><tr>
+        <td>
+          81
+        </td>
+        <td>
+          2710
+        </td>
+        <td>
+          2765
+          -
+          2805
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.media.MediaPlayer.setVolume
+        </td>
+        <td style="background: #F0ADAD">
+          media.this.MediaPlayer.sfxMediaPlayer2jfx(MusicPlayer.this.mediaPlayer.get).setVolume(MusicPlayer.this.generalVolume)
+        </td>
+      </tr><tr>
+        <td>
+          81
+        </td>
+        <td>
+          2709
+        </td>
+        <td>
+          2791
+          -
+          2804
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.generalVolume
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.generalVolume
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          2721
+        </td>
+        <td>
+          2873
+          -
+          2969
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.foreach
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.settingObs.foreach[Unit](((x$1: it.unibo.osmos.redux.mvc.controller.SettingsEventObserver) =&gt; x$1.notify(it.unibo.osmos.redux.mvc.controller.MusicPlayerEvent.apply(it.unibo.osmos.redux.mvc.controller.Volume.apply(if (isMute)
+  MusicPlayer.this.MinVolume.toDouble
+else
+  MusicPlayer.this.generalVolume)))))
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          2715
+        </td>
+        <td>
+          2937
+          -
+          2946
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          scala.Int.toDouble
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.MinVolume.toDouble
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          2714
+        </td>
+        <td>
+          2937
+          -
+          2946
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Int.toDouble
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.MinVolume.toDouble
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          2717
+        </td>
+        <td>
+          2952
+          -
+          2965
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.generalVolume
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.generalVolume
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          2720
+        </td>
+        <td>
+          2892
+          -
+          2968
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.SettingsEventObserver.notify
+        </td>
+        <td style="background: #F0ADAD">
+          x$1.notify(it.unibo.osmos.redux.mvc.controller.MusicPlayerEvent.apply(it.unibo.osmos.redux.mvc.controller.Volume.apply(if (isMute)
+  MusicPlayer.this.MinVolume.toDouble
+else
+  MusicPlayer.this.generalVolume)))
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          2716
+        </td>
+        <td>
+          2952
+          -
+          2965
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.generalVolume
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.generalVolume
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          2719
+        </td>
+        <td>
+          2901
+          -
+          2967
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.MusicPlayerEvent.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.MusicPlayerEvent.apply(it.unibo.osmos.redux.mvc.controller.Volume.apply(if (isMute)
+  MusicPlayer.this.MinVolume.toDouble
+else
+  MusicPlayer.this.generalVolume))
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          2718
+        </td>
+        <td>
+          2918
+          -
+          2966
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.Volume.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.Volume.apply(if (isMute)
+  MusicPlayer.this.MinVolume.toDouble
+else
+  MusicPlayer.this.generalVolume)
+        </td>
+      </tr><tr>
+        <td>
+          90
+        </td>
+        <td>
+          2722
+        </td>
+        <td>
+          3061
+          -
+          3074
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.generalVolume
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.generalVolume
+        </td>
+      </tr><tr>
+        <td>
+          96
+        </td>
+        <td>
+          2723
+        </td>
+        <td>
+          3218
+          -
+          3229
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.mediaPlayer
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.mediaPlayer
+        </td>
+      </tr><tr>
+        <td>
+          97
+        </td>
+        <td>
+          2724
+        </td>
+        <td>
+          3266
+          -
+          3278
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.media.MediaPlayer.getStatus
+        </td>
+        <td style="background: #F0ADAD">
+          media.this.MediaPlayer.sfxMediaPlayer2jfx(mp).getStatus()
+        </td>
+      </tr><tr>
+        <td>
+          97
+        </td>
+        <td>
+          2725
+        </td>
+        <td>
+          3259
+          -
+          3279
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Option.apply[javafx.scene.media.MediaPlayer.Status](media.this.MediaPlayer.sfxMediaPlayer2jfx(mp).getStatus())
+        </td>
+      </tr><tr>
+        <td>
+          98
+        </td>
+        <td>
+          2726
+        </td>
+        <td>
+          3294
+          -
+          3298
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #F0ADAD">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          101
+        </td>
+        <td>
+          2728
+        </td>
+        <td>
+          3370
+          -
+          3405
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.settingObs_=
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.settingObs_=({
+  &lt;synthetic&gt; &lt;artifact&gt; val x$2: it.unibo.osmos.redux.mvc.controller.SettingsEventObserver = observer;
+  MusicPlayer.this.settingObs.::[it.unibo.osmos.redux.mvc.controller.SettingsEventObserver](x$2)
+})
+        </td>
+      </tr><tr>
+        <td>
+          101
+        </td>
+        <td>
+          2727
+        </td>
+        <td>
+          3392
+          -
+          3405
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.::
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.settingObs.::[it.unibo.osmos.redux.mvc.controller.SettingsEventObserver](x$2)
+        </td>
+      </tr><tr>
+        <td>
+          103
+        </td>
+        <td>
+          2729
+        </td>
+        <td>
+          3460
+          -
+          3475
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.buttonAudioClip
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.buttonAudioClip
+        </td>
+      </tr><tr>
+        <td>
+          104
+        </td>
+        <td>
+          2730
+        </td>
+        <td>
+          3515
+          -
+          3528
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.generalVolume
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.generalVolume
+        </td>
+      </tr><tr>
+        <td>
+          104
+        </td>
+        <td>
+          2731
+        </td>
+        <td>
+          3506
+          -
+          3529
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.media.AudioClip.play
+        </td>
+        <td style="background: #F0ADAD">
+          media.this.AudioClip.sfxAudioClip2jfx(bac).play(MusicPlayer.this.generalVolume)
+        </td>
+      </tr><tr>
+        <td>
+          105
+        </td>
+        <td>
+          2733
+        </td>
+        <td>
+          3567
+          -
+          3617
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.media.AudioClip.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new scalafx.scene.media.AudioClip(it.unibo.osmos.redux.mvc.controller.manager.files.SoundFileManager.loadButtonsSound())
+        </td>
+      </tr><tr>
+        <td>
+          105
+        </td>
+        <td>
+          2732
+        </td>
+        <td>
+          3581
+          -
+          3616
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.SoundFileManager.loadButtonsSound
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.manager.files.SoundFileManager.loadButtonsSound()
+        </td>
+      </tr><tr>
+        <td>
+          105
+        </td>
+        <td>
+          2735
+        </td>
+        <td>
+          3544
+          -
+          3618
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.buttonAudioClip_=
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.buttonAudioClip_=(scala.Some.apply[scalafx.scene.media.AudioClip](new scalafx.scene.media.AudioClip(it.unibo.osmos.redux.mvc.controller.manager.files.SoundFileManager.loadButtonsSound())))
+        </td>
+      </tr><tr>
+        <td>
+          105
+        </td>
+        <td>
+          2734
+        </td>
+        <td>
+          3562
+          -
+          3618
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Some.apply[scalafx.scene.media.AudioClip](new scalafx.scene.media.AudioClip(it.unibo.osmos.redux.mvc.controller.manager.files.SoundFileManager.loadButtonsSound()))
+        </td>
+      </tr><tr>
+        <td>
+          105
+        </td>
+        <td>
+          2736
+        </td>
+        <td>
+          3620
+          -
+          3642
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.playButtonSound
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.playButtonSound(sound)
+        </td>
+      </tr><tr>
+        <td>
+          110
+        </td>
+        <td>
+          2739
+        </td>
+        <td>
+          3766
+          -
+          3788
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          javafx.scene.media.MediaPlayer.stop
+        </td>
+        <td style="background: #F0ADAD">
+          media.this.MediaPlayer.sfxMediaPlayer2jfx(MusicPlayer.this.mediaPlayer.get).stop()
+        </td>
+      </tr><tr>
+        <td>
+          110
+        </td>
+        <td>
+          2741
+        </td>
+        <td>
+          3739
+          -
+          3739
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          110
+        </td>
+        <td>
+          2738
+        </td>
+        <td>
+          3766
+          -
+          3788
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.media.MediaPlayer.stop
+        </td>
+        <td style="background: #F0ADAD">
+          media.this.MediaPlayer.sfxMediaPlayer2jfx(MusicPlayer.this.mediaPlayer.get).stop()
+        </td>
+      </tr><tr>
+        <td>
+          110
+        </td>
+        <td>
+          2737
+        </td>
+        <td>
+          3743
+          -
+          3764
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.isDefined
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.mediaPlayer.isDefined
+        </td>
+      </tr><tr>
+        <td>
+          110
+        </td>
+        <td>
+          2740
+        </td>
+        <td>
+          3739
+          -
+          3739
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          112
+        </td>
+        <td>
+          2742
+        </td>
+        <td>
+          3853
+          -
+          3869
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.media.Media.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new scalafx.scene.media.Media(sound)
+        </td>
+      </tr><tr>
+        <td>
+          112
+        </td>
+        <td>
+          2744
+        </td>
+        <td>
+          3832
+          -
+          3871
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Some.apply[scalafx.scene.media.MediaPlayer](new scalafx.scene.media.MediaPlayer(new scalafx.scene.media.Media(sound)))
+        </td>
+      </tr><tr>
+        <td>
+          112
+        </td>
+        <td>
+          2743
+        </td>
+        <td>
+          3837
+          -
+          3870
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.media.MediaPlayer.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new scalafx.scene.media.MediaPlayer(new scalafx.scene.media.Media(sound))
+        </td>
+      </tr><tr>
+        <td>
+          112
+        </td>
+        <td>
+          2745
+        </td>
+        <td>
+          3818
+          -
+          3871
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.mediaPlayer_=
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.mediaPlayer_=(scala.Some.apply[scalafx.scene.media.MediaPlayer](new scalafx.scene.media.MediaPlayer(new scalafx.scene.media.Media(sound))))
+        </td>
+      </tr><tr>
+        <td>
+          114
+        </td>
+        <td>
+          2748
+        </td>
+        <td>
+          3989
+          -
+          4007
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          javafx.util.Duration.ZERO
+        </td>
+        <td style="background: #F0ADAD">
+          javafx.util.Duration.ZERO
+        </td>
+      </tr><tr>
+        <td>
+          114
+        </td>
+        <td>
+          2750
+        </td>
+        <td>
+          3930
+          -
+          4009
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.media.MediaPlayer.setOnEndOfMedia
+        </td>
+        <td style="background: #F0ADAD">
+          media.this.MediaPlayer.sfxMediaPlayer2jfx(MusicPlayer.this.mediaPlayer.get).setOnEndOfMedia((() =&gt; media.this.MediaPlayer.sfxMediaPlayer2jfx(MusicPlayer.this.mediaPlayer.get).seek(javafx.util.Duration.ZERO)))
+        </td>
+      </tr><tr>
+        <td>
+          114
+        </td>
+        <td>
+          2747
+        </td>
+        <td>
+          3968
+          -
+          3983
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.get
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.mediaPlayer.get
+        </td>
+      </tr><tr>
+        <td>
+          114
+        </td>
+        <td>
+          2746
+        </td>
+        <td>
+          3930
+          -
+          3945
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.get
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.mediaPlayer.get
+        </td>
+      </tr><tr>
+        <td>
+          114
+        </td>
+        <td>
+          2749
+        </td>
+        <td>
+          3968
+          -
+          4008
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.media.MediaPlayer.seek
+        </td>
+        <td style="background: #F0ADAD">
+          media.this.MediaPlayer.sfxMediaPlayer2jfx(MusicPlayer.this.mediaPlayer.get).seek(javafx.util.Duration.ZERO)
+        </td>
+      </tr><tr>
+        <td>
+          115
+        </td>
+        <td>
+          2752
+        </td>
+        <td>
+          4014
+          -
+          4043
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.lastLoadedSound_=
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.lastLoadedSound_=(scala.Some.apply[String](sound))
+        </td>
+      </tr><tr>
+        <td>
+          115
+        </td>
+        <td>
+          2751
+        </td>
+        <td>
+          4032
+          -
+          4043
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Some.apply[String](sound)
+        </td>
+      </tr><tr>
+        <td>
+          116
+        </td>
+        <td>
+          2753
+        </td>
+        <td>
+          4048
+          -
+          4064
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.updateMPVolume
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.updateMPVolume()
+        </td>
+      </tr><tr>
+        <td>
+          117
+        </td>
+        <td>
+          2754
+        </td>
+        <td>
+          4069
+          -
+          4091
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.media.MediaPlayer.play
+        </td>
+        <td style="background: #F0ADAD">
+          media.this.MediaPlayer.sfxMediaPlayer2jfx(MusicPlayer.this.mediaPlayer.get).play()
+        </td>
+      </tr><tr>
+        <td>
+          121
+        </td>
+        <td>
+          2757
+        </td>
+        <td>
+          4167
+          -
+          4260
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.&amp;&amp;
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.canApplyStateChange(scala.collection.immutable.List.apply[javafx.scene.media.MediaPlayer.Status](STOPPED, PAUSED)).&amp;&amp;(MusicPlayer.this.lastLoadedSound.get.equals(sound))
+        </td>
+      </tr><tr>
+        <td>
+          121
+        </td>
+        <td>
+          2756
+        </td>
+        <td>
+          4227
+          -
+          4260
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.equals
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.lastLoadedSound.get.equals(sound)
+        </td>
+      </tr><tr>
+        <td>
+          121
+        </td>
+        <td>
+          2755
+        </td>
+        <td>
+          4187
+          -
+          4222
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.immutable.List.apply[javafx.scene.media.MediaPlayer.Status](STOPPED, PAUSED)
+        </td>
+      </tr><tr>
+        <td>
+          122
+        </td>
+        <td>
+          2759
+        </td>
+        <td>
+          4270
+          -
+          4292
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          javafx.scene.media.MediaPlayer.play
+        </td>
+        <td style="background: #F0ADAD">
+          media.this.MediaPlayer.sfxMediaPlayer2jfx(MusicPlayer.this.mediaPlayer.get).play()
+        </td>
+      </tr><tr>
+        <td>
+          122
+        </td>
+        <td>
+          2758
+        </td>
+        <td>
+          4270
+          -
+          4292
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.media.MediaPlayer.play
+        </td>
+        <td style="background: #F0ADAD">
+          media.this.MediaPlayer.sfxMediaPlayer2jfx(MusicPlayer.this.mediaPlayer.get).play()
+        </td>
+      </tr><tr>
+        <td>
+          124
+        </td>
+        <td>
+          2761
+        </td>
+        <td>
+          4312
+          -
+          4336
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.setupAndPlayMedia
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.setupAndPlayMedia(sound)
+        </td>
+      </tr><tr>
+        <td>
+          124
+        </td>
+        <td>
+          2760
+        </td>
+        <td>
+          4312
+          -
+          4336
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.setupAndPlayMedia
+        </td>
+        <td style="background: #F0ADAD">
+          MusicPlayer.this.setupAndPlayMedia(sound)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

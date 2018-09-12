@@ -1,0 +1,2104 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/ecs/entities/CellBuilder.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.entities
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.ecs.components._
+</span>4 <span style=''>import it.unibo.osmos.redux.utils.{Point, Vector}
+</span>5 <span style=''>
+</span>6 <span style=''>/** Base builder for all type of cell */
+</span>7 <span style=''>case class CellBuilder() {
+</span>8 <span style=''>
+</span>9 <span style=''>  // Flag to detect multiple builds
+</span>10 <span style=''>  private var multipleBuildFlag = </span><span style='background: #AEF1AE'>false</span><span style=''>
+</span>11 <span style=''>
+</span>12 <span style=''>  private var acceleration = </span><span style='background: #AEF1AE'>AccelerationComponent(0, 0)</span><span style=''>
+</span>13 <span style=''>  private var collidable = </span><span style='background: #AEF1AE'>CollidableComponent(true)</span><span style=''>
+</span>14 <span style=''>  private var dimension = </span><span style='background: #AEF1AE'>DimensionComponent(1)</span><span style=''>
+</span>15 <span style=''>  private var position = </span><span style='background: #AEF1AE'>PositionComponent(Point(0, 0))</span><span style=''>
+</span>16 <span style=''>  private var speed = </span><span style='background: #AEF1AE'>SpeedComponent(0, 0)</span><span style=''>
+</span>17 <span style=''>  private var visible = </span><span style='background: #AEF1AE'>VisibleComponent(true)</span><span style=''>
+</span>18 <span style=''>  private var entityType = </span><span style='background: #AEF1AE'>TypeComponent(EntityType.Matter)</span><span style=''>
+</span>19 <span style=''>  private var specificWeight: SpecificWeightComponent = </span><span style='background: #AEF1AE'>SpecificWeightComponent(1)</span><span style=''>
+</span>20 <span style=''>  private var spawner = </span><span style='background: #AEF1AE'>SpawnerComponent(false)</span><span style=''>
+</span>21 <span style=''>
+</span>22 <span style=''>  /** Sets the collidability.
+</span>23 <span style=''>    *
+</span>24 <span style=''>    * @param collidable If the entity can collide or not.
+</span>25 <span style=''>    * @return The entity builder.
+</span>26 <span style=''>    */
+</span>27 <span style=''>  def collidable(collidable: Boolean): CellBuilder = {
+</span>28 <span style=''>    </span><span style='background: #AEF1AE'>this.collidable = CollidableComponent(collidable)</span><span style=''>
+</span>29 <span style=''>    this
+</span>30 <span style=''>  }
+</span>31 <span style=''>
+</span>32 <span style=''>  /** Sets the visibility.
+</span>33 <span style=''>    *
+</span>34 <span style=''>    * @param visible If the entity is visible or not.
+</span>35 <span style=''>    * @return The entity builder.
+</span>36 <span style=''>    */
+</span>37 <span style=''>  def visible(visible: Boolean): CellBuilder = {
+</span>38 <span style=''>    </span><span style='background: #AEF1AE'>this.visible = VisibleComponent(visible)</span><span style=''>
+</span>39 <span style=''>    this
+</span>40 <span style=''>  }
+</span>41 <span style=''>
+</span>42 <span style=''>  /** Sets the acceleration.
+</span>43 <span style=''>    *
+</span>44 <span style=''>    * @param x The acceleration x coordinate.
+</span>45 <span style=''>    * @param y The acceleration y coordinate.
+</span>46 <span style=''>    * @return The entity builder.
+</span>47 <span style=''>    */
+</span>48 <span style=''>  def withAcceleration(x: Double, y: Double): CellBuilder = {
+</span>49 <span style=''>    </span><span style='background: #AEF1AE'>this.acceleration = AccelerationComponent(x, y)</span><span style=''>
+</span>50 <span style=''>    this
+</span>51 <span style=''>  }
+</span>52 <span style=''>
+</span>53 <span style=''>  /** Sets the acceleration.
+</span>54 <span style=''>    *
+</span>55 <span style=''>    * @param acceleration The acceleration vector.
+</span>56 <span style=''>    * @return The entity builder.
+</span>57 <span style=''>    */
+</span>58 <span style=''>  def withAcceleration(acceleration: Vector): CellBuilder = {
+</span>59 <span style=''>    </span><span style='background: #F0ADAD'>this.acceleration = AccelerationComponent(acceleration)</span><span style=''>
+</span>60 <span style=''>    this
+</span>61 <span style=''>  }
+</span>62 <span style=''>
+</span>63 <span style=''>  /** Sets the acceleration.
+</span>64 <span style=''>    *
+</span>65 <span style=''>    * @param acceleration The Acceleration component.
+</span>66 <span style=''>    * @return The entity builder.
+</span>67 <span style=''>    */
+</span>68 <span style=''>  def withAcceleration(acceleration: AccelerationComponent): CellBuilder = {
+</span>69 <span style=''>    </span><span style='background: #F0ADAD'>this.acceleration = acceleration.copy()</span><span style=''>
+</span>70 <span style=''>    this
+</span>71 <span style=''>  }
+</span>72 <span style=''>
+</span>73 <span style=''>  /** Sets the dimension.
+</span>74 <span style=''>    *
+</span>75 <span style=''>    * @param dimension The radius of the entity.
+</span>76 <span style=''>    * @return The entity builder.
+</span>77 <span style=''>    */
+</span>78 <span style=''>  def withDimension(dimension: Double): CellBuilder = {
+</span>79 <span style=''>    </span><span style='background: #AEF1AE'>this.dimension = DimensionComponent(dimension)</span><span style=''>
+</span>80 <span style=''>    this
+</span>81 <span style=''>  }
+</span>82 <span style=''>
+</span>83 <span style=''>  /** Sets the dimension.
+</span>84 <span style=''>    *
+</span>85 <span style=''>    * @param dimension The dimension component.
+</span>86 <span style=''>    * @return The entity builder.
+</span>87 <span style=''>    */
+</span>88 <span style=''>  def withDimension(dimension: DimensionComponent): CellBuilder = {
+</span>89 <span style=''>    </span><span style='background: #AEF1AE'>this.dimension = dimension.copy()</span><span style=''>
+</span>90 <span style=''>    this
+</span>91 <span style=''>  }
+</span>92 <span style=''>
+</span>93 <span style=''>  /** Sets the position.
+</span>94 <span style=''>    *
+</span>95 <span style=''>    * @param x The position x coordinate.
+</span>96 <span style=''>    * @param y The position y coordinate.
+</span>97 <span style=''>    * @return The entity builder.
+</span>98 <span style=''>    */
+</span>99 <span style=''>  def withPosition(x: Double, y: Double): CellBuilder = {
+</span>100 <span style=''>    </span><span style='background: #AEF1AE'>this.position = PositionComponent(Point(x, y))</span><span style=''>
+</span>101 <span style=''>    this
+</span>102 <span style=''>  }
+</span>103 <span style=''>
+</span>104 <span style=''>  /** Sets the position.
+</span>105 <span style=''>    *
+</span>106 <span style=''>    * @param position The position point.
+</span>107 <span style=''>    * @return The entity builder.
+</span>108 <span style=''>    */
+</span>109 <span style=''>  def withPosition(position: Point): CellBuilder = {
+</span>110 <span style=''>    </span><span style='background: #AEF1AE'>this.position = PositionComponent(position)</span><span style=''>
+</span>111 <span style=''>    this
+</span>112 <span style=''>  }
+</span>113 <span style=''>
+</span>114 <span style=''>  /** Sets the position.
+</span>115 <span style=''>    *
+</span>116 <span style=''>    * @param position The position component.
+</span>117 <span style=''>    * @return The entity builder.
+</span>118 <span style=''>    */
+</span>119 <span style=''>  def withPosition(position: PositionComponent): CellBuilder = {
+</span>120 <span style=''>    </span><span style='background: #AEF1AE'>this.position = position.copy()</span><span style=''>
+</span>121 <span style=''>    this
+</span>122 <span style=''>  }
+</span>123 <span style=''>
+</span>124 <span style=''>  /** Sets the speed.
+</span>125 <span style=''>    *
+</span>126 <span style=''>    * @param x The speed x coordinate.
+</span>127 <span style=''>    * @param y The speed y coordinate.
+</span>128 <span style=''>    * @return The entity builder.
+</span>129 <span style=''>    */
+</span>130 <span style=''>  def withSpeed(x: Double, y: Double): CellBuilder = {
+</span>131 <span style=''>    </span><span style='background: #AEF1AE'>this.speed = SpeedComponent(x, y)</span><span style=''>
+</span>132 <span style=''>    this
+</span>133 <span style=''>  }
+</span>134 <span style=''>
+</span>135 <span style=''>  /** Sets the speed.
+</span>136 <span style=''>    *
+</span>137 <span style=''>    * @param speed The speed component.
+</span>138 <span style=''>    * @return The entity builder.
+</span>139 <span style=''>    */
+</span>140 <span style=''>  def withSpeed(speed: Vector): CellBuilder = {
+</span>141 <span style=''>    </span><span style='background: #AEF1AE'>this.speed = SpeedComponent(speed)</span><span style=''>
+</span>142 <span style=''>    this
+</span>143 <span style=''>  }
+</span>144 <span style=''>
+</span>145 <span style=''>  /** Sets the speed.
+</span>146 <span style=''>    *
+</span>147 <span style=''>    * @param speed The speed component.
+</span>148 <span style=''>    * @return The entity builder.
+</span>149 <span style=''>    */
+</span>150 <span style=''>  def withSpeed(speed: SpeedComponent): CellBuilder = {
+</span>151 <span style=''>    </span><span style='background: #AEF1AE'>this.speed = speed.copy()</span><span style=''>
+</span>152 <span style=''>    this
+</span>153 <span style=''>  }
+</span>154 <span style=''>
+</span>155 <span style=''>  /** Sets the specific weight.
+</span>156 <span style=''>    *
+</span>157 <span style=''>    * @param weight The weight.
+</span>158 <span style=''>    * @return The entity builder.
+</span>159 <span style=''>    */
+</span>160 <span style=''>  def withSpecificWeight(weight: Double): CellBuilder = {
+</span>161 <span style=''>    </span><span style='background: #AEF1AE'>this.specificWeight = SpecificWeightComponent(weight)</span><span style=''>
+</span>162 <span style=''>    this
+</span>163 <span style=''>  }
+</span>164 <span style=''>
+</span>165 <span style=''>  /** Sets the specific weight.
+</span>166 <span style=''>    *
+</span>167 <span style=''>    * @param weight The specific weight component.
+</span>168 <span style=''>    * @return The entity builder.
+</span>169 <span style=''>    */
+</span>170 <span style=''>  def withSpecificWeight(weight: SpecificWeightComponent): CellBuilder = {
+</span>171 <span style=''>    </span><span style='background: #AEF1AE'>this.specificWeight = weight.copy()</span><span style=''>
+</span>172 <span style=''>    this
+</span>173 <span style=''>  }
+</span>174 <span style=''>
+</span>175 <span style=''>  /** Sets the spawner.
+</span>176 <span style=''>    *
+</span>177 <span style=''>    * @param canSpawn If the entity spawner can spawn or not.
+</span>178 <span style=''>    * @return The entity builder.
+</span>179 <span style=''>    */
+</span>180 <span style=''>  def withSpawner(canSpawn: Boolean): CellBuilder = {
+</span>181 <span style=''>    </span><span style='background: #AEF1AE'>this.spawner = SpawnerComponent(canSpawn)</span><span style=''>
+</span>182 <span style=''>    this
+</span>183 <span style=''>  }
+</span>184 <span style=''>
+</span>185 <span style=''>  /** Sets the spawner.
+</span>186 <span style=''>    *
+</span>187 <span style=''>    * @param spawner The spawner component.
+</span>188 <span style=''>    * @return The entity builder.
+</span>189 <span style=''>    */
+</span>190 <span style=''>  def withSpawner(spawner: SpawnerComponent): CellBuilder = {
+</span>191 <span style=''>    </span><span style='background: #F0ADAD'>this.spawner = spawner.copy()</span><span style=''>
+</span>192 <span style=''>    this
+</span>193 <span style=''>  }
+</span>194 <span style=''>
+</span>195 <span style=''>  /** Builds a CellEntity.
+</span>196 <span style=''>    *
+</span>197 <span style=''>    * @return The CellEntity.
+</span>198 <span style=''>    */
+</span>199 <span style=''>  def buildCellEntity(): CellEntity = </span><span style='background: #AEF1AE'>buildBaseCell()</span><span style=''>
+</span>200 <span style=''>
+</span>201 <span style=''>  /** Builds the base cell entity, checks for multiple builds.
+</span>202 <span style=''>    *
+</span>203 <span style=''>    * @return The base cell entity.
+</span>204 <span style=''>    */
+</span>205 <span style=''>  private def buildBaseCell(): CellEntity = {
+</span>206 <span style=''>    </span><span style='background: #AEF1AE'>checkMultipleBuild()</span><span style=''>
+</span>207 <span style=''>    </span><span style='background: #AEF1AE'>CellEntity(acceleration, collidable, dimension, position, speed, visible, entityType)</span><span style=''>
+</span>208 <span style=''>  }
+</span>209 <span style=''>
+</span>210 <span style=''>  //checks if the build method is called multiple times.
+</span>211 <span style=''>  private def checkMultipleBuild(): Unit = {
+</span>212 <span style=''>    if (</span><span style='background: #AEF1AE'>multipleBuildFlag</span><span style=''>) {
+</span>213 <span style=''>      </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(&quot;The builder cannot build multiple times.&quot;)</span><span style=''>
+</span>214 <span style=''>    } else {
+</span>215 <span style=''>      </span><span style='background: #AEF1AE'>multipleBuildFlag = true</span><span style=''>
+</span>216 <span style=''>    }
+</span>217 <span style=''>  }
+</span>218 <span style=''>
+</span>219 <span style=''>  /** Builds a GravityCellEntity.
+</span>220 <span style=''>    *
+</span>221 <span style=''>    * @return The GravityCellEntity.
+</span>222 <span style=''>    */
+</span>223 <span style=''>  def buildGravityEntity(): GravityCellEntity = {
+</span>224 <span style=''>    if (</span><span style='background: #AEF1AE'>!(Seq(EntityType.Attractive, EntityType.Repulsive) contains entityType.typeEntity)</span><span style=''>) {
+</span>225 <span style=''>      </span><span style='background: #AEF1AE'>withEntityType(EntityType.Attractive)</span><span style=''>
+</span>226 <span style=''>    }
+</span>227 <span style=''>    </span><span style='background: #AEF1AE'>GravityCellEntity(buildBaseCell(), specificWeight)</span><span style=''>
+</span>228 <span style=''>  }
+</span>229 <span style=''>
+</span>230 <span style=''>  /** Sets the entity type.
+</span>231 <span style=''>    *
+</span>232 <span style=''>    * @param entityType The entity type.
+</span>233 <span style=''>    * @return The entity builder.
+</span>234 <span style=''>    */
+</span>235 <span style=''>  def withEntityType(entityType: EntityType.Value): CellBuilder = {
+</span>236 <span style=''>    </span><span style='background: #AEF1AE'>this.entityType = TypeComponent(entityType)</span><span style=''>
+</span>237 <span style=''>    this
+</span>238 <span style=''>  }
+</span>239 <span style=''>
+</span>240 <span style=''>  /** Builds a PlayerCellEntity.
+</span>241 <span style=''>    *
+</span>242 <span style=''>    * @return The PlayerCellEntity.
+</span>243 <span style=''>    */
+</span>244 <span style=''>  def buildPlayerEntity(): PlayerCellEntity = {
+</span>245 <span style=''>    </span><span style='background: #AEF1AE'>withEntityType(EntityType.Controlled)</span><span style=''>
+</span>246 <span style=''>    </span><span style='background: #AEF1AE'>PlayerCellEntity(buildBaseCell(), spawner)</span><span style=''>
+</span>247 <span style=''>  }
+</span>248 <span style=''>
+</span>249 <span style=''>  /** Builds a SentientCellEntity.
+</span>250 <span style=''>    *
+</span>251 <span style=''>    * @return The SentientCellEntity.
+</span>252 <span style=''>    */
+</span>253 <span style=''>  def buildSentientEntity(): SentientCellEntity = {
+</span>254 <span style=''>    </span><span style='background: #AEF1AE'>withEntityType(EntityType.Sentient)</span><span style=''>
+</span>255 <span style=''>    </span><span style='background: #AEF1AE'>SentientCellEntity(buildBaseCell(), spawner)</span><span style=''>
+</span>256 <span style=''>  }
+</span>257 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          260
+        </td>
+        <td>
+          278
+          -
+          283
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          false
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          261
+        </td>
+        <td>
+          314
+          -
+          341
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.AccelerationComponent.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.components.AccelerationComponent.apply(0.0, 0.0)
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          262
+        </td>
+        <td>
+          369
+          -
+          394
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.CollidableComponent.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.components.CollidableComponent.apply(true)
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          263
+        </td>
+        <td>
+          421
+          -
+          442
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.apply(1.0)
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          265
+        </td>
+        <td>
+          468
+          -
+          498
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.components.PositionComponent.apply(it.unibo.osmos.redux.utils.Point.apply(0.0, 0.0))
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          264
+        </td>
+        <td>
+          486
+          -
+          497
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Point.apply(0.0, 0.0)
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          266
+        </td>
+        <td>
+          521
+          -
+          541
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpeedComponent.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.components.SpeedComponent.apply(0.0, 0.0)
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          267
+        </td>
+        <td>
+          566
+          -
+          588
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.VisibleComponent.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.components.VisibleComponent.apply(true)
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          268
+        </td>
+        <td>
+          630
+          -
+          647
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityType.Matter
+        </td>
+        <td style="background: #AEF1AE">
+          EntityType.Matter
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          269
+        </td>
+        <td>
+          616
+          -
+          648
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.TypeComponent.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.components.TypeComponent.apply(EntityType.Matter)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          270
+        </td>
+        <td>
+          705
+          -
+          731
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpecificWeightComponent.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.components.SpecificWeightComponent.apply(1.0)
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          271
+        </td>
+        <td>
+          756
+          -
+          779
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpawnerComponent.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.components.SpawnerComponent.apply(false)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          273
+        </td>
+        <td>
+          975
+          -
+          1024
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.collidable_=
+        </td>
+        <td style="background: #AEF1AE">
+          this.collidable_=(it.unibo.osmos.redux.ecs.components.CollidableComponent.apply(collidable))
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          272
+        </td>
+        <td>
+          993
+          -
+          1024
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.CollidableComponent.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.components.CollidableComponent.apply(collidable)
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          274
+        </td>
+        <td>
+          1235
+          -
+          1260
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.VisibleComponent.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.components.VisibleComponent.apply(visible)
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          275
+        </td>
+        <td>
+          1220
+          -
+          1260
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.visible_=
+        </td>
+        <td style="background: #AEF1AE">
+          this.visible_=(it.unibo.osmos.redux.ecs.components.VisibleComponent.apply(visible))
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          277
+        </td>
+        <td>
+          1509
+          -
+          1556
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.acceleration_=
+        </td>
+        <td style="background: #AEF1AE">
+          this.acceleration_=(it.unibo.osmos.redux.ecs.components.AccelerationComponent.apply(x, y))
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          276
+        </td>
+        <td>
+          1529
+          -
+          1556
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.AccelerationComponent.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.components.AccelerationComponent.apply(x, y)
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          279
+        </td>
+        <td>
+          1764
+          -
+          1819
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.acceleration_=
+        </td>
+        <td style="background: #F0ADAD">
+          this.acceleration_=(it.unibo.osmos.redux.ecs.components.AccelerationComponent.apply(acceleration))
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          278
+        </td>
+        <td>
+          1784
+          -
+          1819
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.AccelerationComponent.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.components.AccelerationComponent.apply(acceleration)
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          280
+        </td>
+        <td>
+          2065
+          -
+          2084
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.AccelerationComponent.copy
+        </td>
+        <td style="background: #F0ADAD">
+          acceleration.copy()
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          281
+        </td>
+        <td>
+          2045
+          -
+          2084
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.acceleration_=
+        </td>
+        <td style="background: #F0ADAD">
+          this.acceleration_=(acceleration.copy())
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          283
+        </td>
+        <td>
+          2281
+          -
+          2327
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.dimension_=
+        </td>
+        <td style="background: #AEF1AE">
+          this.dimension_=(it.unibo.osmos.redux.ecs.components.DimensionComponent.apply(dimension))
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          282
+        </td>
+        <td>
+          2298
+          -
+          2327
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.apply(dimension)
+        </td>
+      </tr><tr>
+        <td>
+          89
+        </td>
+        <td>
+          285
+        </td>
+        <td>
+          2535
+          -
+          2568
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.dimension_=
+        </td>
+        <td style="background: #AEF1AE">
+          this.dimension_=(dimension.copy())
+        </td>
+      </tr><tr>
+        <td>
+          89
+        </td>
+        <td>
+          284
+        </td>
+        <td>
+          2552
+          -
+          2568
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.copy
+        </td>
+        <td style="background: #AEF1AE">
+          dimension.copy()
+        </td>
+      </tr><tr>
+        <td>
+          100
+        </td>
+        <td>
+          286
+        </td>
+        <td>
+          2835
+          -
+          2846
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Point.apply(x, y)
+        </td>
+      </tr><tr>
+        <td>
+          100
+        </td>
+        <td>
+          288
+        </td>
+        <td>
+          2801
+          -
+          2847
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.position_=
+        </td>
+        <td style="background: #AEF1AE">
+          this.position_=(it.unibo.osmos.redux.ecs.components.PositionComponent.apply(it.unibo.osmos.redux.utils.Point.apply(x, y)))
+        </td>
+      </tr><tr>
+        <td>
+          100
+        </td>
+        <td>
+          287
+        </td>
+        <td>
+          2817
+          -
+          2847
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.components.PositionComponent.apply(it.unibo.osmos.redux.utils.Point.apply(x, y))
+        </td>
+      </tr><tr>
+        <td>
+          110
+        </td>
+        <td>
+          289
+        </td>
+        <td>
+          3049
+          -
+          3076
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.components.PositionComponent.apply(position)
+        </td>
+      </tr><tr>
+        <td>
+          110
+        </td>
+        <td>
+          290
+        </td>
+        <td>
+          3033
+          -
+          3076
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.position_=
+        </td>
+        <td style="background: #AEF1AE">
+          this.position_=(it.unibo.osmos.redux.ecs.components.PositionComponent.apply(position))
+        </td>
+      </tr><tr>
+        <td>
+          120
+        </td>
+        <td>
+          292
+        </td>
+        <td>
+          3278
+          -
+          3309
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.position_=
+        </td>
+        <td style="background: #AEF1AE">
+          this.position_=(position.copy())
+        </td>
+      </tr><tr>
+        <td>
+          120
+        </td>
+        <td>
+          291
+        </td>
+        <td>
+          3294
+          -
+          3309
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.copy
+        </td>
+        <td style="background: #AEF1AE">
+          position.copy()
+        </td>
+      </tr><tr>
+        <td>
+          131
+        </td>
+        <td>
+          294
+        </td>
+        <td>
+          3530
+          -
+          3563
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.speed_=
+        </td>
+        <td style="background: #AEF1AE">
+          this.speed_=(it.unibo.osmos.redux.ecs.components.SpeedComponent.apply(x, y))
+        </td>
+      </tr><tr>
+        <td>
+          131
+        </td>
+        <td>
+          293
+        </td>
+        <td>
+          3543
+          -
+          3563
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpeedComponent.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.components.SpeedComponent.apply(x, y)
+        </td>
+      </tr><tr>
+        <td>
+          141
+        </td>
+        <td>
+          295
+        </td>
+        <td>
+          3752
+          -
+          3773
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpeedComponent.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.components.SpeedComponent.apply(speed)
+        </td>
+      </tr><tr>
+        <td>
+          141
+        </td>
+        <td>
+          296
+        </td>
+        <td>
+          3739
+          -
+          3773
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.speed_=
+        </td>
+        <td style="background: #AEF1AE">
+          this.speed_=(it.unibo.osmos.redux.ecs.components.SpeedComponent.apply(speed))
+        </td>
+      </tr><tr>
+        <td>
+          151
+        </td>
+        <td>
+          298
+        </td>
+        <td>
+          3957
+          -
+          3982
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.speed_=
+        </td>
+        <td style="background: #AEF1AE">
+          this.speed_=(speed.copy())
+        </td>
+      </tr><tr>
+        <td>
+          151
+        </td>
+        <td>
+          297
+        </td>
+        <td>
+          3970
+          -
+          3982
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpeedComponent.copy
+        </td>
+        <td style="background: #AEF1AE">
+          speed.copy()
+        </td>
+      </tr><tr>
+        <td>
+          161
+        </td>
+        <td>
+          300
+        </td>
+        <td>
+          4170
+          -
+          4223
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.specificWeight_=
+        </td>
+        <td style="background: #AEF1AE">
+          this.specificWeight_=(it.unibo.osmos.redux.ecs.components.SpecificWeightComponent.apply(weight))
+        </td>
+      </tr><tr>
+        <td>
+          161
+        </td>
+        <td>
+          299
+        </td>
+        <td>
+          4192
+          -
+          4223
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpecificWeightComponent.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.components.SpecificWeightComponent.apply(weight)
+        </td>
+      </tr><tr>
+        <td>
+          171
+        </td>
+        <td>
+          301
+        </td>
+        <td>
+          4469
+          -
+          4482
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpecificWeightComponent.copy
+        </td>
+        <td style="background: #AEF1AE">
+          weight.copy()
+        </td>
+      </tr><tr>
+        <td>
+          171
+        </td>
+        <td>
+          302
+        </td>
+        <td>
+          4447
+          -
+          4482
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.specificWeight_=
+        </td>
+        <td style="background: #AEF1AE">
+          this.specificWeight_=(weight.copy())
+        </td>
+      </tr><tr>
+        <td>
+          181
+        </td>
+        <td>
+          304
+        </td>
+        <td>
+          4688
+          -
+          4729
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.spawner_=
+        </td>
+        <td style="background: #AEF1AE">
+          this.spawner_=(it.unibo.osmos.redux.ecs.components.SpawnerComponent.apply(canSpawn))
+        </td>
+      </tr><tr>
+        <td>
+          181
+        </td>
+        <td>
+          303
+        </td>
+        <td>
+          4703
+          -
+          4729
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpawnerComponent.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.components.SpawnerComponent.apply(canSpawn)
+        </td>
+      </tr><tr>
+        <td>
+          191
+        </td>
+        <td>
+          306
+        </td>
+        <td>
+          4925
+          -
+          4954
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.spawner_=
+        </td>
+        <td style="background: #F0ADAD">
+          this.spawner_=(spawner.copy())
+        </td>
+      </tr><tr>
+        <td>
+          191
+        </td>
+        <td>
+          305
+        </td>
+        <td>
+          4940
+          -
+          4954
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpawnerComponent.copy
+        </td>
+        <td style="background: #F0ADAD">
+          spawner.copy()
+        </td>
+      </tr><tr>
+        <td>
+          199
+        </td>
+        <td>
+          307
+        </td>
+        <td>
+          5077
+          -
+          5092
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.buildBaseCell
+        </td>
+        <td style="background: #AEF1AE">
+          CellBuilder.this.buildBaseCell()
+        </td>
+      </tr><tr>
+        <td>
+          206
+        </td>
+        <td>
+          308
+        </td>
+        <td>
+          5256
+          -
+          5276
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.checkMultipleBuild
+        </td>
+        <td style="background: #AEF1AE">
+          CellBuilder.this.checkMultipleBuild()
+        </td>
+      </tr><tr>
+        <td>
+          207
+        </td>
+        <td>
+          313
+        </td>
+        <td>
+          5339
+          -
+          5344
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.speed
+        </td>
+        <td style="background: #AEF1AE">
+          CellBuilder.this.speed
+        </td>
+      </tr><tr>
+        <td>
+          207
+        </td>
+        <td>
+          316
+        </td>
+        <td>
+          5281
+          -
+          5366
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellEntity.apply
+        </td>
+        <td style="background: #AEF1AE">
+          CellEntity.apply(CellBuilder.this.acceleration, CellBuilder.this.collidable, CellBuilder.this.dimension, CellBuilder.this.position, CellBuilder.this.speed, CellBuilder.this.visible, CellBuilder.this.entityType)
+        </td>
+      </tr><tr>
+        <td>
+          207
+        </td>
+        <td>
+          310
+        </td>
+        <td>
+          5306
+          -
+          5316
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.collidable
+        </td>
+        <td style="background: #AEF1AE">
+          CellBuilder.this.collidable
+        </td>
+      </tr><tr>
+        <td>
+          207
+        </td>
+        <td>
+          309
+        </td>
+        <td>
+          5292
+          -
+          5304
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.acceleration
+        </td>
+        <td style="background: #AEF1AE">
+          CellBuilder.this.acceleration
+        </td>
+      </tr><tr>
+        <td>
+          207
+        </td>
+        <td>
+          312
+        </td>
+        <td>
+          5329
+          -
+          5337
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.position
+        </td>
+        <td style="background: #AEF1AE">
+          CellBuilder.this.position
+        </td>
+      </tr><tr>
+        <td>
+          207
+        </td>
+        <td>
+          315
+        </td>
+        <td>
+          5355
+          -
+          5365
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.entityType
+        </td>
+        <td style="background: #AEF1AE">
+          CellBuilder.this.entityType
+        </td>
+      </tr><tr>
+        <td>
+          207
+        </td>
+        <td>
+          311
+        </td>
+        <td>
+          5318
+          -
+          5327
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.dimension
+        </td>
+        <td style="background: #AEF1AE">
+          CellBuilder.this.dimension
+        </td>
+      </tr><tr>
+        <td>
+          207
+        </td>
+        <td>
+          314
+        </td>
+        <td>
+          5346
+          -
+          5353
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.visible
+        </td>
+        <td style="background: #AEF1AE">
+          CellBuilder.this.visible
+        </td>
+      </tr><tr>
+        <td>
+          212
+        </td>
+        <td>
+          317
+        </td>
+        <td>
+          5482
+          -
+          5499
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.multipleBuildFlag
+        </td>
+        <td style="background: #AEF1AE">
+          CellBuilder.this.multipleBuildFlag
+        </td>
+      </tr><tr>
+        <td>
+          213
+        </td>
+        <td>
+          319
+        </td>
+        <td>
+          5509
+          -
+          5592
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(&quot;The builder cannot build multiple times.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          213
+        </td>
+        <td>
+          318
+        </td>
+        <td>
+          5509
+          -
+          5592
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(&quot;The builder cannot build multiple times.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          215
+        </td>
+        <td>
+          321
+        </td>
+        <td>
+          5612
+          -
+          5636
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.multipleBuildFlag_=
+        </td>
+        <td style="background: #AEF1AE">
+          CellBuilder.this.multipleBuildFlag_=(true)
+        </td>
+      </tr><tr>
+        <td>
+          215
+        </td>
+        <td>
+          320
+        </td>
+        <td>
+          5612
+          -
+          5636
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.multipleBuildFlag_=
+        </td>
+        <td style="background: #AEF1AE">
+          CellBuilder.this.multipleBuildFlag_=(true)
+        </td>
+      </tr><tr>
+        <td>
+          224
+        </td>
+        <td>
+          322
+        </td>
+        <td>
+          5796
+          -
+          5817
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityType.Attractive
+        </td>
+        <td style="background: #AEF1AE">
+          EntityType.Attractive
+        </td>
+      </tr><tr>
+        <td>
+          224
+        </td>
+        <td>
+          325
+        </td>
+        <td>
+          5790
+          -
+          5872
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #AEF1AE">
+          scala.collection.Seq.apply[it.unibo.osmos.redux.ecs.entities.EntityType.Value](EntityType.Attractive, EntityType.Repulsive).contains[it.unibo.osmos.redux.ecs.entities.EntityType.Value](CellBuilder.this.entityType.typeEntity).unary_!
+        </td>
+      </tr><tr>
+        <td>
+          224
+        </td>
+        <td>
+          330
+        </td>
+        <td>
+          5786
+          -
+          5786
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          224
+        </td>
+        <td>
+          324
+        </td>
+        <td>
+          5850
+          -
+          5871
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.TypeComponent.typeEntity
+        </td>
+        <td style="background: #AEF1AE">
+          CellBuilder.this.entityType.typeEntity
+        </td>
+      </tr><tr>
+        <td>
+          224
+        </td>
+        <td>
+          323
+        </td>
+        <td>
+          5819
+          -
+          5839
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityType.Repulsive
+        </td>
+        <td style="background: #AEF1AE">
+          EntityType.Repulsive
+        </td>
+      </tr><tr>
+        <td>
+          224
+        </td>
+        <td>
+          329
+        </td>
+        <td>
+          5786
+          -
+          5786
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          225
+        </td>
+        <td>
+          328
+        </td>
+        <td>
+          5882
+          -
+          5919
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.withEntityType
+        </td>
+        <td style="background: #AEF1AE">
+          CellBuilder.this.withEntityType(EntityType.Attractive)
+        </td>
+      </tr><tr>
+        <td>
+          225
+        </td>
+        <td>
+          327
+        </td>
+        <td>
+          5882
+          -
+          5919
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.withEntityType
+        </td>
+        <td style="background: #AEF1AE">
+          CellBuilder.this.withEntityType(EntityType.Attractive)
+        </td>
+      </tr><tr>
+        <td>
+          225
+        </td>
+        <td>
+          326
+        </td>
+        <td>
+          5897
+          -
+          5918
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityType.Attractive
+        </td>
+        <td style="background: #AEF1AE">
+          EntityType.Attractive
+        </td>
+      </tr><tr>
+        <td>
+          227
+        </td>
+        <td>
+          331
+        </td>
+        <td>
+          5948
+          -
+          5963
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.buildBaseCell
+        </td>
+        <td style="background: #AEF1AE">
+          CellBuilder.this.buildBaseCell()
+        </td>
+      </tr><tr>
+        <td>
+          227
+        </td>
+        <td>
+          333
+        </td>
+        <td>
+          5930
+          -
+          5980
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.GravityCellEntity.apply
+        </td>
+        <td style="background: #AEF1AE">
+          GravityCellEntity.apply(CellBuilder.this.buildBaseCell(), CellBuilder.this.specificWeight)
+        </td>
+      </tr><tr>
+        <td>
+          227
+        </td>
+        <td>
+          332
+        </td>
+        <td>
+          5965
+          -
+          5979
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.specificWeight
+        </td>
+        <td style="background: #AEF1AE">
+          CellBuilder.this.specificWeight
+        </td>
+      </tr><tr>
+        <td>
+          236
+        </td>
+        <td>
+          334
+        </td>
+        <td>
+          6192
+          -
+          6217
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.TypeComponent.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.components.TypeComponent.apply(entityType)
+        </td>
+      </tr><tr>
+        <td>
+          236
+        </td>
+        <td>
+          335
+        </td>
+        <td>
+          6174
+          -
+          6217
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.entityType_=
+        </td>
+        <td style="background: #AEF1AE">
+          this.entityType_=(it.unibo.osmos.redux.ecs.components.TypeComponent.apply(entityType))
+        </td>
+      </tr><tr>
+        <td>
+          245
+        </td>
+        <td>
+          337
+        </td>
+        <td>
+          6366
+          -
+          6403
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.withEntityType
+        </td>
+        <td style="background: #AEF1AE">
+          CellBuilder.this.withEntityType(EntityType.Controlled)
+        </td>
+      </tr><tr>
+        <td>
+          245
+        </td>
+        <td>
+          336
+        </td>
+        <td>
+          6381
+          -
+          6402
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityType.Controlled
+        </td>
+        <td style="background: #AEF1AE">
+          EntityType.Controlled
+        </td>
+      </tr><tr>
+        <td>
+          246
+        </td>
+        <td>
+          340
+        </td>
+        <td>
+          6408
+          -
+          6450
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.PlayerCellEntity.apply
+        </td>
+        <td style="background: #AEF1AE">
+          PlayerCellEntity.apply(CellBuilder.this.buildBaseCell(), CellBuilder.this.spawner)
+        </td>
+      </tr><tr>
+        <td>
+          246
+        </td>
+        <td>
+          339
+        </td>
+        <td>
+          6442
+          -
+          6449
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.spawner
+        </td>
+        <td style="background: #AEF1AE">
+          CellBuilder.this.spawner
+        </td>
+      </tr><tr>
+        <td>
+          246
+        </td>
+        <td>
+          338
+        </td>
+        <td>
+          6425
+          -
+          6440
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.buildBaseCell
+        </td>
+        <td style="background: #AEF1AE">
+          CellBuilder.this.buildBaseCell()
+        </td>
+      </tr><tr>
+        <td>
+          254
+        </td>
+        <td>
+          342
+        </td>
+        <td>
+          6598
+          -
+          6633
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.withEntityType
+        </td>
+        <td style="background: #AEF1AE">
+          CellBuilder.this.withEntityType(EntityType.Sentient)
+        </td>
+      </tr><tr>
+        <td>
+          254
+        </td>
+        <td>
+          341
+        </td>
+        <td>
+          6613
+          -
+          6632
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityType.Sentient
+        </td>
+        <td style="background: #AEF1AE">
+          EntityType.Sentient
+        </td>
+      </tr><tr>
+        <td>
+          255
+        </td>
+        <td>
+          343
+        </td>
+        <td>
+          6657
+          -
+          6672
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.buildBaseCell
+        </td>
+        <td style="background: #AEF1AE">
+          CellBuilder.this.buildBaseCell()
+        </td>
+      </tr><tr>
+        <td>
+          255
+        </td>
+        <td>
+          345
+        </td>
+        <td>
+          6638
+          -
+          6682
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.SentientCellEntity.apply
+        </td>
+        <td style="background: #AEF1AE">
+          SentientCellEntity.apply(CellBuilder.this.buildBaseCell(), CellBuilder.this.spawner)
+        </td>
+      </tr><tr>
+        <td>
+          255
+        </td>
+        <td>
+          344
+        </td>
+        <td>
+          6674
+          -
+          6681
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.spawner
+        </td>
+        <td style="background: #AEF1AE">
+          CellBuilder.this.spawner
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

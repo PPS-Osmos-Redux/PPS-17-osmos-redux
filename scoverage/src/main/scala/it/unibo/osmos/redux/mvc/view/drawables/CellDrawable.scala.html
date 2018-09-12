@@ -1,0 +1,345 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/drawables/CellDrawable.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.drawables
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.mvc.view.ViewConstants.Window.{HalfWindowHeight, HalfWindowWidth}
+</span>4 <span style=''>import scalafx.scene.canvas.GraphicsContext
+</span>5 <span style=''>import scalafx.scene.image.Image
+</span>6 <span style=''>import scalafx.scene.paint.Color
+</span>7 <span style=''>
+</span>8 <span style=''>/** Drawable implementation that shows a cell on the screen
+</span>9 <span style=''>  *
+</span>10 <span style=''>  * @param image           the image
+</span>11 <span style=''>  * @param graphicsContext the GraphicContext on which the Image will be drawn on
+</span>12 <span style=''>  */
+</span>13 <span style=''>class CellDrawable(override val image: Image, override val graphicsContext: GraphicsContext) extends CircleDrawable(graphicsContext) with ImageDrawable {
+</span>14 <span style=''>
+</span>15 <span style=''>  /** Draws the circular image on the canvas
+</span>16 <span style=''>    *
+</span>17 <span style=''>    * @param dw    the drawable wrapper containing the drawable info
+</span>18 <span style=''>    * @param color the color of the circle
+</span>19 <span style=''>    */
+</span>20 <span style=''>  override def draw(dw: DrawableWrapper, color: Color): Unit = {
+</span>21 <span style=''>    </span><span style='background: #F0ADAD'>graphicsContext.stroke = color</span><span style=''>
+</span>22 <span style=''>    </span><span style='background: #F0ADAD'>graphicsContext.lineWidth = 2</span><span style=''>
+</span>23 <span style=''>    val xPosition = </span><span style='background: #F0ADAD'>dw.center.x - dw.radius + HalfWindowWidth</span><span style=''>
+</span>24 <span style=''>    val yPosition = </span><span style='background: #F0ADAD'>dw.center.y - dw.radius + HalfWindowHeight</span><span style=''>
+</span>25 <span style=''>    val diameter = </span><span style='background: #F0ADAD'>dw.radius * 2</span><span style=''>
+</span>26 <span style=''>    </span><span style='background: #F0ADAD'>graphicsContext.fillOval(xPosition, yPosition, diameter, diameter)</span><span style=''>
+</span>27 <span style=''>    </span><span style='background: #F0ADAD'>graphicsContext.strokeOval(xPosition, yPosition, diameter, diameter)</span><span style=''>
+</span>28 <span style=''>    </span><span style='background: #F0ADAD'>graphicsContext.drawImage(image, xPosition, yPosition, diameter, diameter)</span><span style=''>
+</span>29 <span style=''>  }
+</span>30 <span style=''>
+</span>31 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          4324
+        </td>
+        <td>
+          836
+          -
+          866
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.canvas.GraphicsContext.stroke_=
+        </td>
+        <td style="background: #F0ADAD">
+          CellDrawable.this.graphicsContext.stroke_=(color)
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          4325
+        </td>
+        <td>
+          871
+          -
+          900
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.canvas.GraphicsContext.lineWidth_=
+        </td>
+        <td style="background: #F0ADAD">
+          CellDrawable.this.graphicsContext.lineWidth_=(2.0)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          4327
+        </td>
+        <td>
+          947
+          -
+          962
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          4326
+        </td>
+        <td>
+          935
+          -
+          944
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper.radius
+        </td>
+        <td style="background: #F0ADAD">
+          dw.radius
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          4328
+        </td>
+        <td>
+          921
+          -
+          962
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.+
+        </td>
+        <td style="background: #F0ADAD">
+          dw.center.x.-(dw.radius).+(it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth)
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          4330
+        </td>
+        <td>
+          1009
+          -
+          1025
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowHeight
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowHeight
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          4329
+        </td>
+        <td>
+          997
+          -
+          1006
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper.radius
+        </td>
+        <td style="background: #F0ADAD">
+          dw.radius
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          4331
+        </td>
+        <td>
+          983
+          -
+          1025
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.+
+        </td>
+        <td style="background: #F0ADAD">
+          dw.center.y.-(dw.radius).+(it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowHeight)
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          4332
+        </td>
+        <td>
+          1045
+          -
+          1058
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.*
+        </td>
+        <td style="background: #F0ADAD">
+          dw.radius.*(2)
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          4333
+        </td>
+        <td>
+          1063
+          -
+          1129
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.canvas.GraphicsContext.fillOval
+        </td>
+        <td style="background: #F0ADAD">
+          CellDrawable.this.graphicsContext.fillOval(xPosition, yPosition, diameter, diameter)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          4334
+        </td>
+        <td>
+          1134
+          -
+          1202
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.canvas.GraphicsContext.strokeOval
+        </td>
+        <td style="background: #F0ADAD">
+          CellDrawable.this.graphicsContext.strokeOval(xPosition, yPosition, diameter, diameter)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          4336
+        </td>
+        <td>
+          1207
+          -
+          1281
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.canvas.GraphicsContext.drawImage
+        </td>
+        <td style="background: #F0ADAD">
+          CellDrawable.this.graphicsContext.drawImage(CellDrawable.this.image, xPosition, yPosition, diameter, diameter)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          4335
+        </td>
+        <td>
+          1233
+          -
+          1238
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.CellDrawable.image
+        </td>
+        <td style="background: #F0ADAD">
+          CellDrawable.this.image
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

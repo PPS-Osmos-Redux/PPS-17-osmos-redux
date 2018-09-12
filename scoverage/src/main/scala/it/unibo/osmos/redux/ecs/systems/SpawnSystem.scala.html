@@ -1,0 +1,148 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/ecs/systems/SpawnSystem.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.systems
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.ecs.entities._
+</span>4 <span style=''>import it.unibo.osmos.redux.ecs.entities.properties.basic.Spawner
+</span>5 <span style=''>
+</span>6 <span style=''>/** System managing the spawn of new entities */
+</span>7 <span style=''>case class SpawnSystem() extends AbstractSystem[Spawner] {
+</span>8 <span style=''>
+</span>9 <span style=''>  override def update(): Unit = {
+</span>10 <span style=''>    </span><span style='background: #AEF1AE'>entities foreach (e =&gt; {
+</span>11 <span style=''></span><span style='background: #AEF1AE'>      e.getSpawnerComponent.dequeueActions() foreach (a =&gt; {
+</span>12 <span style=''></span><span style='background: #AEF1AE'>        EntityManager.add(
+</span>13 <span style=''></span><span style='background: #AEF1AE'>          CellBuilder()
+</span>14 <span style=''></span><span style='background: #AEF1AE'>            .collidable(true)
+</span>15 <span style=''></span><span style='background: #AEF1AE'>            .visible(true)
+</span>16 <span style=''></span><span style='background: #AEF1AE'>            .withSpeed(a.speed)
+</span>17 <span style=''></span><span style='background: #AEF1AE'>            .withDimension(a.dimension)
+</span>18 <span style=''></span><span style='background: #AEF1AE'>            .withPosition(a.position)
+</span>19 <span style=''></span><span style='background: #AEF1AE'>            .buildCellEntity())
+</span>20 <span style=''></span><span style='background: #AEF1AE'>      })
+</span>21 <span style=''></span><span style='background: #AEF1AE'>    })</span><span style=''>
+</span>22 <span style=''>  }
+</span>23 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          850
+        </td>
+        <td>
+          299
+          -
+          650
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.TraversableForwarder.foreach
+        </td>
+        <td style="background: #AEF1AE">
+          SpawnSystem.this.entities.foreach[Unit](((e: it.unibo.osmos.redux.ecs.entities.properties.basic.Spawner) =&gt; e.getSpawnerComponent.dequeueActions().foreach[Unit](((a: it.unibo.osmos.redux.ecs.components.SpawnAction) =&gt; it.unibo.osmos.redux.ecs.entities.EntityManager.add(it.unibo.osmos.redux.ecs.entities.CellBuilder.apply().collidable(true).visible(true).withSpeed(a.speed).withDimension(a.dimension).withPosition(a.position).buildCellEntity())))))
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          849
+        </td>
+        <td>
+          330
+          -
+          643
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.foreach
+        </td>
+        <td style="background: #AEF1AE">
+          e.getSpawnerComponent.dequeueActions().foreach[Unit](((a: it.unibo.osmos.redux.ecs.components.SpawnAction) =&gt; it.unibo.osmos.redux.ecs.entities.EntityManager.add(it.unibo.osmos.redux.ecs.entities.CellBuilder.apply().collidable(true).visible(true).withSpeed(a.speed).withDimension(a.dimension).withPosition(a.position).buildCellEntity())))
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          848
+        </td>
+        <td>
+          393
+          -
+          634
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityManager.add
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.entities.EntityManager.add(it.unibo.osmos.redux.ecs.entities.CellBuilder.apply().collidable(true).visible(true).withSpeed(a.speed).withDimension(a.dimension).withPosition(a.position).buildCellEntity())
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          847
+        </td>
+        <td>
+          422
+          -
+          633
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.buildCellEntity
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.apply().collidable(true).visible(true).withSpeed(a.speed).withDimension(a.dimension).withPosition(a.position).buildCellEntity()
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

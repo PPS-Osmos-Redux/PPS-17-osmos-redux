@@ -1,0 +1,484 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/components/multiplayer/User.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.components.multiplayer
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.multiplayer.players.Player
+</span>4 <span style=''>import scalafx.beans.property.{BooleanProperty, IntegerProperty, StringProperty}
+</span>5 <span style=''>
+</span>6 <span style=''>/** User class
+</span>7 <span style=''>  *
+</span>8 <span style=''>  * @param username the username
+</span>9 <span style=''>  * @param ip       the ip
+</span>10 <span style=''>  * @param port     the port
+</span>11 <span style=''>  * @param isServer true if the user is a server, false if it's a client
+</span>12 <span style=''>  */
+</span>13 <span style=''>case class User(username: String, ip: String = &quot;&quot;, port: Int = 0, isServer: Boolean) {
+</span>14 <span style=''>
+</span>15 <span style=''>  /** Secondary constructor
+</span>16 <span style=''>    *
+</span>17 <span style=''>    * @param player   The BasicPlayer where to get user info from
+</span>18 <span style=''>    * @param isServer true if the user is a server, false if it's a client
+</span>19 <span style=''>    * @return the user
+</span>20 <span style=''>    */
+</span>21 <span style=''>  def this(player: Player, isServer: Boolean) = </span><span style='background: #F0ADAD'>this(player.getUsername, player.getAddress, player.getPort, isServer)</span><span style=''>
+</span>22 <span style=''>
+</span>23 <span style=''>  /** This method return a bindable version of the User
+</span>24 <span style=''>    *
+</span>25 <span style=''>    * @return the same user but with bindable properties
+</span>26 <span style=''>    */
+</span>27 <span style=''>  def getUserWithProperty: UserWithProperties = </span><span style='background: #F0ADAD'>UserWithProperties(StringProperty(username), StringProperty(ip), IntegerProperty(port), BooleanProperty(isServer))</span><span style=''>
+</span>28 <span style=''>}
+</span>29 <span style=''>
+</span>30 <span style=''>/** User class with properties as base fields
+</span>31 <span style=''>  *
+</span>32 <span style=''>  * @param username the username
+</span>33 <span style=''>  * @param ip       the ip
+</span>34 <span style=''>  * @param port     the port
+</span>35 <span style=''>  * @param isServer true if the user is a server, false if it's a client
+</span>36 <span style=''>  */
+</span>37 <span style=''>case class UserWithProperties(username: StringProperty, ip: StringProperty = StringProperty(&quot;&quot;), port: IntegerProperty = IntegerProperty(0), isServer: BooleanProperty) {
+</span>38 <span style=''>
+</span>39 <span style=''>  /** This method returns the User
+</span>40 <span style=''>    *
+</span>41 <span style=''>    * @return the same user but without the bindable properties
+</span>42 <span style=''>    */
+</span>43 <span style=''>  def getUser: User = </span><span style='background: #F0ADAD'>User(username.value, ip.value, port.value, isServer.value)</span><span style=''>
+</span>44 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          4222
+        </td>
+        <td>
+          751
+          -
+          768
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.Player.getAddress
+        </td>
+        <td style="background: #F0ADAD">
+          player.getAddress
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          4225
+        </td>
+        <td>
+          726
+          -
+          726
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          4221
+        </td>
+        <td>
+          731
+          -
+          749
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.Player.getUsername
+        </td>
+        <td style="background: #F0ADAD">
+          player.getUsername
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          4224
+        </td>
+        <td>
+          726
+          -
+          795
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.multiplayer.User.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          User.this.&lt;init&gt;(player.getUsername, player.getAddress, player.getPort, isServer)
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          4223
+        </td>
+        <td>
+          770
+          -
+          784
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.Player.getPort
+        </td>
+        <td style="background: #F0ADAD">
+          player.getPort
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          4228
+        </td>
+        <td>
+          1031
+          -
+          1033
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.multiplayer.User.ip
+        </td>
+        <td style="background: #F0ADAD">
+          User.this.ip
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          4231
+        </td>
+        <td>
+          1036
+          -
+          1057
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.IntegerProperty.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.beans.property.IntegerProperty.apply(User.this.port)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          4234
+        </td>
+        <td>
+          971
+          -
+          1085
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.multiplayer.UserWithProperties.apply
+        </td>
+        <td style="background: #F0ADAD">
+          UserWithProperties.apply(scalafx.beans.property.StringProperty.apply(User.this.username), scalafx.beans.property.StringProperty.apply(User.this.ip), scalafx.beans.property.IntegerProperty.apply(User.this.port), scalafx.beans.property.BooleanProperty.apply(User.this.isServer))
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          4227
+        </td>
+        <td>
+          990
+          -
+          1014
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.StringProperty.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.beans.property.StringProperty.apply(User.this.username)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          4230
+        </td>
+        <td>
+          1052
+          -
+          1056
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.multiplayer.User.port
+        </td>
+        <td style="background: #F0ADAD">
+          User.this.port
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          4233
+        </td>
+        <td>
+          1059
+          -
+          1084
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.BooleanProperty.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.beans.property.BooleanProperty.apply(User.this.isServer)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          4232
+        </td>
+        <td>
+          1075
+          -
+          1083
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.multiplayer.User.isServer
+        </td>
+        <td style="background: #F0ADAD">
+          User.this.isServer
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          4226
+        </td>
+        <td>
+          1005
+          -
+          1013
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.multiplayer.User.username
+        </td>
+        <td style="background: #F0ADAD">
+          User.this.username
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          4229
+        </td>
+        <td>
+          1016
+          -
+          1034
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.StringProperty.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.beans.property.StringProperty.apply(User.this.ip)
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          4237
+        </td>
+        <td>
+          1642
+          -
+          1652
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyIntegerProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          UserWithProperties.this.port.value
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          4236
+        </td>
+        <td>
+          1632
+          -
+          1640
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyStringProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          UserWithProperties.this.ip.value
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          4239
+        </td>
+        <td>
+          1611
+          -
+          1669
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.multiplayer.User.apply
+        </td>
+        <td style="background: #F0ADAD">
+          User.apply(UserWithProperties.this.username.value, UserWithProperties.this.ip.value, UserWithProperties.this.port.value, UserWithProperties.this.isServer.value)
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          4235
+        </td>
+        <td>
+          1616
+          -
+          1630
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyStringProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          UserWithProperties.this.username.value
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          4238
+        </td>
+        <td>
+          1654
+          -
+          1668
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyBooleanProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          UserWithProperties.this.isServer.value
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

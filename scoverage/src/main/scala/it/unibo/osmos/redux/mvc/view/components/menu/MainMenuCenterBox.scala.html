@@ -1,0 +1,691 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/components/menu/MainMenuCenterBox.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.components.menu
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.mvc.view.components.custom.StyledButton
+</span>4 <span style=''>import scalafx.geometry.Pos
+</span>5 <span style=''>import scalafx.scene.layout.VBox
+</span>6 <span style=''>
+</span>7 <span style=''>
+</span>8 <span style=''>/** Center menu shown in MainMenu
+</span>9 <span style=''>  *
+</span>10 <span style=''>  * @param listener the menu listener
+</span>11 <span style=''>  */
+</span>12 <span style=''>class MainMenuCenterBox(val listener: MainMenuCenterBoxListener) extends VBox(20.0) {
+</span>13 <span style=''>
+</span>14 <span style=''>  </span><span style='background: #F0ADAD'>alignment = Pos.Center</span><span style=''>
+</span>15 <span style=''>
+</span>16 <span style=''>  /** Single-Player button */
+</span>17 <span style=''>  private val singlePlayerButton = </span><span style='background: #F0ADAD'>new StyledButton(&quot;Single-Player&quot;)</span><span style=''>
+</span>18 <span style=''>  /** Multi-Player button */
+</span>19 <span style=''>  private val multiPlayerButton = </span><span style='background: #F0ADAD'>new StyledButton(&quot;Multi-Player&quot;)</span><span style=''>
+</span>20 <span style=''>  /** Editor button */
+</span>21 <span style=''>  private val levelEditorButton = </span><span style='background: #F0ADAD'>new StyledButton(&quot;Level Editor&quot;)</span><span style=''>
+</span>22 <span style=''>  /** Stats button */
+</span>23 <span style=''>  private val statsButton = </span><span style='background: #F0ADAD'>new StyledButton(&quot;Stats&quot;)</span><span style=''>
+</span>24 <span style=''>  /** Editor button */
+</span>25 <span style=''>  private val settingsButton = </span><span style='background: #F0ADAD'>new StyledButton(&quot;Settings&quot;)</span><span style=''>
+</span>26 <span style=''>  /** Exit button */
+</span>27 <span style=''>  private val exitButton = </span><span style='background: #F0ADAD'>new StyledButton(&quot;Exit&quot;)</span><span style=''>
+</span>28 <span style=''>
+</span>29 <span style=''>  </span><span style='background: #F0ADAD'>children = List(singlePlayerButton, multiPlayerButton, levelEditorButton, statsButton, settingsButton, exitButton)</span><span style=''>
+</span>30 <span style=''>
+</span>31 <span style=''>  </span><span style='background: #F0ADAD'>singlePlayerButton.onAction = _ =&gt; listener.onPlayClick()</span><span style=''>
+</span>32 <span style=''>  </span><span style='background: #F0ADAD'>multiPlayerButton.onAction = _ =&gt; listener.onMultiPlayerClick()</span><span style=''>
+</span>33 <span style=''>  </span><span style='background: #F0ADAD'>levelEditorButton.onAction = _ =&gt; listener.onEditorClick()</span><span style=''>
+</span>34 <span style=''>  </span><span style='background: #F0ADAD'>statsButton.onAction = _ =&gt; listener.onStatsClick()</span><span style=''>
+</span>35 <span style=''>  </span><span style='background: #F0ADAD'>settingsButton.onAction = _ =&gt; listener.onSettingsClick()</span><span style=''>
+</span>36 <span style=''>  </span><span style='background: #F0ADAD'>exitButton.onAction = _ =&gt; listener.onExitClick()</span><span style=''>
+</span>37 <span style=''>}
+</span>38 <span style=''>
+</span>39 <span style=''>/** Trait which gets notified when a MainMenuCenterBox event occurs */
+</span>40 <span style=''>trait MainMenuCenterBoxListener {
+</span>41 <span style=''>
+</span>42 <span style=''>  /** Called when the user clicks on the back to menu button */
+</span>43 <span style=''>  def backToMainMenu()
+</span>44 <span style=''>
+</span>45 <span style=''>  /** Called when the user clicks on the play button */
+</span>46 <span style=''>  def onPlayClick()
+</span>47 <span style=''>
+</span>48 <span style=''>  /** Called when the user clicks on the multiplayer button */
+</span>49 <span style=''>  def onMultiPlayerClick()
+</span>50 <span style=''>
+</span>51 <span style=''>  /** Called when the user clicks on the editor button */
+</span>52 <span style=''>  def onEditorClick()
+</span>53 <span style=''>
+</span>54 <span style=''>  /** Called when the user clicks on the stats button */
+</span>55 <span style=''>  def onStatsClick()
+</span>56 <span style=''>
+</span>57 <span style=''>  /** Called when the user clicks on the settings button */
+</span>58 <span style=''>  def onSettingsClick()
+</span>59 <span style=''>
+</span>60 <span style=''>  /** Called when the user clicks on the exit button */
+</span>61 <span style=''>  def onExitClick()
+</span>62 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          4189
+        </td>
+        <td>
+          356
+          -
+          378
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.delegate.AlignmentDelegate.alignment_=
+        </td>
+        <td style="background: #F0ADAD">
+          MainMenuCenterBox.this.alignment_=(scalafx.geometry.Pos.Center)
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          4188
+        </td>
+        <td>
+          368
+          -
+          378
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.geometry.Pos.Center
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.geometry.Pos.Center
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          4190
+        </td>
+        <td>
+          445
+          -
+          478
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.StyledButton.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.components.custom.StyledButton(&quot;Single-Player&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          4191
+        </td>
+        <td>
+          542
+          -
+          574
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.StyledButton.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.components.custom.StyledButton(&quot;Multi-Player&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          4192
+        </td>
+        <td>
+          632
+          -
+          664
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.StyledButton.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.components.custom.StyledButton(&quot;Level Editor&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          4193
+        </td>
+        <td>
+          715
+          -
+          740
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.StyledButton.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.components.custom.StyledButton(&quot;Stats&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          4194
+        </td>
+        <td>
+          795
+          -
+          823
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.StyledButton.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.components.custom.StyledButton(&quot;Settings&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          4195
+        </td>
+        <td>
+          872
+          -
+          896
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.StyledButton.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.components.custom.StyledButton(&quot;Exit&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          4198
+        </td>
+        <td>
+          955
+          -
+          972
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.menu.MainMenuCenterBox.levelEditorButton
+        </td>
+        <td style="background: #F0ADAD">
+          MainMenuCenterBox.this.levelEditorButton
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          4201
+        </td>
+        <td>
+          1003
+          -
+          1013
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.menu.MainMenuCenterBox.exitButton
+        </td>
+        <td style="background: #F0ADAD">
+          MainMenuCenterBox.this.exitButton
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          4200
+        </td>
+        <td>
+          987
+          -
+          1001
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.menu.MainMenuCenterBox.settingsButton
+        </td>
+        <td style="background: #F0ADAD">
+          MainMenuCenterBox.this.settingsButton
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          4203
+        </td>
+        <td>
+          900
+          -
+          1014
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Pane.children_=
+        </td>
+        <td style="background: #F0ADAD">
+          MainMenuCenterBox.this.children_=(scala.collection.immutable.List.apply[it.unibo.osmos.redux.mvc.view.components.custom.StyledButton](MainMenuCenterBox.this.singlePlayerButton, MainMenuCenterBox.this.multiPlayerButton, MainMenuCenterBox.this.levelEditorButton, MainMenuCenterBox.this.statsButton, MainMenuCenterBox.this.settingsButton, MainMenuCenterBox.this.exitButton))
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          4197
+        </td>
+        <td>
+          936
+          -
+          953
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.menu.MainMenuCenterBox.multiPlayerButton
+        </td>
+        <td style="background: #F0ADAD">
+          MainMenuCenterBox.this.multiPlayerButton
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          4199
+        </td>
+        <td>
+          974
+          -
+          985
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.menu.MainMenuCenterBox.statsButton
+        </td>
+        <td style="background: #F0ADAD">
+          MainMenuCenterBox.this.statsButton
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          4202
+        </td>
+        <td>
+          911
+          -
+          1014
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.immutable.List.apply[it.unibo.osmos.redux.mvc.view.components.custom.StyledButton](MainMenuCenterBox.this.singlePlayerButton, MainMenuCenterBox.this.multiPlayerButton, MainMenuCenterBox.this.levelEditorButton, MainMenuCenterBox.this.statsButton, MainMenuCenterBox.this.settingsButton, MainMenuCenterBox.this.exitButton)
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          4196
+        </td>
+        <td>
+          916
+          -
+          934
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.menu.MainMenuCenterBox.singlePlayerButton
+        </td>
+        <td style="background: #F0ADAD">
+          MainMenuCenterBox.this.singlePlayerButton
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          4204
+        </td>
+        <td>
+          1053
+          -
+          1075
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.menu.MainMenuCenterBoxListener.onPlayClick
+        </td>
+        <td style="background: #F0ADAD">
+          MainMenuCenterBox.this.listener.onPlayClick()
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          4205
+        </td>
+        <td>
+          1018
+          -
+          1075
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.ButtonBase.onAction_=
+        </td>
+        <td style="background: #F0ADAD">
+          MainMenuCenterBox.this.singlePlayerButton.onAction_=(((x$1: javafx.event.ActionEvent) =&gt; MainMenuCenterBox.this.listener.onPlayClick()))
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          4207
+        </td>
+        <td>
+          1078
+          -
+          1141
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.ButtonBase.onAction_=
+        </td>
+        <td style="background: #F0ADAD">
+          MainMenuCenterBox.this.multiPlayerButton.onAction_=(((x$2: javafx.event.ActionEvent) =&gt; MainMenuCenterBox.this.listener.onMultiPlayerClick()))
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          4206
+        </td>
+        <td>
+          1112
+          -
+          1141
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.menu.MainMenuCenterBoxListener.onMultiPlayerClick
+        </td>
+        <td style="background: #F0ADAD">
+          MainMenuCenterBox.this.listener.onMultiPlayerClick()
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          4209
+        </td>
+        <td>
+          1144
+          -
+          1202
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.ButtonBase.onAction_=
+        </td>
+        <td style="background: #F0ADAD">
+          MainMenuCenterBox.this.levelEditorButton.onAction_=(((x$3: javafx.event.ActionEvent) =&gt; MainMenuCenterBox.this.listener.onEditorClick()))
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          4208
+        </td>
+        <td>
+          1178
+          -
+          1202
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.menu.MainMenuCenterBoxListener.onEditorClick
+        </td>
+        <td style="background: #F0ADAD">
+          MainMenuCenterBox.this.listener.onEditorClick()
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          4210
+        </td>
+        <td>
+          1233
+          -
+          1256
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.menu.MainMenuCenterBoxListener.onStatsClick
+        </td>
+        <td style="background: #F0ADAD">
+          MainMenuCenterBox.this.listener.onStatsClick()
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          4211
+        </td>
+        <td>
+          1205
+          -
+          1256
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.ButtonBase.onAction_=
+        </td>
+        <td style="background: #F0ADAD">
+          MainMenuCenterBox.this.statsButton.onAction_=(((x$4: javafx.event.ActionEvent) =&gt; MainMenuCenterBox.this.listener.onStatsClick()))
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          4213
+        </td>
+        <td>
+          1259
+          -
+          1316
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.ButtonBase.onAction_=
+        </td>
+        <td style="background: #F0ADAD">
+          MainMenuCenterBox.this.settingsButton.onAction_=(((x$5: javafx.event.ActionEvent) =&gt; MainMenuCenterBox.this.listener.onSettingsClick()))
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          4212
+        </td>
+        <td>
+          1290
+          -
+          1316
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.menu.MainMenuCenterBoxListener.onSettingsClick
+        </td>
+        <td style="background: #F0ADAD">
+          MainMenuCenterBox.this.listener.onSettingsClick()
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          4215
+        </td>
+        <td>
+          1319
+          -
+          1368
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.ButtonBase.onAction_=
+        </td>
+        <td style="background: #F0ADAD">
+          MainMenuCenterBox.this.exitButton.onAction_=(((x$6: javafx.event.ActionEvent) =&gt; MainMenuCenterBox.this.listener.onExitClick()))
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          4214
+        </td>
+        <td>
+          1346
+          -
+          1368
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.menu.MainMenuCenterBoxListener.onExitClick
+        </td>
+        <td style="background: #F0ADAD">
+          MainMenuCenterBox.this.listener.onExitClick()
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

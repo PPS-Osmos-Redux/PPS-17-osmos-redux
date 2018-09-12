@@ -1,0 +1,604 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/ecs/systems/sentientRule/EscapeFromEnemiesRule.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.systems.sentientRule
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.ecs.entities.EntityType
+</span>4 <span style=''>import it.unibo.osmos.redux.ecs.entities.properties.composed.{SentientEnemyProperty, SentientProperty}
+</span>5 <span style=''>import it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils._
+</span>6 <span style=''>import it.unibo.osmos.redux.utils.Constants.Sentient._
+</span>7 <span style=''>import it.unibo.osmos.redux.utils.{MathUtils, Vector}
+</span>8 <span style=''>
+</span>9 <span style=''>import scala.collection.mutable.ListBuffer
+</span>10 <span style=''>
+</span>11 <span style=''>/** Rule to compute the acceleration to run away from enemies
+</span>12 <span style=''>  *
+</span>13 <span style=''>  * @param enemies list of possible enemies
+</span>14 <span style=''>  */
+</span>15 <span style=''>case class EscapeFromEnemiesRule(enemies: ListBuffer[SentientEnemyProperty]) extends SentientRule {
+</span>16 <span style=''>
+</span>17 <span style=''>  /*min value of distance between the entity before divide their unitVector for distance,
+</span>18 <span style=''>    so the nearest entities have greater weight*/
+</span>19 <span style=''>  private val minValueOfDistance: Double = </span><span style='background: #AEF1AE'>1</span><span style=''>
+</span>20 <span style=''>
+</span>21 <span style=''>  override def computeRule(sentient: SentientProperty, previousAcceleration: Vector): Vector = {
+</span>22 <span style=''>    </span><span style='background: #AEF1AE'>escapeFromEnemies(sentient, findEnemies(sentient, enemies), previousAcceleration)</span><span style=''>
+</span>23 <span style=''>  }
+</span>24 <span style=''>
+</span>25 <span style=''>  /** search sentient enemies
+</span>26 <span style=''>    *
+</span>27 <span style=''>    * @param sentient sentient entity
+</span>28 <span style=''>    * @param enemies  list of all entities
+</span>29 <span style=''>    * @return list of sentient's enemies
+</span>30 <span style=''>    */
+</span>31 <span style=''>  private def findEnemies(sentient: SentientProperty, enemies: ListBuffer[SentientEnemyProperty]): List[SentientEnemyProperty] =
+</span>32 <span style=''>    </span><span style='background: #AEF1AE'>enemies.filter(e =&gt; e.getCollidableComponent.isCollidable &amp;&amp;
+</span>33 <span style=''></span><span style='background: #AEF1AE'>      (e.getTypeComponent.typeEntity == EntityType.AntiMatter ||
+</span>34 <span style=''></span><span style='background: #AEF1AE'>        sentient.getDimensionComponent.radius &lt; e.getDimensionComponent.radius)) toList</span><span style=''>
+</span>35 <span style=''>
+</span>36 <span style=''>  /** compute acceleration to run away from all enemies
+</span>37 <span style=''>    *
+</span>38 <span style=''>    * @param sentient sentient entity
+</span>39 <span style=''>    * @param enemies  list of enemies
+</span>40 <span style=''>    */
+</span>41 <span style=''>  private def escapeFromEnemies(sentient: SentientProperty, enemies: List[SentientEnemyProperty], previousAcceleration: Vector): Vector = {
+</span>42 <span style=''>    val actualSpeed = </span><span style='background: #AEF1AE'>sentient.getSpeedComponent.vector add previousAcceleration</span><span style=''>
+</span>43 <span style=''>    val desiredSeparation = </span><span style='background: #AEF1AE'>getDesiredSeparation(actualSpeed)</span><span style=''>
+</span>44 <span style=''>    </span><span style='background: #AEF1AE'>enemies.map(e =&gt; (e, computeDistance(sentient, e)))
+</span>45 <span style=''></span><span style='background: #AEF1AE'>      .filter(p =&gt; p._2 &lt; desiredSeparation)
+</span>46 <span style=''></span><span style='background: #AEF1AE'>      .shiftDistance(minValueOfDistance)
+</span>47 <span style=''></span><span style='background: #AEF1AE'>      .map(m =&gt; MathUtils.unitVector(sentient.getPositionComponent.point, m._1.getPositionComponent.point) divide m._2)
+</span>48 <span style=''></span><span style='background: #AEF1AE'>      .foldLeft((Vector.zero(), 1))((acc, i) =&gt; (acc._1 add ((i subtract acc._1) divide acc._2), acc._2 + 1))._1 normalized()</span><span style=''> match {
+</span>49 <span style=''>      case unitVectorDesiredVelocity if </span><span style='background: #AEF1AE'>unitVectorDesiredVelocity == Vector(0, 0)</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>Vector.zero()</span><span style=''>
+</span>50 <span style=''>      case unitVectorDesiredVelocity =&gt;
+</span>51 <span style=''>        </span><span style='background: #AEF1AE'>computeSteer(actualSpeed, unitVectorDesiredVelocity) multiply WeightOfEscapeAccelerationFromEnemies</span><span style=''>
+</span>52 <span style=''>    }
+</span>53 <span style=''>  }
+</span>54 <span style=''>
+</span>55 <span style=''>  private def computeDistance(sentient: SentientProperty, enemy: SentientEnemyProperty): Double = {
+</span>56 <span style=''>    val dist = </span><span style='background: #AEF1AE'>MathUtils.euclideanDistance(sentient.getPositionComponent, enemy.getPositionComponent)</span><span style=''>
+</span>57 <span style=''>    </span><span style='background: #AEF1AE'>dist - sentient.getDimensionComponent.radius - enemy.getDimensionComponent.radius</span><span style=''>
+</span>58 <span style=''>  }
+</span>59 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1056
+        </td>
+        <td>
+          832
+          -
+          833
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          1.0
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          1058
+        </td>
+        <td>
+          964
+          -
+          994
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.sentientRule.EscapeFromEnemiesRule.findEnemies
+        </td>
+        <td style="background: #AEF1AE">
+          EscapeFromEnemiesRule.this.findEnemies(sentient, EscapeFromEnemiesRule.this.enemies)
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          1057
+        </td>
+        <td>
+          986
+          -
+          993
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.sentientRule.EscapeFromEnemiesRule.enemies
+        </td>
+        <td style="background: #AEF1AE">
+          EscapeFromEnemiesRule.this.enemies
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          1059
+        </td>
+        <td>
+          936
+          -
+          1017
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.sentientRule.EscapeFromEnemiesRule.escapeFromEnemies
+        </td>
+        <td style="background: #AEF1AE">
+          EscapeFromEnemiesRule.this.escapeFromEnemies(sentient, EscapeFromEnemiesRule.this.findEnemies(sentient, EscapeFromEnemiesRule.this.enemies), previousAcceleration)
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          1064
+        </td>
+        <td>
+          1341
+          -
+          1526
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.&amp;&amp;
+        </td>
+        <td style="background: #AEF1AE">
+          e.getCollidableComponent.isCollidable.&amp;&amp;(e.getTypeComponent.typeEntity.==(it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter).||(sentient.getDimensionComponent.radius.&lt;(e.getDimensionComponent.radius)))
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          1060
+        </td>
+        <td>
+          1422
+          -
+          1443
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          1063
+        </td>
+        <td>
+          1389
+          -
+          1525
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.||
+        </td>
+        <td style="background: #AEF1AE">
+          e.getTypeComponent.typeEntity.==(it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter).||(sentient.getDimensionComponent.radius.&lt;(e.getDimensionComponent.radius))
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          1061
+        </td>
+        <td>
+          1495
+          -
+          1525
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.radius
+        </td>
+        <td style="background: #AEF1AE">
+          e.getDimensionComponent.radius
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          1065
+        </td>
+        <td>
+          1321
+          -
+          1534
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.mutable.ListBuffer.toList
+        </td>
+        <td style="background: #AEF1AE">
+          enemies.filter(((e: it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty) =&gt; e.getCollidableComponent.isCollidable.&amp;&amp;(e.getTypeComponent.typeEntity.==(it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter).||(sentient.getDimensionComponent.radius.&lt;(e.getDimensionComponent.radius))))).toList
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          1062
+        </td>
+        <td>
+          1455
+          -
+          1525
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.&lt;
+        </td>
+        <td style="background: #AEF1AE">
+          sentient.getDimensionComponent.radius.&lt;(e.getDimensionComponent.radius)
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          1066
+        </td>
+        <td>
+          1843
+          -
+          1901
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.add
+        </td>
+        <td style="background: #AEF1AE">
+          sentient.getSpeedComponent.vector.add(previousAcceleration)
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          1067
+        </td>
+        <td>
+          1930
+          -
+          1963
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.getDesiredSeparation
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.getDesiredSeparation(actualSpeed)
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          1068
+        </td>
+        <td>
+          1968
+          -
+          2351
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.normalized
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.PimpedList[it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty](enemies.map[(it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double), List[(it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)]](((e: it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty) =&gt; scala.Tuple2.apply[it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double](e, EscapeFromEnemiesRule.this.computeDistance(sentient, e))))(immutable.this.List.canBuildFrom[(it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)]).filter(((p: (it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)) =&gt; p._2.&lt;(desiredSeparation)))).shiftDistance(EscapeFromEnemiesRule.this.minValueOfDistance).map[it.unibo.osmos.redux.utils.Vector, List[it.unibo.osmos.redux.utils.Vector]](((m: (it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)) =&gt; it.unibo.osmos.redux.utils.MathUtils.unitVector(sentient.getPositionComponent.point, m._1.getPositionComponent.point).divide(m._2)))(immutable.this.List.canBuildFrom[it.unibo.osmos.redux.utils.Vector]).foldLeft[(it.unibo.osmos.redux.utils.Vector, Int)](scala.Tuple2.apply[it.unibo.osmos.redux.utils.Vector, Int](it.unibo.osmos.redux.utils.Vector.zero(), 1))(((acc: (it.unibo.osmos.redux.utils.Vector, Int), i: it.unibo.osmos.redux.utils.Vector) =&gt; scala.Tuple2.apply[it.unibo.osmos.redux.utils.Vector, Int](acc._1.add(i.subtract(acc._1).divide(acc._2.toDouble)), acc._2.+(1))))._1.normalized()
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          1070
+        </td>
+        <td>
+          2400
+          -
+          2441
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.==
+        </td>
+        <td style="background: #AEF1AE">
+          unitVectorDesiredVelocity.==(it.unibo.osmos.redux.utils.Vector.apply(0.0, 0.0))
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          1069
+        </td>
+        <td>
+          2429
+          -
+          2441
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Vector.apply(0.0, 0.0)
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          1071
+        </td>
+        <td>
+          2445
+          -
+          2458
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.zero
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Vector.zero()
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          1073
+        </td>
+        <td>
+          2507
+          -
+          2606
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.multiply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.computeSteer(actualSpeed, unitVectorDesiredVelocity).multiply(it.unibo.osmos.redux.utils.Constants.Sentient.WeightOfEscapeAccelerationFromEnemies)
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          1072
+        </td>
+        <td>
+          2569
+          -
+          2606
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.Sentient.WeightOfEscapeAccelerationFromEnemies
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Constants.Sentient.WeightOfEscapeAccelerationFromEnemies
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          1076
+        </td>
+        <td>
+          2733
+          -
+          2819
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.MathUtils.euclideanDistance
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.MathUtils.euclideanDistance(sentient.getPositionComponent, enemy.getPositionComponent)
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          1075
+        </td>
+        <td>
+          2792
+          -
+          2818
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Position.getPositionComponent
+        </td>
+        <td style="background: #AEF1AE">
+          enemy.getPositionComponent
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          1074
+        </td>
+        <td>
+          2761
+          -
+          2790
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Position.getPositionComponent
+        </td>
+        <td style="background: #AEF1AE">
+          sentient.getPositionComponent
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          1079
+        </td>
+        <td>
+          2824
+          -
+          2905
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #AEF1AE">
+          dist.-(sentient.getDimensionComponent.radius).-(enemy.getDimensionComponent.radius)
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          1078
+        </td>
+        <td>
+          2871
+          -
+          2905
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.radius
+        </td>
+        <td style="background: #AEF1AE">
+          enemy.getDimensionComponent.radius
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          1077
+        </td>
+        <td>
+          2831
+          -
+          2868
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.radius
+        </td>
+        <td style="background: #AEF1AE">
+          sentient.getDimensionComponent.radius
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

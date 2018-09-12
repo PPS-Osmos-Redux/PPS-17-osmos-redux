@@ -1,0 +1,379 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/components/level/LevelStateBox.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.components.level
+</span>2 <span style=''>
+</span>3 <span style=''>import scalafx.geometry.Insets
+</span>4 <span style=''>import scalafx.scene.control.Button
+</span>5 <span style=''>import scalafx.scene.layout.VBox
+</span>6 <span style=''>
+</span>7 <span style=''>/** Simple box to manage resume and exit events
+</span>8 <span style=''>  *
+</span>9 <span style=''>  * @param listener the LevelStateBoxListener
+</span>10 <span style=''>  * @param vSpacing the spacing between the elements
+</span>11 <span style=''>  */
+</span>12 <span style=''>class LevelStateBox(val listener: LevelStateBoxListener, val vSpacing: Double) extends VBox(vSpacing) {
+</span>13 <span style=''>  </span><span style='background: #F0ADAD'>padding = Insets(4.0)</span><span style=''>
+</span>14 <span style=''>  </span><span style='background: #F0ADAD'>visible = true</span><span style=''>
+</span>15 <span style=''>  </span><span style='background: #F0ADAD'>margin = Insets(30.0)</span><span style=''>
+</span>16 <span style=''>
+</span>17 <span style=''>  /** Resume button */
+</span>18 <span style=''>  private val resumeButton = </span><span style='background: #F0ADAD'>new</span><span style=''> Button(&quot;Resume&quot;) {
+</span>19 <span style=''>    </span><span style='background: #F0ADAD'>onAction = _ =&gt; listener.onResume()</span><span style=''>
+</span>20 <span style=''>  }
+</span>21 <span style=''>
+</span>22 <span style=''>  /** Exit button */
+</span>23 <span style=''>  private val exitButton = </span><span style='background: #F0ADAD'>new</span><span style=''> Button(&quot;Exit&quot;) {
+</span>24 <span style=''>    </span><span style='background: #F0ADAD'>onAction = _ =&gt; listener.onExit()</span><span style=''>
+</span>25 <span style=''>  }
+</span>26 <span style=''>
+</span>27 <span style=''>  </span><span style='background: #F0ADAD'>Seq(resumeButton, exitButton)</span><span style=''>
+</span>28 <span style=''>}
+</span>29 <span style=''>
+</span>30 <span style=''>/**
+</span>31 <span style=''>  * Trait which gets notified when a LevelStateBox event occurs
+</span>32 <span style=''>  */
+</span>33 <span style=''>trait LevelStateBoxListener {
+</span>34 <span style=''>
+</span>35 <span style=''>  /**
+</span>36 <span style=''>    * Called when the resume button is clicked
+</span>37 <span style=''>    */
+</span>38 <span style=''>  def onResume()
+</span>39 <span style=''>
+</span>40 <span style=''>  /**
+</span>41 <span style=''>    * Called when the exit button is clicked
+</span>42 <span style=''>    */
+</span>43 <span style=''>  def onExit()
+</span>44 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          4174
+        </td>
+        <td>
+          429
+          -
+          440
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.geometry.Insets.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.geometry.Insets.apply(4.0)
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          4175
+        </td>
+        <td>
+          419
+          -
+          440
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Region.padding_=
+        </td>
+        <td style="background: #F0ADAD">
+          LevelStateBox.this.padding_=(scalafx.geometry.Insets.apply(4.0))
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          4176
+        </td>
+        <td>
+          443
+          -
+          457
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.visible_=
+        </td>
+        <td style="background: #F0ADAD">
+          LevelStateBox.this.visible_=(true)
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          4177
+        </td>
+        <td>
+          469
+          -
+          481
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.geometry.Insets.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.geometry.Insets.apply(30.0)
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          4178
+        </td>
+        <td>
+          460
+          -
+          481
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.margin_=
+        </td>
+        <td style="background: #F0ADAD">
+          LevelStateBox.this.margin_=(scalafx.geometry.Insets.apply(30.0))
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          4181
+        </td>
+        <td>
+          535
+          -
+          538
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.level.LevelStateBox.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          4180
+        </td>
+        <td>
+          562
+          -
+          597
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.ButtonBase.onAction_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.onAction_=(((x$1: javafx.event.ActionEvent) =&gt; LevelStateBox.this.listener.onResume()))
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          4179
+        </td>
+        <td>
+          578
+          -
+          597
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.level.LevelStateBoxListener.onResume
+        </td>
+        <td style="background: #F0ADAD">
+          LevelStateBox.this.listener.onResume()
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          4184
+        </td>
+        <td>
+          651
+          -
+          654
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.level.LevelStateBox.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          4183
+        </td>
+        <td>
+          676
+          -
+          709
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.ButtonBase.onAction_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.onAction_=(((x$2: javafx.event.ActionEvent) =&gt; LevelStateBox.this.listener.onExit()))
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          4182
+        </td>
+        <td>
+          692
+          -
+          709
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.level.LevelStateBoxListener.onExit
+        </td>
+        <td style="background: #F0ADAD">
+          LevelStateBox.this.listener.onExit()
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          4186
+        </td>
+        <td>
+          735
+          -
+          745
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.level.LevelStateBox.exitButton
+        </td>
+        <td style="background: #F0ADAD">
+          LevelStateBox.this.exitButton
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          4185
+        </td>
+        <td>
+          721
+          -
+          733
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.level.LevelStateBox.resumeButton
+        </td>
+        <td style="background: #F0ADAD">
+          LevelStateBox.this.resumeButton
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          4187
+        </td>
+        <td>
+          717
+          -
+          746
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.Seq.apply[scalafx.scene.control.Button](LevelStateBox.this.resumeButton, LevelStateBox.this.exitButton)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

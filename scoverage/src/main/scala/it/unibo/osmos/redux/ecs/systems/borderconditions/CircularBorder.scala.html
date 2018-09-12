@@ -1,0 +1,2075 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/ecs/systems/borderconditions/CircularBorder.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.systems.borderconditions
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.ecs.components.{DimensionComponent, PositionComponent}
+</span>4 <span style=''>import it.unibo.osmos.redux.ecs.entities.properties.composed.CollidableProperty
+</span>5 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.CollisionRules
+</span>6 <span style=''>import it.unibo.osmos.redux.utils.{MathUtils, Point, Vector}
+</span>7 <span style=''>
+</span>8 <span style=''>/** Collision implementation for a playing field with circular shape */
+</span>9 <span style=''>case class CircularBorder(levelCenter: Point, collisionRule: CollisionRules.Value, levelRadius: Double) extends AbstractBorder(levelCenter, collisionRule) {
+</span>10 <span style=''>
+</span>11 <span style=''>  private var positionComponent: PositionComponent = _
+</span>12 <span style=''>  private var currentPosition: Point = _
+</span>13 <span style=''>  private var dimensionComponent: DimensionComponent = _
+</span>14 <span style=''>  private var entityRadius: Double = _
+</span>15 <span style=''>  private var maxReachableDistance: Double = _
+</span>16 <span style=''>  private var currentDistanceFromCenter: Double = _
+</span>17 <span style=''>
+</span>18 <span style=''>  override def checkAndSolveCollision(entity: CollidableProperty): Unit = {
+</span>19 <span style=''>    if (</span><span style='background: #AEF1AE'>checkCollision(entity)</span><span style=''>) {
+</span>20 <span style=''>      </span><span style='background: #AEF1AE'>collisionRule match {
+</span>21 <span style=''></span><span style='background: #AEF1AE'>        case CollisionRules.bouncing =&gt;
+</span>22 <span style=''></span><span style='background: #AEF1AE'>          val newPosition = computeNewPosition(entity)
+</span>23 <span style=''></span><span style='background: #AEF1AE'>          positionComponent.point_(newPosition)
+</span>24 <span style=''></span><span style='background: #AEF1AE'>
+</span>25 <span style=''></span><span style='background: #AEF1AE'>          val speedComponent = entity.getSpeedComponent
+</span>26 <span style=''></span><span style='background: #AEF1AE'>          val speedVector = speedComponent.vector
+</span>27 <span style=''></span><span style='background: #AEF1AE'>          val newSpeed = computeNewSpeed(positionComponent.point, speedVector)
+</span>28 <span style=''></span><span style='background: #AEF1AE'>          speedComponent.vector_(newSpeed)
+</span>29 <span style=''></span><span style='background: #AEF1AE'>        case CollisionRules.instantDeath =&gt;
+</span>30 <span style=''></span><span style='background: #AEF1AE'>          dimensionComponent.radius_(entityRadius - (currentDistanceFromCenter - maxReachableDistance))
+</span>31 <span style=''></span><span style='background: #AEF1AE'>        case _ =&gt; </span><span style='background: #F0ADAD'>throw new IllegalArgumentException</span><span style='background: #AEF1AE'>
+</span>32 <span style=''></span><span style='background: #AEF1AE'>      }</span><span style=''>
+</span>33 <span style=''>    }
+</span>34 <span style=''>  }
+</span>35 <span style=''>
+</span>36 <span style=''>  /** For better understanding see: http://gamedev.stackexchange.com/a/29658
+</span>37 <span style=''>    *
+</span>38 <span style=''>    * @param entity the entity to compute new position after bounce
+</span>39 <span style=''>    * @return the entity correct position
+</span>40 <span style=''>    */
+</span>41 <span style=''>  private def computeNewPosition(entity: CollidableProperty): Point = {
+</span>42 <span style=''>    val entityPosition = </span><span style='background: #AEF1AE'>entity.getPositionComponent.point</span><span style=''>
+</span>43 <span style=''>    val entitySpeed = </span><span style='background: #AEF1AE'>entity.getSpeedComponent.vector</span><span style=''>
+</span>44 <span style=''>    val A = </span><span style='background: #AEF1AE'>levelCenter</span><span style=''>
+</span>45 <span style=''>
+</span>46 <span style=''>    val B = </span><span style='background: #AEF1AE'>entityPosition subtract entitySpeed</span><span style=''>
+</span>47 <span style=''>    val C = entityPosition
+</span>48 <span style=''>    val R = </span><span style='background: #AEF1AE'>levelRadius</span><span style=''>
+</span>49 <span style=''>    val r = </span><span style='background: #AEF1AE'>entity.getDimensionComponent.radius</span><span style=''>
+</span>50 <span style=''>
+</span>51 <span style=''>    val AB = </span><span style='background: #AEF1AE'>A subtract B</span><span style=''>
+</span>52 <span style=''>    val BC = </span><span style='background: #AEF1AE'>B subtract C</span><span style=''>
+</span>53 <span style=''>    val magnitudeOfAB = </span><span style='background: #AEF1AE'>AB.getMagnitude</span><span style=''>
+</span>54 <span style=''>    val magnitudeOfBC = </span><span style='background: #AEF1AE'>BC.getMagnitude</span><span style=''>
+</span>55 <span style=''>
+</span>56 <span style=''>    if (</span><span style='background: #AEF1AE'>magnitudeOfBC == 0</span><span style=''>) {
+</span>57 <span style=''>      </span><span style='background: #F0ADAD'>C</span><span style=''>
+</span>58 <span style=''>    } else </span><span style='background: #AEF1AE'>{
+</span>59 <span style=''></span><span style='background: #AEF1AE'>      val b = AB.dot(BC) / Math.pow(magnitudeOfBC, 2) * -1
+</span>60 <span style=''></span><span style='background: #AEF1AE'>      val c = (Math.pow(magnitudeOfAB, 2) - Math.pow(R - r, 2)) / Math.pow(magnitudeOfBC, 2)
+</span>61 <span style=''></span><span style='background: #AEF1AE'>      val d = b * b - c
+</span>62 <span style=''></span><span style='background: #AEF1AE'>      var k = b - Math.sqrt(d)
+</span>63 <span style=''></span><span style='background: #AEF1AE'>
+</span>64 <span style=''></span><span style='background: #AEF1AE'>      if (k &lt; 0) {
+</span>65 <span style=''></span><span style='background: #AEF1AE'>        k = b + Math.sqrt(d)
+</span>66 <span style=''></span><span style='background: #AEF1AE'>      }
+</span>67 <span style=''></span><span style='background: #AEF1AE'>
+</span>68 <span style=''></span><span style='background: #AEF1AE'>      val BD = C subtract B
+</span>69 <span style=''></span><span style='background: #AEF1AE'>      val newMagnitudeOfBD = BD getNewMagnitude (magnitudeOfBC * k)
+</span>70 <span style=''></span><span style='background: #AEF1AE'>
+</span>71 <span style=''></span><span style='background: #AEF1AE'>      // D
+</span>72 <span style=''></span><span style='background: #AEF1AE'>      B add newMagnitudeOfBD
+</span>73 <span style=''></span><span style='background: #AEF1AE'>    }</span><span style=''>
+</span>74 <span style=''>  }
+</span>75 <span style=''>
+</span>76 <span style=''>  /** For better understanding see second answer:
+</span>77 <span style=''>    * https://stackoverflow.com/questions/573084/bounce-angle
+</span>78 <span style=''>    *
+</span>79 <span style=''>    * @param currentPosition the entity position computed at computeNewPosition()
+</span>80 <span style=''>    * @return the new entity speed after bounce
+</span>81 <span style=''>    */
+</span>82 <span style=''>  private def computeNewSpeed(currentPosition: Point, speedVector: Vector): Vector = {
+</span>83 <span style=''>    val v = speedVector
+</span>84 <span style=''>    val n = </span><span style='background: #AEF1AE'>currentPosition subtract levelCenter normalized()</span><span style=''>
+</span>85 <span style=''>
+</span>86 <span style=''>    val u = </span><span style='background: #AEF1AE'>n multiply (v dot n)</span><span style=''>
+</span>87 <span style=''>    val w = </span><span style='background: #AEF1AE'>v subtract u</span><span style=''>
+</span>88 <span style=''>    val vAfter = </span><span style='background: #AEF1AE'>w subtract u</span><span style=''>
+</span>89 <span style=''>    val reflection = </span><span style='background: #AEF1AE'>vAfter subtract v multiply restitution</span><span style=''>
+</span>90 <span style=''>    </span><span style='background: #AEF1AE'>v add reflection</span><span style=''>
+</span>91 <span style=''>  }
+</span>92 <span style=''>
+</span>93 <span style=''>  override def repositionIfOutsideMap(entity: CollidableProperty): Unit = {
+</span>94 <span style=''>    if (</span><span style='background: #F0ADAD'>checkCollision(entity)</span><span style=''>) {
+</span>95 <span style=''>      </span><span style='background: #F0ADAD'>collisionRule match {
+</span>96 <span style=''></span><span style='background: #F0ADAD'>        case CollisionRules.bouncing =&gt;
+</span>97 <span style=''></span><span style='background: #F0ADAD'>          val vector = MathUtils.unitVector(levelCenter, currentPosition)
+</span>98 <span style=''></span><span style='background: #F0ADAD'>          val back = currentDistanceFromCenter - levelRadius + entityRadius
+</span>99 <span style=''></span><span style='background: #F0ADAD'>          positionComponent.point_(currentPosition add (vector multiply back))
+</span>100 <span style=''></span><span style='background: #F0ADAD'>        case _ =&gt;
+</span>101 <span style=''></span><span style='background: #F0ADAD'>      }</span><span style=''>
+</span>102 <span style=''>    }
+</span>103 <span style=''>  }
+</span>104 <span style=''>
+</span>105 <span style=''>  private def checkCollision(entity: CollidableProperty): Boolean = {
+</span>106 <span style=''>    </span><span style='background: #AEF1AE'>positionComponent = entity.getPositionComponent</span><span style=''>
+</span>107 <span style=''>    </span><span style='background: #AEF1AE'>currentPosition = positionComponent.point</span><span style=''>
+</span>108 <span style=''>    </span><span style='background: #AEF1AE'>dimensionComponent = entity.getDimensionComponent</span><span style=''>
+</span>109 <span style=''>    </span><span style='background: #AEF1AE'>entityRadius = dimensionComponent.radius</span><span style=''>
+</span>110 <span style=''>    </span><span style='background: #AEF1AE'>maxReachableDistance = levelRadius - entityRadius</span><span style=''>
+</span>111 <span style=''>    </span><span style='background: #AEF1AE'>currentDistanceFromCenter = MathUtils.euclideanDistance(levelCenter, currentPosition)</span><span style=''>
+</span>112 <span style=''>    </span><span style='background: #AEF1AE'>currentDistanceFromCenter &gt; maxReachableDistance</span><span style=''>
+</span>113 <span style=''>  }
+</span>114 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          855
+        </td>
+        <td>
+          965
+          -
+          987
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.CircularBorder.checkCollision
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.checkCollision(entity)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          871
+        </td>
+        <td>
+          961
+          -
+          961
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          870
+        </td>
+        <td>
+          961
+          -
+          961
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          869
+        </td>
+        <td>
+          997
+          -
+          1599
+        </td>
+        <td>
+          Match
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.collisionRule match {
+  case it.unibo.osmos.redux.mvc.controller.levels.structure.CollisionRules.bouncing =&gt; {
+    val newPosition: it.unibo.osmos.redux.utils.Point = CircularBorder.this.computeNewPosition(entity);
+    CircularBorder.this.positionComponent.point_(newPosition);
+    val speedComponent: it.unibo.osmos.redux.ecs.components.SpeedComponent = entity.getSpeedComponent;
+    val speedVector: it.unibo.osmos.redux.utils.Vector = speedComponent.vector;
+    val newSpeed: it.unibo.osmos.redux.utils.Vector = CircularBorder.this.computeNewSpeed(CircularBorder.this.positionComponent.point, speedVector);
+    speedComponent.vector_(newSpeed)
+  }
+  case it.unibo.osmos.redux.mvc.controller.levels.structure.CollisionRules.instantDeath =&gt; CircularBorder.this.dimensionComponent.radius_(CircularBorder.this.entityRadius.-(CircularBorder.this.currentDistanceFromCenter.-(CircularBorder.this.maxReachableDistance)))
+  case _ =&gt; throw new scala.`package`.IllegalArgumentException()
+}
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          856
+        </td>
+        <td>
+          997
+          -
+          1010
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.CircularBorder.collisionRule
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.collisionRule
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          857
+        </td>
+        <td>
+          1087
+          -
+          1113
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.CircularBorder.computeNewPosition
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.computeNewPosition(entity)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          858
+        </td>
+        <td>
+          1124
+          -
+          1161
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.point_
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.positionComponent.point_(newPosition)
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          859
+        </td>
+        <td>
+          1194
+          -
+          1218
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Speed.getSpeedComponent
+        </td>
+        <td style="background: #AEF1AE">
+          entity.getSpeedComponent
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          860
+        </td>
+        <td>
+          1247
+          -
+          1268
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.VectorComponent.vector
+        </td>
+        <td style="background: #AEF1AE">
+          speedComponent.vector
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          862
+        </td>
+        <td>
+          1294
+          -
+          1347
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.CircularBorder.computeNewSpeed
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.computeNewSpeed(CircularBorder.this.positionComponent.point, speedVector)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          861
+        </td>
+        <td>
+          1310
+          -
+          1333
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.point
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.positionComponent.point
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          863
+        </td>
+        <td>
+          1358
+          -
+          1390
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.VectorComponent.vector_
+        </td>
+        <td style="background: #AEF1AE">
+          speedComponent.vector_(newSpeed)
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          864
+        </td>
+        <td>
+          1516
+          -
+          1536
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.CircularBorder.maxReachableDistance
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.maxReachableDistance
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          866
+        </td>
+        <td>
+          1472
+          -
+          1537
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.entityRadius.-(CircularBorder.this.currentDistanceFromCenter.-(CircularBorder.this.maxReachableDistance))
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          865
+        </td>
+        <td>
+          1488
+          -
+          1536
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.currentDistanceFromCenter.-(CircularBorder.this.maxReachableDistance)
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          867
+        </td>
+        <td>
+          1445
+          -
+          1538
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.radius_
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.dimensionComponent.radius_(CircularBorder.this.entityRadius.-(CircularBorder.this.currentDistanceFromCenter.-(CircularBorder.this.maxReachableDistance)))
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          868
+        </td>
+        <td>
+          1557
+          -
+          1591
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.IllegalArgumentException()
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          872
+        </td>
+        <td>
+          1908
+          -
+          1941
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.point
+        </td>
+        <td style="background: #AEF1AE">
+          entity.getPositionComponent.point
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          873
+        </td>
+        <td>
+          1964
+          -
+          1995
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.VectorComponent.vector
+        </td>
+        <td style="background: #AEF1AE">
+          entity.getSpeedComponent.vector
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          874
+        </td>
+        <td>
+          2008
+          -
+          2019
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.CircularBorder.levelCenter
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.levelCenter
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          875
+        </td>
+        <td>
+          2033
+          -
+          2068
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.subtract
+        </td>
+        <td style="background: #AEF1AE">
+          entityPosition.subtract(entitySpeed)
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          876
+        </td>
+        <td>
+          2108
+          -
+          2119
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.CircularBorder.levelRadius
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.levelRadius
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          877
+        </td>
+        <td>
+          2132
+          -
+          2167
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.radius
+        </td>
+        <td style="background: #AEF1AE">
+          entity.getDimensionComponent.radius
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          878
+        </td>
+        <td>
+          2182
+          -
+          2194
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.subtract
+        </td>
+        <td style="background: #AEF1AE">
+          A.subtract(B)
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          879
+        </td>
+        <td>
+          2208
+          -
+          2220
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.subtract
+        </td>
+        <td style="background: #AEF1AE">
+          B.subtract(C)
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          880
+        </td>
+        <td>
+          2245
+          -
+          2260
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.getMagnitude
+        </td>
+        <td style="background: #AEF1AE">
+          AB.getMagnitude
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          881
+        </td>
+        <td>
+          2285
+          -
+          2300
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.getMagnitude
+        </td>
+        <td style="background: #AEF1AE">
+          BC.getMagnitude
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          882
+        </td>
+        <td>
+          2310
+          -
+          2328
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.==
+        </td>
+        <td style="background: #AEF1AE">
+          magnitudeOfBC.==(0)
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          883
+        </td>
+        <td>
+          2338
+          -
+          2339
+        </td>
+        <td>
+          Ident
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.CircularBorder.C
+        </td>
+        <td style="background: #F0ADAD">
+          C
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          904
+        </td>
+        <td>
+          2351
+          -
+          2760
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          {
+  val b: Double = AB.dot(BC)./(java.lang.Math.pow(magnitudeOfBC, 2.0)).*(-1);
+  val c: Double = java.lang.Math.pow(magnitudeOfAB, 2.0).-(java.lang.Math.pow(R.-(r), 2.0))./(java.lang.Math.pow(magnitudeOfBC, 2.0));
+  val d: Double = b.*(b).-(c);
+  var k: Double = b.-(java.lang.Math.sqrt(d));
+  if (k.&lt;(0))
+    k = b.+(java.lang.Math.sqrt(d))
+  else
+    ();
+  val BD: it.unibo.osmos.redux.utils.Vector = C.subtract(B);
+  val newMagnitudeOfBD: it.unibo.osmos.redux.utils.Vector = BD.getNewMagnitude(magnitudeOfBC.*(k));
+  B.add(newMagnitudeOfBD)
+}
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          884
+        </td>
+        <td>
+          2367
+          -
+          2411
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.*
+        </td>
+        <td style="background: #AEF1AE">
+          AB.dot(BC)./(java.lang.Math.pow(magnitudeOfBC, 2.0)).*(-1)
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          890
+        </td>
+        <td>
+          2426
+          -
+          2504
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double./
+        </td>
+        <td style="background: #AEF1AE">
+          java.lang.Math.pow(magnitudeOfAB, 2.0).-(java.lang.Math.pow(R.-(r), 2.0))./(java.lang.Math.pow(magnitudeOfBC, 2.0))
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          887
+        </td>
+        <td>
+          2472
+          -
+          2473
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          2.0
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          886
+        </td>
+        <td>
+          2465
+          -
+          2470
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #AEF1AE">
+          R.-(r)
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          889
+        </td>
+        <td>
+          2478
+          -
+          2504
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Math.pow
+        </td>
+        <td style="background: #AEF1AE">
+          java.lang.Math.pow(magnitudeOfBC, 2.0)
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          885
+        </td>
+        <td>
+          2451
+          -
+          2452
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          2.0
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          888
+        </td>
+        <td>
+          2456
+          -
+          2474
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Math.pow
+        </td>
+        <td style="background: #AEF1AE">
+          java.lang.Math.pow(R.-(r), 2.0)
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          891
+        </td>
+        <td>
+          2519
+          -
+          2528
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #AEF1AE">
+          b.*(b).-(c)
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          893
+        </td>
+        <td>
+          2543
+          -
+          2559
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #AEF1AE">
+          b.-(java.lang.Math.sqrt(d))
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          892
+        </td>
+        <td>
+          2547
+          -
+          2559
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Math.sqrt
+        </td>
+        <td style="background: #AEF1AE">
+          java.lang.Math.sqrt(d)
+        </td>
+      </tr><tr>
+        <td>
+          64
+        </td>
+        <td>
+          899
+        </td>
+        <td>
+          2567
+          -
+          2567
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          64
+        </td>
+        <td>
+          898
+        </td>
+        <td>
+          2567
+          -
+          2567
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          64
+        </td>
+        <td>
+          894
+        </td>
+        <td>
+          2571
+          -
+          2576
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.&lt;
+        </td>
+        <td style="background: #AEF1AE">
+          k.&lt;(0)
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          896
+        </td>
+        <td>
+          2592
+          -
+          2608
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.+
+        </td>
+        <td style="background: #AEF1AE">
+          b.+(java.lang.Math.sqrt(d))
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          895
+        </td>
+        <td>
+          2596
+          -
+          2608
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Math.sqrt
+        </td>
+        <td style="background: #AEF1AE">
+          java.lang.Math.sqrt(d)
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          897
+        </td>
+        <td>
+          2588
+          -
+          2608
+        </td>
+        <td>
+          Assign
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          k = b.+(java.lang.Math.sqrt(d))
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          900
+        </td>
+        <td>
+          2633
+          -
+          2645
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.subtract
+        </td>
+        <td style="background: #AEF1AE">
+          C.subtract(B)
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          902
+        </td>
+        <td>
+          2675
+          -
+          2713
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.getNewMagnitude
+        </td>
+        <td style="background: #AEF1AE">
+          BD.getNewMagnitude(magnitudeOfBC.*(k))
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          901
+        </td>
+        <td>
+          2695
+          -
+          2712
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.*
+        </td>
+        <td style="background: #AEF1AE">
+          magnitudeOfBC.*(k)
+        </td>
+      </tr><tr>
+        <td>
+          72
+        </td>
+        <td>
+          903
+        </td>
+        <td>
+          2732
+          -
+          2754
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.add
+        </td>
+        <td style="background: #AEF1AE">
+          B.add(newMagnitudeOfBD)
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          905
+        </td>
+        <td>
+          3144
+          -
+          3193
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.normalized
+        </td>
+        <td style="background: #AEF1AE">
+          currentPosition.subtract(CircularBorder.this.levelCenter).normalized()
+        </td>
+      </tr><tr>
+        <td>
+          86
+        </td>
+        <td>
+          907
+        </td>
+        <td>
+          3207
+          -
+          3227
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.multiply
+        </td>
+        <td style="background: #AEF1AE">
+          n.multiply(v.dot(n))
+        </td>
+      </tr><tr>
+        <td>
+          86
+        </td>
+        <td>
+          906
+        </td>
+        <td>
+          3219
+          -
+          3226
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.dot
+        </td>
+        <td style="background: #AEF1AE">
+          v.dot(n)
+        </td>
+      </tr><tr>
+        <td>
+          87
+        </td>
+        <td>
+          908
+        </td>
+        <td>
+          3240
+          -
+          3252
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.subtract
+        </td>
+        <td style="background: #AEF1AE">
+          v.subtract(u)
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          909
+        </td>
+        <td>
+          3270
+          -
+          3282
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.subtract
+        </td>
+        <td style="background: #AEF1AE">
+          w.subtract(u)
+        </td>
+      </tr><tr>
+        <td>
+          89
+        </td>
+        <td>
+          911
+        </td>
+        <td>
+          3304
+          -
+          3342
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.multiply
+        </td>
+        <td style="background: #AEF1AE">
+          vAfter.subtract(v).multiply(CircularBorder.this.restitution)
+        </td>
+      </tr><tr>
+        <td>
+          89
+        </td>
+        <td>
+          910
+        </td>
+        <td>
+          3331
+          -
+          3342
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.restitution
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.restitution
+        </td>
+      </tr><tr>
+        <td>
+          90
+        </td>
+        <td>
+          912
+        </td>
+        <td>
+          3347
+          -
+          3363
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.add
+        </td>
+        <td style="background: #AEF1AE">
+          v.add(reflection)
+        </td>
+      </tr><tr>
+        <td>
+          94
+        </td>
+        <td>
+          926
+        </td>
+        <td>
+          3449
+          -
+          3449
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          94
+        </td>
+        <td>
+          913
+        </td>
+        <td>
+          3453
+          -
+          3475
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.CircularBorder.checkCollision
+        </td>
+        <td style="background: #F0ADAD">
+          CircularBorder.this.checkCollision(entity)
+        </td>
+      </tr><tr>
+        <td>
+          94
+        </td>
+        <td>
+          927
+        </td>
+        <td>
+          3449
+          -
+          3449
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          95
+        </td>
+        <td>
+          914
+        </td>
+        <td>
+          3485
+          -
+          3498
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.CircularBorder.collisionRule
+        </td>
+        <td style="background: #F0ADAD">
+          CircularBorder.this.collisionRule
+        </td>
+      </tr><tr>
+        <td>
+          95
+        </td>
+        <td>
+          925
+        </td>
+        <td>
+          3485
+          -
+          3801
+        </td>
+        <td>
+          Match
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          CircularBorder.this.collisionRule match {
+  case it.unibo.osmos.redux.mvc.controller.levels.structure.CollisionRules.bouncing =&gt; {
+    val vector: it.unibo.osmos.redux.utils.Vector = it.unibo.osmos.redux.utils.MathUtils.unitVector(CircularBorder.this.levelCenter, CircularBorder.this.currentPosition);
+    val back: Double = CircularBorder.this.currentDistanceFromCenter.-(CircularBorder.this.levelRadius).+(CircularBorder.this.entityRadius);
+    CircularBorder.this.positionComponent.point_(CircularBorder.this.currentPosition.add(vector.multiply(back)))
+  }
+  case _ =&gt; ()
+}
+        </td>
+      </tr><tr>
+        <td>
+          97
+        </td>
+        <td>
+          917
+        </td>
+        <td>
+          3570
+          -
+          3620
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.MathUtils.unitVector
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.MathUtils.unitVector(CircularBorder.this.levelCenter, CircularBorder.this.currentPosition)
+        </td>
+      </tr><tr>
+        <td>
+          97
+        </td>
+        <td>
+          916
+        </td>
+        <td>
+          3604
+          -
+          3619
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.CircularBorder.currentPosition
+        </td>
+        <td style="background: #F0ADAD">
+          CircularBorder.this.currentPosition
+        </td>
+      </tr><tr>
+        <td>
+          97
+        </td>
+        <td>
+          915
+        </td>
+        <td>
+          3591
+          -
+          3602
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.CircularBorder.levelCenter
+        </td>
+        <td style="background: #F0ADAD">
+          CircularBorder.this.levelCenter
+        </td>
+      </tr><tr>
+        <td>
+          98
+        </td>
+        <td>
+          920
+        </td>
+        <td>
+          3642
+          -
+          3696
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.+
+        </td>
+        <td style="background: #F0ADAD">
+          CircularBorder.this.currentDistanceFromCenter.-(CircularBorder.this.levelRadius).+(CircularBorder.this.entityRadius)
+        </td>
+      </tr><tr>
+        <td>
+          98
+        </td>
+        <td>
+          919
+        </td>
+        <td>
+          3684
+          -
+          3696
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.CircularBorder.entityRadius
+        </td>
+        <td style="background: #F0ADAD">
+          CircularBorder.this.entityRadius
+        </td>
+      </tr><tr>
+        <td>
+          98
+        </td>
+        <td>
+          918
+        </td>
+        <td>
+          3670
+          -
+          3681
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.CircularBorder.levelRadius
+        </td>
+        <td style="background: #F0ADAD">
+          CircularBorder.this.levelRadius
+        </td>
+      </tr><tr>
+        <td>
+          99
+        </td>
+        <td>
+          923
+        </td>
+        <td>
+          3707
+          -
+          3775
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.point_
+        </td>
+        <td style="background: #F0ADAD">
+          CircularBorder.this.positionComponent.point_(CircularBorder.this.currentPosition.add(vector.multiply(back)))
+        </td>
+      </tr><tr>
+        <td>
+          99
+        </td>
+        <td>
+          922
+        </td>
+        <td>
+          3732
+          -
+          3774
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.add
+        </td>
+        <td style="background: #F0ADAD">
+          CircularBorder.this.currentPosition.add(vector.multiply(back))
+        </td>
+      </tr><tr>
+        <td>
+          99
+        </td>
+        <td>
+          921
+        </td>
+        <td>
+          3753
+          -
+          3773
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.multiply
+        </td>
+        <td style="background: #F0ADAD">
+          vector.multiply(back)
+        </td>
+      </tr><tr>
+        <td>
+          100
+        </td>
+        <td>
+          924
+        </td>
+        <td>
+          3791
+          -
+          3793
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          106
+        </td>
+        <td>
+          929
+        </td>
+        <td>
+          3887
+          -
+          3934
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.CircularBorder.positionComponent_=
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.positionComponent_=(entity.getPositionComponent)
+        </td>
+      </tr><tr>
+        <td>
+          106
+        </td>
+        <td>
+          928
+        </td>
+        <td>
+          3907
+          -
+          3934
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Position.getPositionComponent
+        </td>
+        <td style="background: #AEF1AE">
+          entity.getPositionComponent
+        </td>
+      </tr><tr>
+        <td>
+          107
+        </td>
+        <td>
+          931
+        </td>
+        <td>
+          3939
+          -
+          3980
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.CircularBorder.currentPosition_=
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.currentPosition_=(CircularBorder.this.positionComponent.point)
+        </td>
+      </tr><tr>
+        <td>
+          107
+        </td>
+        <td>
+          930
+        </td>
+        <td>
+          3957
+          -
+          3980
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.point
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.positionComponent.point
+        </td>
+      </tr><tr>
+        <td>
+          108
+        </td>
+        <td>
+          932
+        </td>
+        <td>
+          4006
+          -
+          4034
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Dimension.getDimensionComponent
+        </td>
+        <td style="background: #AEF1AE">
+          entity.getDimensionComponent
+        </td>
+      </tr><tr>
+        <td>
+          108
+        </td>
+        <td>
+          933
+        </td>
+        <td>
+          3985
+          -
+          4034
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.CircularBorder.dimensionComponent_=
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.dimensionComponent_=(entity.getDimensionComponent)
+        </td>
+      </tr><tr>
+        <td>
+          109
+        </td>
+        <td>
+          935
+        </td>
+        <td>
+          4039
+          -
+          4079
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.CircularBorder.entityRadius_=
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.entityRadius_=(CircularBorder.this.dimensionComponent.radius)
+        </td>
+      </tr><tr>
+        <td>
+          109
+        </td>
+        <td>
+          934
+        </td>
+        <td>
+          4054
+          -
+          4079
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.radius
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.dimensionComponent.radius
+        </td>
+      </tr><tr>
+        <td>
+          110
+        </td>
+        <td>
+          938
+        </td>
+        <td>
+          4084
+          -
+          4133
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.CircularBorder.maxReachableDistance_=
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.maxReachableDistance_=(CircularBorder.this.levelRadius.-(CircularBorder.this.entityRadius))
+        </td>
+      </tr><tr>
+        <td>
+          110
+        </td>
+        <td>
+          937
+        </td>
+        <td>
+          4107
+          -
+          4133
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.levelRadius.-(CircularBorder.this.entityRadius)
+        </td>
+      </tr><tr>
+        <td>
+          110
+        </td>
+        <td>
+          936
+        </td>
+        <td>
+          4121
+          -
+          4133
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.CircularBorder.entityRadius
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.entityRadius
+        </td>
+      </tr><tr>
+        <td>
+          111
+        </td>
+        <td>
+          941
+        </td>
+        <td>
+          4166
+          -
+          4223
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.MathUtils.euclideanDistance
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.MathUtils.euclideanDistance(CircularBorder.this.levelCenter, CircularBorder.this.currentPosition)
+        </td>
+      </tr><tr>
+        <td>
+          111
+        </td>
+        <td>
+          940
+        </td>
+        <td>
+          4207
+          -
+          4222
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.CircularBorder.currentPosition
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.currentPosition
+        </td>
+      </tr><tr>
+        <td>
+          111
+        </td>
+        <td>
+          939
+        </td>
+        <td>
+          4194
+          -
+          4205
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.CircularBorder.levelCenter
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.levelCenter
+        </td>
+      </tr><tr>
+        <td>
+          111
+        </td>
+        <td>
+          942
+        </td>
+        <td>
+          4138
+          -
+          4223
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.CircularBorder.currentDistanceFromCenter_=
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.currentDistanceFromCenter_=(it.unibo.osmos.redux.utils.MathUtils.euclideanDistance(CircularBorder.this.levelCenter, CircularBorder.this.currentPosition))
+        </td>
+      </tr><tr>
+        <td>
+          112
+        </td>
+        <td>
+          944
+        </td>
+        <td>
+          4228
+          -
+          4276
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.currentDistanceFromCenter.&gt;(CircularBorder.this.maxReachableDistance)
+        </td>
+      </tr><tr>
+        <td>
+          112
+        </td>
+        <td>
+          943
+        </td>
+        <td>
+          4256
+          -
+          4276
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.CircularBorder.maxReachableDistance
+        </td>
+        <td style="background: #AEF1AE">
+          CircularBorder.this.maxReachableDistance
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

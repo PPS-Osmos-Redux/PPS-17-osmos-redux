@@ -1,0 +1,6723 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/multiplayer/server/Server.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.multiplayer.server
+</span>2 <span style=''>
+</span>3 <span style=''>import akka.actor.{ActorRef, PoisonPill}
+</span>4 <span style=''>import akka.pattern.ask
+</span>5 <span style=''>import akka.util.Timeout
+</span>6 <span style=''>import it.unibo.osmos.redux.ecs.entities.{EntityManager, PlayerCellEntity}
+</span>7 <span style=''>import it.unibo.osmos.redux.multiplayer.common.{ActorSystemHolder, NetworkUtils}
+</span>8 <span style=''>import it.unibo.osmos.redux.multiplayer.lobby.GameLobby
+</span>9 <span style=''>import it.unibo.osmos.redux.multiplayer.players.{BasePlayer, ReferablePlayer}
+</span>10 <span style=''>import it.unibo.osmos.redux.multiplayer.server.ServerActor._
+</span>11 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.{Level, LevelInfo}
+</span>12 <span style=''>import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
+</span>13 <span style=''>import it.unibo.osmos.redux.mvc.view.context.{LobbyContext, MultiPlayerLevelContext}
+</span>14 <span style=''>import it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper
+</span>15 <span style=''>import it.unibo.osmos.redux.utils.InputEventQueue
+</span>16 <span style=''>
+</span>17 <span style=''>import scala.concurrent.ExecutionContext.Implicits.global
+</span>18 <span style=''>import scala.concurrent.duration._
+</span>19 <span style=''>import scala.concurrent.{Future, Promise}
+</span>20 <span style=''>import scala.util.{Failure, Success}
+</span>21 <span style=''>
+</span>22 <span style=''>/** Trait representing a Server */
+</span>23 <span style=''>trait Server {
+</span>24 <span style=''>
+</span>25 <span style=''>  type ServerState = ServerState.Value
+</span>26 <span style=''>
+</span>27 <span style=''>  implicit val who: String = </span><span style='background: #F0ADAD'>&quot;Server&quot;</span><span style=''>
+</span>28 <span style=''>  implicit val timeout: Timeout = </span><span style='background: #F0ADAD'>Timeout(5.seconds)</span><span style=''>
+</span>29 <span style=''>
+</span>30 <span style=''>  /** Binds this instance with the input ActorRef.
+</span>31 <span style=''>    *
+</span>32 <span style=''>    * @param actorRef The ActorRef.
+</span>33 <span style=''>    */
+</span>34 <span style=''>  def bind(actorRef: ActorRef): Unit
+</span>35 <span style=''>
+</span>36 <span style=''>  /** Gets the uuid of the cell entity that represents this client.
+</span>37 <span style=''>    *
+</span>38 <span style=''>    * @return The uuid.
+</span>39 <span style=''>    */
+</span>40 <span style=''>  def getUUID: String
+</span>41 <span style=''>
+</span>42 <span style=''>  /** Gets the username of the player representing the server.
+</span>43 <span style=''>    *
+</span>44 <span style=''>    * @return The username.
+</span>45 <span style=''>    */
+</span>46 <span style=''>  def getUsername: String
+</span>47 <span style=''>
+</span>48 <span style=''>  /** Gets the state of the server.
+</span>49 <span style=''>    *
+</span>50 <span style=''>    * @return The server state.
+</span>51 <span style=''>    */
+</span>52 <span style=''>  def getState: ServerState
+</span>53 <span style=''>
+</span>54 <span style=''>  /** Kills this instance. */
+</span>55 <span style=''>  def kill(): Unit
+</span>56 <span style=''>
+</span>57 <span style=''>  /** Signals all clients that the game needs to be started and checks that they all reply.
+</span>58 <span style=''>    *
+</span>59 <span style=''>    * @param level The level.
+</span>60 <span style=''>    * @return Promise that completes with true if all clients replied before the timeout; otherwise false.
+</span>61 <span style=''>    */
+</span>62 <span style=''>  def initGame(level: Level): Promise[Boolean]
+</span>63 <span style=''>
+</span>64 <span style=''>  /** Starts the game by notifying the interface and passing the level context to use.
+</span>65 <span style=''>    *
+</span>66 <span style=''>    * @param levelContext The level context.
+</span>67 <span style=''>    * @param levelInfo    The level info.
+</span>68 <span style=''>    */
+</span>69 <span style=''>  def startGame(levelContext: MultiPlayerLevelContext, levelInfo: LevelInfo): Unit
+</span>70 <span style=''>
+</span>71 <span style=''>  /** Signals all clients that the game have been stopped.
+</span>72 <span style=''>    *
+</span>73 <span style=''>    * @param winner The username of the player who won, if not declared the winner is assumed to be the server.
+</span>74 <span style=''>    */
+</span>75 <span style=''>  def stopGame(winner: String = &quot;&quot;): Unit
+</span>76 <span style=''>
+</span>77 <span style=''>  /** Delivers a message to a specified client.
+</span>78 <span style=''>    *
+</span>79 <span style=''>    * @param username The player username.
+</span>80 <span style=''>    * @param message  The message.
+</span>81 <span style=''>    */
+</span>82 <span style=''>  def deliverMessage(username: String, message: Any): Unit
+</span>83 <span style=''>
+</span>84 <span style=''>  /** Broadcasts a message to all connected clients.
+</span>85 <span style=''>    *
+</span>86 <span style=''>    * @param message          The message to send.
+</span>87 <span style=''>    * @param clientsToExclude Specify clients to which the delivery must not be performed.
+</span>88 <span style=''>    */
+</span>89 <span style=''>  def broadcastMessage(message: Any, clientsToExclude: String*): Unit
+</span>90 <span style=''>
+</span>91 <span style=''>  /** Removes the player from the game.
+</span>92 <span style=''>    *
+</span>93 <span style=''>    * @param username The player username.
+</span>94 <span style=''>    * @param notify   If the player client needs to be notified.
+</span>95 <span style=''>    */
+</span>96 <span style=''>  def removePlayerFromGame(username: String, notify: Boolean = false)
+</span>97 <span style=''>
+</span>98 <span style=''>  /** Notifies server about new client input event.
+</span>99 <span style=''>    *
+</span>100 <span style=''>    * @param event The event.
+</span>101 <span style=''>    */
+</span>102 <span style=''>  def notifyClientInputEvent(event: MouseEventWrapper): Unit
+</span>103 <span style=''>
+</span>104 <span style=''>  /** Creates a lobby and enters it, all further requests to enter it are handled.
+</span>105 <span style=''>    *
+</span>106 <span style=''>    * @param lobbyContext The lobby context.
+</span>107 <span style=''>    */
+</span>108 <span style=''>  def createLobby(lobbyContext: LobbyContext): Unit
+</span>109 <span style=''>
+</span>110 <span style=''>  /** Closes the lobby, all further requests to enter it are ignored. */
+</span>111 <span style=''>  def closeLobby(): Unit
+</span>112 <span style=''>
+</span>113 <span style=''>  /** Gets the lobby players.
+</span>114 <span style=''>    *
+</span>115 <span style=''>    * @return All players in the lobby.
+</span>116 <span style=''>    */
+</span>117 <span style=''>  def getLobbyPlayers: Seq[ReferablePlayer]
+</span>118 <span style=''>
+</span>119 <span style=''>  /** Removes a player from the lobby.
+</span>120 <span style=''>    *
+</span>121 <span style=''>    * @param username The username of the player.
+</span>122 <span style=''>    */
+</span>123 <span style=''>  def removePlayerFromLobby(username: String): Unit
+</span>124 <span style=''>
+</span>125 <span style=''>  /** Adds a player to the lobby.
+</span>126 <span style=''>    *
+</span>127 <span style=''>    * @param actorRef The actor ref.
+</span>128 <span style=''>    * @param player   The player to add.
+</span>129 <span style=''>    * @return True, if the player is added correctly; false if the lobby is full.
+</span>130 <span style=''>    */
+</span>131 <span style=''>  def addPlayerToLobby(actorRef: ActorRef, player: BasePlayer): Boolean
+</span>132 <span style=''>}
+</span>133 <span style=''>
+</span>134 <span style=''>object Server {
+</span>135 <span style=''>
+</span>136 <span style=''>  /** The server username in the lobby.
+</span>137 <span style=''>    *
+</span>138 <span style=''>    * @param username The username
+</span>139 <span style=''>    * @return A ServerImpl instance
+</span>140 <span style=''>    */
+</span>141 <span style=''>  def apply(username: String): Server = </span><span style='background: #F0ADAD'>ServerImpl(username)</span><span style=''>
+</span>142 <span style=''>
+</span>143 <span style=''>  final case class ServerImpl(private var username: String) extends Server {
+</span>144 <span style=''>
+</span>145 <span style=''>    //the uuid of the cell entity that represents this client
+</span>146 <span style=''>    private var uuid: String = _
+</span>147 <span style=''>    //current state of the server
+</span>148 <span style=''>    private var status: ServerState = </span><span style='background: #F0ADAD'>ServerState.Idle</span><span style=''>
+</span>149 <span style=''>    //the current lobby
+</span>150 <span style=''>    private var lobby: Option[GameLobby[ReferablePlayer]] = </span><span style='background: #F0ADAD'>None</span><span style=''>
+</span>151 <span style=''>    //the actor ref used to send and receive
+</span>152 <span style=''>    private var ref: Option[ActorRef] = </span><span style='background: #F0ADAD'>None</span><span style=''>
+</span>153 <span style=''>
+</span>154 <span style=''>    //MAIN METHODS
+</span>155 <span style=''>
+</span>156 <span style=''>    override def bind(actorRef: ActorRef): Unit = </span><span style='background: #F0ADAD'>ref = Some(actorRef)</span><span style=''>
+</span>157 <span style=''>
+</span>158 <span style=''>    override def getUUID: String = </span><span style='background: #F0ADAD'>uuid</span><span style=''>
+</span>159 <span style=''>
+</span>160 <span style=''>    override def getUsername: String = </span><span style='background: #F0ADAD'>username</span><span style=''>
+</span>161 <span style=''>
+</span>162 <span style=''>    override def getState: ServerState = </span><span style='background: #F0ADAD'>status</span><span style=''>
+</span>163 <span style=''>
+</span>164 <span style=''>    override def kill(): Unit = {
+</span>165 <span style=''>      </span><span style='background: #F0ADAD'>status</span><span style=''> match {
+</span>166 <span style=''>        case ServerState.Game =&gt; </span><span style='background: #F0ADAD'>broadcastMessage(GameEnded(false))</span><span style=''>
+</span>167 <span style=''>        case ServerState.Lobby =&gt; </span><span style='background: #F0ADAD'>broadcastMessage(LobbyClosed)</span><span style=''>
+</span>168 <span style=''>        case _ </span><span style='background: #F0ADAD'>=&gt;</span><span style=''> //do nothing is other states
+</span>169 <span style=''>      }
+</span>170 <span style=''>
+</span>171 <span style=''>      if (</span><span style='background: #F0ADAD'>lobby.nonEmpty</span><span style=''>) {
+</span>172 <span style=''>        </span><span style='background: #F0ADAD'>lobby = None</span><span style=''>
+</span>173 <span style=''>      }
+</span>174 <span style=''>
+</span>175 <span style=''>      if (</span><span style='background: #F0ADAD'>ref.nonEmpty</span><span style=''>) </span><span style='background: #F0ADAD'>{
+</span>176 <span style=''></span><span style='background: #F0ADAD'>        ref.get ! PoisonPill
+</span>177 <span style=''></span><span style='background: #F0ADAD'>        ref = None
+</span>178 <span style=''></span><span style='background: #F0ADAD'>      }</span><span style=''>
+</span>179 <span style=''>
+</span>180 <span style=''>      </span><span style='background: #F0ADAD'>status = ServerState.Dead</span><span style=''>
+</span>181 <span style=''>    }
+</span>182 <span style=''>
+</span>183 <span style=''>    //COMMUNICATION
+</span>184 <span style=''>
+</span>185 <span style=''>    override def broadcastMessage(message: Any, clientsToExclude: String*): Unit = {
+</span>186 <span style=''>      if (</span><span style='background: #F0ADAD'>ref.isEmpty</span><span style=''>) </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Unable to broadcast the message, server is not bind to an actor.&quot;)</span><span style=''>
+</span>187 <span style=''>
+</span>188 <span style=''>      val usernameToExclude = </span><span style='background: #F0ADAD'>clientsToExclude :+ this.username</span><span style=''>
+</span>189 <span style=''>      val actors = </span><span style='background: #F0ADAD'>lobby.get.getPlayers.filterNot(p =&gt; (usernameToExclude contains p.getUsername) || !p.isAlive).map(_.getActorRef)</span><span style=''>
+</span>190 <span style=''>      </span><span style='background: #F0ADAD'>actors.foreach(a =&gt; a ! message)</span><span style=''>
+</span>191 <span style=''>    }
+</span>192 <span style=''>
+</span>193 <span style=''>    override def initGame(level: Level): Promise[Boolean] = {
+</span>194 <span style=''>      if (</span><span style='background: #F0ADAD'>status != ServerState.Lobby</span><span style=''>) </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Cannot init the game because the server is in the state: $status&quot;)</span><span style=''>
+</span>195 <span style=''>
+</span>196 <span style=''>      val promise = </span><span style='background: #F0ADAD'>Promise[Boolean]()</span><span style=''>
+</span>197 <span style=''>      //assign player cells to lobby players
+</span>198 <span style=''>      val futures = </span><span style='background: #F0ADAD'>setupClients(level)</span><span style=''>
+</span>199 <span style=''>      </span><span style='background: #F0ADAD'>Future.sequence(futures) onComplete {
+</span>200 <span style=''></span><span style='background: #F0ADAD'>        case Success(_) =&gt; promise success true
+</span>201 <span style=''></span><span style='background: #F0ADAD'>        case Failure(t) =&gt; promise failure t
+</span>202 <span style=''></span><span style='background: #F0ADAD'>      }</span><span style=''>
+</span>203 <span style=''>      promise
+</span>204 <span style=''>    }
+</span>205 <span style=''>
+</span>206 <span style=''>    //GAME MANAGEMENT
+</span>207 <span style=''>
+</span>208 <span style=''>    private def setupClients(level: Level): Seq[Future[Any]] = {
+</span>209 <span style=''>      val availablePlayerCells = </span><span style='background: #F0ADAD'>level.entities.filter(_.isInstanceOf[PlayerCellEntity]).map(p =&gt; Some(p.getUUID))</span><span style=''>
+</span>210 <span style=''>      val otherPlayers = </span><span style='background: #F0ADAD'>lobby.get.getPlayers.filterNot(_.getUsername == this.username)</span><span style=''>
+</span>211 <span style=''>
+</span>212 <span style=''>      if (</span><span style='background: #F0ADAD'>availablePlayerCells.size &lt;= 0</span><span style=''>) </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Cannot setup clients if the level has no player cells.&quot;)</span><span style=''>
+</span>213 <span style=''>
+</span>214 <span style=''>      //assign first available player cell to the server
+</span>215 <span style=''>      </span><span style='background: #F0ADAD'>this.uuid = availablePlayerCells.head.get</span><span style=''>
+</span>216 <span style=''>
+</span>217 <span style=''>      //update uuid of the server players
+</span>218 <span style=''>      val serverPlayer = </span><span style='background: #F0ADAD'>getPlayerFromLobby(this.username)</span><span style=''>
+</span>219 <span style=''>      if (</span><span style='background: #F0ADAD'>serverPlayer.isEmpty</span><span style=''>) </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Cannot update server player uuid because the player was not found.&quot;)</span><span style=''>
+</span>220 <span style=''>      </span><span style='background: #F0ADAD'>serverPlayer.get.setUUID(this.uuid)</span><span style=''>
+</span>221 <span style=''>
+</span>222 <span style=''>      //get map shape and send to the clients along with the assigned uuid
+</span>223 <span style=''>      val mapShape = </span><span style='background: #F0ADAD'>level.levelMap.mapShape</span><span style=''>
+</span>224 <span style=''>
+</span>225 <span style=''>      //gather extra player cells
+</span>226 <span style=''>      val remainingPlayerCells = </span><span style='background: #F0ADAD'>availablePlayerCells.tail</span><span style=''>
+</span>227 <span style=''>      val extraCellPlayers = </span><span style='background: #F0ADAD'>remainingPlayerCells.slice(otherPlayers.size, remainingPlayerCells.size).map(_.get)</span><span style=''>
+</span>228 <span style=''>      //update level entities by removing the extra player cells
+</span>229 <span style=''>      </span><span style='background: #F0ADAD'>level.entities = for (
+</span>230 <span style=''></span><span style='background: #F0ADAD'>        e &lt;- level.entities
+</span>231 <span style=''></span><span style='background: #F0ADAD'>        if !(extraCellPlayers contains e.getUUID)
+</span>232 <span style=''></span><span style='background: #F0ADAD'>      ) yield e</span><span style=''>
+</span>233 <span style=''>
+</span>234 <span style=''>      //prepare ask requests for all clients and return futures
+</span>235 <span style=''>      </span><span style='background: #F0ADAD'>otherPlayers.map(Some(_)).zipAll(availablePlayerCells.tail, None, None).map {
+</span>236 <span style=''></span><span style='background: #F0ADAD'>        case (Some(p), Some(id)) =&gt; p.setUUID(id); Some(p.getActorRef ? GameStarted(id, level.levelInfo, mapShape))
+</span>237 <span style=''></span><span style='background: #F0ADAD'>        case (None, _) =&gt; None
+</span>238 <span style=''></span><span style='background: #F0ADAD'>        case _ =&gt; throw new IllegalStateException(&quot;Not enough player cells for all the clients.&quot;)
+</span>239 <span style=''></span><span style='background: #F0ADAD'>      }.filter(_.nonEmpty).map(_.get)</span><span style=''>
+</span>240 <span style=''>    }
+</span>241 <span style=''>
+</span>242 <span style=''>    override def startGame(levelContext: MultiPlayerLevelContext, levelInfo: LevelInfo): Unit = {
+</span>243 <span style=''>      if (</span><span style='background: #F0ADAD'>status != ServerState.Lobby</span><span style=''>) </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Cannot start game because the server is in the state: $status&quot;)</span><span style=''>
+</span>244 <span style=''>
+</span>245 <span style=''>      </span><span style='background: #F0ADAD'>lobby</span><span style=''> match {
+</span>246 <span style=''>        case Some(gameLobby) =&gt;
+</span>247 <span style=''>          </span><span style='background: #F0ADAD'>gameLobby.notifyGameStarted(levelContext, levelInfo)</span><span style=''>
+</span>248 <span style=''>          </span><span style='background: #F0ADAD'>status = ServerState.Game</span><span style=''>
+</span>249 <span style=''>        case _ =&gt; </span><span style='background: #F0ADAD'>throw new IllegalArgumentException(&quot;Unable to start the game if the lobby is not defined.&quot;)</span><span style=''>
+</span>250 <span style=''>      }
+</span>251 <span style=''>    }
+</span>252 <span style=''>
+</span>253 <span style=''>    override def stopGame(winner: String = username): Unit = {
+</span>254 <span style=''>      if (</span><span style='background: #F0ADAD'>status != ServerState.Lobby &amp;&amp; status != ServerState.Game</span><span style=''>) </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Cannot stop game because the server is in the state: $status&quot;)</span><span style=''>
+</span>255 <span style=''>
+</span>256 <span style=''>      //if the server won, everyone else lost
+</span>257 <span style=''>      if (</span><span style='background: #F0ADAD'>winner.equals(username)</span><span style=''>) {
+</span>258 <span style=''>        </span><span style='background: #F0ADAD'>broadcastMessage(ServerActor.GameEnded(false))</span><span style=''>
+</span>259 <span style=''>      } else </span><span style='background: #F0ADAD'>{
+</span>260 <span style=''></span><span style='background: #F0ADAD'>        deliverMessage(winner, GameEnded(true))
+</span>261 <span style=''></span><span style='background: #F0ADAD'>        broadcastMessage(GameEnded(false), winner)
+</span>262 <span style=''></span><span style='background: #F0ADAD'>      }</span><span style=''>
+</span>263 <span style=''>      //reset lobby death status
+</span>264 <span style=''>      </span><span style='background: #F0ADAD'>resetLobbyPlayersDeathStatus()</span><span style=''>
+</span>265 <span style=''>      //change current server status
+</span>266 <span style=''>      </span><span style='background: #F0ADAD'>status = ServerState.Lobby</span><span style=''>
+</span>267 <span style=''>    }
+</span>268 <span style=''>
+</span>269 <span style=''>    override def deliverMessage(username: String, message: Any): Unit = {
+</span>270 <span style=''>      if (</span><span style='background: #F0ADAD'>lobby.isEmpty</span><span style=''>) </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(&quot;Cannot deliver message to specific client if the lobby is not defined.&quot;)</span><span style=''>
+</span>271 <span style=''>
+</span>272 <span style=''>      </span><span style='background: #F0ADAD'>lobby.get.getPlayers.find(_.getUsername == username)</span><span style=''> match {
+</span>273 <span style=''>        case Some(player) =&gt; </span><span style='background: #F0ADAD'>player.getActorRef ! message</span><span style=''>
+</span>274 <span style=''>        case None =&gt; </span><span style='background: #F0ADAD'>throw new IllegalArgumentException(&quot;Cannot deliver message to specific client if the username does not match any player.&quot;)</span><span style=''>
+</span>275 <span style=''>      }
+</span>276 <span style=''>    }
+</span>277 <span style=''>
+</span>278 <span style=''>    private def resetLobbyPlayersDeathStatus(): Unit = </span><span style='background: #F0ADAD'>lobby</span><span style=''> match {
+</span>279 <span style=''>      case Some(gameLobby) =&gt; </span><span style='background: #F0ADAD'>gameLobby.getPlayers.foreach(_ setLiveness true)</span><span style=''>
+</span>280 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(&quot;Cannot reset lobby players death status if the lobby is not defined.&quot;)</span><span style=''>
+</span>281 <span style=''>    }
+</span>282 <span style=''>
+</span>283 <span style=''>    //LOBBY MANAGEMENT
+</span>284 <span style=''>
+</span>285 <span style=''>    override def notifyClientInputEvent(event: MouseEventWrapper): Unit = {
+</span>286 <span style=''>      if (</span><span style='background: #F0ADAD'>status != ServerState.Game</span><span style=''>) </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Cannot manage client input event because the server is in the state: $status&quot;)</span><span style=''>
+</span>287 <span style=''>
+</span>288 <span style=''>      </span><span style='background: #F0ADAD'>InputEventQueue enqueue event</span><span style=''>
+</span>289 <span style=''>    }
+</span>290 <span style=''>
+</span>291 <span style=''>    override def removePlayerFromGame(username: String, notify: Boolean = false): Unit = {
+</span>292 <span style=''>      if (</span><span style='background: #F0ADAD'>status != ServerState.Game</span><span style=''>) </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Cannot remove player from game because it's in the state: $status&quot;)</span><span style=''>
+</span>293 <span style=''>
+</span>294 <span style=''>      //detect if the dead player is the server itself
+</span>295 <span style=''>      val isServer = </span><span style='background: #F0ADAD'>username == this.username</span><span style=''>
+</span>296 <span style=''>
+</span>297 <span style=''>      //remove entity cell relative to the player that has left
+</span>298 <span style=''>      val player = </span><span style='background: #F0ADAD'>getPlayerFromLobby(username)</span><span style=''>
+</span>299 <span style=''>      if (</span><span style='background: #F0ADAD'>player.isEmpty</span><span style=''>) </span><span style='background: #F0ADAD'>throw new IllegalArgumentException(&quot;Cannot remove player from game because it was not found.&quot;)</span><span style=''>
+</span>300 <span style=''>
+</span>301 <span style=''>      //notify player that he has lost (just clients)
+</span>302 <span style=''>      if (</span><span style='background: #F0ADAD'>notify &amp;&amp; !isServer</span><span style=''>) </span><span style='background: #F0ADAD'>player.get.getActorRef ! GameEnded(false)</span><span style=''>
+</span>303 <span style=''>
+</span>304 <span style=''>      //get the player entity
+</span>305 <span style=''>      val playerEntity = </span><span style='background: #F0ADAD'>EntityManager.filterEntities(classOf[PlayerCellEntity]).find(_.getUUID == player.get.getUUID)</span><span style=''>
+</span>306 <span style=''>      if (</span><span style='background: #F0ADAD'>playerEntity.isEmpty</span><span style=''>) </span><span style='background: #F0ADAD'>throw new IllegalArgumentException(&quot;Cannot remove player cell from game because it was not found.&quot;)</span><span style=''>
+</span>307 <span style=''>
+</span>308 <span style=''>      </span><span style='background: #F0ADAD'>EntityManager.delete(playerEntity.get)</span><span style=''>
+</span>309 <span style=''>      //set the player as dead only if it's not the server itself
+</span>310 <span style=''>      </span><span style='background: #F0ADAD'>setLobbyPlayerAsDead(username)</span><span style=''>
+</span>311 <span style=''>    }
+</span>312 <span style=''>
+</span>313 <span style=''>    private def getPlayerFromLobby(username: String): Option[ReferablePlayer] = </span><span style='background: #F0ADAD'>lobby</span><span style=''> match {
+</span>314 <span style=''>      case Some(gameLobby) =&gt; </span><span style='background: #F0ADAD'>gameLobby.getPlayers.find(_.getUsername == username)</span><span style=''>
+</span>315 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(&quot;Cannot get lobby player if the lobby is not defined.&quot;)</span><span style=''>
+</span>316 <span style=''>    }
+</span>317 <span style=''>
+</span>318 <span style=''>    private def setLobbyPlayerAsDead(username: String): Unit = </span><span style='background: #F0ADAD'>lobby</span><span style=''> match {
+</span>319 <span style=''>      case Some(gameLobby) =&gt; </span><span style='background: #F0ADAD'>gameLobby.getPlayers.filter(_.getUsername == username).foreach(_ setLiveness false)</span><span style=''>
+</span>320 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(&quot;Cannot set lobby player as dead if the lobby is not defined.&quot;)</span><span style=''>
+</span>321 <span style=''>    }
+</span>322 <span style=''>
+</span>323 <span style=''>    override def createLobby(lobbyContext: LobbyContext): Unit = {
+</span>324 <span style=''>      if (</span><span style='background: #F0ADAD'>status != ServerState.Idle</span><span style=''>) </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Server cannot close lobby because it's in the state: $status&quot;)</span><span style=''>
+</span>325 <span style=''>
+</span>326 <span style=''>      //retrieve actor system address
+</span>327 <span style=''>      val address = </span><span style='background: #F0ADAD'>ActorSystemHolder.systemAddress</span><span style=''>
+</span>328 <span style=''>      //abort if something is wrong with the system
+</span>329 <span style=''>      if (</span><span style='background: #F0ADAD'>!NetworkUtils.validatePort(address.port.getOrElse(-1)) ||
+</span>330 <span style=''></span><span style='background: #F0ADAD'>        !NetworkUtils.validateIPV4Address(address.host.getOrElse(&quot;&quot;))</span><span style=''>) {
+</span>331 <span style=''>        </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Server cannot create the lobby because the actor system gave invalid address or port.&quot;)</span><span style=''>
+</span>332 <span style=''>      }
+</span>333 <span style=''>
+</span>334 <span style=''>      //Create the lobby
+</span>335 <span style=''>      </span><span style='background: #F0ADAD'>lobby = Some(GameLobby(lobbyContext))</span><span style=''>
+</span>336 <span style=''>      //add the server itself
+</span>337 <span style=''>      val serverPlayer = </span><span style='background: #F0ADAD'>BasePlayer(username, address.host.get, address.port.get)</span><span style=''>
+</span>338 <span style=''>      //let interface to show immediately the server player
+</span>339 <span style=''>      </span><span style='background: #F0ADAD'>lobbyContext.users = Seq(new User(serverPlayer, true))</span><span style=''>
+</span>340 <span style=''>      //add himself to the lobby
+</span>341 <span style=''>      </span><span style='background: #F0ADAD'>lobby.get.addPlayer(new ReferablePlayer(serverPlayer, ref.get))</span><span style=''>
+</span>342 <span style=''>
+</span>343 <span style=''>      </span><span style='background: #F0ADAD'>status = ServerState.Lobby</span><span style=''>
+</span>344 <span style=''>    }
+</span>345 <span style=''>
+</span>346 <span style=''>    //HELPER METHODS
+</span>347 <span style=''>
+</span>348 <span style=''>    override def closeLobby(): Unit = {
+</span>349 <span style=''>      if (</span><span style='background: #F0ADAD'>status != ServerState.Lobby</span><span style=''>) </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Server cannot close lobby because it's in the state: $status&quot;)</span><span style=''>
+</span>350 <span style=''>      if (</span><span style='background: #F0ADAD'>lobby.isEmpty</span><span style=''>) </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Cannot close lobby if it's not defined.&quot;)</span><span style=''>
+</span>351 <span style=''>
+</span>352 <span style=''>      //broadcast that the lobby is closed
+</span>353 <span style=''>      </span><span style='background: #F0ADAD'>broadcastMessage(LobbyClosed)</span><span style=''>
+</span>354 <span style=''>      //let view change scene
+</span>355 <span style=''>      </span><span style='background: #F0ADAD'>lobby.get.notifyLobbyClosed()</span><span style=''>
+</span>356 <span style=''>      //clear lobby variable
+</span>357 <span style=''>      </span><span style='background: #F0ADAD'>lobby = None</span><span style=''>
+</span>358 <span style=''>
+</span>359 <span style=''>      </span><span style='background: #F0ADAD'>status = ServerState.Idle</span><span style=''>
+</span>360 <span style=''>    }
+</span>361 <span style=''>
+</span>362 <span style=''>    override def getLobbyPlayers: Seq[ReferablePlayer] = {
+</span>363 <span style=''>      (status, lobby) match {
+</span>364 <span style=''>        case (ServerState.Lobby | ServerState.Game, Some(gameLobby)) =&gt; </span><span style='background: #F0ADAD'>gameLobby.getPlayers</span><span style=''>
+</span>365 <span style=''>        case (_, None) =&gt; </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Cannot get lobby players because the lobby is not defined.&quot;)</span><span style=''>
+</span>366 <span style=''>        case _ =&gt; </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Cannot because it's in the state: $status&quot;)</span><span style=''>
+</span>367 <span style=''>      }
+</span>368 <span style=''>    }
+</span>369 <span style=''>
+</span>370 <span style=''>    override def addPlayerToLobby(actorRef: ActorRef, player: BasePlayer): Boolean = {
+</span>371 <span style=''>      (status, lobby) match {
+</span>372 <span style=''>        case (ServerState.Lobby, Some(gameLobby)) =&gt;
+</span>373 <span style=''>          if (</span><span style='background: #F0ADAD'>!gameLobby.isFull</span><span style=''>) </span><span style='background: #F0ADAD'>{
+</span>374 <span style=''></span><span style='background: #F0ADAD'>            val newPlayer = new ReferablePlayer(player.getUsername, player.getAddress, player.getPort, actorRef)
+</span>375 <span style=''></span><span style='background: #F0ADAD'>            //tell everyone a new player entered the lobby
+</span>376 <span style=''></span><span style='background: #F0ADAD'>            broadcastMessage(PlayerEnteredLobby(newPlayer.toBasicPlayer))
+</span>377 <span style=''></span><span style='background: #F0ADAD'>            //add the player to the lobby
+</span>378 <span style=''></span><span style='background: #F0ADAD'>            gameLobby.addPlayer(newPlayer)
+</span>379 <span style=''></span><span style='background: #F0ADAD'>            true
+</span>380 <span style=''></span><span style='background: #F0ADAD'>          }</span><span style=''> else </span><span style='background: #F0ADAD'>false</span><span style=''>
+</span>381 <span style=''>        case _ =&gt; </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Unable to add player to lobby because the lobby is undefined&quot;)</span><span style=''>
+</span>382 <span style=''>      }
+</span>383 <span style=''>    }
+</span>384 <span style=''>
+</span>385 <span style=''>    override def removePlayerFromLobby(username: String): Unit = {
+</span>386 <span style=''>      (status, lobby) match {
+</span>387 <span style=''>        case (ServerState.Lobby | ServerState.Game, Some(gameLobby)) =&gt;
+</span>388 <span style=''>          //effectively remove player from lobby
+</span>389 <span style=''>          </span><span style='background: #F0ADAD'>gameLobby.removePlayer(username)</span><span style=''>
+</span>390 <span style=''>          //tell everyone the player left the game
+</span>391 <span style=''>          </span><span style='background: #F0ADAD'>broadcastMessage(PlayerLeftLobby(username))</span><span style=''>
+</span>392 <span style=''>        case _ =&gt; </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Unable to remove player to lobby because the lobby is undefined&quot;)</span><span style=''>
+</span>393 <span style=''>      }
+</span>394 <span style=''>    }
+</span>395 <span style=''>  }
+</span>396 <span style=''>
+</span>397 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          1577
+        </td>
+        <td>
+          1125
+          -
+          1133
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;Server&quot;
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          1578
+        </td>
+        <td>
+          1176
+          -
+          1177
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          5
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          1580
+        </td>
+        <td>
+          1168
+          -
+          1186
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          akka.util.Timeout.apply
+        </td>
+        <td style="background: #F0ADAD">
+          akka.util.Timeout.apply(scala.concurrent.duration.`package`.DurationInt(5).seconds)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          1579
+        </td>
+        <td>
+          1176
+          -
+          1185
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.concurrent.duration.DurationConversions.seconds
+        </td>
+        <td style="background: #F0ADAD">
+          scala.concurrent.duration.`package`.DurationInt(5).seconds
+        </td>
+      </tr><tr>
+        <td>
+          141
+        </td>
+        <td>
+          1581
+        </td>
+        <td>
+          4439
+          -
+          4459
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.apply
+        </td>
+        <td style="background: #F0ADAD">
+          Server.this.ServerImpl.apply(username)
+        </td>
+      </tr><tr>
+        <td>
+          148
+        </td>
+        <td>
+          1582
+        </td>
+        <td>
+          4706
+          -
+          4722
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerState.Idle
+        </td>
+        <td style="background: #F0ADAD">
+          ServerState.Idle
+        </td>
+      </tr><tr>
+        <td>
+          150
+        </td>
+        <td>
+          1583
+        </td>
+        <td>
+          4807
+          -
+          4811
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #F0ADAD">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          152
+        </td>
+        <td>
+          1584
+        </td>
+        <td>
+          4897
+          -
+          4901
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #F0ADAD">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          156
+        </td>
+        <td>
+          1586
+        </td>
+        <td>
+          4973
+          -
+          4993
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.ref_=
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.ref_=(scala.Some.apply[akka.actor.ActorRef](actorRef))
+        </td>
+      </tr><tr>
+        <td>
+          156
+        </td>
+        <td>
+          1585
+        </td>
+        <td>
+          4979
+          -
+          4993
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Some.apply[akka.actor.ActorRef](actorRef)
+        </td>
+      </tr><tr>
+        <td>
+          158
+        </td>
+        <td>
+          1587
+        </td>
+        <td>
+          5030
+          -
+          5034
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.uuid
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.uuid
+        </td>
+      </tr><tr>
+        <td>
+          160
+        </td>
+        <td>
+          1588
+        </td>
+        <td>
+          5075
+          -
+          5083
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.username
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.username
+        </td>
+      </tr><tr>
+        <td>
+          162
+        </td>
+        <td>
+          1589
+        </td>
+        <td>
+          5126
+          -
+          5132
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.status
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.status
+        </td>
+      </tr><tr>
+        <td>
+          165
+        </td>
+        <td>
+          1590
+        </td>
+        <td>
+          5174
+          -
+          5180
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.status
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.status
+        </td>
+      </tr><tr>
+        <td>
+          166
+        </td>
+        <td>
+          1592
+        </td>
+        <td>
+          5222
+          -
+          5256
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.broadcastMessage
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.broadcastMessage(it.unibo.osmos.redux.multiplayer.server.ServerActor.GameEnded.apply(false))
+        </td>
+      </tr><tr>
+        <td>
+          166
+        </td>
+        <td>
+          1591
+        </td>
+        <td>
+          5239
+          -
+          5255
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.GameEnded.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.GameEnded.apply(false)
+        </td>
+      </tr><tr>
+        <td>
+          167
+        </td>
+        <td>
+          1593
+        </td>
+        <td>
+          5308
+          -
+          5319
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.LobbyClosed
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.LobbyClosed
+        </td>
+      </tr><tr>
+        <td>
+          167
+        </td>
+        <td>
+          1594
+        </td>
+        <td>
+          5291
+          -
+          5320
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.broadcastMessage
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.broadcastMessage(it.unibo.osmos.redux.multiplayer.server.ServerActor.LobbyClosed)
+        </td>
+      </tr><tr>
+        <td>
+          168
+        </td>
+        <td>
+          1595
+        </td>
+        <td>
+          5336
+          -
+          5338
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          171
+        </td>
+        <td>
+          1596
+        </td>
+        <td>
+          5387
+          -
+          5401
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.nonEmpty
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.lobby.nonEmpty
+        </td>
+      </tr><tr>
+        <td>
+          171
+        </td>
+        <td>
+          1601
+        </td>
+        <td>
+          5383
+          -
+          5383
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          171
+        </td>
+        <td>
+          1600
+        </td>
+        <td>
+          5383
+          -
+          5383
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          172
+        </td>
+        <td>
+          1599
+        </td>
+        <td>
+          5413
+          -
+          5425
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.lobby_=
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.lobby_=(scala.None)
+        </td>
+      </tr><tr>
+        <td>
+          172
+        </td>
+        <td>
+          1598
+        </td>
+        <td>
+          5413
+          -
+          5425
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.lobby_=
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.lobby_=(scala.None)
+        </td>
+      </tr><tr>
+        <td>
+          172
+        </td>
+        <td>
+          1597
+        </td>
+        <td>
+          5421
+          -
+          5425
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #F0ADAD">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          175
+        </td>
+        <td>
+          1611
+        </td>
+        <td>
+          5441
+          -
+          5441
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          175
+        </td>
+        <td>
+          1602
+        </td>
+        <td>
+          5445
+          -
+          5457
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.nonEmpty
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.ref.nonEmpty
+        </td>
+      </tr><tr>
+        <td>
+          175
+        </td>
+        <td>
+          1610
+        </td>
+        <td>
+          5459
+          -
+          5516
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          {
+  {
+    &lt;artifact&gt; val qual$1: akka.actor.ScalaActorRef = actor.this.`package`.actorRef2Scala(ServerImpl.this.ref.get);
+    &lt;artifact&gt; val x$14: akka.actor.PoisonPill.type = akka.actor.PoisonPill;
+    &lt;artifact&gt; val x$15: akka.actor.ActorRef = qual$1.!$default$2(x$14);
+    qual$1.!(x$14)(x$15)
+  };
+  ServerImpl.this.ref_=(scala.None)
+}
+        </td>
+      </tr><tr>
+        <td>
+          175
+        </td>
+        <td>
+          1612
+        </td>
+        <td>
+          5441
+          -
+          5441
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          176
+        </td>
+        <td>
+          1605
+        </td>
+        <td>
+          5479
+          -
+          5489
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          akka.actor.PoisonPill
+        </td>
+        <td style="background: #F0ADAD">
+          akka.actor.PoisonPill
+        </td>
+      </tr><tr>
+        <td>
+          176
+        </td>
+        <td>
+          1604
+        </td>
+        <td>
+          5469
+          -
+          5476
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          akka.actor.actorRef2Scala
+        </td>
+        <td style="background: #F0ADAD">
+          actor.this.`package`.actorRef2Scala(ServerImpl.this.ref.get)
+        </td>
+      </tr><tr>
+        <td>
+          176
+        </td>
+        <td>
+          1607
+        </td>
+        <td>
+          5469
+          -
+          5489
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          akka.actor.ScalaActorRef.!
+        </td>
+        <td style="background: #F0ADAD">
+          qual$1.!(x$14)(x$15)
+        </td>
+      </tr><tr>
+        <td>
+          176
+        </td>
+        <td>
+          1606
+        </td>
+        <td>
+          5477
+          -
+          5477
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          akka.actor.ScalaActorRef.!$default$2
+        </td>
+        <td style="background: #F0ADAD">
+          qual$1.!$default$2(x$14)
+        </td>
+      </tr><tr>
+        <td>
+          176
+        </td>
+        <td>
+          1603
+        </td>
+        <td>
+          5469
+          -
+          5476
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.get
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.ref.get
+        </td>
+      </tr><tr>
+        <td>
+          177
+        </td>
+        <td>
+          1608
+        </td>
+        <td>
+          5504
+          -
+          5508
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #F0ADAD">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          177
+        </td>
+        <td>
+          1609
+        </td>
+        <td>
+          5498
+          -
+          5508
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.ref_=
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.ref_=(scala.None)
+        </td>
+      </tr><tr>
+        <td>
+          180
+        </td>
+        <td>
+          1614
+        </td>
+        <td>
+          5524
+          -
+          5549
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.status_=
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.status_=(ServerState.Dead)
+        </td>
+      </tr><tr>
+        <td>
+          180
+        </td>
+        <td>
+          1613
+        </td>
+        <td>
+          5533
+          -
+          5549
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerState.Dead
+        </td>
+        <td style="background: #F0ADAD">
+          ServerState.Dead
+        </td>
+      </tr><tr>
+        <td>
+          186
+        </td>
+        <td>
+          1617
+        </td>
+        <td>
+          5686
+          -
+          5785
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new java.lang.IllegalStateException(&quot;Unable to broadcast the message, server is not bind to an actor.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          186
+        </td>
+        <td>
+          1619
+        </td>
+        <td>
+          5669
+          -
+          5669
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          186
+        </td>
+        <td>
+          1616
+        </td>
+        <td>
+          5686
+          -
+          5785
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new java.lang.IllegalStateException(&quot;Unable to broadcast the message, server is not bind to an actor.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          186
+        </td>
+        <td>
+          1615
+        </td>
+        <td>
+          5673
+          -
+          5684
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.isEmpty
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.ref.isEmpty
+        </td>
+      </tr><tr>
+        <td>
+          186
+        </td>
+        <td>
+          1618
+        </td>
+        <td>
+          5669
+          -
+          5669
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          188
+        </td>
+        <td>
+          1620
+        </td>
+        <td>
+          5837
+          -
+          5850
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.username
+        </td>
+        <td style="background: #F0ADAD">
+          this.username
+        </td>
+      </tr><tr>
+        <td>
+          188
+        </td>
+        <td>
+          1622
+        </td>
+        <td>
+          5817
+          -
+          5850
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.SeqLike.:+
+        </td>
+        <td style="background: #F0ADAD">
+          clientsToExclude.:+[String, Seq[String]](this.username)(collection.this.Seq.canBuildFrom[String])
+        </td>
+      </tr><tr>
+        <td>
+          188
+        </td>
+        <td>
+          1621
+        </td>
+        <td>
+          5834
+          -
+          5834
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.Seq.canBuildFrom
+        </td>
+        <td style="background: #F0ADAD">
+          collection.this.Seq.canBuildFrom[String]
+        </td>
+      </tr><tr>
+        <td>
+          189
+        </td>
+        <td>
+          1623
+        </td>
+        <td>
+          5934
+          -
+          5947
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.BasePlayer.getUsername
+        </td>
+        <td style="background: #F0ADAD">
+          p.getUsername
+        </td>
+      </tr><tr>
+        <td>
+          189
+        </td>
+        <td>
+          1626
+        </td>
+        <td>
+          5968
+          -
+          5981
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.ReferablePlayer.getActorRef
+        </td>
+        <td style="background: #F0ADAD">
+          x$1.getActorRef
+        </td>
+      </tr><tr>
+        <td>
+          189
+        </td>
+        <td>
+          1628
+        </td>
+        <td>
+          5870
+          -
+          5982
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.TraversableLike.map
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.lobby.get.getPlayers.filterNot(((p: it.unibo.osmos.redux.multiplayer.players.ReferablePlayer) =&gt; usernameToExclude.contains[String](p.getUsername).||(p.isAlive.unary_!))).map[akka.actor.ActorRef, Seq[akka.actor.ActorRef]](((x$1: it.unibo.osmos.redux.multiplayer.players.ReferablePlayer) =&gt; x$1.getActorRef))(collection.this.Seq.canBuildFrom[akka.actor.ActorRef])
+        </td>
+      </tr><tr>
+        <td>
+          189
+        </td>
+        <td>
+          1625
+        </td>
+        <td>
+          5906
+          -
+          5962
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.||
+        </td>
+        <td style="background: #F0ADAD">
+          usernameToExclude.contains[String](p.getUsername).||(p.isAlive.unary_!)
+        </td>
+      </tr><tr>
+        <td>
+          189
+        </td>
+        <td>
+          1624
+        </td>
+        <td>
+          5952
+          -
+          5962
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #F0ADAD">
+          p.isAlive.unary_!
+        </td>
+      </tr><tr>
+        <td>
+          189
+        </td>
+        <td>
+          1627
+        </td>
+        <td>
+          5967
+          -
+          5967
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.Seq.canBuildFrom
+        </td>
+        <td style="background: #F0ADAD">
+          collection.this.Seq.canBuildFrom[akka.actor.ActorRef]
+        </td>
+      </tr><tr>
+        <td>
+          190
+        </td>
+        <td>
+          1629
+        </td>
+        <td>
+          6009
+          -
+          6010
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          akka.actor.actorRef2Scala
+        </td>
+        <td style="background: #F0ADAD">
+          actor.this.`package`.actorRef2Scala(a)
+        </td>
+      </tr><tr>
+        <td>
+          190
+        </td>
+        <td>
+          1632
+        </td>
+        <td>
+          5989
+          -
+          6021
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.IterableLike.foreach
+        </td>
+        <td style="background: #F0ADAD">
+          actors.foreach[Unit](((a: akka.actor.ActorRef) =&gt; {
+  &lt;artifact&gt; val qual$2: akka.actor.ScalaActorRef = actor.this.`package`.actorRef2Scala(a);
+  &lt;artifact&gt; val x$16: Any = message;
+  &lt;artifact&gt; val x$17: akka.actor.ActorRef = qual$2.!$default$2(x$16);
+  qual$2.!(x$16)(x$17)
+}))
+        </td>
+      </tr><tr>
+        <td>
+          190
+        </td>
+        <td>
+          1631
+        </td>
+        <td>
+          6009
+          -
+          6020
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          akka.actor.ScalaActorRef.!
+        </td>
+        <td style="background: #F0ADAD">
+          qual$2.!(x$16)(x$17)
+        </td>
+      </tr><tr>
+        <td>
+          190
+        </td>
+        <td>
+          1630
+        </td>
+        <td>
+          6011
+          -
+          6011
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          akka.actor.ScalaActorRef.!$default$2
+        </td>
+        <td style="background: #F0ADAD">
+          qual$2.!$default$2(x$16)
+        </td>
+      </tr><tr>
+        <td>
+          194
+        </td>
+        <td>
+          1638
+        </td>
+        <td>
+          6097
+          -
+          6097
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          194
+        </td>
+        <td>
+          1635
+        </td>
+        <td>
+          6130
+          -
+          6238
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Cannot init the game because the server is in the state: &quot;, &quot;&quot;).s(ServerImpl.this.status))
+        </td>
+      </tr><tr>
+        <td>
+          194
+        </td>
+        <td>
+          1634
+        </td>
+        <td>
+          6101
+          -
+          6128
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.!=
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.status.!=(ServerState.Lobby)
+        </td>
+      </tr><tr>
+        <td>
+          194
+        </td>
+        <td>
+          1637
+        </td>
+        <td>
+          6097
+          -
+          6097
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          194
+        </td>
+        <td>
+          1633
+        </td>
+        <td>
+          6111
+          -
+          6128
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerState.Lobby
+        </td>
+        <td style="background: #F0ADAD">
+          ServerState.Lobby
+        </td>
+      </tr><tr>
+        <td>
+          194
+        </td>
+        <td>
+          1636
+        </td>
+        <td>
+          6130
+          -
+          6238
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Cannot init the game because the server is in the state: &quot;, &quot;&quot;).s(ServerImpl.this.status))
+        </td>
+      </tr><tr>
+        <td>
+          196
+        </td>
+        <td>
+          1639
+        </td>
+        <td>
+          6260
+          -
+          6278
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.concurrent.Promise.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.concurrent.Promise.apply[Boolean]()
+        </td>
+      </tr><tr>
+        <td>
+          198
+        </td>
+        <td>
+          1640
+        </td>
+        <td>
+          6344
+          -
+          6363
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.setupClients
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.setupClients(level)
+        </td>
+      </tr><tr>
+        <td>
+          199
+        </td>
+        <td>
+          1641
+        </td>
+        <td>
+          6385
+          -
+          6385
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.Seq.canBuildFrom
+        </td>
+        <td style="background: #F0ADAD">
+          collection.this.Seq.canBuildFrom[Any]
+        </td>
+      </tr><tr>
+        <td>
+          199
+        </td>
+        <td>
+          1644
+        </td>
+        <td>
+          6370
+          -
+          6508
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.concurrent.Future.onComplete
+        </td>
+        <td style="background: #F0ADAD">
+          scala.concurrent.Future.sequence[Any, Seq](futures)(collection.this.Seq.canBuildFrom[Any], scala.concurrent.ExecutionContext.Implicits.global).onComplete[scala.concurrent.Promise[Boolean]](((x0$1: scala.util.Try[Seq[Any]]) =&gt; x0$1 match {
+  case (value: Seq[Any])scala.util.Success[Seq[Any]](_) =&gt; promise.success(true)
+  case (exception: Throwable)scala.util.Failure[Seq[Any]]((t @ _)) =&gt; promise.failure(t)
+}))(scala.concurrent.ExecutionContext.Implicits.global)
+        </td>
+      </tr><tr>
+        <td>
+          200
+        </td>
+        <td>
+          1642
+        </td>
+        <td>
+          6435
+          -
+          6455
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.concurrent.Promise.success
+        </td>
+        <td style="background: #F0ADAD">
+          promise.success(true)
+        </td>
+      </tr><tr>
+        <td>
+          201
+        </td>
+        <td>
+          1643
+        </td>
+        <td>
+          6483
+          -
+          6500
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.concurrent.Promise.failure
+        </td>
+        <td style="background: #F0ADAD">
+          promise.failure(t)
+        </td>
+      </tr><tr>
+        <td>
+          209
+        </td>
+        <td>
+          1647
+        </td>
+        <td>
+          6716
+          -
+          6731
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Some.apply[String](p.getUUID)
+        </td>
+      </tr><tr>
+        <td>
+          209
+        </td>
+        <td>
+          1646
+        </td>
+        <td>
+          6721
+          -
+          6730
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Property.getUUID
+        </td>
+        <td style="background: #F0ADAD">
+          p.getUUID
+        </td>
+      </tr><tr>
+        <td>
+          209
+        </td>
+        <td>
+          1649
+        </td>
+        <td>
+          6651
+          -
+          6732
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.immutable.List.map
+        </td>
+        <td style="background: #F0ADAD">
+          level.entities.filter(((x$2: it.unibo.osmos.redux.ecs.entities.CellEntity) =&gt; x$2.isInstanceOf[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity])).map[Some[String], List[Some[String]]](((p: it.unibo.osmos.redux.ecs.entities.CellEntity) =&gt; scala.Some.apply[String](p.getUUID)))(immutable.this.List.canBuildFrom[Some[String]])
+        </td>
+      </tr><tr>
+        <td>
+          209
+        </td>
+        <td>
+          1645
+        </td>
+        <td>
+          6673
+          -
+          6705
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.Any.isInstanceOf
+        </td>
+        <td style="background: #F0ADAD">
+          x$2.isInstanceOf[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity]
+        </td>
+      </tr><tr>
+        <td>
+          209
+        </td>
+        <td>
+          1648
+        </td>
+        <td>
+          6710
+          -
+          6710
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.immutable.List.canBuildFrom
+        </td>
+        <td style="background: #F0ADAD">
+          immutable.this.List.canBuildFrom[Some[String]]
+        </td>
+      </tr><tr>
+        <td>
+          210
+        </td>
+        <td>
+          1650
+        </td>
+        <td>
+          6806
+          -
+          6819
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.username
+        </td>
+        <td style="background: #F0ADAD">
+          this.username
+        </td>
+      </tr><tr>
+        <td>
+          210
+        </td>
+        <td>
+          1652
+        </td>
+        <td>
+          6758
+          -
+          6820
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.TraversableLike.filterNot
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.lobby.get.getPlayers.filterNot(((x$3: it.unibo.osmos.redux.multiplayer.players.ReferablePlayer) =&gt; x$3.getUsername.==(this.username)))
+        </td>
+      </tr><tr>
+        <td>
+          210
+        </td>
+        <td>
+          1651
+        </td>
+        <td>
+          6789
+          -
+          6819
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.==
+        </td>
+        <td style="background: #F0ADAD">
+          x$3.getUsername.==(this.username)
+        </td>
+      </tr><tr>
+        <td>
+          212
+        </td>
+        <td>
+          1656
+        </td>
+        <td>
+          6828
+          -
+          6828
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          212
+        </td>
+        <td>
+          1653
+        </td>
+        <td>
+          6832
+          -
+          6862
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.&lt;=
+        </td>
+        <td style="background: #F0ADAD">
+          availablePlayerCells.size.&lt;=(0)
+        </td>
+      </tr><tr>
+        <td>
+          212
+        </td>
+        <td>
+          1655
+        </td>
+        <td>
+          6864
+          -
+          6953
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new java.lang.IllegalStateException(&quot;Cannot setup clients if the level has no player cells.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          212
+        </td>
+        <td>
+          1657
+        </td>
+        <td>
+          6828
+          -
+          6828
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          212
+        </td>
+        <td>
+          1654
+        </td>
+        <td>
+          6864
+          -
+          6953
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new java.lang.IllegalStateException(&quot;Cannot setup clients if the level has no player cells.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          215
+        </td>
+        <td>
+          1659
+        </td>
+        <td>
+          7018
+          -
+          7059
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.uuid_=
+        </td>
+        <td style="background: #F0ADAD">
+          this.uuid_=(availablePlayerCells.head.get)
+        </td>
+      </tr><tr>
+        <td>
+          215
+        </td>
+        <td>
+          1658
+        </td>
+        <td>
+          7030
+          -
+          7059
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Some.get
+        </td>
+        <td style="background: #F0ADAD">
+          availablePlayerCells.head.get
+        </td>
+      </tr><tr>
+        <td>
+          218
+        </td>
+        <td>
+          1661
+        </td>
+        <td>
+          7128
+          -
+          7161
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.getPlayerFromLobby
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.getPlayerFromLobby(this.username)
+        </td>
+      </tr><tr>
+        <td>
+          218
+        </td>
+        <td>
+          1660
+        </td>
+        <td>
+          7147
+          -
+          7160
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.username
+        </td>
+        <td style="background: #F0ADAD">
+          this.username
+        </td>
+      </tr><tr>
+        <td>
+          219
+        </td>
+        <td>
+          1665
+        </td>
+        <td>
+          7168
+          -
+          7168
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          219
+        </td>
+        <td>
+          1662
+        </td>
+        <td>
+          7172
+          -
+          7192
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.isEmpty
+        </td>
+        <td style="background: #F0ADAD">
+          serverPlayer.isEmpty
+        </td>
+      </tr><tr>
+        <td>
+          219
+        </td>
+        <td>
+          1664
+        </td>
+        <td>
+          7194
+          -
+          7295
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new java.lang.IllegalStateException(&quot;Cannot update server player uuid because the player was not found.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          219
+        </td>
+        <td>
+          1666
+        </td>
+        <td>
+          7168
+          -
+          7168
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          219
+        </td>
+        <td>
+          1663
+        </td>
+        <td>
+          7194
+          -
+          7295
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new java.lang.IllegalStateException(&quot;Cannot update server player uuid because the player was not found.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          220
+        </td>
+        <td>
+          1668
+        </td>
+        <td>
+          7302
+          -
+          7337
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.Referable.setUUID
+        </td>
+        <td style="background: #F0ADAD">
+          serverPlayer.get.setUUID(this.uuid)
+        </td>
+      </tr><tr>
+        <td>
+          220
+        </td>
+        <td>
+          1667
+        </td>
+        <td>
+          7327
+          -
+          7336
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.uuid
+        </td>
+        <td style="background: #F0ADAD">
+          this.uuid
+        </td>
+      </tr><tr>
+        <td>
+          223
+        </td>
+        <td>
+          1669
+        </td>
+        <td>
+          7435
+          -
+          7458
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.LevelMap.mapShape
+        </td>
+        <td style="background: #F0ADAD">
+          level.levelMap.mapShape
+        </td>
+      </tr><tr>
+        <td>
+          226
+        </td>
+        <td>
+          1670
+        </td>
+        <td>
+          7527
+          -
+          7552
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.TraversableLike.tail
+        </td>
+        <td style="background: #F0ADAD">
+          availablePlayerCells.tail
+        </td>
+      </tr><tr>
+        <td>
+          227
+        </td>
+        <td>
+          1674
+        </td>
+        <td>
+          7658
+          -
+          7658
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.immutable.List.canBuildFrom
+        </td>
+        <td style="background: #F0ADAD">
+          immutable.this.List.canBuildFrom[String]
+        </td>
+      </tr><tr>
+        <td>
+          227
+        </td>
+        <td>
+          1671
+        </td>
+        <td>
+          7609
+          -
+          7626
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.SeqLike.size
+        </td>
+        <td style="background: #F0ADAD">
+          otherPlayers.size
+        </td>
+      </tr><tr>
+        <td>
+          227
+        </td>
+        <td>
+          1673
+        </td>
+        <td>
+          7659
+          -
+          7664
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Some.get
+        </td>
+        <td style="background: #F0ADAD">
+          x$4.get
+        </td>
+      </tr><tr>
+        <td>
+          227
+        </td>
+        <td>
+          1675
+        </td>
+        <td>
+          7582
+          -
+          7665
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.immutable.List.map
+        </td>
+        <td style="background: #F0ADAD">
+          remainingPlayerCells.slice(otherPlayers.size, remainingPlayerCells.size).map[String, List[String]](((x$4: Some[String]) =&gt; x$4.get))(immutable.this.List.canBuildFrom[String])
+        </td>
+      </tr><tr>
+        <td>
+          227
+        </td>
+        <td>
+          1672
+        </td>
+        <td>
+          7628
+          -
+          7653
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.SeqLike.size
+        </td>
+        <td style="background: #F0ADAD">
+          remainingPlayerCells.size
+        </td>
+      </tr><tr>
+        <td>
+          229
+        </td>
+        <td>
+          1680
+        </td>
+        <td>
+          7737
+          -
+          7853
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.Level.entities_=
+        </td>
+        <td style="background: #F0ADAD">
+          level.entities_=(level.entities.withFilter(((e: it.unibo.osmos.redux.ecs.entities.CellEntity) =&gt; extraCellPlayers.contains[String](e.getUUID).unary_!)).map[it.unibo.osmos.redux.ecs.entities.CellEntity, List[it.unibo.osmos.redux.ecs.entities.CellEntity]](((e: it.unibo.osmos.redux.ecs.entities.CellEntity) =&gt; e))(immutable.this.List.canBuildFrom[it.unibo.osmos.redux.ecs.entities.CellEntity]))
+        </td>
+      </tr><tr>
+        <td>
+          230
+        </td>
+        <td>
+          1679
+        </td>
+        <td>
+          7754
+          -
+          7853
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.generic.FilterMonadic.map
+        </td>
+        <td style="background: #F0ADAD">
+          level.entities.withFilter(((e: it.unibo.osmos.redux.ecs.entities.CellEntity) =&gt; extraCellPlayers.contains[String](e.getUUID).unary_!)).map[it.unibo.osmos.redux.ecs.entities.CellEntity, List[it.unibo.osmos.redux.ecs.entities.CellEntity]](((e: it.unibo.osmos.redux.ecs.entities.CellEntity) =&gt; e))(immutable.this.List.canBuildFrom[it.unibo.osmos.redux.ecs.entities.CellEntity])
+        </td>
+      </tr><tr>
+        <td>
+          230
+        </td>
+        <td>
+          1678
+        </td>
+        <td>
+          7770
+          -
+          7770
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.immutable.List.canBuildFrom
+        </td>
+        <td style="background: #F0ADAD">
+          immutable.this.List.canBuildFrom[it.unibo.osmos.redux.ecs.entities.CellEntity]
+        </td>
+      </tr><tr>
+        <td>
+          231
+        </td>
+        <td>
+          1677
+        </td>
+        <td>
+          7799
+          -
+          7837
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #F0ADAD">
+          extraCellPlayers.contains[String](e.getUUID).unary_!
+        </td>
+      </tr><tr>
+        <td>
+          231
+        </td>
+        <td>
+          1676
+        </td>
+        <td>
+          7827
+          -
+          7836
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Property.getUUID
+        </td>
+        <td style="background: #F0ADAD">
+          e.getUUID
+        </td>
+      </tr><tr>
+        <td>
+          235
+        </td>
+        <td>
+          1698
+        </td>
+        <td>
+          8001
+          -
+          8001
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.Seq.canBuildFrom
+        </td>
+        <td style="background: #F0ADAD">
+          collection.this.Seq.canBuildFrom[Option[scala.concurrent.Future[Any]]]
+        </td>
+      </tr><tr>
+        <td>
+          235
+        </td>
+        <td>
+          1683
+        </td>
+        <td>
+          7958
+          -
+          7983
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.TraversableLike.tail
+        </td>
+        <td style="background: #F0ADAD">
+          availablePlayerCells.tail
+        </td>
+      </tr><tr>
+        <td>
+          235
+        </td>
+        <td>
+          1686
+        </td>
+        <td>
+          7957
+          -
+          7957
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.Seq.canBuildFrom
+        </td>
+        <td style="background: #F0ADAD">
+          collection.this.Seq.canBuildFrom[(Option[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer], Option[String])]
+        </td>
+      </tr><tr>
+        <td>
+          235
+        </td>
+        <td>
+          1682
+        </td>
+        <td>
+          7941
+          -
+          7941
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.Seq.canBuildFrom
+        </td>
+        <td style="background: #F0ADAD">
+          collection.this.Seq.canBuildFrom[Some[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer]]
+        </td>
+      </tr><tr>
+        <td>
+          235
+        </td>
+        <td>
+          1685
+        </td>
+        <td>
+          7991
+          -
+          7995
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #F0ADAD">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          235
+        </td>
+        <td>
+          1684
+        </td>
+        <td>
+          7985
+          -
+          7989
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #F0ADAD">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          235
+        </td>
+        <td>
+          1681
+        </td>
+        <td>
+          7942
+          -
+          7949
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Some.apply[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer](x$5)
+        </td>
+      </tr><tr>
+        <td>
+          236
+        </td>
+        <td>
+          1689
+        </td>
+        <td>
+          8059
+          -
+          8072
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          akka.pattern.AskSupport.ask
+        </td>
+        <td style="background: #F0ADAD">
+          akka.pattern.`package`.ask(p.getActorRef)
+        </td>
+      </tr><tr>
+        <td>
+          236
+        </td>
+        <td>
+          1692
+        </td>
+        <td>
+          8073
+          -
+          8073
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.timeout
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.timeout
+        </td>
+      </tr><tr>
+        <td>
+          236
+        </td>
+        <td>
+          1695
+        </td>
+        <td>
+          8054
+          -
+          8118
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Some.apply[scala.concurrent.Future[Any]]({
+  &lt;artifact&gt; val qual$3: akka.pattern.AskableActorRef = akka.pattern.`package`.ask(p.getActorRef);
+  &lt;artifact&gt; val x$18: it.unibo.osmos.redux.multiplayer.server.ServerActor.GameStarted = it.unibo.osmos.redux.multiplayer.server.ServerActor.GameStarted.apply(id, level.levelInfo, mapShape);
+  &lt;artifact&gt; val x$19: akka.util.Timeout = ServerImpl.this.timeout;
+  &lt;artifact&gt; val x$20: akka.actor.ActorRef = qual$3.?$default$3(x$18);
+  qual$3.?(x$18)(x$19, x$20)
+})
+        </td>
+      </tr><tr>
+        <td>
+          236
+        </td>
+        <td>
+          1694
+        </td>
+        <td>
+          8059
+          -
+          8117
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          akka.pattern.AskableActorRef.?
+        </td>
+        <td style="background: #F0ADAD">
+          qual$3.?(x$18)(x$19, x$20)
+        </td>
+      </tr><tr>
+        <td>
+          236
+        </td>
+        <td>
+          1688
+        </td>
+        <td>
+          8059
+          -
+          8072
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.ReferablePlayer.getActorRef
+        </td>
+        <td style="background: #F0ADAD">
+          p.getActorRef
+        </td>
+      </tr><tr>
+        <td>
+          236
+        </td>
+        <td>
+          1691
+        </td>
+        <td>
+          8075
+          -
+          8117
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.GameStarted.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.GameStarted.apply(id, level.levelInfo, mapShape)
+        </td>
+      </tr><tr>
+        <td>
+          236
+        </td>
+        <td>
+          1693
+        </td>
+        <td>
+          8073
+          -
+          8073
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          akka.pattern.AskableActorRef.?$default$3
+        </td>
+        <td style="background: #F0ADAD">
+          qual$3.?$default$3(x$18)
+        </td>
+      </tr><tr>
+        <td>
+          236
+        </td>
+        <td>
+          1687
+        </td>
+        <td>
+          8039
+          -
+          8052
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.Referable.setUUID
+        </td>
+        <td style="background: #F0ADAD">
+          p.setUUID(id)
+        </td>
+      </tr><tr>
+        <td>
+          236
+        </td>
+        <td>
+          1690
+        </td>
+        <td>
+          8091
+          -
+          8106
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.Level.levelInfo
+        </td>
+        <td style="background: #F0ADAD">
+          level.levelInfo
+        </td>
+      </tr><tr>
+        <td>
+          237
+        </td>
+        <td>
+          1696
+        </td>
+        <td>
+          8145
+          -
+          8149
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #F0ADAD">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          238
+        </td>
+        <td>
+          1697
+        </td>
+        <td>
+          8168
+          -
+          8247
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new java.lang.IllegalStateException(&quot;Not enough player cells for all the clients.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          239
+        </td>
+        <td>
+          1701
+        </td>
+        <td>
+          8278
+          -
+          8278
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.Seq.canBuildFrom
+        </td>
+        <td style="background: #F0ADAD">
+          collection.this.Seq.canBuildFrom[scala.concurrent.Future[Any]]
+        </td>
+      </tr><tr>
+        <td>
+          239
+        </td>
+        <td>
+          1700
+        </td>
+        <td>
+          8279
+          -
+          8284
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.get
+        </td>
+        <td style="background: #F0ADAD">
+          x$7.get
+        </td>
+      </tr><tr>
+        <td>
+          239
+        </td>
+        <td>
+          1702
+        </td>
+        <td>
+          7925
+          -
+          8285
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.TraversableLike.map
+        </td>
+        <td style="background: #F0ADAD">
+          otherPlayers.map[Some[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer], Seq[Some[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer]]](((x$5: it.unibo.osmos.redux.multiplayer.players.ReferablePlayer) =&gt; scala.Some.apply[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer](x$5)))(collection.this.Seq.canBuildFrom[Some[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer]]).zipAll[Option[String], Option[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer], Seq[(Option[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer], Option[String])]](availablePlayerCells.tail, scala.None, scala.None)(collection.this.Seq.canBuildFrom[(Option[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer], Option[String])]).map[Option[scala.concurrent.Future[Any]], Seq[Option[scala.concurrent.Future[Any]]]](((x0$2: (Option[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer], Option[String])) =&gt; x0$2 match {
+  case (_1: Option[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer], _2: Option[String])(Option[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer], Option[String])((value: it.unibo.osmos.redux.multiplayer.players.ReferablePlayer)Some[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer]((p @ _)), (value: String)Some[String]((id @ _))) =&gt; {
+    p.setUUID(id);
+    scala.Some.apply[scala.concurrent.Future[Any]]({
+      &lt;artifact&gt; val qual$3: akka.pattern.AskableActorRef = akka.pattern.`package`.ask(p.getActorRef);
+      &lt;artifact&gt; val x$18: it.unibo.osmos.redux.multiplayer.server.ServerActor.GameStarted = it.unibo.osmos.redux.multiplayer.server.ServerActor.GameStarted.apply(id, level.levelInfo, mapShape);
+      &lt;artifact&gt; val x$19: akka.util.Timeout = ServerImpl.this.timeout;
+      &lt;artifact&gt; val x$20: akka.actor.ActorRef = qual$3.?$default$3(x$18);
+      qual$3.?(x$18)(x$19, x$20)
+    })
+  }
+  case (_1: Option[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer], _2: Option[String])(Option[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer], Option[String])(scala.None, _) =&gt; scala.None
+  case _ =&gt; throw new java.lang.IllegalStateException(&quot;Not enough player cells for all the clients.&quot;)
+}))(collection.this.Seq.canBuildFrom[Option[scala.concurrent.Future[Any]]]).filter(((x$6: Option[scala.concurrent.Future[Any]]) =&gt; x$6.nonEmpty)).map[scala.concurrent.Future[Any], Seq[scala.concurrent.Future[Any]]](((x$7: Option[scala.concurrent.Future[Any]]) =&gt; x$7.get))(collection.this.Seq.canBuildFrom[scala.concurrent.Future[Any]])
+        </td>
+      </tr><tr>
+        <td>
+          239
+        </td>
+        <td>
+          1699
+        </td>
+        <td>
+          8263
+          -
+          8273
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.nonEmpty
+        </td>
+        <td style="background: #F0ADAD">
+          x$6.nonEmpty
+        </td>
+      </tr><tr>
+        <td>
+          243
+        </td>
+        <td>
+          1707
+        </td>
+        <td>
+          8397
+          -
+          8397
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          243
+        </td>
+        <td>
+          1704
+        </td>
+        <td>
+          8401
+          -
+          8428
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.!=
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.status.!=(ServerState.Lobby)
+        </td>
+      </tr><tr>
+        <td>
+          243
+        </td>
+        <td>
+          1703
+        </td>
+        <td>
+          8411
+          -
+          8428
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerState.Lobby
+        </td>
+        <td style="background: #F0ADAD">
+          ServerState.Lobby
+        </td>
+      </tr><tr>
+        <td>
+          243
+        </td>
+        <td>
+          1706
+        </td>
+        <td>
+          8430
+          -
+          8535
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Cannot start game because the server is in the state: &quot;, &quot;&quot;).s(ServerImpl.this.status))
+        </td>
+      </tr><tr>
+        <td>
+          243
+        </td>
+        <td>
+          1705
+        </td>
+        <td>
+          8430
+          -
+          8535
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Cannot start game because the server is in the state: &quot;, &quot;&quot;).s(ServerImpl.this.status))
+        </td>
+      </tr><tr>
+        <td>
+          243
+        </td>
+        <td>
+          1708
+        </td>
+        <td>
+          8397
+          -
+          8397
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          245
+        </td>
+        <td>
+          1709
+        </td>
+        <td>
+          8543
+          -
+          8548
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.lobby
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.lobby
+        </td>
+      </tr><tr>
+        <td>
+          247
+        </td>
+        <td>
+          1710
+        </td>
+        <td>
+          8599
+          -
+          8651
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.lobby.AbstractLobby.notifyGameStarted
+        </td>
+        <td style="background: #F0ADAD">
+          gameLobby.notifyGameStarted(levelContext, levelInfo)
+        </td>
+      </tr><tr>
+        <td>
+          248
+        </td>
+        <td>
+          1712
+        </td>
+        <td>
+          8662
+          -
+          8687
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.status_=
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.status_=(ServerState.Game)
+        </td>
+      </tr><tr>
+        <td>
+          248
+        </td>
+        <td>
+          1711
+        </td>
+        <td>
+          8671
+          -
+          8687
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerState.Game
+        </td>
+        <td style="background: #F0ADAD">
+          ServerState.Game
+        </td>
+      </tr><tr>
+        <td>
+          249
+        </td>
+        <td>
+          1713
+        </td>
+        <td>
+          8706
+          -
+          8797
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.IllegalArgumentException(&quot;Unable to start the game if the lobby is not defined.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          254
+        </td>
+        <td>
+          1716
+        </td>
+        <td>
+          8917
+          -
+          8943
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.!=
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.status.!=(ServerState.Game)
+        </td>
+      </tr><tr>
+        <td>
+          254
+        </td>
+        <td>
+          1719
+        </td>
+        <td>
+          8945
+          -
+          9049
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Cannot stop game because the server is in the state: &quot;, &quot;&quot;).s(ServerImpl.this.status))
+        </td>
+      </tr><tr>
+        <td>
+          254
+        </td>
+        <td>
+          1721
+        </td>
+        <td>
+          8882
+          -
+          8882
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          254
+        </td>
+        <td>
+          1715
+        </td>
+        <td>
+          8927
+          -
+          8943
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerState.Game
+        </td>
+        <td style="background: #F0ADAD">
+          ServerState.Game
+        </td>
+      </tr><tr>
+        <td>
+          254
+        </td>
+        <td>
+          1718
+        </td>
+        <td>
+          8945
+          -
+          9049
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Cannot stop game because the server is in the state: &quot;, &quot;&quot;).s(ServerImpl.this.status))
+        </td>
+      </tr><tr>
+        <td>
+          254
+        </td>
+        <td>
+          1717
+        </td>
+        <td>
+          8886
+          -
+          8943
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.&amp;&amp;
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.status.!=(ServerState.Lobby).&amp;&amp;(ServerImpl.this.status.!=(ServerState.Game))
+        </td>
+      </tr><tr>
+        <td>
+          254
+        </td>
+        <td>
+          1720
+        </td>
+        <td>
+          8882
+          -
+          8882
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          254
+        </td>
+        <td>
+          1714
+        </td>
+        <td>
+          8896
+          -
+          8913
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerState.Lobby
+        </td>
+        <td style="background: #F0ADAD">
+          ServerState.Lobby
+        </td>
+      </tr><tr>
+        <td>
+          257
+        </td>
+        <td>
+          1722
+        </td>
+        <td>
+          9121
+          -
+          9129
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.username
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.username
+        </td>
+      </tr><tr>
+        <td>
+          257
+        </td>
+        <td>
+          1723
+        </td>
+        <td>
+          9107
+          -
+          9130
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.equals
+        </td>
+        <td style="background: #F0ADAD">
+          winner.equals(ServerImpl.this.username)
+        </td>
+      </tr><tr>
+        <td>
+          258
+        </td>
+        <td>
+          1725
+        </td>
+        <td>
+          9142
+          -
+          9188
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.broadcastMessage
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.broadcastMessage(ServerActor.GameEnded.apply(false))
+        </td>
+      </tr><tr>
+        <td>
+          258
+        </td>
+        <td>
+          1724
+        </td>
+        <td>
+          9159
+          -
+          9187
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.GameEnded.apply
+        </td>
+        <td style="background: #F0ADAD">
+          ServerActor.GameEnded.apply(false)
+        </td>
+      </tr><tr>
+        <td>
+          258
+        </td>
+        <td>
+          1726
+        </td>
+        <td>
+          9142
+          -
+          9188
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.broadcastMessage
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.broadcastMessage(ServerActor.GameEnded.apply(false))
+        </td>
+      </tr><tr>
+        <td>
+          259
+        </td>
+        <td>
+          1731
+        </td>
+        <td>
+          9202
+          -
+          9310
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          {
+  ServerImpl.this.deliverMessage(winner, it.unibo.osmos.redux.multiplayer.server.ServerActor.GameEnded.apply(true));
+  ServerImpl.this.broadcastMessage(it.unibo.osmos.redux.multiplayer.server.ServerActor.GameEnded.apply(false), winner)
+}
+        </td>
+      </tr><tr>
+        <td>
+          260
+        </td>
+        <td>
+          1728
+        </td>
+        <td>
+          9212
+          -
+          9251
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.deliverMessage
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.deliverMessage(winner, it.unibo.osmos.redux.multiplayer.server.ServerActor.GameEnded.apply(true))
+        </td>
+      </tr><tr>
+        <td>
+          260
+        </td>
+        <td>
+          1727
+        </td>
+        <td>
+          9235
+          -
+          9250
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.GameEnded.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.GameEnded.apply(true)
+        </td>
+      </tr><tr>
+        <td>
+          261
+        </td>
+        <td>
+          1730
+        </td>
+        <td>
+          9260
+          -
+          9302
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.broadcastMessage
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.broadcastMessage(it.unibo.osmos.redux.multiplayer.server.ServerActor.GameEnded.apply(false), winner)
+        </td>
+      </tr><tr>
+        <td>
+          261
+        </td>
+        <td>
+          1729
+        </td>
+        <td>
+          9277
+          -
+          9293
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.GameEnded.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.GameEnded.apply(false)
+        </td>
+      </tr><tr>
+        <td>
+          264
+        </td>
+        <td>
+          1732
+        </td>
+        <td>
+          9350
+          -
+          9380
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.resetLobbyPlayersDeathStatus
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.resetLobbyPlayersDeathStatus()
+        </td>
+      </tr><tr>
+        <td>
+          266
+        </td>
+        <td>
+          1734
+        </td>
+        <td>
+          9424
+          -
+          9450
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.status_=
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.status_=(ServerState.Lobby)
+        </td>
+      </tr><tr>
+        <td>
+          266
+        </td>
+        <td>
+          1733
+        </td>
+        <td>
+          9433
+          -
+          9450
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerState.Lobby
+        </td>
+        <td style="background: #F0ADAD">
+          ServerState.Lobby
+        </td>
+      </tr><tr>
+        <td>
+          270
+        </td>
+        <td>
+          1737
+        </td>
+        <td>
+          9557
+          -
+          9670
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(&quot;Cannot deliver message to specific client if the lobby is not defined.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          270
+        </td>
+        <td>
+          1739
+        </td>
+        <td>
+          9538
+          -
+          9538
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          270
+        </td>
+        <td>
+          1736
+        </td>
+        <td>
+          9557
+          -
+          9670
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(&quot;Cannot deliver message to specific client if the lobby is not defined.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          270
+        </td>
+        <td>
+          1735
+        </td>
+        <td>
+          9542
+          -
+          9555
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.isEmpty
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.lobby.isEmpty
+        </td>
+      </tr><tr>
+        <td>
+          270
+        </td>
+        <td>
+          1738
+        </td>
+        <td>
+          9538
+          -
+          9538
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          272
+        </td>
+        <td>
+          1741
+        </td>
+        <td>
+          9678
+          -
+          9730
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.IterableLike.find
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.lobby.get.getPlayers.find(((x$8: it.unibo.osmos.redux.multiplayer.players.ReferablePlayer) =&gt; x$8.getUsername.==(username)))
+        </td>
+      </tr><tr>
+        <td>
+          272
+        </td>
+        <td>
+          1740
+        </td>
+        <td>
+          9704
+          -
+          9729
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.==
+        </td>
+        <td style="background: #F0ADAD">
+          x$8.getUsername.==(username)
+        </td>
+      </tr><tr>
+        <td>
+          273
+        </td>
+        <td>
+          1743
+        </td>
+        <td>
+          9768
+          -
+          9786
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          akka.actor.actorRef2Scala
+        </td>
+        <td style="background: #F0ADAD">
+          actor.this.`package`.actorRef2Scala(player.getActorRef)
+        </td>
+      </tr><tr>
+        <td>
+          273
+        </td>
+        <td>
+          1742
+        </td>
+        <td>
+          9768
+          -
+          9786
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.ReferablePlayer.getActorRef
+        </td>
+        <td style="background: #F0ADAD">
+          player.getActorRef
+        </td>
+      </tr><tr>
+        <td>
+          273
+        </td>
+        <td>
+          1745
+        </td>
+        <td>
+          9768
+          -
+          9796
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          akka.actor.ScalaActorRef.!
+        </td>
+        <td style="background: #F0ADAD">
+          qual$4.!(x$21)(x$22)
+        </td>
+      </tr><tr>
+        <td>
+          273
+        </td>
+        <td>
+          1744
+        </td>
+        <td>
+          9787
+          -
+          9787
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          akka.actor.ScalaActorRef.!$default$2
+        </td>
+        <td style="background: #F0ADAD">
+          qual$4.!$default$2(x$21)
+        </td>
+      </tr><tr>
+        <td>
+          274
+        </td>
+        <td>
+          1746
+        </td>
+        <td>
+          9818
+          -
+          9940
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.IllegalArgumentException(&quot;Cannot deliver message to specific client if the username does not match any player.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          278
+        </td>
+        <td>
+          1747
+        </td>
+        <td>
+          10011
+          -
+          10016
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.lobby
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.lobby
+        </td>
+      </tr><tr>
+        <td>
+          279
+        </td>
+        <td>
+          1748
+        </td>
+        <td>
+          10084
+          -
+          10102
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.Alive.setLiveness
+        </td>
+        <td style="background: #F0ADAD">
+          x$9.setLiveness(true)
+        </td>
+      </tr><tr>
+        <td>
+          279
+        </td>
+        <td>
+          1749
+        </td>
+        <td>
+          10055
+          -
+          10103
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.IterableLike.foreach
+        </td>
+        <td style="background: #F0ADAD">
+          gameLobby.getPlayers.foreach[Unit](((x$9: it.unibo.osmos.redux.multiplayer.players.ReferablePlayer) =&gt; x$9.setLiveness(true)))
+        </td>
+      </tr><tr>
+        <td>
+          280
+        </td>
+        <td>
+          1750
+        </td>
+        <td>
+          10120
+          -
+          10231
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(&quot;Cannot reset lobby players death status if the lobby is not defined.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          286
+        </td>
+        <td>
+          1752
+        </td>
+        <td>
+          10349
+          -
+          10375
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.!=
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.status.!=(ServerState.Game)
+        </td>
+      </tr><tr>
+        <td>
+          286
+        </td>
+        <td>
+          1755
+        </td>
+        <td>
+          10345
+          -
+          10345
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          286
+        </td>
+        <td>
+          1754
+        </td>
+        <td>
+          10377
+          -
+          10497
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Cannot manage client input event because the server is in the state: &quot;, &quot;&quot;).s(ServerImpl.this.status))
+        </td>
+      </tr><tr>
+        <td>
+          286
+        </td>
+        <td>
+          1751
+        </td>
+        <td>
+          10359
+          -
+          10375
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerState.Game
+        </td>
+        <td style="background: #F0ADAD">
+          ServerState.Game
+        </td>
+      </tr><tr>
+        <td>
+          286
+        </td>
+        <td>
+          1753
+        </td>
+        <td>
+          10377
+          -
+          10497
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Cannot manage client input event because the server is in the state: &quot;, &quot;&quot;).s(ServerImpl.this.status))
+        </td>
+      </tr><tr>
+        <td>
+          286
+        </td>
+        <td>
+          1756
+        </td>
+        <td>
+          10345
+          -
+          10345
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          288
+        </td>
+        <td>
+          1757
+        </td>
+        <td>
+          10505
+          -
+          10534
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.InputEventQueue.enqueue
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.InputEventQueue.enqueue(event)
+        </td>
+      </tr><tr>
+        <td>
+          292
+        </td>
+        <td>
+          1761
+        </td>
+        <td>
+          10671
+          -
+          10780
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Cannot remove player from game because it\'s in the state: &quot;, &quot;&quot;).s(ServerImpl.this.status))
+        </td>
+      </tr><tr>
+        <td>
+          292
+        </td>
+        <td>
+          1763
+        </td>
+        <td>
+          10639
+          -
+          10639
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          292
+        </td>
+        <td>
+          1760
+        </td>
+        <td>
+          10671
+          -
+          10780
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Cannot remove player from game because it\'s in the state: &quot;, &quot;&quot;).s(ServerImpl.this.status))
+        </td>
+      </tr><tr>
+        <td>
+          292
+        </td>
+        <td>
+          1762
+        </td>
+        <td>
+          10639
+          -
+          10639
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          292
+        </td>
+        <td>
+          1759
+        </td>
+        <td>
+          10643
+          -
+          10669
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.!=
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.status.!=(ServerState.Game)
+        </td>
+      </tr><tr>
+        <td>
+          292
+        </td>
+        <td>
+          1758
+        </td>
+        <td>
+          10653
+          -
+          10669
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerState.Game
+        </td>
+        <td style="background: #F0ADAD">
+          ServerState.Game
+        </td>
+      </tr><tr>
+        <td>
+          295
+        </td>
+        <td>
+          1764
+        </td>
+        <td>
+          10870
+          -
+          10883
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.username
+        </td>
+        <td style="background: #F0ADAD">
+          this.username
+        </td>
+      </tr><tr>
+        <td>
+          295
+        </td>
+        <td>
+          1765
+        </td>
+        <td>
+          10858
+          -
+          10883
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.==
+        </td>
+        <td style="background: #F0ADAD">
+          username.==(this.username)
+        </td>
+      </tr><tr>
+        <td>
+          298
+        </td>
+        <td>
+          1766
+        </td>
+        <td>
+          10968
+          -
+          10996
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.getPlayerFromLobby
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.getPlayerFromLobby(username)
+        </td>
+      </tr><tr>
+        <td>
+          299
+        </td>
+        <td>
+          1770
+        </td>
+        <td>
+          11003
+          -
+          11003
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          299
+        </td>
+        <td>
+          1769
+        </td>
+        <td>
+          11023
+          -
+          11117
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.IllegalArgumentException(&quot;Cannot remove player from game because it was not found.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          299
+        </td>
+        <td>
+          1771
+        </td>
+        <td>
+          11003
+          -
+          11003
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          299
+        </td>
+        <td>
+          1768
+        </td>
+        <td>
+          11023
+          -
+          11117
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.IllegalArgumentException(&quot;Cannot remove player from game because it was not found.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          299
+        </td>
+        <td>
+          1767
+        </td>
+        <td>
+          11007
+          -
+          11021
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.isEmpty
+        </td>
+        <td style="background: #F0ADAD">
+          player.isEmpty
+        </td>
+      </tr><tr>
+        <td>
+          302
+        </td>
+        <td>
+          1779
+        </td>
+        <td>
+          11204
+          -
+          11245
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          {
+  &lt;artifact&gt; val qual$5: akka.actor.ScalaActorRef = actor.this.`package`.actorRef2Scala(player.get.getActorRef);
+  &lt;artifact&gt; val x$23: it.unibo.osmos.redux.multiplayer.server.ServerActor.GameEnded = it.unibo.osmos.redux.multiplayer.server.ServerActor.GameEnded.apply(false);
+  &lt;artifact&gt; val x$24: akka.actor.ActorRef = qual$5.!$default$2(x$23);
+  qual$5.!(x$23)(x$24)
+}
+        </td>
+      </tr><tr>
+        <td>
+          302
+        </td>
+        <td>
+          1773
+        </td>
+        <td>
+          11183
+          -
+          11202
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.&amp;&amp;
+        </td>
+        <td style="background: #F0ADAD">
+          notify.&amp;&amp;(isServer.unary_!)
+        </td>
+      </tr><tr>
+        <td>
+          302
+        </td>
+        <td>
+          1781
+        </td>
+        <td>
+          11179
+          -
+          11179
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          302
+        </td>
+        <td>
+          1772
+        </td>
+        <td>
+          11193
+          -
+          11202
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #F0ADAD">
+          isServer.unary_!
+        </td>
+      </tr><tr>
+        <td>
+          302
+        </td>
+        <td>
+          1775
+        </td>
+        <td>
+          11204
+          -
+          11226
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          akka.actor.actorRef2Scala
+        </td>
+        <td style="background: #F0ADAD">
+          actor.this.`package`.actorRef2Scala(player.get.getActorRef)
+        </td>
+      </tr><tr>
+        <td>
+          302
+        </td>
+        <td>
+          1778
+        </td>
+        <td>
+          11204
+          -
+          11245
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          akka.actor.ScalaActorRef.!
+        </td>
+        <td style="background: #F0ADAD">
+          qual$5.!(x$23)(x$24)
+        </td>
+      </tr><tr>
+        <td>
+          302
+        </td>
+        <td>
+          1777
+        </td>
+        <td>
+          11227
+          -
+          11227
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          akka.actor.ScalaActorRef.!$default$2
+        </td>
+        <td style="background: #F0ADAD">
+          qual$5.!$default$2(x$23)
+        </td>
+      </tr><tr>
+        <td>
+          302
+        </td>
+        <td>
+          1780
+        </td>
+        <td>
+          11179
+          -
+          11179
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          302
+        </td>
+        <td>
+          1774
+        </td>
+        <td>
+          11204
+          -
+          11226
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.ReferablePlayer.getActorRef
+        </td>
+        <td style="background: #F0ADAD">
+          player.get.getActorRef
+        </td>
+      </tr><tr>
+        <td>
+          302
+        </td>
+        <td>
+          1776
+        </td>
+        <td>
+          11229
+          -
+          11245
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.GameEnded.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.GameEnded.apply(false)
+        </td>
+      </tr><tr>
+        <td>
+          305
+        </td>
+        <td>
+          1782
+        </td>
+        <td>
+          11331
+          -
+          11356
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          classOf[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity]
+        </td>
+      </tr><tr>
+        <td>
+          305
+        </td>
+        <td>
+          1784
+        </td>
+        <td>
+          11363
+          -
+          11394
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.==
+        </td>
+        <td style="background: #F0ADAD">
+          x$10.getUUID.==(player.get.getUUID)
+        </td>
+      </tr><tr>
+        <td>
+          305
+        </td>
+        <td>
+          1783
+        </td>
+        <td>
+          11376
+          -
+          11394
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.Referable.getUUID
+        </td>
+        <td style="background: #F0ADAD">
+          player.get.getUUID
+        </td>
+      </tr><tr>
+        <td>
+          305
+        </td>
+        <td>
+          1785
+        </td>
+        <td>
+          11302
+          -
+          11395
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.LinearSeqOptimized.find
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.entities.EntityManager.filterEntities(classOf[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity]).find(((x$10: it.unibo.osmos.redux.ecs.entities.properties.basic.Property) =&gt; x$10.getUUID.==(player.get.getUUID)))
+        </td>
+      </tr><tr>
+        <td>
+          306
+        </td>
+        <td>
+          1788
+        </td>
+        <td>
+          11428
+          -
+          11527
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.IllegalArgumentException(&quot;Cannot remove player cell from game because it was not found.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          306
+        </td>
+        <td>
+          1790
+        </td>
+        <td>
+          11402
+          -
+          11402
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          306
+        </td>
+        <td>
+          1787
+        </td>
+        <td>
+          11428
+          -
+          11527
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.IllegalArgumentException(&quot;Cannot remove player cell from game because it was not found.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          306
+        </td>
+        <td>
+          1786
+        </td>
+        <td>
+          11406
+          -
+          11426
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.isEmpty
+        </td>
+        <td style="background: #F0ADAD">
+          playerEntity.isEmpty
+        </td>
+      </tr><tr>
+        <td>
+          306
+        </td>
+        <td>
+          1789
+        </td>
+        <td>
+          11402
+          -
+          11402
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          308
+        </td>
+        <td>
+          1791
+        </td>
+        <td>
+          11556
+          -
+          11572
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.get
+        </td>
+        <td style="background: #F0ADAD">
+          playerEntity.get
+        </td>
+      </tr><tr>
+        <td>
+          308
+        </td>
+        <td>
+          1792
+        </td>
+        <td>
+          11535
+          -
+          11573
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityManager.delete
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.entities.EntityManager.delete(playerEntity.get)
+        </td>
+      </tr><tr>
+        <td>
+          310
+        </td>
+        <td>
+          1793
+        </td>
+        <td>
+          11646
+          -
+          11676
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.setLobbyPlayerAsDead
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.setLobbyPlayerAsDead(username)
+        </td>
+      </tr><tr>
+        <td>
+          313
+        </td>
+        <td>
+          1794
+        </td>
+        <td>
+          11764
+          -
+          11769
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.lobby
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.lobby
+        </td>
+      </tr><tr>
+        <td>
+          314
+        </td>
+        <td>
+          1796
+        </td>
+        <td>
+          11808
+          -
+          11860
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.IterableLike.find
+        </td>
+        <td style="background: #F0ADAD">
+          gameLobby.getPlayers.find(((x$11: it.unibo.osmos.redux.multiplayer.players.ReferablePlayer) =&gt; x$11.getUsername.==(username)))
+        </td>
+      </tr><tr>
+        <td>
+          314
+        </td>
+        <td>
+          1795
+        </td>
+        <td>
+          11834
+          -
+          11859
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.==
+        </td>
+        <td style="background: #F0ADAD">
+          x$11.getUsername.==(username)
+        </td>
+      </tr><tr>
+        <td>
+          315
+        </td>
+        <td>
+          1797
+        </td>
+        <td>
+          11877
+          -
+          11972
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(&quot;Cannot get lobby player if the lobby is not defined.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          318
+        </td>
+        <td>
+          1798
+        </td>
+        <td>
+          12043
+          -
+          12048
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.lobby
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.lobby
+        </td>
+      </tr><tr>
+        <td>
+          319
+        </td>
+        <td>
+          1799
+        </td>
+        <td>
+          12115
+          -
+          12140
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.==
+        </td>
+        <td style="background: #F0ADAD">
+          x$12.getUsername.==(username)
+        </td>
+      </tr><tr>
+        <td>
+          319
+        </td>
+        <td>
+          1801
+        </td>
+        <td>
+          12087
+          -
+          12170
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.IterableLike.foreach
+        </td>
+        <td style="background: #F0ADAD">
+          gameLobby.getPlayers.filter(((x$12: it.unibo.osmos.redux.multiplayer.players.ReferablePlayer) =&gt; x$12.getUsername.==(username))).foreach[Unit](((x$13: it.unibo.osmos.redux.multiplayer.players.ReferablePlayer) =&gt; x$13.setLiveness(false)))
+        </td>
+      </tr><tr>
+        <td>
+          319
+        </td>
+        <td>
+          1800
+        </td>
+        <td>
+          12150
+          -
+          12169
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.Alive.setLiveness
+        </td>
+        <td style="background: #F0ADAD">
+          x$13.setLiveness(false)
+        </td>
+      </tr><tr>
+        <td>
+          320
+        </td>
+        <td>
+          1802
+        </td>
+        <td>
+          12187
+          -
+          12290
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(&quot;Cannot set lobby player as dead if the lobby is not defined.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          324
+        </td>
+        <td>
+          1806
+        </td>
+        <td>
+          12403
+          -
+          12507
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Server cannot close lobby because it\'s in the state: &quot;, &quot;&quot;).s(ServerImpl.this.status))
+        </td>
+      </tr><tr>
+        <td>
+          324
+        </td>
+        <td>
+          1808
+        </td>
+        <td>
+          12371
+          -
+          12371
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          324
+        </td>
+        <td>
+          1805
+        </td>
+        <td>
+          12403
+          -
+          12507
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Server cannot close lobby because it\'s in the state: &quot;, &quot;&quot;).s(ServerImpl.this.status))
+        </td>
+      </tr><tr>
+        <td>
+          324
+        </td>
+        <td>
+          1804
+        </td>
+        <td>
+          12375
+          -
+          12401
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.!=
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.status.!=(ServerState.Idle)
+        </td>
+      </tr><tr>
+        <td>
+          324
+        </td>
+        <td>
+          1807
+        </td>
+        <td>
+          12371
+          -
+          12371
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          324
+        </td>
+        <td>
+          1803
+        </td>
+        <td>
+          12385
+          -
+          12401
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerState.Idle
+        </td>
+        <td style="background: #F0ADAD">
+          ServerState.Idle
+        </td>
+      </tr><tr>
+        <td>
+          327
+        </td>
+        <td>
+          1809
+        </td>
+        <td>
+          12567
+          -
+          12598
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder.systemAddress
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder.systemAddress
+        </td>
+      </tr><tr>
+        <td>
+          329
+        </td>
+        <td>
+          1817
+        </td>
+        <td>
+          12657
+          -
+          12657
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          329
+        </td>
+        <td>
+          1813
+        </td>
+        <td>
+          12661
+          -
+          12788
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.||
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.multiplayer.common.NetworkUtils.validatePort(address.port.getOrElse[Int](-1)).unary_!.||(it.unibo.osmos.redux.multiplayer.common.NetworkUtils.validateIPV4Address(address.host.getOrElse[String](&quot;&quot;)).unary_!)
+        </td>
+      </tr><tr>
+        <td>
+          329
+        </td>
+        <td>
+          1816
+        </td>
+        <td>
+          12657
+          -
+          12657
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          329
+        </td>
+        <td>
+          1810
+        </td>
+        <td>
+          12688
+          -
+          12714
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.getOrElse
+        </td>
+        <td style="background: #F0ADAD">
+          address.port.getOrElse[Int](-1)
+        </td>
+      </tr><tr>
+        <td>
+          330
+        </td>
+        <td>
+          1811
+        </td>
+        <td>
+          12761
+          -
+          12787
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.getOrElse
+        </td>
+        <td style="background: #F0ADAD">
+          address.host.getOrElse[String](&quot;&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          330
+        </td>
+        <td>
+          1812
+        </td>
+        <td>
+          12727
+          -
+          12788
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.multiplayer.common.NetworkUtils.validateIPV4Address(address.host.getOrElse[String](&quot;&quot;)).unary_!
+        </td>
+      </tr><tr>
+        <td>
+          331
+        </td>
+        <td>
+          1815
+        </td>
+        <td>
+          12800
+          -
+          12920
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new java.lang.IllegalStateException(&quot;Server cannot create the lobby because the actor system gave invalid address or port.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          331
+        </td>
+        <td>
+          1814
+        </td>
+        <td>
+          12800
+          -
+          12920
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new java.lang.IllegalStateException(&quot;Server cannot create the lobby because the actor system gave invalid address or port.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          335
+        </td>
+        <td>
+          1820
+        </td>
+        <td>
+          12961
+          -
+          12998
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.lobby_=
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.lobby_=(scala.Some.apply[it.unibo.osmos.redux.multiplayer.lobby.GameLobby[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer]](it.unibo.osmos.redux.multiplayer.lobby.GameLobby.apply[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer](lobbyContext)))
+        </td>
+      </tr><tr>
+        <td>
+          335
+        </td>
+        <td>
+          1819
+        </td>
+        <td>
+          12969
+          -
+          12998
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Some.apply[it.unibo.osmos.redux.multiplayer.lobby.GameLobby[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer]](it.unibo.osmos.redux.multiplayer.lobby.GameLobby.apply[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer](lobbyContext))
+        </td>
+      </tr><tr>
+        <td>
+          335
+        </td>
+        <td>
+          1818
+        </td>
+        <td>
+          12974
+          -
+          12997
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.lobby.GameLobby.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.multiplayer.lobby.GameLobby.apply[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer](lobbyContext)
+        </td>
+      </tr><tr>
+        <td>
+          337
+        </td>
+        <td>
+          1824
+        </td>
+        <td>
+          13054
+          -
+          13110
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.BasePlayer.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.multiplayer.players.BasePlayer.apply(ServerImpl.this.username, address.host.get, address.port.get)
+        </td>
+      </tr><tr>
+        <td>
+          337
+        </td>
+        <td>
+          1823
+        </td>
+        <td>
+          13093
+          -
+          13109
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.get
+        </td>
+        <td style="background: #F0ADAD">
+          address.port.get
+        </td>
+      </tr><tr>
+        <td>
+          337
+        </td>
+        <td>
+          1822
+        </td>
+        <td>
+          13075
+          -
+          13091
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.get
+        </td>
+        <td style="background: #F0ADAD">
+          address.host.get
+        </td>
+      </tr><tr>
+        <td>
+          337
+        </td>
+        <td>
+          1821
+        </td>
+        <td>
+          13065
+          -
+          13073
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.username
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.username
+        </td>
+      </tr><tr>
+        <td>
+          339
+        </td>
+        <td>
+          1826
+        </td>
+        <td>
+          13198
+          -
+          13231
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.Seq.apply[it.unibo.osmos.redux.mvc.view.components.multiplayer.User](new it.unibo.osmos.redux.mvc.view.components.multiplayer.User(serverPlayer, true))
+        </td>
+      </tr><tr>
+        <td>
+          339
+        </td>
+        <td>
+          1825
+        </td>
+        <td>
+          13202
+          -
+          13230
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.multiplayer.User.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.components.multiplayer.User(serverPlayer, true)
+        </td>
+      </tr><tr>
+        <td>
+          339
+        </td>
+        <td>
+          1827
+        </td>
+        <td>
+          13177
+          -
+          13231
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LobbyContext.users_=
+        </td>
+        <td style="background: #F0ADAD">
+          lobbyContext.users_=(scala.collection.Seq.apply[it.unibo.osmos.redux.mvc.view.components.multiplayer.User](new it.unibo.osmos.redux.mvc.view.components.multiplayer.User(serverPlayer, true)))
+        </td>
+      </tr><tr>
+        <td>
+          341
+        </td>
+        <td>
+          1829
+        </td>
+        <td>
+          13291
+          -
+          13333
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.ReferablePlayer.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.multiplayer.players.ReferablePlayer(serverPlayer, ServerImpl.this.ref.get)
+        </td>
+      </tr><tr>
+        <td>
+          341
+        </td>
+        <td>
+          1828
+        </td>
+        <td>
+          13325
+          -
+          13332
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.get
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.ref.get
+        </td>
+      </tr><tr>
+        <td>
+          341
+        </td>
+        <td>
+          1830
+        </td>
+        <td>
+          13271
+          -
+          13334
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.lobby.GameLobby.addPlayer
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.lobby.get.addPlayer(new it.unibo.osmos.redux.multiplayer.players.ReferablePlayer(serverPlayer, ServerImpl.this.ref.get))
+        </td>
+      </tr><tr>
+        <td>
+          343
+        </td>
+        <td>
+          1832
+        </td>
+        <td>
+          13342
+          -
+          13368
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.status_=
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.status_=(ServerState.Lobby)
+        </td>
+      </tr><tr>
+        <td>
+          343
+        </td>
+        <td>
+          1831
+        </td>
+        <td>
+          13351
+          -
+          13368
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerState.Lobby
+        </td>
+        <td style="background: #F0ADAD">
+          ServerState.Lobby
+        </td>
+      </tr><tr>
+        <td>
+          349
+        </td>
+        <td>
+          1833
+        </td>
+        <td>
+          13458
+          -
+          13475
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerState.Lobby
+        </td>
+        <td style="background: #F0ADAD">
+          ServerState.Lobby
+        </td>
+      </tr><tr>
+        <td>
+          349
+        </td>
+        <td>
+          1835
+        </td>
+        <td>
+          13477
+          -
+          13581
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Server cannot close lobby because it\'s in the state: &quot;, &quot;&quot;).s(ServerImpl.this.status))
+        </td>
+      </tr><tr>
+        <td>
+          349
+        </td>
+        <td>
+          1838
+        </td>
+        <td>
+          13444
+          -
+          13444
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          349
+        </td>
+        <td>
+          1837
+        </td>
+        <td>
+          13444
+          -
+          13444
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          349
+        </td>
+        <td>
+          1834
+        </td>
+        <td>
+          13448
+          -
+          13475
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.!=
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.status.!=(ServerState.Lobby)
+        </td>
+      </tr><tr>
+        <td>
+          349
+        </td>
+        <td>
+          1836
+        </td>
+        <td>
+          13477
+          -
+          13581
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Server cannot close lobby because it\'s in the state: &quot;, &quot;&quot;).s(ServerImpl.this.status))
+        </td>
+      </tr><tr>
+        <td>
+          350
+        </td>
+        <td>
+          1842
+        </td>
+        <td>
+          13588
+          -
+          13588
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          350
+        </td>
+        <td>
+          1841
+        </td>
+        <td>
+          13607
+          -
+          13690
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Cannot close lobby if it\'s not defined.&quot;).s())
+        </td>
+      </tr><tr>
+        <td>
+          350
+        </td>
+        <td>
+          1840
+        </td>
+        <td>
+          13607
+          -
+          13690
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Cannot close lobby if it\'s not defined.&quot;).s())
+        </td>
+      </tr><tr>
+        <td>
+          350
+        </td>
+        <td>
+          1843
+        </td>
+        <td>
+          13588
+          -
+          13588
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          350
+        </td>
+        <td>
+          1839
+        </td>
+        <td>
+          13592
+          -
+          13605
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.isEmpty
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.lobby.isEmpty
+        </td>
+      </tr><tr>
+        <td>
+          353
+        </td>
+        <td>
+          1844
+        </td>
+        <td>
+          13758
+          -
+          13769
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.LobbyClosed
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.LobbyClosed
+        </td>
+      </tr><tr>
+        <td>
+          353
+        </td>
+        <td>
+          1845
+        </td>
+        <td>
+          13741
+          -
+          13770
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.broadcastMessage
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.broadcastMessage(it.unibo.osmos.redux.multiplayer.server.ServerActor.LobbyClosed)
+        </td>
+      </tr><tr>
+        <td>
+          355
+        </td>
+        <td>
+          1847
+        </td>
+        <td>
+          13817
+          -
+          13817
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.lobby.AbstractLobby.notifyLobbyClosed$default$1
+        </td>
+        <td style="background: #F0ADAD">
+          qual$6.notifyLobbyClosed$default$1
+        </td>
+      </tr><tr>
+        <td>
+          355
+        </td>
+        <td>
+          1846
+        </td>
+        <td>
+          13807
+          -
+          13816
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.get
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.lobby.get
+        </td>
+      </tr><tr>
+        <td>
+          355
+        </td>
+        <td>
+          1848
+        </td>
+        <td>
+          13807
+          -
+          13836
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.lobby.AbstractLobby.notifyLobbyClosed
+        </td>
+        <td style="background: #F0ADAD">
+          qual$6.notifyLobbyClosed(x$25)
+        </td>
+      </tr><tr>
+        <td>
+          357
+        </td>
+        <td>
+          1850
+        </td>
+        <td>
+          13872
+          -
+          13884
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.lobby_=
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.lobby_=(scala.None)
+        </td>
+      </tr><tr>
+        <td>
+          357
+        </td>
+        <td>
+          1849
+        </td>
+        <td>
+          13880
+          -
+          13884
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #F0ADAD">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          359
+        </td>
+        <td>
+          1851
+        </td>
+        <td>
+          13901
+          -
+          13917
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerState.Idle
+        </td>
+        <td style="background: #F0ADAD">
+          ServerState.Idle
+        </td>
+      </tr><tr>
+        <td>
+          359
+        </td>
+        <td>
+          1852
+        </td>
+        <td>
+          13892
+          -
+          13917
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.status_=
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.status_=(ServerState.Idle)
+        </td>
+      </tr><tr>
+        <td>
+          364
+        </td>
+        <td>
+          1853
+        </td>
+        <td>
+          14086
+          -
+          14106
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.lobby.GameLobby.getPlayers
+        </td>
+        <td style="background: #F0ADAD">
+          gameLobby.getPlayers
+        </td>
+      </tr><tr>
+        <td>
+          365
+        </td>
+        <td>
+          1854
+        </td>
+        <td>
+          14133
+          -
+          14235
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Cannot get lobby players because the lobby is not defined.&quot;).s())
+        </td>
+      </tr><tr>
+        <td>
+          366
+        </td>
+        <td>
+          1855
+        </td>
+        <td>
+          14254
+          -
+          14339
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Cannot because it\'s in the state: &quot;, &quot;&quot;).s(ServerImpl.this.status))
+        </td>
+      </tr><tr>
+        <td>
+          373
+        </td>
+        <td>
+          1856
+        </td>
+        <td>
+          14539
+          -
+          14556
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #F0ADAD">
+          gameLobby.isFull.unary_!
+        </td>
+      </tr><tr>
+        <td>
+          373
+        </td>
+        <td>
+          1866
+        </td>
+        <td>
+          14558
+          -
+          14919
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          {
+  val newPlayer: it.unibo.osmos.redux.multiplayer.players.ReferablePlayer = new it.unibo.osmos.redux.multiplayer.players.ReferablePlayer(player.getUsername, player.getAddress, player.getPort, actorRef);
+  ServerImpl.this.broadcastMessage(it.unibo.osmos.redux.multiplayer.server.ServerActor.PlayerEnteredLobby.apply(newPlayer.toBasicPlayer));
+  gameLobby.addPlayer(newPlayer);
+  true
+}
+        </td>
+      </tr><tr>
+        <td>
+          374
+        </td>
+        <td>
+          1859
+        </td>
+        <td>
+          14647
+          -
+          14661
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.BasePlayer.getPort
+        </td>
+        <td style="background: #F0ADAD">
+          player.getPort
+        </td>
+      </tr><tr>
+        <td>
+          374
+        </td>
+        <td>
+          1858
+        </td>
+        <td>
+          14628
+          -
+          14645
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.BasePlayer.getAddress
+        </td>
+        <td style="background: #F0ADAD">
+          player.getAddress
+        </td>
+      </tr><tr>
+        <td>
+          374
+        </td>
+        <td>
+          1860
+        </td>
+        <td>
+          14588
+          -
+          14672
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.ReferablePlayer.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.multiplayer.players.ReferablePlayer(player.getUsername, player.getAddress, player.getPort, actorRef)
+        </td>
+      </tr><tr>
+        <td>
+          374
+        </td>
+        <td>
+          1857
+        </td>
+        <td>
+          14608
+          -
+          14626
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.BasePlayer.getUsername
+        </td>
+        <td style="background: #F0ADAD">
+          player.getUsername
+        </td>
+      </tr><tr>
+        <td>
+          376
+        </td>
+        <td>
+          1862
+        </td>
+        <td>
+          14761
+          -
+          14804
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.PlayerEnteredLobby.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.PlayerEnteredLobby.apply(newPlayer.toBasicPlayer)
+        </td>
+      </tr><tr>
+        <td>
+          376
+        </td>
+        <td>
+          1861
+        </td>
+        <td>
+          14780
+          -
+          14803
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.ReferablePlayer.toBasicPlayer
+        </td>
+        <td style="background: #F0ADAD">
+          newPlayer.toBasicPlayer
+        </td>
+      </tr><tr>
+        <td>
+          376
+        </td>
+        <td>
+          1863
+        </td>
+        <td>
+          14744
+          -
+          14805
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.broadcastMessage
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.broadcastMessage(it.unibo.osmos.redux.multiplayer.server.ServerActor.PlayerEnteredLobby.apply(newPlayer.toBasicPlayer))
+        </td>
+      </tr><tr>
+        <td>
+          378
+        </td>
+        <td>
+          1864
+        </td>
+        <td>
+          14860
+          -
+          14890
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.lobby.GameLobby.addPlayer
+        </td>
+        <td style="background: #F0ADAD">
+          gameLobby.addPlayer(newPlayer)
+        </td>
+      </tr><tr>
+        <td>
+          379
+        </td>
+        <td>
+          1865
+        </td>
+        <td>
+          14903
+          -
+          14907
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          380
+        </td>
+        <td>
+          1868
+        </td>
+        <td>
+          14925
+          -
+          14930
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          false
+        </td>
+      </tr><tr>
+        <td>
+          380
+        </td>
+        <td>
+          1867
+        </td>
+        <td>
+          14925
+          -
+          14930
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          false
+        </td>
+      </tr><tr>
+        <td>
+          381
+        </td>
+        <td>
+          1869
+        </td>
+        <td>
+          14949
+          -
+          15044
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new java.lang.IllegalStateException(&quot;Unable to add player to lobby because the lobby is undefined&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          389
+        </td>
+        <td>
+          1870
+        </td>
+        <td>
+          15288
+          -
+          15320
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.lobby.GameLobby.removePlayer
+        </td>
+        <td style="background: #F0ADAD">
+          gameLobby.removePlayer(username)
+        </td>
+      </tr><tr>
+        <td>
+          391
+        </td>
+        <td>
+          1871
+        </td>
+        <td>
+          15399
+          -
+          15424
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.PlayerLeftLobby.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.PlayerLeftLobby.apply(username)
+        </td>
+      </tr><tr>
+        <td>
+          391
+        </td>
+        <td>
+          1872
+        </td>
+        <td>
+          15382
+          -
+          15425
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.broadcastMessage
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.broadcastMessage(it.unibo.osmos.redux.multiplayer.server.ServerActor.PlayerLeftLobby.apply(username))
+        </td>
+      </tr><tr>
+        <td>
+          392
+        </td>
+        <td>
+          1873
+        </td>
+        <td>
+          15444
+          -
+          15542
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new java.lang.IllegalStateException(&quot;Unable to remove player to lobby because the lobby is undefined&quot;)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

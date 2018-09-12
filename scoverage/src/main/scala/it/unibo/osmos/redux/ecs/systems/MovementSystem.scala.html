@@ -1,0 +1,433 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/ecs/systems/MovementSystem.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.systems
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.ecs.entities.properties.composed.MovableProperty
+</span>4 <span style=''>
+</span>5 <span style=''>/** System manging cell movement based on their acceleration and speed */
+</span>6 <span style=''>case class MovementSystem() extends AbstractSystem[MovableProperty] {
+</span>7 <span style=''>
+</span>8 <span style=''>  private val cellMaxSpeed: Double = </span><span style='background: #AEF1AE'>4</span><span style=''>
+</span>9 <span style=''>
+</span>10 <span style=''>  override def update(): Unit = {
+</span>11 <span style=''>    </span><span style='background: #AEF1AE'>entities foreach (entity =&gt; {
+</span>12 <span style=''></span><span style='background: #AEF1AE'>      updateEntitySpeed(entity)
+</span>13 <span style=''></span><span style='background: #AEF1AE'>      updateEntityPosition(entity)
+</span>14 <span style=''></span><span style='background: #AEF1AE'>    })</span><span style=''>
+</span>15 <span style=''>  }
+</span>16 <span style=''>
+</span>17 <span style=''>  private def updateEntitySpeed(entity: MovableProperty): Unit = {
+</span>18 <span style=''>    val accelerationComponent = </span><span style='background: #AEF1AE'>entity.getAccelerationComponent</span><span style=''>
+</span>19 <span style=''>    val accelerationVector = </span><span style='background: #AEF1AE'>accelerationComponent.vector</span><span style=''>
+</span>20 <span style=''>    val speedComponent = </span><span style='background: #AEF1AE'>entity.getSpeedComponent</span><span style=''>
+</span>21 <span style=''>    val speedVector = </span><span style='background: #AEF1AE'>speedComponent.vector</span><span style=''>
+</span>22 <span style=''>    </span><span style='background: #AEF1AE'>speedComponent.vector_(speedVector add accelerationVector limit cellMaxSpeed)</span><span style=''>
+</span>23 <span style=''>    </span><span style='background: #AEF1AE'>accelerationComponent.reset()</span><span style=''>
+</span>24 <span style=''>  }
+</span>25 <span style=''>
+</span>26 <span style=''>  private def updateEntityPosition(entity: MovableProperty): Unit = {
+</span>27 <span style=''>    val positionComponent = </span><span style='background: #AEF1AE'>entity.getPositionComponent</span><span style=''>
+</span>28 <span style=''>    val position = </span><span style='background: #AEF1AE'>positionComponent.point</span><span style=''>
+</span>29 <span style=''>    val speedVector = </span><span style='background: #AEF1AE'>entity.getSpeedComponent.vector</span><span style=''>
+</span>30 <span style=''>    </span><span style='background: #AEF1AE'>positionComponent.point_(position add speedVector)</span><span style=''>
+</span>31 <span style=''>  }
+</span>32 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          710
+        </td>
+        <td>
+          302
+          -
+          303
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          4.0
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          713
+        </td>
+        <td>
+          343
+          -
+          446
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.TraversableForwarder.foreach
+        </td>
+        <td style="background: #AEF1AE">
+          MovementSystem.this.entities.foreach[Unit](((entity: it.unibo.osmos.redux.ecs.entities.properties.composed.MovableProperty) =&gt; {
+  MovementSystem.this.updateEntitySpeed(entity);
+  MovementSystem.this.updateEntityPosition(entity)
+}))
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          711
+        </td>
+        <td>
+          379
+          -
+          404
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.MovementSystem.updateEntitySpeed
+        </td>
+        <td style="background: #AEF1AE">
+          MovementSystem.this.updateEntitySpeed(entity)
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          712
+        </td>
+        <td>
+          411
+          -
+          439
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.MovementSystem.updateEntityPosition
+        </td>
+        <td style="background: #AEF1AE">
+          MovementSystem.this.updateEntityPosition(entity)
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          714
+        </td>
+        <td>
+          551
+          -
+          582
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Acceleration.getAccelerationComponent
+        </td>
+        <td style="background: #AEF1AE">
+          entity.getAccelerationComponent
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          715
+        </td>
+        <td>
+          612
+          -
+          640
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.VectorComponent.vector
+        </td>
+        <td style="background: #AEF1AE">
+          accelerationComponent.vector
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          716
+        </td>
+        <td>
+          666
+          -
+          690
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Speed.getSpeedComponent
+        </td>
+        <td style="background: #AEF1AE">
+          entity.getSpeedComponent
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          717
+        </td>
+        <td>
+          713
+          -
+          734
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.VectorComponent.vector
+        </td>
+        <td style="background: #AEF1AE">
+          speedComponent.vector
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          720
+        </td>
+        <td>
+          739
+          -
+          816
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.VectorComponent.vector_
+        </td>
+        <td style="background: #AEF1AE">
+          speedComponent.vector_(speedVector.add(accelerationVector).limit(MovementSystem.this.cellMaxSpeed))
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          719
+        </td>
+        <td>
+          762
+          -
+          815
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.limit
+        </td>
+        <td style="background: #AEF1AE">
+          speedVector.add(accelerationVector).limit(MovementSystem.this.cellMaxSpeed)
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          718
+        </td>
+        <td>
+          803
+          -
+          815
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.MovementSystem.cellMaxSpeed
+        </td>
+        <td style="background: #AEF1AE">
+          MovementSystem.this.cellMaxSpeed
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          721
+        </td>
+        <td>
+          821
+          -
+          850
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.AccelerationComponent.reset
+        </td>
+        <td style="background: #AEF1AE">
+          accelerationComponent.reset()
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          722
+        </td>
+        <td>
+          954
+          -
+          981
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Position.getPositionComponent
+        </td>
+        <td style="background: #AEF1AE">
+          entity.getPositionComponent
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          723
+        </td>
+        <td>
+          1001
+          -
+          1024
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.point
+        </td>
+        <td style="background: #AEF1AE">
+          positionComponent.point
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          724
+        </td>
+        <td>
+          1047
+          -
+          1078
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.VectorComponent.vector
+        </td>
+        <td style="background: #AEF1AE">
+          entity.getSpeedComponent.vector
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          726
+        </td>
+        <td>
+          1083
+          -
+          1133
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.point_
+        </td>
+        <td style="background: #AEF1AE">
+          positionComponent.point_(position.add(speedVector))
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          725
+        </td>
+        <td>
+          1108
+          -
+          1132
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.add
+        </td>
+        <td style="background: #AEF1AE">
+          position.add(speedVector)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

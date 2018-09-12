@@ -1,0 +1,345 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/components/custom/TitledTextField.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.components.custom
+</span>2 <span style=''>
+</span>3 <span style=''>import scalafx.beans.property.StringProperty
+</span>4 <span style=''>import scalafx.scene.control.TextField
+</span>5 <span style=''>
+</span>6 <span style=''>/** A TextField with a Text
+</span>7 <span style=''>  *
+</span>8 <span style=''>  * @param title          the StringProperty representing the title shown
+</span>9 <span style=''>  * @param stringProperty the StringProperty which gets constantly updated
+</span>10 <span style=''>  */
+</span>11 <span style=''>class TitledTextField(override val title: StringProperty, stringProperty: StringProperty) extends TitledNode[TextField](title, vertical = false) {
+</span>12 <span style=''>
+</span>13 <span style=''>  /** Secondary constructor which uses a simple String as a title
+</span>14 <span style=''>    *
+</span>15 <span style=''>    * @param title          the String title
+</span>16 <span style=''>    * @param stringProperty the string property
+</span>17 <span style=''>    */
+</span>18 <span style=''>  def this(title: String, stringProperty: StringProperty) {
+</span>19 <span style=''>    </span><span style='background: #F0ADAD'>this(StringProperty(title), stringProperty)</span><span style=''>
+</span>20 <span style=''>  }
+</span>21 <span style=''>
+</span>22 <span style=''>  /** The node that will be shown after the text
+</span>23 <span style=''>    *
+</span>24 <span style=''>    * @return a node of type N &lt;: Node
+</span>25 <span style=''>    */
+</span>26 <span style=''>  override def innerNode: TextField = </span><span style='background: #F0ADAD'>new</span><span style=''> TextField() {
+</span>27 <span style=''>    </span><span style='background: #F0ADAD'>editable = true</span><span style=''>
+</span>28 <span style=''>    </span><span style='background: #F0ADAD'>prefWidth &lt;== maxWidth</span><span style=''>
+</span>29 <span style=''>    if (</span><span style='background: #F0ADAD'>stringProperty != null</span><span style=''>) </span><span style='background: #F0ADAD'>stringProperty &lt;==&gt; text</span><span style=''>
+</span>30 <span style=''>  }
+</span>31 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          3569
+        </td>
+        <td>
+          706
+          -
+          706
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          3567
+        </td>
+        <td>
+          717
+          -
+          738
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.StringProperty.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.beans.property.StringProperty.apply(title)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          3568
+        </td>
+        <td>
+          712
+          -
+          755
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledTextField.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          TitledTextField.this.&lt;init&gt;(scalafx.beans.property.StringProperty.apply(title), stringProperty)
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          3579
+        </td>
+        <td>
+          900
+          -
+          903
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledTextField.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          3570
+        </td>
+        <td>
+          922
+          -
+          937
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.TextInputControl.editable_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.editable_=(true)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          3572
+        </td>
+        <td>
+          942
+          -
+          964
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.prefWidth.&lt;==($anon.this.maxWidth)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          3571
+        </td>
+        <td>
+          956
+          -
+          964
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.scene.layout.Region.maxWidth
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.maxWidth
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          3576
+        </td>
+        <td>
+          997
+          -
+          1021
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          TitledTextField.this.stringProperty.&lt;==&gt;($anon.this.text)
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          3573
+        </td>
+        <td>
+          973
+          -
+          995
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.!=
+        </td>
+        <td style="background: #F0ADAD">
+          TitledTextField.this.stringProperty.!=(null)
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          3575
+        </td>
+        <td>
+          997
+          -
+          1021
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          TitledTextField.this.stringProperty.&lt;==&gt;($anon.this.text)
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          3578
+        </td>
+        <td>
+          969
+          -
+          969
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          3577
+        </td>
+        <td>
+          969
+          -
+          969
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          3574
+        </td>
+        <td>
+          1017
+          -
+          1021
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.scene.control.TextInputControl.text
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.text
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

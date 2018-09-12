@@ -1,0 +1,367 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/multiplayer/common/ActorSystemConfigFactory.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.multiplayer.common
+</span>2 <span style=''>
+</span>3 <span style=''>import com.typesafe.config.{Config, ConfigFactory}
+</span>4 <span style=''>import it.unibo.osmos.redux.utils.Constants
+</span>5 <span style=''>
+</span>6 <span style=''>import scala.io.Source
+</span>7 <span style=''>
+</span>8 <span style=''>/** Factory to create and load the actor's configs */
+</span>9 <span style=''>object ActorSystemConfigFactory {
+</span>10 <span style=''>
+</span>11 <span style=''>  /** Creates and returns a default config.
+</span>12 <span style=''>    *
+</span>13 <span style=''>    * @return The default config.
+</span>14 <span style=''>    */
+</span>15 <span style=''>  def create(): Config = {
+</span>16 <span style=''>    val configString =
+</span>17 <span style=''>      </span><span style='background: #F0ADAD'>&quot;&quot;&quot;
+</span>18 <span style=''></span><span style='background: #F0ADAD'>     akka {
+</span>19 <span style=''></span><span style='background: #F0ADAD'>       actor {
+</span>20 <span style=''></span><span style='background: #F0ADAD'>         provider = remote
+</span>21 <span style=''></span><span style='background: #F0ADAD'>       }
+</span>22 <span style=''></span><span style='background: #F0ADAD'>       remote {
+</span>23 <span style=''></span><span style='background: #F0ADAD'>         enabled-transports = [&quot;akka.remote.netty.tcp&quot;]
+</span>24 <span style=''></span><span style='background: #F0ADAD'>         netty.tcp {
+</span>25 <span style=''></span><span style='background: #F0ADAD'>           port = 0
+</span>26 <span style=''></span><span style='background: #F0ADAD'>         }
+</span>27 <span style=''></span><span style='background: #F0ADAD'>       }
+</span>28 <span style=''></span><span style='background: #F0ADAD'>     }
+</span>29 <span style=''></span><span style='background: #F0ADAD'>      &quot;&quot;&quot;</span><span style=''>
+</span>30 <span style=''>    </span><span style='background: #F0ADAD'>ConfigFactory.parseString(configString)</span><span style=''>
+</span>31 <span style=''>  }
+</span>32 <span style=''>
+</span>33 <span style=''>  /** Creates and returns a config with the specified address and port.
+</span>34 <span style=''>    *
+</span>35 <span style=''>    * @param address The user object that contains declared port
+</span>36 <span style=''>    * @return The default config with custom port and address.
+</span>37 <span style=''>    */
+</span>38 <span style=''>  def create(address: String, port: String): Config = {
+</span>39 <span style=''>    val configString =
+</span>40 <span style=''>      </span><span style='background: #F0ADAD'>s&quot;&quot;&quot;
+</span>41 <span style=''></span><span style='background: #F0ADAD'>     akka {
+</span>42 <span style=''></span><span style='background: #F0ADAD'>       actor {
+</span>43 <span style=''></span><span style='background: #F0ADAD'>         provider = remote
+</span>44 <span style=''></span><span style='background: #F0ADAD'>       }
+</span>45 <span style=''></span><span style='background: #F0ADAD'>       remote {
+</span>46 <span style=''></span><span style='background: #F0ADAD'>         enabled-transports = [&quot;akka.remote.netty.tcp&quot;]
+</span>47 <span style=''></span><span style='background: #F0ADAD'>         netty.tcp {
+</span>48 <span style=''></span><span style='background: #F0ADAD'>           address = $address
+</span>49 <span style=''></span><span style='background: #F0ADAD'>           port = $port
+</span>50 <span style=''></span><span style='background: #F0ADAD'>         }
+</span>51 <span style=''></span><span style='background: #F0ADAD'>       }
+</span>52 <span style=''></span><span style='background: #F0ADAD'>     }
+</span>53 <span style=''></span><span style='background: #F0ADAD'>      &quot;&quot;&quot;</span><span style=''>
+</span>54 <span style=''>    </span><span style='background: #F0ADAD'>ConfigFactory.parseString(configString)</span><span style=''>
+</span>55 <span style=''>  }
+</span>56 <span style=''>
+</span>57 <span style=''>  /** Loads and returns the config declared in the default.conf file in the resources.
+</span>58 <span style=''>    *
+</span>59 <span style=''>    * @return The config.
+</span>60 <span style=''>    */
+</span>61 <span style=''>  def load(): Config = {
+</span>62 <span style=''>    </span><span style='background: #F0ADAD'>ConfigFactory.parseString(readConfigFile)</span><span style=''>
+</span>63 <span style=''>  }
+</span>64 <span style=''>
+</span>65 <span style=''>  /** Reads from the default system conf file.
+</span>66 <span style=''>    *
+</span>67 <span style=''>    * @return The file content.
+</span>68 <span style=''>    */
+</span>69 <span style=''>  private def readConfigFile: String = {
+</span>70 <span style=''>    val fileStream = </span><span style='background: #F0ADAD'>getClass.getClassLoader.getResourceAsStream(Constants.MultiPlayer.ActorSystemConfigFilePath)</span><span style=''>
+</span>71 <span style=''>    try </span><span style='background: #F0ADAD'>Source.fromInputStream(fileStream).mkString</span><span style=''>
+</span>72 <span style=''>    finally </span><span style='background: #F0ADAD'>fileStream.close()</span><span style=''>
+</span>73 <span style=''>  }
+</span>74 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          1447
+        </td>
+        <td>
+          405
+          -
+          621
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;\n     akka {\n       actor {\n         provider = remote\n       }\n       remote {\n         enabled-transports = [\&quot;akka.remote.netty.tcp\&quot;]\n         netty.tcp {\n           port = 0\n         }\n       }\n     }\n      &quot;
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          1448
+        </td>
+        <td>
+          626
+          -
+          665
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.typesafe.config.ConfigFactory.parseString
+        </td>
+        <td style="background: #F0ADAD">
+          com.typesafe.config.ConfigFactory.parseString(configString)
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          1449
+        </td>
+        <td>
+          969
+          -
+          1220
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.StringContext.s
+        </td>
+        <td style="background: #F0ADAD">
+          scala.StringContext.apply(&quot;\n     akka {\n       actor {\n         provider = remote\n       }\n       remote {\n         enabled-transports = [\&quot;akka.remote.netty.tcp\&quot;]\n         netty.tcp {\n           address = &quot;, &quot;\n           port = &quot;, &quot;\n         }\n       }\n     }\n      &quot;).s(address, port)
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          1450
+        </td>
+        <td>
+          1225
+          -
+          1264
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.typesafe.config.ConfigFactory.parseString
+        </td>
+        <td style="background: #F0ADAD">
+          com.typesafe.config.ConfigFactory.parseString(configString)
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          1452
+        </td>
+        <td>
+          1425
+          -
+          1466
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.typesafe.config.ConfigFactory.parseString
+        </td>
+        <td style="background: #F0ADAD">
+          com.typesafe.config.ConfigFactory.parseString(ActorSystemConfigFactory.this.readConfigFile)
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          1451
+        </td>
+        <td>
+          1451
+          -
+          1465
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.common.ActorSystemConfigFactory.readConfigFile
+        </td>
+        <td style="background: #F0ADAD">
+          ActorSystemConfigFactory.this.readConfigFile
+        </td>
+      </tr><tr>
+        <td>
+          70
+        </td>
+        <td>
+          1454
+        </td>
+        <td>
+          1626
+          -
+          1718
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.ClassLoader.getResourceAsStream
+        </td>
+        <td style="background: #F0ADAD">
+          ActorSystemConfigFactory.this.getClass().getClassLoader().getResourceAsStream(it.unibo.osmos.redux.utils.Constants.MultiPlayer.ActorSystemConfigFilePath)
+        </td>
+      </tr><tr>
+        <td>
+          70
+        </td>
+        <td>
+          1453
+        </td>
+        <td>
+          1670
+          -
+          1717
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.MultiPlayer.ActorSystemConfigFilePath
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Constants.MultiPlayer.ActorSystemConfigFilePath
+        </td>
+      </tr><tr>
+        <td>
+          71
+        </td>
+        <td>
+          1456
+        </td>
+        <td>
+          1727
+          -
+          1770
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          scala.io.BufferedSource.mkString
+        </td>
+        <td style="background: #F0ADAD">
+          scala.io.Source.fromInputStream(fileStream)(io.this.Codec.fallbackSystemCodec).mkString
+        </td>
+      </tr><tr>
+        <td>
+          71
+        </td>
+        <td>
+          1455
+        </td>
+        <td>
+          1727
+          -
+          1770
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.io.BufferedSource.mkString
+        </td>
+        <td style="background: #F0ADAD">
+          scala.io.Source.fromInputStream(fileStream)(io.this.Codec.fallbackSystemCodec).mkString
+        </td>
+      </tr><tr>
+        <td>
+          72
+        </td>
+        <td>
+          1458
+        </td>
+        <td>
+          1783
+          -
+          1801
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          java.io.InputStream.close
+        </td>
+        <td style="background: #F0ADAD">
+          fileStream.close()
+        </td>
+      </tr><tr>
+        <td>
+          72
+        </td>
+        <td>
+          1457
+        </td>
+        <td>
+          1783
+          -
+          1801
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.io.InputStream.close
+        </td>
+        <td style="background: #F0ADAD">
+          fileStream.close()
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

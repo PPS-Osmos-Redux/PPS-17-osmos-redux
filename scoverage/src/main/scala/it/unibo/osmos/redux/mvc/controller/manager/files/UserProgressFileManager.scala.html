@@ -1,0 +1,681 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/controller/manager/files/UserProgressFileManager.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.controller.manager.files
+</span>2 <span style=''>
+</span>3 <span style=''>import java.io.File
+</span>4 <span style=''>import java.nio.file.Paths
+</span>5 <span style=''>
+</span>6 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels
+</span>7 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel
+</span>8 <span style=''>import it.unibo.osmos.redux.mvc.model.JsonProtocols._
+</span>9 <span style=''>import it.unibo.osmos.redux.utils.Constants.UserHomePaths._
+</span>10 <span style=''>import it.unibo.osmos.redux.utils.Logger
+</span>11 <span style=''>import spray.json.DefaultJsonProtocol._
+</span>12 <span style=''>import spray.json._
+</span>13 <span style=''>
+</span>14 <span style=''>import scala.util.{Failure, Success, Try}
+</span>15 <span style=''>
+</span>16 <span style=''>/** Defines operation on user progress files. */
+</span>17 <span style=''>object UserProgressFileManager extends FileManager {
+</span>18 <span style=''>  override implicit val who: String = </span><span style='background: #AEF1AE'>&quot;UserProgressFileManager&quot;</span><span style=''>
+</span>19 <span style=''>
+</span>20 <span style=''>  /** Saves user progress.
+</span>21 <span style=''>    *
+</span>22 <span style=''>    * @param userProgress List[CampaignLevel]
+</span>23 <span style=''>    * @return true if the function is completed with success
+</span>24 <span style=''>    */
+</span>25 <span style=''>  def saveUserProgress(userProgress: List[CampaignLevel]): Boolean = {
+</span>26 <span style=''>    val upFile = </span><span style='background: #AEF1AE'>new File(DefaultFS.getPath(UserProgressFileName + jsonExtension).toUri)</span><span style=''>
+</span>27 <span style=''>    </span><span style='background: #AEF1AE'>createDirectoriesTree(upFile)</span><span style=''>
+</span>28 <span style=''>    </span><span style='background: #AEF1AE'>saveToFile(upFile, userProgress.toJson.prettyPrint)</span><span style=''>
+</span>29 <span style=''>  }
+</span>30 <span style=''>
+</span>31 <span style=''>  /** Loads user progress from file.
+</span>32 <span style=''>    *
+</span>33 <span style=''>    * @return List[CampaignLevel]
+</span>34 <span style=''>    */
+</span>35 <span style=''>  def loadUserProgress(): List[CampaignLevel] =
+</span>36 <span style=''>    </span><span style='background: #AEF1AE'>loadFile(UserProgressFileName + jsonExtension)</span><span style=''> match {
+</span>37 <span style=''>      case Some(text) =&gt; </span><span style='background: #AEF1AE'>Try(text.parseJson.convertTo[List[CampaignLevel]])</span><span style=''> match {
+</span>38 <span style=''>        case Success(value) =&gt; value
+</span>39 <span style=''>        case Failure(_) =&gt; </span><span style='background: #F0ADAD'>Logger.log(&quot;Error: failed user progress convertion to json&quot;)</span><span style=''>
+</span>40 <span style=''>          </span><span style='background: #F0ADAD'>deleteFile(Paths.get(UserProgressFileName + jsonExtension))</span><span style=''>
+</span>41 <span style=''>          </span><span style='background: #F0ADAD'>loadUserProgress()</span><span style=''>
+</span>42 <span style=''>      }
+</span>43 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>saveUserProgress(SinglePlayerLevels.getCampaignLevels)</span><span style=''>
+</span>44 <span style=''>        </span><span style='background: #F0ADAD'>loadUserProgress()</span><span style=''>
+</span>45 <span style=''>    }
+</span>46 <span style=''>
+</span>47 <span style=''>  /** Delete user progress file
+</span>48 <span style=''>    *
+</span>49 <span style=''>    * @return Try[Unit]
+</span>50 <span style=''>    */
+</span>51 <span style=''>  def deleteUserProgress(): Try[Unit] = </span><span style='background: #AEF1AE'>deleteFile(DefaultFS.getPath(UserProgressFileName + jsonExtension).toAbsolutePath)</span><span style=''>
+</span>52 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          2612
+        </td>
+        <td>
+          649
+          -
+          674
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;UserProgressFileManager&quot;
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          2613
+        </td>
+        <td>
+          920
+          -
+          981
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.nio.file.Path.toUri
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Constants.UserHomePaths.DefaultFS.getPath(it.unibo.osmos.redux.utils.Constants.UserHomePaths.UserProgressFileName.+(UserProgressFileManager.this.jsonExtension)).toUri()
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          2614
+        </td>
+        <td>
+          911
+          -
+          982
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.io.File.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new java.io.File(it.unibo.osmos.redux.utils.Constants.UserHomePaths.DefaultFS.getPath(it.unibo.osmos.redux.utils.Constants.UserHomePaths.UserProgressFileName.+(UserProgressFileManager.this.jsonExtension)).toUri())
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          2615
+        </td>
+        <td>
+          987
+          -
+          1016
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.createDirectoriesTree
+        </td>
+        <td style="background: #AEF1AE">
+          UserProgressFileManager.this.createDirectoriesTree(upFile)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          2616
+        </td>
+        <td>
+          1053
+          -
+          1053
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.model.JsonProtocols.campaignLevelsFormatter
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.model.JsonProtocols.campaignLevelsFormatter
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          2619
+        </td>
+        <td>
+          1021
+          -
+          1072
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.saveToFile
+        </td>
+        <td style="background: #AEF1AE">
+          UserProgressFileManager.this.saveToFile(upFile, spray.json.`package`.enrichAny[List[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel]](userProgress).toJson(spray.json.DefaultJsonProtocol.listFormat[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel](it.unibo.osmos.redux.mvc.model.JsonProtocols.campaignLevelsFormatter)).prettyPrint)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          2618
+        </td>
+        <td>
+          1040
+          -
+          1071
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          spray.json.JsValue.prettyPrint
+        </td>
+        <td style="background: #AEF1AE">
+          spray.json.`package`.enrichAny[List[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel]](userProgress).toJson(spray.json.DefaultJsonProtocol.listFormat[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel](it.unibo.osmos.redux.mvc.model.JsonProtocols.campaignLevelsFormatter)).prettyPrint
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          2617
+        </td>
+        <td>
+          1053
+          -
+          1053
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          spray.json.CollectionFormats.listFormat
+        </td>
+        <td style="background: #AEF1AE">
+          spray.json.DefaultJsonProtocol.listFormat[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel](it.unibo.osmos.redux.mvc.model.JsonProtocols.campaignLevelsFormatter)
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          2622
+        </td>
+        <td>
+          1214
+          -
+          1260
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.loadFile
+        </td>
+        <td style="background: #AEF1AE">
+          UserProgressFileManager.this.loadFile(it.unibo.osmos.redux.utils.Constants.UserHomePaths.UserProgressFileName.+(UserProgressFileManager.this.jsonExtension))
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          2621
+        </td>
+        <td>
+          1223
+          -
+          1259
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Constants.UserHomePaths.UserProgressFileName.+(UserProgressFileManager.this.jsonExtension)
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          2620
+        </td>
+        <td>
+          1246
+          -
+          1259
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.jsonExtension
+        </td>
+        <td style="background: #AEF1AE">
+          UserProgressFileManager.this.jsonExtension
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          2625
+        </td>
+        <td>
+          1298
+          -
+          1343
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          spray.json.JsValue.convertTo
+        </td>
+        <td style="background: #AEF1AE">
+          spray.json.`package`.enrichString(text).parseJson.convertTo[List[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel]](spray.json.DefaultJsonProtocol.listFormat[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel](it.unibo.osmos.redux.mvc.model.JsonProtocols.campaignLevelsFormatter))
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          2624
+        </td>
+        <td>
+          1322
+          -
+          1322
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          spray.json.CollectionFormats.listFormat
+        </td>
+        <td style="background: #AEF1AE">
+          spray.json.DefaultJsonProtocol.listFormat[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel](it.unibo.osmos.redux.mvc.model.JsonProtocols.campaignLevelsFormatter)
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          2626
+        </td>
+        <td>
+          1294
+          -
+          1344
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.util.Try.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.util.Try.apply[List[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel]](spray.json.`package`.enrichString(text).parseJson.convertTo[List[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel]](spray.json.DefaultJsonProtocol.listFormat[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel](it.unibo.osmos.redux.mvc.model.JsonProtocols.campaignLevelsFormatter)))
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          2623
+        </td>
+        <td>
+          1322
+          -
+          1322
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.model.JsonProtocols.campaignLevelsFormatter
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.model.JsonProtocols.campaignLevelsFormatter
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          2628
+        </td>
+        <td>
+          1427
+          -
+          1427
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.UserProgressFileManager.who
+        </td>
+        <td style="background: #F0ADAD">
+          UserProgressFileManager.this.who
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          2627
+        </td>
+        <td>
+          1428
+          -
+          1476
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;Error: failed user progress convertion to json&quot;
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          2629
+        </td>
+        <td>
+          1417
+          -
+          1477
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Logger.log
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Logger.log(&quot;Error: failed user progress convertion to json&quot;)(UserProgressFileManager.this.who)
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          2631
+        </td>
+        <td>
+          1509
+          -
+          1545
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Constants.UserHomePaths.UserProgressFileName.+(UserProgressFileManager.this.jsonExtension)
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          2630
+        </td>
+        <td>
+          1532
+          -
+          1545
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.jsonExtension
+        </td>
+        <td style="background: #F0ADAD">
+          UserProgressFileManager.this.jsonExtension
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          2633
+        </td>
+        <td>
+          1488
+          -
+          1547
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.deleteFile
+        </td>
+        <td style="background: #F0ADAD">
+          UserProgressFileManager.this.deleteFile(java.nio.file.Paths.get(it.unibo.osmos.redux.utils.Constants.UserHomePaths.UserProgressFileName.+(UserProgressFileManager.this.jsonExtension)))
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          2632
+        </td>
+        <td>
+          1499
+          -
+          1546
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.nio.file.Paths.get
+        </td>
+        <td style="background: #F0ADAD">
+          java.nio.file.Paths.get(it.unibo.osmos.redux.utils.Constants.UserHomePaths.UserProgressFileName.+(UserProgressFileManager.this.jsonExtension))
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          2634
+        </td>
+        <td>
+          1558
+          -
+          1576
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.UserProgressFileManager.loadUserProgress
+        </td>
+        <td style="background: #F0ADAD">
+          UserProgressFileManager.this.loadUserProgress()
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          2636
+        </td>
+        <td>
+          1601
+          -
+          1655
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.UserProgressFileManager.saveUserProgress
+        </td>
+        <td style="background: #F0ADAD">
+          UserProgressFileManager.this.saveUserProgress(it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.getCampaignLevels)
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          2635
+        </td>
+        <td>
+          1618
+          -
+          1654
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.getCampaignLevels
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.getCampaignLevels
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          2637
+        </td>
+        <td>
+          1664
+          -
+          1682
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.UserProgressFileManager.loadUserProgress
+        </td>
+        <td style="background: #F0ADAD">
+          UserProgressFileManager.this.loadUserProgress()
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          2639
+        </td>
+        <td>
+          1799
+          -
+          1881
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.deleteFile
+        </td>
+        <td style="background: #AEF1AE">
+          UserProgressFileManager.this.deleteFile(it.unibo.osmos.redux.utils.Constants.UserHomePaths.DefaultFS.getPath(it.unibo.osmos.redux.utils.Constants.UserHomePaths.UserProgressFileName.+(UserProgressFileManager.this.jsonExtension)).toAbsolutePath())
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          2638
+        </td>
+        <td>
+          1810
+          -
+          1880
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.nio.file.Path.toAbsolutePath
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Constants.UserHomePaths.DefaultFS.getPath(it.unibo.osmos.redux.utils.Constants.UserHomePaths.UserProgressFileName.+(UserProgressFileManager.this.jsonExtension)).toAbsolutePath()
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

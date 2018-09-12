@@ -1,0 +1,510 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/components/editor/GravityCellEntityCreator.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.components.editor
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.ecs.entities.{CellBuilder, GravityCellEntity}
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField
+</span>5 <span style=''>import scalafx.beans.property.DoubleProperty
+</span>6 <span style=''>import scalafx.scene.control.Label
+</span>7 <span style=''>import scalafx.scene.layout.VBox
+</span>8 <span style=''>
+</span>9 <span style=''>/** A panel showing input nodes which is also capable of providing the requested GravityCellEntity */
+</span>10 <span style=''>class GravityCellEntityCreator extends CellEntityCreator {
+</span>11 <span style=''>
+</span>12 <span style=''>  /** Specific weight node */
+</span>13 <span style=''>  val weight: DoubleProperty = </span><span style='background: #AEF1AE'>DoubleProperty(1.0)</span><span style=''>
+</span>14 <span style=''>  val weightNode = </span><span style='background: #AEF1AE'>new VBox(2.0, new Label(&quot;Weight&quot;), new TitledDoubleField(&quot;Weight: &quot;, weight, 0.0, Double.MaxValue).innerNode)</span><span style=''>
+</span>15 <span style=''>
+</span>16 <span style=''>  </span><span style='background: #AEF1AE'>children.add(weightNode)</span><span style=''>
+</span>17 <span style=''>
+</span>18 <span style=''>  override def create(): GravityCellEntity = {
+</span>19 <span style=''>    val builder = </span><span style='background: #AEF1AE'>CellBuilder()</span><span style=''>
+</span>20 <span style=''>    </span><span style='background: #AEF1AE'>configureBuilder(builder)</span><span style=''>
+</span>21 <span style=''>    </span><span style='background: #AEF1AE'>builder.buildGravityEntity()</span><span style=''>
+</span>22 <span style=''>  }
+</span>23 <span style=''>
+</span>24 <span style=''>  override def configureBuilder(builder: CellBuilder, withEntityType: Boolean = true): Unit = {
+</span>25 <span style=''>    </span><span style='background: #AEF1AE'>super.configureBuilder(builder)</span><span style=''>
+</span>26 <span style=''>    </span><span style='background: #AEF1AE'>builder.withSpecificWeight(weight.value)</span><span style=''>
+</span>27 <span style=''>  }
+</span>28 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          3949
+        </td>
+        <td>
+          541
+          -
+          560
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.DoubleProperty.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scalafx.beans.property.DoubleProperty.apply(1.0)
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          3950
+        </td>
+        <td>
+          589
+          -
+          592
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          2.0
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          3953
+        </td>
+        <td>
+          649
+          -
+          655
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.GravityCellEntityCreator.weight
+        </td>
+        <td style="background: #AEF1AE">
+          GravityCellEntityCreator.this.weight
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          3956
+        </td>
+        <td>
+          615
+          -
+          688
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField.innerNode
+        </td>
+        <td style="background: #AEF1AE">
+          new it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField(&quot;Weight: &quot;, GravityCellEntityCreator.this.weight, 0.0, 1.7976931348623157E308).innerNode
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          3955
+        </td>
+        <td>
+          662
+          -
+          677
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          1.7976931348623157E308
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          3952
+        </td>
+        <td>
+          637
+          -
+          647
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;Weight: &quot;
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          3951
+        </td>
+        <td>
+          594
+          -
+          613
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.Label.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new scalafx.scene.control.Label(&quot;Weight&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          3954
+        </td>
+        <td>
+          657
+          -
+          660
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          0.0
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          3957
+        </td>
+        <td>
+          580
+          -
+          689
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.VBox.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new scalafx.scene.layout.VBox(2.0, new scalafx.scene.control.Label(&quot;Weight&quot;), new it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField(&quot;Weight: &quot;, GravityCellEntityCreator.this.weight, 0.0, 1.7976931348623157E308).innerNode)
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          3959
+        </td>
+        <td>
+          706
+          -
+          716
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.scene.layout.VBox.sfxVBox2jfx
+        </td>
+        <td style="background: #AEF1AE">
+          layout.this.VBox.sfxVBox2jfx(GravityCellEntityCreator.this.weightNode)
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          3958
+        </td>
+        <td>
+          706
+          -
+          716
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.GravityCellEntityCreator.weightNode
+        </td>
+        <td style="background: #AEF1AE">
+          GravityCellEntityCreator.this.weightNode
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          3960
+        </td>
+        <td>
+          693
+          -
+          717
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.util.List.add
+        </td>
+        <td style="background: #AEF1AE">
+          GravityCellEntityCreator.this.children.add(layout.this.VBox.sfxVBox2jfx(GravityCellEntityCreator.this.weightNode))
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          3961
+        </td>
+        <td>
+          784
+          -
+          797
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.apply()
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          3962
+        </td>
+        <td>
+          802
+          -
+          802
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.GravityCellEntityCreator.configureBuilder$default$2
+        </td>
+        <td style="background: #AEF1AE">
+          GravityCellEntityCreator.this.configureBuilder$default$2
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          3963
+        </td>
+        <td>
+          802
+          -
+          827
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.GravityCellEntityCreator.configureBuilder
+        </td>
+        <td style="background: #AEF1AE">
+          GravityCellEntityCreator.this.configureBuilder(builder, GravityCellEntityCreator.this.configureBuilder$default$2)
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          3964
+        </td>
+        <td>
+          832
+          -
+          860
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.buildGravityEntity
+        </td>
+        <td style="background: #AEF1AE">
+          builder.buildGravityEntity()
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          3966
+        </td>
+        <td>
+          966
+          -
+          997
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator.configureBuilder
+        </td>
+        <td style="background: #AEF1AE">
+          GravityCellEntityCreator.super.configureBuilder(builder, GravityCellEntityCreator.super.configureBuilder$default$2)
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          3965
+        </td>
+        <td>
+          972
+          -
+          972
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator.configureBuilder$default$2
+        </td>
+        <td style="background: #AEF1AE">
+          GravityCellEntityCreator.super.configureBuilder$default$2
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          3968
+        </td>
+        <td>
+          1002
+          -
+          1042
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.withSpecificWeight
+        </td>
+        <td style="background: #AEF1AE">
+          builder.withSpecificWeight(GravityCellEntityCreator.this.weight.value)
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          3967
+        </td>
+        <td>
+          1029
+          -
+          1041
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyDoubleProperty.value
+        </td>
+        <td style="background: #AEF1AE">
+          GravityCellEntityCreator.this.weight.value
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          3969
+        </td>
+        <td>
+          1028
+          -
+          1028
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

@@ -1,0 +1,2652 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/ecs/engine/GameEngine.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.engine
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.ecs.entities.{EntityManager, PlayerCellEntity}
+</span>4 <span style=''>import it.unibo.osmos.redux.ecs.systems._
+</span>5 <span style=''>import it.unibo.osmos.redux.multiplayer.server.Server
+</span>6 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.Level
+</span>7 <span style=''>import it.unibo.osmos.redux.mvc.view.context.{LevelContext, LevelContextType, MultiPlayerLevelContext}
+</span>8 <span style=''>import it.unibo.osmos.redux.utils.{Constants, InputEventQueue, Logger}
+</span>9 <span style=''>
+</span>10 <span style=''>import scala.collection.mutable.ListBuffer
+</span>11 <span style=''>
+</span>12 <span style=''>/** Game engine, the game loop manager. */
+</span>13 <span style=''>trait GameEngine {
+</span>14 <span style=''>
+</span>15 <span style=''>  type GameStatus = GameStatus.Value
+</span>16 <span style=''>
+</span>17 <span style=''>  /** Initializes the game loop with the input data that represents the level.
+</span>18 <span style=''>    *
+</span>19 <span style=''>    * @param level        The object that contains all level data.
+</span>20 <span style=''>    * @param levelContext The context of the current game level.
+</span>21 <span style=''>    */
+</span>22 <span style=''>  def init(level: Level, levelContext: LevelContext): Unit
+</span>23 <span style=''>
+</span>24 <span style=''>  /** Initializes the game loop and server for a multi-player level.
+</span>25 <span style=''>    *
+</span>26 <span style=''>    * @param level  The object that contains all level data.
+</span>27 <span style=''>    * @param server The server.
+</span>28 <span style=''>    * @return The context of the initialized game level.
+</span>29 <span style=''>    */
+</span>30 <span style=''>  def init(level: Level, server: Server): MultiPlayerLevelContext
+</span>31 <span style=''>
+</span>32 <span style=''>  /** Starts the game loop. */
+</span>33 <span style=''>  def start(): Unit
+</span>34 <span style=''>
+</span>35 <span style=''>  /** Pauses the game loop. */
+</span>36 <span style=''>  def pause(): Unit
+</span>37 <span style=''>
+</span>38 <span style=''>  /** Resumes the game loop. */
+</span>39 <span style=''>  def resume(): Unit
+</span>40 <span style=''>
+</span>41 <span style=''>  /** Stops the game loop. */
+</span>42 <span style=''>  def stop(): Unit
+</span>43 <span style=''>
+</span>44 <span style=''>  /** Clears all data of the current game loop. */
+</span>45 <span style=''>  def clear(): Unit
+</span>46 <span style=''>
+</span>47 <span style=''>  /** Gets the current game loop status.
+</span>48 <span style=''>    *
+</span>49 <span style=''>    * @return The current game loop status.
+</span>50 <span style=''>    */
+</span>51 <span style=''>  def getStatus: GameStatus
+</span>52 <span style=''>
+</span>53 <span style=''>  /** Returns the current frame rate.
+</span>54 <span style=''>    *
+</span>55 <span style=''>    * @return The frame rate.
+</span>56 <span style=''>    */
+</span>57 <span style=''>  def getFps: Int
+</span>58 <span style=''>
+</span>59 <span style=''>  /** Changes the game loop speed by updating the current frame rate.
+</span>60 <span style=''>    *
+</span>61 <span style=''>    * @param increment Whether the game loop speed needs to be increased or decreased.
+</span>62 <span style=''>    */
+</span>63 <span style=''>  def changeSpeed(increment: Boolean = false): Unit
+</span>64 <span style=''>}
+</span>65 <span style=''>
+</span>66 <span style=''>/** Game engine object companion. */
+</span>67 <span style=''>object GameEngine {
+</span>68 <span style=''>
+</span>69 <span style=''>  def apply(): GameEngine = </span><span style='background: #F0ADAD'>GameEngineImpl()</span><span style=''>
+</span>70 <span style=''>
+</span>71 <span style=''>  def apply(frameRate: Int): GameEngine = </span><span style='background: #F0ADAD'>GameEngineImpl(frameRate)</span><span style=''>
+</span>72 <span style=''>
+</span>73 <span style=''>  /** The Game engine class implementation.
+</span>74 <span style=''>    *
+</span>75 <span style=''>    * @param frameRate The frame rate of the game.
+</span>76 <span style=''>    */
+</span>77 <span style=''>  private case class GameEngineImpl(private var frameRate: Int = Constants.Engine.DefaultFps) extends GameEngine {
+</span>78 <span style=''>
+</span>79 <span style=''>    private var gameLoop: Option[GameLoop] = _
+</span>80 <span style=''>
+</span>81 <span style=''>    override def init(level: Level, levelContext: LevelContext): Unit = {
+</span>82 <span style=''>
+</span>83 <span style=''>      //clear all
+</span>84 <span style=''>      </span><span style='background: #F0ADAD'>clear()</span><span style=''>
+</span>85 <span style=''>
+</span>86 <span style=''>      //register InputEventStack to the mouse event listener to collect input events
+</span>87 <span style=''>      </span><span style='background: #F0ADAD'>levelContext.subscribe(e =&gt; {
+</span>88 <span style=''></span><span style='background: #F0ADAD'>        InputEventQueue.enqueue(e)
+</span>89 <span style=''></span><span style='background: #F0ADAD'>      })</span><span style=''>
+</span>90 <span style=''>
+</span>91 <span style=''>      //create systems, add to list, the order in this collection is the final system order in the game loop
+</span>92 <span style=''>      val systems = </span><span style='background: #F0ADAD'>ListBuffer[System]()</span><span style=''>
+</span>93 <span style=''>      if (</span><span style='background: #F0ADAD'>!(levelContext.levelContextType == LevelContextType.simulation)</span><span style=''>) </span><span style='background: #F0ADAD'>systems += InputSystem()</span><span style=''>
+</span>94 <span style=''>      </span><span style='background: #F0ADAD'>systems ++= initMainSystems(level, levelContext)</span><span style=''>
+</span>95 <span style=''>      if (</span><span style='background: #F0ADAD'>!(levelContext.levelContextType == LevelContextType.simulation)</span><span style=''>) </span><span style='background: #F0ADAD'>systems += EndGameSystem(levelContext, level.levelInfo.victoryRule)</span><span style=''>
+</span>96 <span style=''>
+</span>97 <span style=''>
+</span>98 <span style=''>      //add all entities in the entity manager (systems are subscribed to EntityManager event when created)
+</span>99 <span style=''>      </span><span style='background: #F0ADAD'>level.entities foreach (EntityManager add _)</span><span style=''>
+</span>100 <span style=''>
+</span>101 <span style=''>      //init the gameloop
+</span>102 <span style=''>      </span><span style='background: #F0ADAD'>gameLoop = Some(new GameLoop(this, systems.toList))</span><span style=''>
+</span>103 <span style=''>    }
+</span>104 <span style=''>
+</span>105 <span style=''>    override def clear(): Unit = {
+</span>106 <span style=''>      //clear entities
+</span>107 <span style=''>      </span><span style='background: #F0ADAD'>EntityManager.clear()</span><span style=''>
+</span>108 <span style=''>      //clear mouse events
+</span>109 <span style=''>      </span><span style='background: #F0ADAD'>InputEventQueue.dequeueAll()</span><span style=''>
+</span>110 <span style=''>      //reset game speed
+</span>111 <span style=''>      </span><span style='background: #F0ADAD'>frameRate = Constants.Engine.DefaultFps</span><span style=''>
+</span>112 <span style=''>
+</span>113 <span style=''>      </span><span style='background: #F0ADAD'>gameLoop</span><span style=''> match {
+</span>114 <span style=''>        case Some(i) =&gt; </span><span style='background: #F0ADAD'>i.getStatus</span><span style=''> match {
+</span>115 <span style=''>          case GameStatus.Running | GameStatus.Paused =&gt; </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Unable to clear game engine if the game loop is still running or is paused&quot;)</span><span style=''>
+</span>116 <span style=''>          case _ =&gt; </span><span style='background: #F0ADAD'>i.kill()</span><span style=''>
+</span>117 <span style=''>        }
+</span>118 <span style=''>        case _ </span><span style='background: #F0ADAD'>=&gt;</span><span style=''> //do nothing if it's not present
+</span>119 <span style=''>      }
+</span>120 <span style=''>      </span><span style='background: #F0ADAD'>gameLoop = None</span><span style=''>
+</span>121 <span style=''>    }
+</span>122 <span style=''>
+</span>123 <span style=''>    /** Initializes the main game systems
+</span>124 <span style=''>      *
+</span>125 <span style=''>      * @param level        The level
+</span>126 <span style=''>      * @param levelContext The level context
+</span>127 <span style=''>      * @return The list of all main systems
+</span>128 <span style=''>      */
+</span>129 <span style=''>    private def initMainSystems(level: Level, levelContext: LevelContext): List[System] = {
+</span>130 <span style=''>      </span><span style='background: #F0ADAD'>List(SpawnSystem(), GravitySystem(), MovementSystem(), CollisionSystem(level), CellsEliminationSystem(), SentientSystem(level), DrawSystem(levelContext))</span><span style=''>
+</span>131 <span style=''>    }
+</span>132 <span style=''>
+</span>133 <span style=''>    override def init(level: Level, server: Server): MultiPlayerLevelContext = {
+</span>134 <span style=''>
+</span>135 <span style=''>      //clear all
+</span>136 <span style=''>      </span><span style='background: #F0ADAD'>clear()</span><span style=''>
+</span>137 <span style=''>
+</span>138 <span style=''>      //obtain server entity cell uuid
+</span>139 <span style=''>      val serverPlayer = </span><span style='background: #F0ADAD'>level.entities.find(_.isInstanceOf[PlayerCellEntity])</span><span style=''>
+</span>140 <span style=''>      if (</span><span style='background: #F0ADAD'>serverPlayer.isEmpty</span><span style=''>) </span><span style='background: #F0ADAD'>throw new IllegalArgumentException(&quot;Game Engine cannot initialize multi-player game because no player cell entity is present in the level definition.&quot;)</span><span style=''>
+</span>141 <span style=''>
+</span>142 <span style=''>      //create the level context
+</span>143 <span style=''>      val levelContext = </span><span style='background: #F0ADAD'>LevelContext(serverPlayer.get.getUUID)</span><span style=''>
+</span>144 <span style=''>
+</span>145 <span style=''>      //register InputEventQueue to the mouse event listener to collect input events
+</span>146 <span style=''>      </span><span style='background: #F0ADAD'>levelContext.subscribe {
+</span>147 <span style=''></span><span style='background: #F0ADAD'>        InputEventQueue enqueue _
+</span>148 <span style=''></span><span style='background: #F0ADAD'>      }</span><span style=''>
+</span>149 <span style=''>
+</span>150 <span style=''>      //create systems, add to list, the order in this collection is the final system order in the game loop
+</span>151 <span style=''>      val systems = </span><span style='background: #F0ADAD'>ListBuffer[System](InputSystem())</span><span style=''>
+</span>152 <span style=''>      </span><span style='background: #F0ADAD'>systems ++= initMainSystems(level, levelContext) :+ MultiPlayerEndGameSystem(server, levelContext, level.levelInfo.victoryRule) :+ MultiPlayerUpdateSystem(server)</span><span style=''>
+</span>153 <span style=''>
+</span>154 <span style=''>      //add all entities in the entity manager (systems are subscribed to EntityManager event when created)
+</span>155 <span style=''>      </span><span style='background: #F0ADAD'>level.entities foreach (EntityManager add _)</span><span style=''>
+</span>156 <span style=''>
+</span>157 <span style=''>      //init the gameloop
+</span>158 <span style=''>      </span><span style='background: #F0ADAD'>gameLoop = Some(new GameLoop(this, systems.toList))</span><span style=''>
+</span>159 <span style=''>
+</span>160 <span style=''>      levelContext
+</span>161 <span style=''>    }
+</span>162 <span style=''>
+</span>163 <span style=''>    override def start(): Unit = {
+</span>164 <span style=''>      </span><span style='background: #F0ADAD'>gameLoop</span><span style=''> match {
+</span>165 <span style=''>        case Some(g) =&gt; </span><span style='background: #F0ADAD'>g.getStatus</span><span style=''> match {
+</span>166 <span style=''>          case GameStatus.Idle =&gt; </span><span style='background: #F0ADAD'>g.start()</span><span style=''>
+</span>167 <span style=''>          case _ =&gt; </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Unable to start game loop because the current game status is not idle.&quot;)</span><span style=''>
+</span>168 <span style=''>        }
+</span>169 <span style=''>        case None =&gt; </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Unable to start game loop because it hasn't been initialized yet.&quot;)</span><span style=''>
+</span>170 <span style=''>      }
+</span>171 <span style=''>    }
+</span>172 <span style=''>
+</span>173 <span style=''>    override def pause(): Unit = {
+</span>174 <span style=''>      </span><span style='background: #F0ADAD'>gameLoop</span><span style=''> match {
+</span>175 <span style=''>        case Some(g) =&gt; </span><span style='background: #F0ADAD'>g.pause()</span><span style=''>
+</span>176 <span style=''>        case None =&gt; </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Unable to pause game loop because it hasn't been initialized yet&quot;)</span><span style=''>
+</span>177 <span style=''>      }
+</span>178 <span style=''>    }
+</span>179 <span style=''>
+</span>180 <span style=''>    override def resume(): Unit = {
+</span>181 <span style=''>      </span><span style='background: #F0ADAD'>gameLoop</span><span style=''> match {
+</span>182 <span style=''>        case Some(g) =&gt; </span><span style='background: #F0ADAD'>g.unPause()</span><span style=''>
+</span>183 <span style=''>        case None =&gt; </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Unable to resume game loop because it hasn't been initialized yet&quot;)</span><span style=''>
+</span>184 <span style=''>      }
+</span>185 <span style=''>    }
+</span>186 <span style=''>
+</span>187 <span style=''>    override def stop(): Unit = {
+</span>188 <span style=''>      </span><span style='background: #F0ADAD'>gameLoop</span><span style=''> match {
+</span>189 <span style=''>        case Some(g) =&gt; </span><span style='background: #F0ADAD'>g.kill()</span><span style=''>
+</span>190 <span style=''>        case None =&gt; </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Unable to stop game loop because it hasn't been initialized yet&quot;)</span><span style=''>
+</span>191 <span style=''>      }
+</span>192 <span style=''>      </span><span style='background: #F0ADAD'>gameLoop = None</span><span style=''>
+</span>193 <span style=''>    }
+</span>194 <span style=''>
+</span>195 <span style=''>    override def getStatus: GameStatus = {
+</span>196 <span style=''>      </span><span style='background: #F0ADAD'>gameLoop</span><span style=''> match {
+</span>197 <span style=''>        case Some(g) =&gt; </span><span style='background: #F0ADAD'>g.getStatus</span><span style=''>
+</span>198 <span style=''>        case None =&gt; </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Unable to get game status if the game loop is not present.&quot;)</span><span style=''>
+</span>199 <span style=''>      }
+</span>200 <span style=''>    }
+</span>201 <span style=''>
+</span>202 <span style=''>    override def getFps: Int = </span><span style='background: #F0ADAD'>frameRate</span><span style=''>
+</span>203 <span style=''>
+</span>204 <span style=''>    override def changeSpeed(increment: Boolean): Unit = {
+</span>205 <span style=''>      if (</span><span style='background: #F0ADAD'>increment &amp;&amp; frameRate &lt; Constants.Engine.MaximumFps</span><span style=''>) {
+</span>206 <span style=''>        </span><span style='background: #F0ADAD'>frameRate += Constants.Engine.FpsChangeStep</span><span style=''>
+</span>207 <span style=''>      } else </span><span style='background: #F0ADAD'>if (!increment &amp;&amp; frameRate &gt; Constants.Engine.MinimumFps) {
+</span>208 <span style=''></span><span style='background: #F0ADAD'>        frameRate -= Constants.Engine.FpsChangeStep
+</span>209 <span style=''></span><span style='background: #F0ADAD'>      }</span><span style=''>
+</span>210 <span style=''>      </span><span style='background: #F0ADAD'>Logger.log(s&quot;changedSpeed: $frameRate&quot;)(&quot;GameEngine&quot;)</span><span style=''>
+</span>211 <span style=''>    }
+</span>212 <span style=''>  }
+</span>213 <span style=''>
+</span>214 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          74
+        </td>
+        <td>
+          1999
+          -
+          1999
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameEngine.GameEngineImpl.apply$default$1
+        </td>
+        <td style="background: #F0ADAD">
+          GameEngine.this.GameEngineImpl.apply$default$1
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          75
+        </td>
+        <td>
+          1999
+          -
+          2015
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameEngine.GameEngineImpl.apply
+        </td>
+        <td style="background: #F0ADAD">
+          GameEngine.this.GameEngineImpl.apply(GameEngine.this.GameEngineImpl.apply$default$1)
+        </td>
+      </tr><tr>
+        <td>
+          71
+        </td>
+        <td>
+          76
+        </td>
+        <td>
+          2059
+          -
+          2084
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameEngine.GameEngineImpl.apply
+        </td>
+        <td style="background: #F0ADAD">
+          GameEngine.this.GameEngineImpl.apply(frameRate)
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          77
+        </td>
+        <td>
+          2457
+          -
+          2464
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameEngine.GameEngineImpl.clear
+        </td>
+        <td style="background: #F0ADAD">
+          GameEngineImpl.this.clear()
+        </td>
+      </tr><tr>
+        <td>
+          87
+        </td>
+        <td>
+          79
+        </td>
+        <td>
+          2557
+          -
+          2630
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.EventWrapperObservable.subscribe
+        </td>
+        <td style="background: #F0ADAD">
+          levelContext.subscribe(((e: it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper) =&gt; it.unibo.osmos.redux.utils.InputEventQueue.enqueue(e)))
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          78
+        </td>
+        <td>
+          2595
+          -
+          2621
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.InputEventQueue.enqueue
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.InputEventQueue.enqueue(e)
+        </td>
+      </tr><tr>
+        <td>
+          92
+        </td>
+        <td>
+          80
+        </td>
+        <td>
+          2761
+          -
+          2781
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.mutable.ListBuffer.apply[it.unibo.osmos.redux.ecs.systems.System]()
+        </td>
+      </tr><tr>
+        <td>
+          93
+        </td>
+        <td>
+          83
+        </td>
+        <td>
+          2868
+          -
+          2881
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.InputSystem.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.systems.InputSystem.apply()
+        </td>
+      </tr><tr>
+        <td>
+          93
+        </td>
+        <td>
+          86
+        </td>
+        <td>
+          2788
+          -
+          2788
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          93
+        </td>
+        <td>
+          82
+        </td>
+        <td>
+          2792
+          -
+          2855
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #F0ADAD">
+          levelContext.levelContextType.==(it.unibo.osmos.redux.mvc.view.context.LevelContextType.simulation).unary_!
+        </td>
+      </tr><tr>
+        <td>
+          93
+        </td>
+        <td>
+          85
+        </td>
+        <td>
+          2857
+          -
+          2881
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          scala.collection.mutable.ListBuffer.+=
+        </td>
+        <td style="background: #F0ADAD">
+          systems.+=(it.unibo.osmos.redux.ecs.systems.InputSystem.apply())
+        </td>
+      </tr><tr>
+        <td>
+          93
+        </td>
+        <td>
+          87
+        </td>
+        <td>
+          2788
+          -
+          2788
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          93
+        </td>
+        <td>
+          81
+        </td>
+        <td>
+          2827
+          -
+          2854
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContextType.simulation
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.context.LevelContextType.simulation
+        </td>
+      </tr><tr>
+        <td>
+          93
+        </td>
+        <td>
+          84
+        </td>
+        <td>
+          2857
+          -
+          2881
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.mutable.ListBuffer.+=
+        </td>
+        <td style="background: #F0ADAD">
+          systems.+=(it.unibo.osmos.redux.ecs.systems.InputSystem.apply())
+        </td>
+      </tr><tr>
+        <td>
+          94
+        </td>
+        <td>
+          89
+        </td>
+        <td>
+          2888
+          -
+          2936
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.mutable.ListBuffer.++=
+        </td>
+        <td style="background: #F0ADAD">
+          systems.++=(GameEngineImpl.this.initMainSystems(level, levelContext))
+        </td>
+      </tr><tr>
+        <td>
+          94
+        </td>
+        <td>
+          88
+        </td>
+        <td>
+          2900
+          -
+          2936
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameEngine.GameEngineImpl.initMainSystems
+        </td>
+        <td style="background: #F0ADAD">
+          GameEngineImpl.this.initMainSystems(level, levelContext)
+        </td>
+      </tr><tr>
+        <td>
+          95
+        </td>
+        <td>
+          92
+        </td>
+        <td>
+          3051
+          -
+          3078
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo.victoryRule
+        </td>
+        <td style="background: #F0ADAD">
+          level.levelInfo.victoryRule
+        </td>
+      </tr><tr>
+        <td>
+          95
+        </td>
+        <td>
+          95
+        </td>
+        <td>
+          3012
+          -
+          3079
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          scala.collection.mutable.ListBuffer.+=
+        </td>
+        <td style="background: #F0ADAD">
+          systems.+=(it.unibo.osmos.redux.ecs.systems.EndGameSystem.apply(levelContext, level.levelInfo.victoryRule))
+        </td>
+      </tr><tr>
+        <td>
+          95
+        </td>
+        <td>
+          91
+        </td>
+        <td>
+          2947
+          -
+          3010
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #F0ADAD">
+          levelContext.levelContextType.==(it.unibo.osmos.redux.mvc.view.context.LevelContextType.simulation).unary_!
+        </td>
+      </tr><tr>
+        <td>
+          95
+        </td>
+        <td>
+          94
+        </td>
+        <td>
+          3012
+          -
+          3079
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.mutable.ListBuffer.+=
+        </td>
+        <td style="background: #F0ADAD">
+          systems.+=(it.unibo.osmos.redux.ecs.systems.EndGameSystem.apply(levelContext, level.levelInfo.victoryRule))
+        </td>
+      </tr><tr>
+        <td>
+          95
+        </td>
+        <td>
+          97
+        </td>
+        <td>
+          2943
+          -
+          2943
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          95
+        </td>
+        <td>
+          96
+        </td>
+        <td>
+          2943
+          -
+          2943
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          95
+        </td>
+        <td>
+          90
+        </td>
+        <td>
+          2982
+          -
+          3009
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContextType.simulation
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.context.LevelContextType.simulation
+        </td>
+      </tr><tr>
+        <td>
+          95
+        </td>
+        <td>
+          93
+        </td>
+        <td>
+          3023
+          -
+          3079
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.EndGameSystem.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.systems.EndGameSystem.apply(levelContext, level.levelInfo.victoryRule)
+        </td>
+      </tr><tr>
+        <td>
+          99
+        </td>
+        <td>
+          98
+        </td>
+        <td>
+          3220
+          -
+          3239
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityManager.add
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.entities.EntityManager.add(x$1)
+        </td>
+      </tr><tr>
+        <td>
+          99
+        </td>
+        <td>
+          99
+        </td>
+        <td>
+          3196
+          -
+          3240
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.foreach
+        </td>
+        <td style="background: #F0ADAD">
+          level.entities.foreach[Unit](((x$1: it.unibo.osmos.redux.ecs.entities.CellEntity) =&gt; it.unibo.osmos.redux.ecs.entities.EntityManager.add(x$1)))
+        </td>
+      </tr><tr>
+        <td>
+          102
+        </td>
+        <td>
+          101
+        </td>
+        <td>
+          3290
+          -
+          3324
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameLoop.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new GameLoop(this, systems.toList)
+        </td>
+      </tr><tr>
+        <td>
+          102
+        </td>
+        <td>
+          100
+        </td>
+        <td>
+          3309
+          -
+          3323
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.mutable.ListBuffer.toList
+        </td>
+        <td style="background: #F0ADAD">
+          systems.toList
+        </td>
+      </tr><tr>
+        <td>
+          102
+        </td>
+        <td>
+          103
+        </td>
+        <td>
+          3274
+          -
+          3325
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameEngine.GameEngineImpl.gameLoop_=
+        </td>
+        <td style="background: #F0ADAD">
+          GameEngineImpl.this.gameLoop_=(scala.Some.apply[it.unibo.osmos.redux.ecs.engine.GameLoop](new GameLoop(this, systems.toList)))
+        </td>
+      </tr><tr>
+        <td>
+          102
+        </td>
+        <td>
+          102
+        </td>
+        <td>
+          3285
+          -
+          3325
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Some.apply[it.unibo.osmos.redux.ecs.engine.GameLoop](new GameLoop(this, systems.toList))
+        </td>
+      </tr><tr>
+        <td>
+          107
+        </td>
+        <td>
+          104
+        </td>
+        <td>
+          3397
+          -
+          3418
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityManager.clear
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.entities.EntityManager.clear()
+        </td>
+      </tr><tr>
+        <td>
+          109
+        </td>
+        <td>
+          105
+        </td>
+        <td>
+          3452
+          -
+          3480
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.InputEventQueue.dequeueAll
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.InputEventQueue.dequeueAll()
+        </td>
+      </tr><tr>
+        <td>
+          111
+        </td>
+        <td>
+          107
+        </td>
+        <td>
+          3512
+          -
+          3551
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameEngine.GameEngineImpl.frameRate_=
+        </td>
+        <td style="background: #F0ADAD">
+          GameEngineImpl.this.frameRate_=(it.unibo.osmos.redux.utils.Constants.Engine.DefaultFps)
+        </td>
+      </tr><tr>
+        <td>
+          111
+        </td>
+        <td>
+          106
+        </td>
+        <td>
+          3524
+          -
+          3551
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.Engine.DefaultFps
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Constants.Engine.DefaultFps
+        </td>
+      </tr><tr>
+        <td>
+          113
+        </td>
+        <td>
+          108
+        </td>
+        <td>
+          3559
+          -
+          3567
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameEngine.GameEngineImpl.gameLoop
+        </td>
+        <td style="background: #F0ADAD">
+          GameEngineImpl.this.gameLoop
+        </td>
+      </tr><tr>
+        <td>
+          114
+        </td>
+        <td>
+          109
+        </td>
+        <td>
+          3600
+          -
+          3611
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameLoop.getStatus
+        </td>
+        <td style="background: #F0ADAD">
+          i.getStatus
+        </td>
+      </tr><tr>
+        <td>
+          115
+        </td>
+        <td>
+          110
+        </td>
+        <td>
+          3677
+          -
+          3786
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new java.lang.IllegalStateException(&quot;Unable to clear game engine if the game loop is still running or is paused&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          116
+        </td>
+        <td>
+          111
+        </td>
+        <td>
+          3807
+          -
+          3815
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameLoop.kill
+        </td>
+        <td style="background: #F0ADAD">
+          i.kill()
+        </td>
+      </tr><tr>
+        <td>
+          118
+        </td>
+        <td>
+          112
+        </td>
+        <td>
+          3841
+          -
+          3843
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          120
+        </td>
+        <td>
+          113
+        </td>
+        <td>
+          3902
+          -
+          3906
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #F0ADAD">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          120
+        </td>
+        <td>
+          114
+        </td>
+        <td>
+          3891
+          -
+          3906
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameEngine.GameEngineImpl.gameLoop_=
+        </td>
+        <td style="background: #F0ADAD">
+          GameEngineImpl.this.gameLoop_=(scala.None)
+        </td>
+      </tr><tr>
+        <td>
+          130
+        </td>
+        <td>
+          119
+        </td>
+        <td>
+          4279
+          -
+          4303
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.CellsEliminationSystem.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.systems.CellsEliminationSystem.apply()
+        </td>
+      </tr><tr>
+        <td>
+          130
+        </td>
+        <td>
+          122
+        </td>
+        <td>
+          4200
+          -
+          4353
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.immutable.List.apply[it.unibo.osmos.redux.ecs.systems.AbstractSystem[_ &gt;: it.unibo.osmos.redux.ecs.entities.properties.composed.DrawableProperty with it.unibo.osmos.redux.ecs.entities.properties.composed.SentientProperty with it.unibo.osmos.redux.ecs.entities.properties.composed.DeathProperty with it.unibo.osmos.redux.ecs.entities.properties.composed.MovableProperty &lt;: it.unibo.osmos.redux.ecs.entities.properties.basic.Property] with Product with Serializable](it.unibo.osmos.redux.ecs.systems.SpawnSystem.apply(), it.unibo.osmos.redux.ecs.systems.GravitySystem.apply(), it.unibo.osmos.redux.ecs.systems.MovementSystem.apply(), it.unibo.osmos.redux.ecs.systems.CollisionSystem.apply(level), it.unibo.osmos.redux.ecs.systems.CellsEliminationSystem.apply(), it.unibo.osmos.redux.ecs.systems.SentientSystem.apply(level), it.unibo.osmos.redux.ecs.systems.DrawSystem.apply(levelContext))
+        </td>
+      </tr><tr>
+        <td>
+          130
+        </td>
+        <td>
+          116
+        </td>
+        <td>
+          4220
+          -
+          4235
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.GravitySystem.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.systems.GravitySystem.apply()
+        </td>
+      </tr><tr>
+        <td>
+          130
+        </td>
+        <td>
+          115
+        </td>
+        <td>
+          4205
+          -
+          4218
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.SpawnSystem.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.systems.SpawnSystem.apply()
+        </td>
+      </tr><tr>
+        <td>
+          130
+        </td>
+        <td>
+          118
+        </td>
+        <td>
+          4255
+          -
+          4277
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.CollisionSystem.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.systems.CollisionSystem.apply(level)
+        </td>
+      </tr><tr>
+        <td>
+          130
+        </td>
+        <td>
+          121
+        </td>
+        <td>
+          4328
+          -
+          4352
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.DrawSystem.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.systems.DrawSystem.apply(levelContext)
+        </td>
+      </tr><tr>
+        <td>
+          130
+        </td>
+        <td>
+          120
+        </td>
+        <td>
+          4305
+          -
+          4326
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.SentientSystem.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.systems.SentientSystem.apply(level)
+        </td>
+      </tr><tr>
+        <td>
+          130
+        </td>
+        <td>
+          117
+        </td>
+        <td>
+          4237
+          -
+          4253
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.MovementSystem.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.systems.MovementSystem.apply()
+        </td>
+      </tr><tr>
+        <td>
+          136
+        </td>
+        <td>
+          123
+        </td>
+        <td>
+          4467
+          -
+          4474
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameEngine.GameEngineImpl.clear
+        </td>
+        <td style="background: #F0ADAD">
+          GameEngineImpl.this.clear()
+        </td>
+      </tr><tr>
+        <td>
+          139
+        </td>
+        <td>
+          125
+        </td>
+        <td>
+          4540
+          -
+          4593
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.LinearSeqOptimized.find
+        </td>
+        <td style="background: #F0ADAD">
+          level.entities.find(((x$2: it.unibo.osmos.redux.ecs.entities.CellEntity) =&gt; x$2.isInstanceOf[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity]))
+        </td>
+      </tr><tr>
+        <td>
+          139
+        </td>
+        <td>
+          124
+        </td>
+        <td>
+          4560
+          -
+          4592
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.Any.isInstanceOf
+        </td>
+        <td style="background: #F0ADAD">
+          x$2.isInstanceOf[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity]
+        </td>
+      </tr><tr>
+        <td>
+          140
+        </td>
+        <td>
+          128
+        </td>
+        <td>
+          4626
+          -
+          4777
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.IllegalArgumentException(&quot;Game Engine cannot initialize multi-player game because no player cell entity is present in the level definition.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          140
+        </td>
+        <td>
+          127
+        </td>
+        <td>
+          4626
+          -
+          4777
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.IllegalArgumentException(&quot;Game Engine cannot initialize multi-player game because no player cell entity is present in the level definition.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          140
+        </td>
+        <td>
+          130
+        </td>
+        <td>
+          4600
+          -
+          4600
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          140
+        </td>
+        <td>
+          129
+        </td>
+        <td>
+          4600
+          -
+          4600
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          140
+        </td>
+        <td>
+          126
+        </td>
+        <td>
+          4604
+          -
+          4624
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.isEmpty
+        </td>
+        <td style="background: #F0ADAD">
+          serverPlayer.isEmpty
+        </td>
+      </tr><tr>
+        <td>
+          143
+        </td>
+        <td>
+          131
+        </td>
+        <td>
+          4850
+          -
+          4874
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Property.getUUID
+        </td>
+        <td style="background: #F0ADAD">
+          serverPlayer.get.getUUID
+        </td>
+      </tr><tr>
+        <td>
+          143
+        </td>
+        <td>
+          132
+        </td>
+        <td>
+          4837
+          -
+          4875
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LevelContext.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.context.LevelContext.apply(serverPlayer.get.getUUID)
+        </td>
+      </tr><tr>
+        <td>
+          146
+        </td>
+        <td>
+          134
+        </td>
+        <td>
+          4968
+          -
+          5034
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.EventWrapperObservable.subscribe
+        </td>
+        <td style="background: #F0ADAD">
+          levelContext.subscribe(((x$3: it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper) =&gt; it.unibo.osmos.redux.utils.InputEventQueue.enqueue(x$3)))
+        </td>
+      </tr><tr>
+        <td>
+          147
+        </td>
+        <td>
+          133
+        </td>
+        <td>
+          5001
+          -
+          5026
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.InputEventQueue.enqueue
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.InputEventQueue.enqueue(x$3)
+        </td>
+      </tr><tr>
+        <td>
+          151
+        </td>
+        <td>
+          136
+        </td>
+        <td>
+          5165
+          -
+          5198
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.mutable.ListBuffer.apply[it.unibo.osmos.redux.ecs.systems.System](it.unibo.osmos.redux.ecs.systems.InputSystem.apply())
+        </td>
+      </tr><tr>
+        <td>
+          151
+        </td>
+        <td>
+          135
+        </td>
+        <td>
+          5184
+          -
+          5197
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.InputSystem.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.systems.InputSystem.apply()
+        </td>
+      </tr><tr>
+        <td>
+          152
+        </td>
+        <td>
+          137
+        </td>
+        <td>
+          5304
+          -
+          5331
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo.victoryRule
+        </td>
+        <td style="background: #F0ADAD">
+          level.levelInfo.victoryRule
+        </td>
+      </tr><tr>
+        <td>
+          152
+        </td>
+        <td>
+          140
+        </td>
+        <td>
+          5336
+          -
+          5367
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.MultiPlayerUpdateSystem.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.systems.MultiPlayerUpdateSystem.apply(server)
+        </td>
+      </tr><tr>
+        <td>
+          152
+        </td>
+        <td>
+          142
+        </td>
+        <td>
+          5217
+          -
+          5367
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.SeqLike.:+
+        </td>
+        <td style="background: #F0ADAD">
+          GameEngineImpl.this.initMainSystems(level, levelContext).:+[it.unibo.osmos.redux.ecs.systems.System, List[it.unibo.osmos.redux.ecs.systems.System]](it.unibo.osmos.redux.ecs.systems.MultiPlayerEndGameSystem.apply(server, levelContext, level.levelInfo.victoryRule))(immutable.this.List.canBuildFrom[it.unibo.osmos.redux.ecs.systems.System]).:+[it.unibo.osmos.redux.ecs.systems.System, scala.collection.TraversableOnce[it.unibo.osmos.redux.ecs.systems.System]](it.unibo.osmos.redux.ecs.systems.MultiPlayerUpdateSystem.apply(server))(immutable.this.List.canBuildFrom[it.unibo.osmos.redux.ecs.systems.System])
+        </td>
+      </tr><tr>
+        <td>
+          152
+        </td>
+        <td>
+          139
+        </td>
+        <td>
+          5254
+          -
+          5254
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.immutable.List.canBuildFrom
+        </td>
+        <td style="background: #F0ADAD">
+          immutable.this.List.canBuildFrom[it.unibo.osmos.redux.ecs.systems.System]
+        </td>
+      </tr><tr>
+        <td>
+          152
+        </td>
+        <td>
+          138
+        </td>
+        <td>
+          5257
+          -
+          5332
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.MultiPlayerEndGameSystem.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.systems.MultiPlayerEndGameSystem.apply(server, levelContext, level.levelInfo.victoryRule)
+        </td>
+      </tr><tr>
+        <td>
+          152
+        </td>
+        <td>
+          141
+        </td>
+        <td>
+          5333
+          -
+          5333
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.immutable.List.canBuildFrom
+        </td>
+        <td style="background: #F0ADAD">
+          immutable.this.List.canBuildFrom[it.unibo.osmos.redux.ecs.systems.System]
+        </td>
+      </tr><tr>
+        <td>
+          152
+        </td>
+        <td>
+          143
+        </td>
+        <td>
+          5205
+          -
+          5367
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.mutable.ListBuffer.++=
+        </td>
+        <td style="background: #F0ADAD">
+          systems.++=(GameEngineImpl.this.initMainSystems(level, levelContext).:+[it.unibo.osmos.redux.ecs.systems.System, List[it.unibo.osmos.redux.ecs.systems.System]](it.unibo.osmos.redux.ecs.systems.MultiPlayerEndGameSystem.apply(server, levelContext, level.levelInfo.victoryRule))(immutable.this.List.canBuildFrom[it.unibo.osmos.redux.ecs.systems.System]).:+[it.unibo.osmos.redux.ecs.systems.System, scala.collection.TraversableOnce[it.unibo.osmos.redux.ecs.systems.System]](it.unibo.osmos.redux.ecs.systems.MultiPlayerUpdateSystem.apply(server))(immutable.this.List.canBuildFrom[it.unibo.osmos.redux.ecs.systems.System]))
+        </td>
+      </tr><tr>
+        <td>
+          155
+        </td>
+        <td>
+          145
+        </td>
+        <td>
+          5483
+          -
+          5527
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.foreach
+        </td>
+        <td style="background: #F0ADAD">
+          level.entities.foreach[Unit](((x$4: it.unibo.osmos.redux.ecs.entities.CellEntity) =&gt; it.unibo.osmos.redux.ecs.entities.EntityManager.add(x$4)))
+        </td>
+      </tr><tr>
+        <td>
+          155
+        </td>
+        <td>
+          144
+        </td>
+        <td>
+          5507
+          -
+          5526
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityManager.add
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.entities.EntityManager.add(x$4)
+        </td>
+      </tr><tr>
+        <td>
+          158
+        </td>
+        <td>
+          146
+        </td>
+        <td>
+          5596
+          -
+          5610
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.mutable.ListBuffer.toList
+        </td>
+        <td style="background: #F0ADAD">
+          systems.toList
+        </td>
+      </tr><tr>
+        <td>
+          158
+        </td>
+        <td>
+          149
+        </td>
+        <td>
+          5561
+          -
+          5612
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameEngine.GameEngineImpl.gameLoop_=
+        </td>
+        <td style="background: #F0ADAD">
+          GameEngineImpl.this.gameLoop_=(scala.Some.apply[it.unibo.osmos.redux.ecs.engine.GameLoop](new GameLoop(this, systems.toList)))
+        </td>
+      </tr><tr>
+        <td>
+          158
+        </td>
+        <td>
+          148
+        </td>
+        <td>
+          5572
+          -
+          5612
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Some.apply[it.unibo.osmos.redux.ecs.engine.GameLoop](new GameLoop(this, systems.toList))
+        </td>
+      </tr><tr>
+        <td>
+          158
+        </td>
+        <td>
+          147
+        </td>
+        <td>
+          5577
+          -
+          5611
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameLoop.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new GameLoop(this, systems.toList)
+        </td>
+      </tr><tr>
+        <td>
+          164
+        </td>
+        <td>
+          150
+        </td>
+        <td>
+          5681
+          -
+          5689
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameEngine.GameEngineImpl.gameLoop
+        </td>
+        <td style="background: #F0ADAD">
+          GameEngineImpl.this.gameLoop
+        </td>
+      </tr><tr>
+        <td>
+          165
+        </td>
+        <td>
+          151
+        </td>
+        <td>
+          5722
+          -
+          5733
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameLoop.getStatus
+        </td>
+        <td style="background: #F0ADAD">
+          g.getStatus
+        </td>
+      </tr><tr>
+        <td>
+          166
+        </td>
+        <td>
+          152
+        </td>
+        <td>
+          5776
+          -
+          5785
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Thread.start
+        </td>
+        <td style="background: #F0ADAD">
+          g.start()
+        </td>
+      </tr><tr>
+        <td>
+          167
+        </td>
+        <td>
+          153
+        </td>
+        <td>
+          5806
+          -
+          5911
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new java.lang.IllegalStateException(&quot;Unable to start game loop because the current game status is not idle.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          169
+        </td>
+        <td>
+          154
+        </td>
+        <td>
+          5943
+          -
+          6043
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new java.lang.IllegalStateException(&quot;Unable to start game loop because it hasn\'t been initialized yet.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          174
+        </td>
+        <td>
+          155
+        </td>
+        <td>
+          6100
+          -
+          6108
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameEngine.GameEngineImpl.gameLoop
+        </td>
+        <td style="background: #F0ADAD">
+          GameEngineImpl.this.gameLoop
+        </td>
+      </tr><tr>
+        <td>
+          175
+        </td>
+        <td>
+          156
+        </td>
+        <td>
+          6141
+          -
+          6150
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameLoop.pause
+        </td>
+        <td style="background: #F0ADAD">
+          g.pause()
+        </td>
+      </tr><tr>
+        <td>
+          176
+        </td>
+        <td>
+          157
+        </td>
+        <td>
+          6172
+          -
+          6271
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new java.lang.IllegalStateException(&quot;Unable to pause game loop because it hasn\'t been initialized yet&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          181
+        </td>
+        <td>
+          158
+        </td>
+        <td>
+          6329
+          -
+          6337
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameEngine.GameEngineImpl.gameLoop
+        </td>
+        <td style="background: #F0ADAD">
+          GameEngineImpl.this.gameLoop
+        </td>
+      </tr><tr>
+        <td>
+          182
+        </td>
+        <td>
+          159
+        </td>
+        <td>
+          6370
+          -
+          6381
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameLoop.unPause
+        </td>
+        <td style="background: #F0ADAD">
+          g.unPause()
+        </td>
+      </tr><tr>
+        <td>
+          183
+        </td>
+        <td>
+          160
+        </td>
+        <td>
+          6403
+          -
+          6503
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new java.lang.IllegalStateException(&quot;Unable to resume game loop because it hasn\'t been initialized yet&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          188
+        </td>
+        <td>
+          161
+        </td>
+        <td>
+          6559
+          -
+          6567
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameEngine.GameEngineImpl.gameLoop
+        </td>
+        <td style="background: #F0ADAD">
+          GameEngineImpl.this.gameLoop
+        </td>
+      </tr><tr>
+        <td>
+          189
+        </td>
+        <td>
+          162
+        </td>
+        <td>
+          6600
+          -
+          6608
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameLoop.kill
+        </td>
+        <td style="background: #F0ADAD">
+          g.kill()
+        </td>
+      </tr><tr>
+        <td>
+          190
+        </td>
+        <td>
+          163
+        </td>
+        <td>
+          6630
+          -
+          6728
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new java.lang.IllegalStateException(&quot;Unable to stop game loop because it hasn\'t been initialized yet&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          192
+        </td>
+        <td>
+          164
+        </td>
+        <td>
+          6754
+          -
+          6758
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #F0ADAD">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          192
+        </td>
+        <td>
+          165
+        </td>
+        <td>
+          6743
+          -
+          6758
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameEngine.GameEngineImpl.gameLoop_=
+        </td>
+        <td style="background: #F0ADAD">
+          GameEngineImpl.this.gameLoop_=(scala.None)
+        </td>
+      </tr><tr>
+        <td>
+          196
+        </td>
+        <td>
+          166
+        </td>
+        <td>
+          6815
+          -
+          6823
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameEngine.GameEngineImpl.gameLoop
+        </td>
+        <td style="background: #F0ADAD">
+          GameEngineImpl.this.gameLoop
+        </td>
+      </tr><tr>
+        <td>
+          197
+        </td>
+        <td>
+          167
+        </td>
+        <td>
+          6856
+          -
+          6867
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameLoop.getStatus
+        </td>
+        <td style="background: #F0ADAD">
+          g.getStatus
+        </td>
+      </tr><tr>
+        <td>
+          198
+        </td>
+        <td>
+          168
+        </td>
+        <td>
+          6889
+          -
+          6982
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new java.lang.IllegalStateException(&quot;Unable to get game status if the game loop is not present.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          202
+        </td>
+        <td>
+          169
+        </td>
+        <td>
+          7029
+          -
+          7038
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameEngine.GameEngineImpl.frameRate
+        </td>
+        <td style="background: #F0ADAD">
+          GameEngineImpl.this.frameRate
+        </td>
+      </tr><tr>
+        <td>
+          205
+        </td>
+        <td>
+          172
+        </td>
+        <td>
+          7109
+          -
+          7161
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.&amp;&amp;
+        </td>
+        <td style="background: #F0ADAD">
+          increment.&amp;&amp;(GameEngineImpl.this.frameRate.&lt;(it.unibo.osmos.redux.utils.Constants.Engine.MaximumFps))
+        </td>
+      </tr><tr>
+        <td>
+          205
+        </td>
+        <td>
+          171
+        </td>
+        <td>
+          7122
+          -
+          7161
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.&lt;
+        </td>
+        <td style="background: #F0ADAD">
+          GameEngineImpl.this.frameRate.&lt;(it.unibo.osmos.redux.utils.Constants.Engine.MaximumFps)
+        </td>
+      </tr><tr>
+        <td>
+          205
+        </td>
+        <td>
+          170
+        </td>
+        <td>
+          7134
+          -
+          7161
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.Engine.MaximumFps
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Constants.Engine.MaximumFps
+        </td>
+      </tr><tr>
+        <td>
+          206
+        </td>
+        <td>
+          173
+        </td>
+        <td>
+          7186
+          -
+          7216
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.Engine.FpsChangeStep
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Constants.Engine.FpsChangeStep
+        </td>
+      </tr><tr>
+        <td>
+          206
+        </td>
+        <td>
+          176
+        </td>
+        <td>
+          7173
+          -
+          7216
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameEngine.GameEngineImpl.frameRate_=
+        </td>
+        <td style="background: #F0ADAD">
+          GameEngineImpl.this.frameRate_=(GameEngineImpl.this.frameRate.+(it.unibo.osmos.redux.utils.Constants.Engine.FpsChangeStep))
+        </td>
+      </tr><tr>
+        <td>
+          206
+        </td>
+        <td>
+          175
+        </td>
+        <td>
+          7173
+          -
+          7216
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameEngine.GameEngineImpl.frameRate_=
+        </td>
+        <td style="background: #F0ADAD">
+          GameEngineImpl.this.frameRate_=(GameEngineImpl.this.frameRate.+(it.unibo.osmos.redux.utils.Constants.Engine.FpsChangeStep))
+        </td>
+      </tr><tr>
+        <td>
+          206
+        </td>
+        <td>
+          174
+        </td>
+        <td>
+          7173
+          -
+          7216
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.+
+        </td>
+        <td style="background: #F0ADAD">
+          GameEngineImpl.this.frameRate.+(it.unibo.osmos.redux.utils.Constants.Engine.FpsChangeStep)
+        </td>
+      </tr><tr>
+        <td>
+          207
+        </td>
+        <td>
+          185
+        </td>
+        <td>
+          7230
+          -
+          7230
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          207
+        </td>
+        <td>
+          184
+        </td>
+        <td>
+          7230
+          -
+          7230
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          207
+        </td>
+        <td>
+          178
+        </td>
+        <td>
+          7248
+          -
+          7287
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          GameEngineImpl.this.frameRate.&gt;(it.unibo.osmos.redux.utils.Constants.Engine.MinimumFps)
+        </td>
+      </tr><tr>
+        <td>
+          207
+        </td>
+        <td>
+          186
+        </td>
+        <td>
+          7230
+          -
+          7350
+        </td>
+        <td>
+          If
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          if (increment.unary_!.&amp;&amp;(GameEngineImpl.this.frameRate.&gt;(it.unibo.osmos.redux.utils.Constants.Engine.MinimumFps)))
+  GameEngineImpl.this.frameRate_=(GameEngineImpl.this.frameRate.-(it.unibo.osmos.redux.utils.Constants.Engine.FpsChangeStep))
+else
+  ()
+        </td>
+      </tr><tr>
+        <td>
+          207
+        </td>
+        <td>
+          177
+        </td>
+        <td>
+          7260
+          -
+          7287
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.Engine.MinimumFps
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Constants.Engine.MinimumFps
+        </td>
+      </tr><tr>
+        <td>
+          207
+        </td>
+        <td>
+          179
+        </td>
+        <td>
+          7234
+          -
+          7287
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.&amp;&amp;
+        </td>
+        <td style="background: #F0ADAD">
+          increment.unary_!.&amp;&amp;(GameEngineImpl.this.frameRate.&gt;(it.unibo.osmos.redux.utils.Constants.Engine.MinimumFps))
+        </td>
+      </tr><tr>
+        <td>
+          208
+        </td>
+        <td>
+          182
+        </td>
+        <td>
+          7299
+          -
+          7342
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameEngine.GameEngineImpl.frameRate_=
+        </td>
+        <td style="background: #F0ADAD">
+          GameEngineImpl.this.frameRate_=(GameEngineImpl.this.frameRate.-(it.unibo.osmos.redux.utils.Constants.Engine.FpsChangeStep))
+        </td>
+      </tr><tr>
+        <td>
+          208
+        </td>
+        <td>
+          181
+        </td>
+        <td>
+          7299
+          -
+          7342
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.-
+        </td>
+        <td style="background: #F0ADAD">
+          GameEngineImpl.this.frameRate.-(it.unibo.osmos.redux.utils.Constants.Engine.FpsChangeStep)
+        </td>
+      </tr><tr>
+        <td>
+          208
+        </td>
+        <td>
+          180
+        </td>
+        <td>
+          7312
+          -
+          7342
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.Engine.FpsChangeStep
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Constants.Engine.FpsChangeStep
+        </td>
+      </tr><tr>
+        <td>
+          208
+        </td>
+        <td>
+          183
+        </td>
+        <td>
+          7299
+          -
+          7342
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameEngine.GameEngineImpl.frameRate_=
+        </td>
+        <td style="background: #F0ADAD">
+          GameEngineImpl.this.frameRate_=(GameEngineImpl.this.frameRate.-(it.unibo.osmos.redux.utils.Constants.Engine.FpsChangeStep))
+        </td>
+      </tr><tr>
+        <td>
+          210
+        </td>
+        <td>
+          187
+        </td>
+        <td>
+          7357
+          -
+          7410
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Logger.log
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Logger.log(scala.StringContext.apply(&quot;changedSpeed: &quot;, &quot;&quot;).s(GameEngineImpl.this.frameRate))(&quot;GameEngine&quot;)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

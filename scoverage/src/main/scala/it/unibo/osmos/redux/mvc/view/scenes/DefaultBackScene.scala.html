@@ -1,0 +1,217 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/scenes/DefaultBackScene.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.scenes
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.mvc.view.components.custom.StyledButton
+</span>4 <span style=''>import scalafx.scene.control.Button
+</span>5 <span style=''>import scalafx.stage.Stage
+</span>6 <span style=''>
+</span>7 <span style=''>/** An implementation of BaseScene holding a Button with let back navigation
+</span>8 <span style=''>  *
+</span>9 <span style=''>  * @param parentStage       the parent stage
+</span>10 <span style=''>  * @param backClickListener the BackClickListener
+</span>11 <span style=''>  * @param backText          the button text
+</span>12 <span style=''>  * @param additionalAction  an additional function to be executed before calling the back click listener
+</span>13 <span style=''>  */
+</span>14 <span style=''>class DefaultBackScene(override val parentStage: Stage, backClickListener: BackClickListener, backText: String = &quot;Back&quot;, var additionalAction: () =&gt; Unit = () =&gt; {})
+</span>15 <span style=''>  extends BaseScene(parentStage) {
+</span>16 <span style=''>
+</span>17 <span style=''>  /** The back button */
+</span>18 <span style=''>  protected val goBack: Button = </span><span style='background: #F0ADAD'>new</span><span style=''> StyledButton(backText) {
+</span>19 <span style=''>    </span><span style='background: #F0ADAD'>onAction = _ =&gt; {
+</span>20 <span style=''></span><span style='background: #F0ADAD'>      additionalAction()
+</span>21 <span style=''></span><span style='background: #F0ADAD'>      backClickListener.onBackClick()
+</span>22 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
+</span>23 <span style=''>  }
+</span>24 <span style=''>
+</span>25 <span style=''>  /** The text setter
+</span>26 <span style=''>    *
+</span>27 <span style=''>    * @param backText the new text that must be shown on the button
+</span>28 <span style=''>    */
+</span>29 <span style=''>  protected def setText(backText: String): Unit = {
+</span>30 <span style=''>    </span><span style='background: #F0ADAD'>goBack.setText(backText)</span><span style=''>
+</span>31 <span style=''>  }
+</span>32 <span style=''>
+</span>33 <span style=''>  /** The additional action setter
+</span>34 <span style=''>    *
+</span>35 <span style=''>    * @param action a new function that should be executed before calling the back listener
+</span>36 <span style=''>    */
+</span>37 <span style=''>  protected def setAdditionalAction(action: () =&gt; Unit): Unit = {
+</span>38 <span style=''>    </span><span style='background: #F0ADAD'>additionalAction = action</span><span style=''>
+</span>39 <span style=''>  }
+</span>40 <span style=''>}
+</span>41 <span style=''>
+</span>42 <span style=''>/** Trait used by scenes directly reachable by MainScene to notify back event */
+</span>43 <span style=''>trait BackClickListener {
+</span>44 <span style=''>
+</span>45 <span style=''>  /** Called when the user wants to go back to the previous screen */
+</span>46 <span style=''>  def onBackClick()
+</span>47 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          4412
+        </td>
+        <td>
+          772
+          -
+          775
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.DefaultBackScene.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          4411
+        </td>
+        <td>
+          805
+          -
+          891
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.ButtonBase.onAction_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.onAction_=(((x$1: javafx.event.ActionEvent) =&gt; {
+  DefaultBackScene.this.additionalAction.apply();
+  DefaultBackScene.this.backClickListener.onBackClick()
+}))
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          4409
+        </td>
+        <td>
+          829
+          -
+          847
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Function0.apply
+        </td>
+        <td style="background: #F0ADAD">
+          DefaultBackScene.this.additionalAction.apply()
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          4410
+        </td>
+        <td>
+          854
+          -
+          885
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.BackClickListener.onBackClick
+        </td>
+        <td style="background: #F0ADAD">
+          DefaultBackScene.this.backClickListener.onBackClick()
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          4413
+        </td>
+        <td>
+          1056
+          -
+          1080
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.control.Labeled.setText
+        </td>
+        <td style="background: #F0ADAD">
+          control.this.Button.sfxButton2jfx(DefaultBackScene.this.goBack).setText(backText)
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          4414
+        </td>
+        <td>
+          1296
+          -
+          1321
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.DefaultBackScene.additionalAction_=
+        </td>
+        <td style="background: #F0ADAD">
+          DefaultBackScene.this.additionalAction_=(action)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

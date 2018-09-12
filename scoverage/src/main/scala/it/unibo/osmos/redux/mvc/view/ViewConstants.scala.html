@@ -1,0 +1,885 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/ViewConstants.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view
+</span>2 <span style=''>
+</span>3 <span style=''>import scalafx.scene.paint.Color
+</span>4 <span style=''>import scalafx.stage.Screen
+</span>5 <span style=''>
+</span>6 <span style=''>/** View constants */
+</span>7 <span style=''>object ViewConstants {
+</span>8 <span style=''>
+</span>9 <span style=''>  /** Window constants */
+</span>10 <span style=''>  object Window {
+</span>11 <span style=''>    val DefaultWindowTitle: String = </span><span style='background: #AEF1AE'>&quot;Osmos-Redux&quot;</span><span style=''>
+</span>12 <span style=''>    val DefaultWindowWidth: Double = </span><span style='background: #AEF1AE'>Screen.primary.visualBounds.width</span><span style=''>
+</span>13 <span style=''>    val HalfWindowWidth: Double = </span><span style='background: #AEF1AE'>DefaultWindowWidth / 2</span><span style=''>
+</span>14 <span style=''>    val DefaultWindowHeight: Double = </span><span style='background: #AEF1AE'>Screen.primary.visualBounds.height</span><span style=''>
+</span>15 <span style=''>    val HalfWindowHeight: Double = </span><span style='background: #AEF1AE'>DefaultWindowHeight / 2</span><span style=''>
+</span>16 <span style=''>  }
+</span>17 <span style=''>
+</span>18 <span style=''>  object Editor {
+</span>19 <span style=''>
+</span>20 <span style=''>    import Window._
+</span>21 <span style=''>
+</span>22 <span style=''>    val MaxLevelRadius: Double = </span><span style='background: #AEF1AE'>0.8 * (if (HalfWindowHeight &lt; HalfWindowWidth) HalfWindowHeight else </span><span style='background: #F0ADAD'>HalfWindowWidth</span><span style='background: #AEF1AE'>)</span><span style=''>
+</span>23 <span style=''>    val StartingLevelRadius: Double = </span><span style='background: #AEF1AE'>MaxLevelRadius / 2</span><span style=''>
+</span>24 <span style=''>    val MaxLevelWidth: Double = </span><span style='background: #AEF1AE'>0.8 * DefaultWindowWidth</span><span style=''>
+</span>25 <span style=''>    val MaxLevelHeight: Double = </span><span style='background: #AEF1AE'>0.8 * DefaultWindowHeight</span><span style=''>
+</span>26 <span style=''>    val StartingLevelWidth: Double = </span><span style='background: #AEF1AE'>DefaultWindowWidth / 2</span><span style=''>
+</span>27 <span style=''>    val StartingLevelHeight: Double = </span><span style='background: #AEF1AE'>DefaultWindowHeight / 2</span><span style=''>
+</span>28 <span style=''>  }
+</span>29 <span style=''>
+</span>30 <span style=''>  object Level {
+</span>31 <span style=''>    /** Scrolling delta */
+</span>32 <span style=''>    val ScrollingDelta = </span><span style='background: #F0ADAD'>1.1</span><span style=''>
+</span>33 <span style=''>    /** Max zoom out scale */
+</span>34 <span style=''>    val MaxZoomOutScale = </span><span style='background: #F0ADAD'>1.0</span><span style=''>
+</span>35 <span style=''>    /** Max zoom in scale */
+</span>36 <span style=''>    val MaxZoomInScale = </span><span style='background: #F0ADAD'>1.2</span><span style=''>
+</span>37 <span style=''>  }
+</span>38 <span style=''>
+</span>39 <span style=''>  /** Entities constants */
+</span>40 <span style=''>  object Entities {
+</span>41 <span style=''>
+</span>42 <span style=''>    /** Colors constants */
+</span>43 <span style=''>    object Colors {
+</span>44 <span style=''>      val DefaultPlayerColor: Color = </span><span style='background: #F0ADAD'>Color.Green</span><span style=''>
+</span>45 <span style=''>      val DefaultEntityMaxColor: Color = </span><span style='background: #F0ADAD'>Color.DarkRed</span><span style=''>
+</span>46 <span style=''>      val DefaultEntityMinColor: Color = </span><span style='background: #F0ADAD'>Color.LightBlue</span><span style=''>
+</span>47 <span style=''>    }
+</span>48 <span style=''>
+</span>49 <span style=''>    /** Textures constants */
+</span>50 <span style=''>    object Textures {
+</span>51 <span style=''>      val TextureFolder: String = </span><span style='background: #F0ADAD'>&quot;/textures/&quot;</span><span style=''>
+</span>52 <span style=''>      val BackgroundTexture: String = </span><span style='background: #F0ADAD'>TextureFolder + &quot;background.png&quot;</span><span style=''>
+</span>53 <span style=''>      val CellTexture: String = </span><span style='background: #F0ADAD'>TextureFolder + &quot;cell_blue.png&quot;</span><span style=''>
+</span>54 <span style=''>      val PlayerCellTexture: String = </span><span style='background: #F0ADAD'>TextureFolder + &quot;cell_green.png&quot;</span><span style=''>
+</span>55 <span style=''>      val AttractiveTexture: String = </span><span style='background: #F0ADAD'>TextureFolder + &quot;cell_red.png&quot;</span><span style=''>
+</span>56 <span style=''>      val RepulsiveTexture: String = </span><span style='background: #F0ADAD'>TextureFolder + &quot;cell_yellow.png&quot;</span><span style=''>
+</span>57 <span style=''>      val AntiMatterTexture: String = </span><span style='background: #F0ADAD'>TextureFolder + &quot;cell_dark_blue.png&quot;</span><span style=''>
+</span>58 <span style=''>      val SentientTexture: String = </span><span style='background: #F0ADAD'>TextureFolder + &quot;cell_purple.png&quot;</span><span style=''>
+</span>59 <span style=''>      val ControllerTexture: String = </span><span style='background: #F0ADAD'>TextureFolder + &quot;cell_violet.png&quot;</span><span style=''>
+</span>60 <span style=''>    }
+</span>61 <span style=''>
+</span>62 <span style=''>  }
+</span>63 <span style=''>
+</span>64 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          3363
+        </td>
+        <td>
+          228
+          -
+          241
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;Osmos-Redux&quot;
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          3364
+        </td>
+        <td>
+          279
+          -
+          312
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.geometry.Rectangle2D.width
+        </td>
+        <td style="background: #AEF1AE">
+          scalafx.stage.Screen.primary.visualBounds.width
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          3365
+        </td>
+        <td>
+          347
+          -
+          369
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double./
+        </td>
+        <td style="background: #AEF1AE">
+          Window.this.DefaultWindowWidth./(2)
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          3366
+        </td>
+        <td>
+          408
+          -
+          442
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.geometry.Rectangle2D.height
+        </td>
+        <td style="background: #AEF1AE">
+          scalafx.stage.Screen.primary.visualBounds.height
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          3367
+        </td>
+        <td>
+          478
+          -
+          501
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double./
+        </td>
+        <td style="background: #AEF1AE">
+          Window.this.DefaultWindowHeight./(2)
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          3370
+        </td>
+        <td>
+          591
+          -
+          625
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.&lt;
+        </td>
+        <td style="background: #AEF1AE">
+          ViewConstants.this.Window.HalfWindowHeight.&lt;(ViewConstants.this.Window.HalfWindowWidth)
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          3369
+        </td>
+        <td>
+          610
+          -
+          625
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth
+        </td>
+        <td style="background: #AEF1AE">
+          ViewConstants.this.Window.HalfWindowWidth
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          3372
+        </td>
+        <td>
+          627
+          -
+          643
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowHeight
+        </td>
+        <td style="background: #AEF1AE">
+          ViewConstants.this.Window.HalfWindowHeight
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          3375
+        </td>
+        <td>
+          580
+          -
+          665
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.*
+        </td>
+        <td style="background: #AEF1AE">
+          0.8.*(if (ViewConstants.this.Window.HalfWindowHeight.&lt;(ViewConstants.this.Window.HalfWindowWidth))
+  ViewConstants.this.Window.HalfWindowHeight
+else
+  ViewConstants.this.Window.HalfWindowWidth)
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          3374
+        </td>
+        <td>
+          649
+          -
+          664
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth
+        </td>
+        <td style="background: #F0ADAD">
+          ViewConstants.this.Window.HalfWindowWidth
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          3368
+        </td>
+        <td>
+          580
+          -
+          583
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          0.8
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          3371
+        </td>
+        <td>
+          627
+          -
+          643
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowHeight
+        </td>
+        <td style="background: #AEF1AE">
+          ViewConstants.this.Window.HalfWindowHeight
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          3373
+        </td>
+        <td>
+          649
+          -
+          664
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth
+        </td>
+        <td style="background: #F0ADAD">
+          ViewConstants.this.Window.HalfWindowWidth
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          3376
+        </td>
+        <td>
+          704
+          -
+          722
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double./
+        </td>
+        <td style="background: #AEF1AE">
+          Editor.this.MaxLevelRadius./(2)
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          3379
+        </td>
+        <td>
+          755
+          -
+          779
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.*
+        </td>
+        <td style="background: #AEF1AE">
+          0.8.*(ViewConstants.this.Window.DefaultWindowWidth)
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          3378
+        </td>
+        <td>
+          761
+          -
+          779
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.DefaultWindowWidth
+        </td>
+        <td style="background: #AEF1AE">
+          ViewConstants.this.Window.DefaultWindowWidth
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          3377
+        </td>
+        <td>
+          755
+          -
+          758
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          0.8
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          3381
+        </td>
+        <td>
+          819
+          -
+          838
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.DefaultWindowHeight
+        </td>
+        <td style="background: #AEF1AE">
+          ViewConstants.this.Window.DefaultWindowHeight
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          3380
+        </td>
+        <td>
+          813
+          -
+          816
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          0.8
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          3382
+        </td>
+        <td>
+          813
+          -
+          838
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.*
+        </td>
+        <td style="background: #AEF1AE">
+          0.8.*(ViewConstants.this.Window.DefaultWindowHeight)
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          3383
+        </td>
+        <td>
+          876
+          -
+          898
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double./
+        </td>
+        <td style="background: #AEF1AE">
+          ViewConstants.this.Window.DefaultWindowWidth./(2)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          3384
+        </td>
+        <td>
+          937
+          -
+          960
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double./
+        </td>
+        <td style="background: #AEF1AE">
+          ViewConstants.this.Window.DefaultWindowHeight./(2)
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          3385
+        </td>
+        <td>
+          1035
+          -
+          1038
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          1.1
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          3386
+        </td>
+        <td>
+          1095
+          -
+          1098
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          1.0
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          3387
+        </td>
+        <td>
+          1153
+          -
+          1156
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          1.2
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          3388
+        </td>
+        <td>
+          1297
+          -
+          1308
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.scene.paint.Color.Green
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.scene.paint.Color.Green
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          3389
+        </td>
+        <td>
+          1350
+          -
+          1363
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.scene.paint.Color.DarkRed
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.scene.paint.Color.DarkRed
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          3390
+        </td>
+        <td>
+          1405
+          -
+          1420
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.scene.paint.Color.LightBlue
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.scene.paint.Color.LightBlue
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          3391
+        </td>
+        <td>
+          1514
+          -
+          1526
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;/textures/&quot;
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          3392
+        </td>
+        <td>
+          1565
+          -
+          1597
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #F0ADAD">
+          Textures.this.TextureFolder.+(&quot;background.png&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          3393
+        </td>
+        <td>
+          1630
+          -
+          1661
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #F0ADAD">
+          Textures.this.TextureFolder.+(&quot;cell_blue.png&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          3394
+        </td>
+        <td>
+          1700
+          -
+          1732
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #F0ADAD">
+          Textures.this.TextureFolder.+(&quot;cell_green.png&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          3395
+        </td>
+        <td>
+          1771
+          -
+          1801
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #F0ADAD">
+          Textures.this.TextureFolder.+(&quot;cell_red.png&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          3396
+        </td>
+        <td>
+          1839
+          -
+          1872
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #F0ADAD">
+          Textures.this.TextureFolder.+(&quot;cell_yellow.png&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          3397
+        </td>
+        <td>
+          1911
+          -
+          1947
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #F0ADAD">
+          Textures.this.TextureFolder.+(&quot;cell_dark_blue.png&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          3398
+        </td>
+        <td>
+          1984
+          -
+          2017
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #F0ADAD">
+          Textures.this.TextureFolder.+(&quot;cell_purple.png&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          3399
+        </td>
+        <td>
+          2056
+          -
+          2089
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #F0ADAD">
+          Textures.this.TextureFolder.+(&quot;cell_violet.png&quot;)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

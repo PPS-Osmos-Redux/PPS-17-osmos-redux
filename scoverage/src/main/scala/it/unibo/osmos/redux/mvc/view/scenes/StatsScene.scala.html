@@ -1,0 +1,1415 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/scenes/StatsScene.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.scenes
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.view.ViewConstants
+</span>5 <span style=''>import javafx.collections.FXCollections
+</span>6 <span style=''>import scalafx.beans.property.StringProperty
+</span>7 <span style=''>import scalafx.geometry.Pos
+</span>8 <span style=''>import scalafx.scene.control.{TableColumn, TableView}
+</span>9 <span style=''>import scalafx.scene.layout.VBox
+</span>10 <span style=''>import scalafx.stage.Stage
+</span>11 <span style=''>
+</span>12 <span style=''>/** Scene where the user can find his in game stats
+</span>13 <span style=''>  *
+</span>14 <span style=''>  * @param parentStage           the parent stage
+</span>15 <span style=''>  * @param listener              the StatsSceneListener
+</span>16 <span style=''>  * @param previousSceneListener the BackClickListener
+</span>17 <span style=''>  */
+</span>18 <span style=''>class StatsScene(override val parentStage: Stage, listener: StatsSceneListener, previousSceneListener: BackClickListener) extends DefaultBackScene(parentStage, previousSceneListener) {
+</span>19 <span style=''>
+</span>20 <span style=''>  private implicit def toStringProperty[A](value: A): StringProperty = </span><span style='background: #F0ADAD'>StringProperty(value.toString)</span><span style=''>
+</span>21 <span style=''>
+</span>22 <span style=''>  private val levelNameColumn = </span><span style='background: #F0ADAD'>new</span><span style=''> TableColumn[CampaignLevel, String](&quot;Level Name&quot;) {
+</span>23 <span style=''>    </span><span style='background: #F0ADAD'>cellValueFactory = p =&gt; p.value.levelInfo.name</span><span style=''>
+</span>24 <span style=''>  }
+</span>25 <span style=''>  private val victoryRuleColumn = </span><span style='background: #F0ADAD'>new</span><span style=''> TableColumn[CampaignLevel, String](&quot;Victory Rule&quot;) {
+</span>26 <span style=''>    </span><span style='background: #F0ADAD'>cellValueFactory = p =&gt; p.value.levelInfo.victoryRule</span><span style=''>
+</span>27 <span style=''>  }
+</span>28 <span style=''>  private val victoriesColumn = </span><span style='background: #F0ADAD'>new</span><span style=''> TableColumn[CampaignLevel, String](&quot;Victories&quot;) {
+</span>29 <span style=''>    </span><span style='background: #F0ADAD'>cellValueFactory = p =&gt; p.value.levelStat.victories</span><span style=''>
+</span>30 <span style=''>  }
+</span>31 <span style=''>  private val defeatsColumn = </span><span style='background: #F0ADAD'>new</span><span style=''> TableColumn[CampaignLevel, String](&quot;Defeats&quot;) {
+</span>32 <span style=''>    </span><span style='background: #F0ADAD'>cellValueFactory = p =&gt; p.value.levelStat.defeats</span><span style=''>
+</span>33 <span style=''>  }
+</span>34 <span style=''>
+</span>35 <span style=''>  private val playerData = </span><span style='background: #F0ADAD'>FXCollections.observableArrayList[CampaignLevel]()</span><span style=''>
+</span>36 <span style=''>  </span><span style='background: #F0ADAD'>listener.getCampaignLevels.foreach(e =&gt; playerData.add(e))</span><span style=''>
+</span>37 <span style=''>
+</span>38 <span style=''>  private val statsTable = </span><span style='background: #F0ADAD'>new</span><span style=''> TableView[CampaignLevel]() {
+</span>39 <span style=''>    </span><span style='background: #F0ADAD'>maxWidth = ViewConstants.Window.HalfWindowWidth</span><span style=''>
+</span>40 <span style=''>    </span><span style='background: #F0ADAD'>prefHeight = ViewConstants.Window.DefaultWindowHeight / 4</span><span style=''>
+</span>41 <span style=''>    /** add the columns to table */
+</span>42 <span style=''>    </span><span style='background: #F0ADAD'>columns ++= List(levelNameColumn, victoryRuleColumn, victoriesColumn, defeatsColumn)</span><span style=''>
+</span>43 <span style=''>  }
+</span>44 <span style=''>
+</span>45 <span style=''>  private val columnMinWidth = </span><span style='background: #F0ADAD'>statsTable.width / 4.1</span><span style=''>
+</span>46 <span style=''>  </span><span style='background: #F0ADAD'>levelNameColumn.minWidth &lt;== columnMinWidth</span><span style=''>
+</span>47 <span style=''>  </span><span style='background: #F0ADAD'>victoryRuleColumn.minWidth &lt;== columnMinWidth</span><span style=''>
+</span>48 <span style=''>  </span><span style='background: #F0ADAD'>victoriesColumn.minWidth &lt;== columnMinWidth</span><span style=''>
+</span>49 <span style=''>  </span><span style='background: #F0ADAD'>defeatsColumn.minWidth &lt;== columnMinWidth</span><span style=''>
+</span>50 <span style=''>
+</span>51 <span style=''>  /** Adds player data to table */
+</span>52 <span style=''>  </span><span style='background: #F0ADAD'>statsTable.setItems(playerData)</span><span style=''>
+</span>53 <span style=''>
+</span>54 <span style=''>  /** The central container */
+</span>55 <span style=''>  protected val container: VBox = </span><span style='background: #F0ADAD'>new</span><span style=''> VBox(15) {
+</span>56 <span style=''>    </span><span style='background: #F0ADAD'>alignment = Pos.Center</span><span style=''>
+</span>57 <span style=''>    </span><span style='background: #F0ADAD'>children = Seq(statsTable, goBack)</span><span style=''>
+</span>58 <span style=''>    </span><span style='background: #F0ADAD'>styleClass.add(&quot;settings-vbox&quot;)</span><span style=''>
+</span>59 <span style=''>  }
+</span>60 <span style=''>
+</span>61 <span style=''>  /** Setting the root container */
+</span>62 <span style=''>  </span><span style='background: #F0ADAD'>root = container</span><span style=''>
+</span>63 <span style=''>}
+</span>64 <span style=''>
+</span>65 <span style=''>trait StatsSceneListener {
+</span>66 <span style=''>
+</span>67 <span style=''>  /** This method retrieve the campaign level info
+</span>68 <span style=''>    *
+</span>69 <span style=''>    * @return a list of CampaignLevel
+</span>70 <span style=''>    */
+</span>71 <span style=''>  def getCampaignLevels: List[CampaignLevel]
+</span>72 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          5332
+        </td>
+        <td>
+          893
+          -
+          907
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Any.toString
+        </td>
+        <td style="background: #F0ADAD">
+          value.toString()
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          5333
+        </td>
+        <td>
+          878
+          -
+          908
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.StringProperty.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.beans.property.StringProperty.apply(value.toString())
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          5337
+        </td>
+        <td>
+          942
+          -
+          945
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.StatsScene.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          5334
+        </td>
+        <td>
+          1025
+          -
+          1047
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo.name
+        </td>
+        <td style="background: #F0ADAD">
+          p.value.levelInfo.name
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          5336
+        </td>
+        <td>
+          1001
+          -
+          1047
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.TableColumn.cellValueFactory_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.cellValueFactory_=(((p: scalafx.scene.control.TableColumn.CellDataFeatures[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel,String]) =&gt; StatsScene.this.toStringProperty[String](p.value.levelInfo.name)))
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          5335
+        </td>
+        <td>
+          1025
+          -
+          1047
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.StatsScene.toStringProperty
+        </td>
+        <td style="background: #F0ADAD">
+          StatsScene.this.toStringProperty[String](p.value.levelInfo.name)
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          5341
+        </td>
+        <td>
+          1086
+          -
+          1089
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.StatsScene.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          5340
+        </td>
+        <td>
+          1147
+          -
+          1200
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.TableColumn.cellValueFactory_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.cellValueFactory_=(((p: scalafx.scene.control.TableColumn.CellDataFeatures[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel,String]) =&gt; StatsScene.this.toStringProperty[it.unibo.osmos.redux.mvc.controller.levels.structure.VictoryRules.Value](p.value.levelInfo.victoryRule)))
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          5339
+        </td>
+        <td>
+          1171
+          -
+          1200
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.StatsScene.toStringProperty
+        </td>
+        <td style="background: #F0ADAD">
+          StatsScene.this.toStringProperty[it.unibo.osmos.redux.mvc.controller.levels.structure.VictoryRules.Value](p.value.levelInfo.victoryRule)
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          5338
+        </td>
+        <td>
+          1171
+          -
+          1200
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo.victoryRule
+        </td>
+        <td style="background: #F0ADAD">
+          p.value.levelInfo.victoryRule
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          5345
+        </td>
+        <td>
+          1237
+          -
+          1240
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.StatsScene.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          5343
+        </td>
+        <td>
+          1319
+          -
+          1346
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.StatsScene.toStringProperty
+        </td>
+        <td style="background: #F0ADAD">
+          StatsScene.this.toStringProperty[Int](p.value.levelStat.victories)
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          5342
+        </td>
+        <td>
+          1319
+          -
+          1346
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.victories
+        </td>
+        <td style="background: #F0ADAD">
+          p.value.levelStat.victories
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          5344
+        </td>
+        <td>
+          1295
+          -
+          1346
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.TableColumn.cellValueFactory_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.cellValueFactory_=(((p: scalafx.scene.control.TableColumn.CellDataFeatures[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel,String]) =&gt; StatsScene.this.toStringProperty[Int](p.value.levelStat.victories)))
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          5349
+        </td>
+        <td>
+          1381
+          -
+          1384
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.StatsScene.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          5346
+        </td>
+        <td>
+          1461
+          -
+          1486
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevelStat.defeats
+        </td>
+        <td style="background: #F0ADAD">
+          p.value.levelStat.defeats
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          5348
+        </td>
+        <td>
+          1437
+          -
+          1486
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.TableColumn.cellValueFactory_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.cellValueFactory_=(((p: scalafx.scene.control.TableColumn.CellDataFeatures[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel,String]) =&gt; StatsScene.this.toStringProperty[Int](p.value.levelStat.defeats)))
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          5347
+        </td>
+        <td>
+          1461
+          -
+          1486
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.StatsScene.toStringProperty
+        </td>
+        <td style="background: #F0ADAD">
+          StatsScene.this.toStringProperty[Int](p.value.levelStat.defeats)
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          5350
+        </td>
+        <td>
+          1519
+          -
+          1569
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.collections.FXCollections.observableArrayList
+        </td>
+        <td style="background: #F0ADAD">
+          javafx.collections.FXCollections.observableArrayList[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel]()
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          5352
+        </td>
+        <td>
+          1572
+          -
+          1630
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.foreach
+        </td>
+        <td style="background: #F0ADAD">
+          StatsScene.this.listener.getCampaignLevels.foreach[Boolean](((e: it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel) =&gt; StatsScene.this.playerData.add(e)))
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          5351
+        </td>
+        <td>
+          1612
+          -
+          1629
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.util.List.add
+        </td>
+        <td style="background: #F0ADAD">
+          StatsScene.this.playerData.add(e)
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          5367
+        </td>
+        <td>
+          1659
+          -
+          1662
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.StatsScene.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          5354
+        </td>
+        <td>
+          1696
+          -
+          1743
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Region.maxWidth_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.maxWidth_=(it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth)
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          5353
+        </td>
+        <td>
+          1707
+          -
+          1743
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          5355
+        </td>
+        <td>
+          1761
+          -
+          1805
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double./
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.DefaultWindowHeight./(4)
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          5356
+        </td>
+        <td>
+          1748
+          -
+          1805
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Region.prefHeight_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.prefHeight_=(it.unibo.osmos.redux.mvc.view.ViewConstants.Window.DefaultWindowHeight./(4))
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          5358
+        </td>
+        <td>
+          1863
+          -
+          1878
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.scene.control.TableColumn.sfxTableColumn2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          control.this.TableColumn.sfxTableColumn2jfx[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel, String](StatsScene.this.levelNameColumn)
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          5361
+        </td>
+        <td>
+          1899
+          -
+          1914
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.StatsScene.victoriesColumn
+        </td>
+        <td style="background: #F0ADAD">
+          StatsScene.this.victoriesColumn
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          5364
+        </td>
+        <td>
+          1916
+          -
+          1929
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.scene.control.TableColumn.sfxTableColumn2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          control.this.TableColumn.sfxTableColumn2jfx[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel, String](StatsScene.this.defeatsColumn)
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          5363
+        </td>
+        <td>
+          1916
+          -
+          1929
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.StatsScene.defeatsColumn
+        </td>
+        <td style="background: #F0ADAD">
+          StatsScene.this.defeatsColumn
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          5357
+        </td>
+        <td>
+          1863
+          -
+          1878
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.StatsScene.levelNameColumn
+        </td>
+        <td style="background: #F0ADAD">
+          StatsScene.this.levelNameColumn
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          5366
+        </td>
+        <td>
+          1846
+          -
+          1930
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.collections.ObservableBuffer.++=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.columns.++=(scala.collection.immutable.List.apply[javafx.scene.control.TableColumn[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel,String]](control.this.TableColumn.sfxTableColumn2jfx[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel, String](StatsScene.this.levelNameColumn), control.this.TableColumn.sfxTableColumn2jfx[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel, String](StatsScene.this.victoryRuleColumn), control.this.TableColumn.sfxTableColumn2jfx[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel, String](StatsScene.this.victoriesColumn), control.this.TableColumn.sfxTableColumn2jfx[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel, String](StatsScene.this.defeatsColumn)))
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          5360
+        </td>
+        <td>
+          1880
+          -
+          1897
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.scene.control.TableColumn.sfxTableColumn2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          control.this.TableColumn.sfxTableColumn2jfx[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel, String](StatsScene.this.victoryRuleColumn)
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          5359
+        </td>
+        <td>
+          1880
+          -
+          1897
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.StatsScene.victoryRuleColumn
+        </td>
+        <td style="background: #F0ADAD">
+          StatsScene.this.victoryRuleColumn
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          5362
+        </td>
+        <td>
+          1899
+          -
+          1914
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.scene.control.TableColumn.sfxTableColumn2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          control.this.TableColumn.sfxTableColumn2jfx[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel, String](StatsScene.this.victoriesColumn)
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          5365
+        </td>
+        <td>
+          1858
+          -
+          1930
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.immutable.List.apply[javafx.scene.control.TableColumn[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel,String]](control.this.TableColumn.sfxTableColumn2jfx[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel, String](StatsScene.this.levelNameColumn), control.this.TableColumn.sfxTableColumn2jfx[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel, String](StatsScene.this.victoryRuleColumn), control.this.TableColumn.sfxTableColumn2jfx[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel, String](StatsScene.this.victoriesColumn), control.this.TableColumn.sfxTableColumn2jfx[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel, String](StatsScene.this.defeatsColumn))
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          5368
+        </td>
+        <td>
+          1967
+          -
+          1989
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.binding.NumberExpression./
+        </td>
+        <td style="background: #F0ADAD">
+          StatsScene.this.statsTable.width./(4.1)
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          5370
+        </td>
+        <td>
+          2021
+          -
+          2035
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.beans.binding.NumberBinding.sfxNumberBinding2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          binding.this.NumberBinding.sfxNumberBinding2jfx(StatsScene.this.columnMinWidth)
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          5369
+        </td>
+        <td>
+          2021
+          -
+          2035
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.StatsScene.columnMinWidth
+        </td>
+        <td style="background: #F0ADAD">
+          StatsScene.this.columnMinWidth
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          5371
+        </td>
+        <td>
+          1992
+          -
+          2035
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          StatsScene.this.levelNameColumn.minWidth.&lt;==(binding.this.NumberBinding.sfxNumberBinding2jfx(StatsScene.this.columnMinWidth))
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          5373
+        </td>
+        <td>
+          2069
+          -
+          2083
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.beans.binding.NumberBinding.sfxNumberBinding2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          binding.this.NumberBinding.sfxNumberBinding2jfx(StatsScene.this.columnMinWidth)
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          5372
+        </td>
+        <td>
+          2069
+          -
+          2083
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.StatsScene.columnMinWidth
+        </td>
+        <td style="background: #F0ADAD">
+          StatsScene.this.columnMinWidth
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          5374
+        </td>
+        <td>
+          2038
+          -
+          2083
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          StatsScene.this.victoryRuleColumn.minWidth.&lt;==(binding.this.NumberBinding.sfxNumberBinding2jfx(StatsScene.this.columnMinWidth))
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          5376
+        </td>
+        <td>
+          2115
+          -
+          2129
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.beans.binding.NumberBinding.sfxNumberBinding2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          binding.this.NumberBinding.sfxNumberBinding2jfx(StatsScene.this.columnMinWidth)
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          5375
+        </td>
+        <td>
+          2115
+          -
+          2129
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.StatsScene.columnMinWidth
+        </td>
+        <td style="background: #F0ADAD">
+          StatsScene.this.columnMinWidth
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          5377
+        </td>
+        <td>
+          2086
+          -
+          2129
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          StatsScene.this.victoriesColumn.minWidth.&lt;==(binding.this.NumberBinding.sfxNumberBinding2jfx(StatsScene.this.columnMinWidth))
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          5379
+        </td>
+        <td>
+          2159
+          -
+          2173
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.beans.binding.NumberBinding.sfxNumberBinding2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          binding.this.NumberBinding.sfxNumberBinding2jfx(StatsScene.this.columnMinWidth)
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          5378
+        </td>
+        <td>
+          2159
+          -
+          2173
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.StatsScene.columnMinWidth
+        </td>
+        <td style="background: #F0ADAD">
+          StatsScene.this.columnMinWidth
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          5380
+        </td>
+        <td>
+          2132
+          -
+          2173
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          StatsScene.this.defeatsColumn.minWidth.&lt;==(binding.this.NumberBinding.sfxNumberBinding2jfx(StatsScene.this.columnMinWidth))
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          5382
+        </td>
+        <td>
+          2232
+          -
+          2242
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.StatsScene.playerData
+        </td>
+        <td style="background: #F0ADAD">
+          StatsScene.this.playerData
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          5381
+        </td>
+        <td>
+          2212
+          -
+          2222
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.StatsScene.statsTable
+        </td>
+        <td style="background: #F0ADAD">
+          StatsScene.this.statsTable
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          5383
+        </td>
+        <td>
+          2212
+          -
+          2243
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.control.TableView.setItems
+        </td>
+        <td style="background: #F0ADAD">
+          control.this.TableView.sfxTableView2jfx[it.unibo.osmos.redux.mvc.controller.levels.structure.CampaignLevel](StatsScene.this.statsTable).setItems(StatsScene.this.playerData)
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          5391
+        </td>
+        <td>
+          2310
+          -
+          2313
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.StatsScene.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          5385
+        </td>
+        <td>
+          2329
+          -
+          2351
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.delegate.AlignmentDelegate.alignment_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.alignment_=(scalafx.geometry.Pos.Center)
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          5384
+        </td>
+        <td>
+          2341
+          -
+          2351
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.geometry.Pos.Center
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.geometry.Pos.Center
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          5388
+        </td>
+        <td>
+          2367
+          -
+          2390
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.Seq.apply[scalafx.scene.control.Control](StatsScene.this.statsTable, StatsScene.this.goBack)
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          5387
+        </td>
+        <td>
+          2383
+          -
+          2389
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.DefaultBackScene.goBack
+        </td>
+        <td style="background: #F0ADAD">
+          StatsScene.this.goBack
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          5386
+        </td>
+        <td>
+          2371
+          -
+          2381
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.StatsScene.statsTable
+        </td>
+        <td style="background: #F0ADAD">
+          StatsScene.this.statsTable
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          5389
+        </td>
+        <td>
+          2356
+          -
+          2390
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Pane.children_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.children_=(scala.collection.Seq.apply[scalafx.scene.control.Control](StatsScene.this.statsTable, StatsScene.this.goBack))
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          5390
+        </td>
+        <td>
+          2395
+          -
+          2426
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.util.List.add
+        </td>
+        <td style="background: #F0ADAD">
+          collections.this.ObservableBuffer.observableBuffer2ObservableList[String]($anon.this.styleClass).add(&quot;settings-vbox&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          5393
+        </td>
+        <td>
+          2470
+          -
+          2486
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Scene.root_=
+        </td>
+        <td style="background: #F0ADAD">
+          StatsScene.this.root_=(StatsScene.this.container)
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          5392
+        </td>
+        <td>
+          2477
+          -
+          2486
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.StatsScene.container
+        </td>
+        <td style="background: #F0ADAD">
+          StatsScene.this.container
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

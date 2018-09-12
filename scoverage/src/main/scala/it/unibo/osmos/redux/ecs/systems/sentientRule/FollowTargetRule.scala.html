@@ -1,0 +1,1072 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/ecs/systems/sentientRule/FollowTargetRule.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.systems.sentientRule
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.ecs.entities.EntityType
+</span>4 <span style=''>import it.unibo.osmos.redux.ecs.entities.properties.composed.{SentientEnemyProperty, SentientProperty}
+</span>5 <span style=''>import it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils._
+</span>6 <span style=''>import it.unibo.osmos.redux.utils.Constants.Sentient._
+</span>7 <span style=''>import it.unibo.osmos.redux.utils.{MathUtils, Vector}
+</span>8 <span style=''>
+</span>9 <span style=''>import scala.collection.mutable.ListBuffer
+</span>10 <span style=''>
+</span>11 <span style=''>/** Rule to compute the acceleration to follow the target enemy
+</span>12 <span style=''>  *
+</span>13 <span style=''>  * @param enemies list of enemies from which choose the target enemy
+</span>14 <span style=''>  */
+</span>15 <span style=''>case class FollowTargetRule(enemies: ListBuffer[SentientEnemyProperty]) extends SentientRule {
+</span>16 <span style=''>
+</span>17 <span style=''>  override def computeRule(sentient: SentientProperty, previousAcceleration: Vector): Vector = {
+</span>18 <span style=''>    val escapeVelocity = </span><span style='background: #AEF1AE'>sentient.getSpeedComponent.vector add previousAcceleration</span><span style=''>
+</span>19 <span style=''>    </span><span style='background: #AEF1AE'>findTarget(sentient, enemies, escapeVelocity)</span><span style=''> match {
+</span>20 <span style=''>      case Some(target) =&gt; </span><span style='background: #AEF1AE'>followTarget(sentient, target, escapeVelocity)</span><span style=''>
+</span>21 <span style=''>      case _ =&gt; </span><span style='background: #AEF1AE'>Vector.zero()</span><span style=''>
+</span>22 <span style=''>    }
+</span>23 <span style=''>  }
+</span>24 <span style=''>
+</span>25 <span style=''>  /** apply a acceleration to the sentient to follow the target
+</span>26 <span style=''>    *
+</span>27 <span style=''>    * @param sentient sentient entity
+</span>28 <span style=''>    * @param target   target entity
+</span>29 <span style=''>    */
+</span>30 <span style=''>  private def followTarget(sentient: SentientProperty, target: SentientEnemyProperty, actualVelocity: Vector): Vector = {
+</span>31 <span style=''>    val nextPositionTarget = </span><span style='background: #AEF1AE'>target.getPositionComponent.point.add(target.getSpeedComponent.vector)</span><span style=''>
+</span>32 <span style=''>    val unitVectorDesiredVelocity = </span><span style='background: #AEF1AE'>MathUtils.unitVector(nextPositionTarget, sentient.getPositionComponent.point)</span><span style=''>
+</span>33 <span style=''>    </span><span style='background: #AEF1AE'>computeSteer(actualVelocity, unitVectorDesiredVelocity)</span><span style=''>
+</span>34 <span style=''>  }
+</span>35 <span style=''>
+</span>36 <span style=''>  /** find the target enemy
+</span>37 <span style=''>    *
+</span>38 <span style=''>    * @param sentient sentient entity
+</span>39 <span style=''>    * @param enemies  list of entity
+</span>40 <span style=''>    * @return the sentient's enemy with greater target coefficient is present, else None
+</span>41 <span style=''>    */
+</span>42 <span style=''>  private def findTarget(sentient: SentientProperty, enemies: ListBuffer[SentientEnemyProperty], escapeVelocity: Vector): Option[SentientEnemyProperty] = {
+</span>43 <span style=''>    </span><span style='background: #AEF1AE'>enemies.filter(e =&gt; e.getCollidableComponent.isCollidable &amp;&amp;
+</span>44 <span style=''></span><span style='background: #AEF1AE'>      !(e.getTypeComponent.typeEntity == EntityType.AntiMatter) &amp;&amp;
+</span>45 <span style=''></span><span style='background: #AEF1AE'>      sentient.getDimensionComponent.radius &gt; e.getDimensionComponent.radius)
+</span>46 <span style=''></span><span style='background: #AEF1AE'>      .map(e =&gt; {
+</span>47 <span style=''></span><span style='background: #AEF1AE'>        if (hasLostRadiusBehaviour(sentient)) {
+</span>48 <span style=''></span><span style='background: #AEF1AE'>          (e, targetCoefficientWithLostRadius(sentient, e, escapeVelocity))
+</span>49 <span style=''></span><span style='background: #AEF1AE'>        } else {
+</span>50 <span style=''></span><span style='background: #AEF1AE'>          (e, targetCoefficientWithoutLostRadius(sentient, e))
+</span>51 <span style=''></span><span style='background: #AEF1AE'>        }
+</span>52 <span style=''></span><span style='background: #AEF1AE'>      })
+</span>53 <span style=''></span><span style='background: #AEF1AE'>      .filter(e =&gt; e._2 &gt; 0)</span><span style=''> match {
+</span>54 <span style=''>      case list if </span><span style='background: #AEF1AE'>list.isEmpty</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>None</span><span style=''>
+</span>55 <span style=''>      case list =&gt; </span><span style='background: #AEF1AE'>Some(list.max(Ordering.by((d: (SentientEnemyProperty, Double)) =&gt; d._2))._1)</span><span style=''>
+</span>56 <span style=''>    }
+</span>57 <span style=''>  }
+</span>58 <span style=''>
+</span>59 <span style=''>  /** compute the coefficient with lost radius
+</span>60 <span style=''>    *
+</span>61 <span style=''>    * @param sentient sentient entity
+</span>62 <span style=''>    * @param enemy    sentient enemy entity
+</span>63 <span style=''>    * @return the coefficient representing the radius that can be gained form an enemy
+</span>64 <span style=''>    */
+</span>65 <span style=''>  private def targetCoefficientWithLostRadius(sentient: SentientProperty, enemy: SentientEnemyProperty, escapeVelocity: Vector): Double = {
+</span>66 <span style=''>    val nextPositionTarget = </span><span style='background: #AEF1AE'>enemy.getPositionComponent.point.add(enemy.getSpeedComponent.vector)</span><span style=''>
+</span>67 <span style=''>    val unitVectorDesiredVelocity = </span><span style='background: #AEF1AE'>MathUtils.unitVector(nextPositionTarget, sentient.getPositionComponent.point)</span><span style=''>
+</span>68 <span style=''>    val magnitudeOfRotation = </span><span style='background: #AEF1AE'>computeUnlimitedSteer(escapeVelocity, unitVectorDesiredVelocity).getMagnitude</span><span style=''>
+</span>69 <span style=''>    val lostRadiusPercentage = </span><span style='background: #AEF1AE'>magnitudeOfRotation * PercentageOfLostRadiusForMagnitudeAcceleration</span><span style=''>
+</span>70 <span style=''>    </span><span style='background: #AEF1AE'>enemy.getDimensionComponent.radius - (sentient.getDimensionComponent.radius * lostRadiusPercentage)</span><span style=''>
+</span>71 <span style=''>  }
+</span>72 <span style=''>
+</span>73 <span style=''>  /** compute the coefficient without lost radius
+</span>74 <span style=''>    *
+</span>75 <span style=''>    * @param sentient sentient entity
+</span>76 <span style=''>    * @param enemy    sentient enemy entity
+</span>77 <span style=''>    * @return a coefficient directly proportional to the enemy's radius and
+</span>78 <span style=''>    *         inversely proportional to the distance between the entities
+</span>79 <span style=''>    */
+</span>80 <span style=''>  private def targetCoefficientWithoutLostRadius(sentient: SentientProperty, enemy: SentientEnemyProperty): Double = {
+</span>81 <span style=''>    </span><span style='background: #AEF1AE'>enemy.getDimensionComponent.radius / MathUtils.euclideanDistance(sentient.getPositionComponent, enemy.getPositionComponent)</span><span style=''>
+</span>82 <span style=''>  }
+</span>83 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          1080
+        </td>
+        <td>
+          794
+          -
+          852
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.add
+        </td>
+        <td style="background: #AEF1AE">
+          sentient.getSpeedComponent.vector.add(previousAcceleration)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1082
+        </td>
+        <td>
+          857
+          -
+          902
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule.findTarget
+        </td>
+        <td style="background: #AEF1AE">
+          FollowTargetRule.this.findTarget(sentient, FollowTargetRule.this.enemies, escapeVelocity)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1081
+        </td>
+        <td>
+          878
+          -
+          885
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule.enemies
+        </td>
+        <td style="background: #AEF1AE">
+          FollowTargetRule.this.enemies
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          1083
+        </td>
+        <td>
+          938
+          -
+          984
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule.followTarget
+        </td>
+        <td style="background: #AEF1AE">
+          FollowTargetRule.this.followTarget(sentient, target, escapeVelocity)
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          1084
+        </td>
+        <td>
+          1001
+          -
+          1014
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.zero
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Vector.zero()
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          1085
+        </td>
+        <td>
+          1366
+          -
+          1397
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.VectorComponent.vector
+        </td>
+        <td style="background: #AEF1AE">
+          target.getSpeedComponent.vector
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          1086
+        </td>
+        <td>
+          1328
+          -
+          1398
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.add
+        </td>
+        <td style="background: #AEF1AE">
+          target.getPositionComponent.point.add(target.getSpeedComponent.vector)
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          1088
+        </td>
+        <td>
+          1435
+          -
+          1512
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.MathUtils.unitVector
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.MathUtils.unitVector(nextPositionTarget, sentient.getPositionComponent.point)
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          1087
+        </td>
+        <td>
+          1476
+          -
+          1511
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.point
+        </td>
+        <td style="background: #AEF1AE">
+          sentient.getPositionComponent.point
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          1089
+        </td>
+        <td>
+          1517
+          -
+          1572
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.computeSteer
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.computeSteer(actualVelocity, unitVectorDesiredVelocity)
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          1091
+        </td>
+        <td>
+          2010
+          -
+          2067
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #AEF1AE">
+          e.getTypeComponent.typeEntity.==(it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter).unary_!
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          1094
+        </td>
+        <td>
+          1963
+          -
+          2147
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.&amp;&amp;
+        </td>
+        <td style="background: #AEF1AE">
+          e.getCollidableComponent.isCollidable.&amp;&amp;(e.getTypeComponent.typeEntity.==(it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter).unary_!).&amp;&amp;(sentient.getDimensionComponent.radius.&gt;(e.getDimensionComponent.radius))
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          1090
+        </td>
+        <td>
+          2045
+          -
+          2066
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          1093
+        </td>
+        <td>
+          2077
+          -
+          2147
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          sentient.getDimensionComponent.radius.&gt;(e.getDimensionComponent.radius)
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          1092
+        </td>
+        <td>
+          2117
+          -
+          2147
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.radius
+        </td>
+        <td style="background: #AEF1AE">
+          e.getDimensionComponent.radius
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          1102
+        </td>
+        <td>
+          2159
+          -
+          2159
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.mutable.ListBuffer.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          mutable.this.ListBuffer.canBuildFrom[(it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)]
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          1095
+        </td>
+        <td>
+          2179
+          -
+          2211
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.hasLostRadiusBehaviour
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.hasLostRadiusBehaviour(sentient)
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          1097
+        </td>
+        <td>
+          2225
+          -
+          2290
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Tuple2.apply[it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double](e, FollowTargetRule.this.targetCoefficientWithLostRadius(sentient, e, escapeVelocity))
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          1096
+        </td>
+        <td>
+          2229
+          -
+          2289
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule.targetCoefficientWithLostRadius
+        </td>
+        <td style="background: #AEF1AE">
+          FollowTargetRule.this.targetCoefficientWithLostRadius(sentient, e, escapeVelocity)
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          1098
+        </td>
+        <td>
+          2225
+          -
+          2290
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Tuple2.apply[it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double](e, FollowTargetRule.this.targetCoefficientWithLostRadius(sentient, e, escapeVelocity))
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          1100
+        </td>
+        <td>
+          2318
+          -
+          2370
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Tuple2.apply[it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double](e, FollowTargetRule.this.targetCoefficientWithoutLostRadius(sentient, e))
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          1099
+        </td>
+        <td>
+          2322
+          -
+          2369
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule.targetCoefficientWithoutLostRadius
+        </td>
+        <td style="background: #AEF1AE">
+          FollowTargetRule.this.targetCoefficientWithoutLostRadius(sentient, e)
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          1101
+        </td>
+        <td>
+          2318
+          -
+          2370
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Tuple2.apply[it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double](e, FollowTargetRule.this.targetCoefficientWithoutLostRadius(sentient, e))
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          1104
+        </td>
+        <td>
+          1943
+          -
+          2418
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.TraversableLike.filter
+        </td>
+        <td style="background: #AEF1AE">
+          enemies.filter(((e: it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty) =&gt; e.getCollidableComponent.isCollidable.&amp;&amp;(e.getTypeComponent.typeEntity.==(it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter).unary_!).&amp;&amp;(sentient.getDimensionComponent.radius.&gt;(e.getDimensionComponent.radius)))).map[(it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double), scala.collection.mutable.ListBuffer[(it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)]](((e: it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty) =&gt; if (it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.hasLostRadiusBehaviour(sentient))
+  scala.Tuple2.apply[it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double](e, FollowTargetRule.this.targetCoefficientWithLostRadius(sentient, e, escapeVelocity))
+else
+  scala.Tuple2.apply[it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double](e, FollowTargetRule.this.targetCoefficientWithoutLostRadius(sentient, e))))(mutable.this.ListBuffer.canBuildFrom[(it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)]).filter(((e: (it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)) =&gt; e._2.&gt;(0)))
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          1103
+        </td>
+        <td>
+          2409
+          -
+          2417
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          e._2.&gt;(0)
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          1106
+        </td>
+        <td>
+          2462
+          -
+          2466
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #AEF1AE">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          1105
+        </td>
+        <td>
+          2446
+          -
+          2458
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.mutable.ListBuffer.isEmpty
+        </td>
+        <td style="background: #AEF1AE">
+          list.isEmpty
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          1109
+        </td>
+        <td>
+          2500
+          -
+          2557
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.math.Ordering.by
+        </td>
+        <td style="background: #AEF1AE">
+          scala.`package`.Ordering.by[(it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double), Double](((d: (it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)) =&gt; d._2))(math.this.Ordering.Double)
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          1111
+        </td>
+        <td>
+          2486
+          -
+          2562
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Some.apply[it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty](list.max[(it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)](scala.`package`.Ordering.by[(it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double), Double](((d: (it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)) =&gt; d._2))(math.this.Ordering.Double))._1)
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          1108
+        </td>
+        <td>
+          2511
+          -
+          2511
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.math.Ordering.Double
+        </td>
+        <td style="background: #AEF1AE">
+          math.this.Ordering.Double
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          1107
+        </td>
+        <td>
+          2552
+          -
+          2556
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._2
+        </td>
+        <td style="background: #AEF1AE">
+          d._2
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          1110
+        </td>
+        <td>
+          2491
+          -
+          2561
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._1
+        </td>
+        <td style="background: #AEF1AE">
+          list.max[(it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)](scala.`package`.Ordering.by[(it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double), Double](((d: (it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)) =&gt; d._2))(math.this.Ordering.Double))._1
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          1113
+        </td>
+        <td>
+          2972
+          -
+          3040
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.add
+        </td>
+        <td style="background: #AEF1AE">
+          enemy.getPositionComponent.point.add(enemy.getSpeedComponent.vector)
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          1112
+        </td>
+        <td>
+          3009
+          -
+          3039
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.VectorComponent.vector
+        </td>
+        <td style="background: #AEF1AE">
+          enemy.getSpeedComponent.vector
+        </td>
+      </tr><tr>
+        <td>
+          67
+        </td>
+        <td>
+          1115
+        </td>
+        <td>
+          3077
+          -
+          3154
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.MathUtils.unitVector
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.MathUtils.unitVector(nextPositionTarget, sentient.getPositionComponent.point)
+        </td>
+      </tr><tr>
+        <td>
+          67
+        </td>
+        <td>
+          1114
+        </td>
+        <td>
+          3118
+          -
+          3153
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.point
+        </td>
+        <td style="background: #AEF1AE">
+          sentient.getPositionComponent.point
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          1116
+        </td>
+        <td>
+          3185
+          -
+          3262
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.getMagnitude
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.computeUnlimitedSteer(escapeVelocity, unitVectorDesiredVelocity).getMagnitude
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          1118
+        </td>
+        <td>
+          3294
+          -
+          3362
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.*
+        </td>
+        <td style="background: #AEF1AE">
+          magnitudeOfRotation.*(it.unibo.osmos.redux.utils.Constants.Sentient.PercentageOfLostRadiusForMagnitudeAcceleration)
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          1117
+        </td>
+        <td>
+          3316
+          -
+          3362
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.Sentient.PercentageOfLostRadiusForMagnitudeAcceleration
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Constants.Sentient.PercentageOfLostRadiusForMagnitudeAcceleration
+        </td>
+      </tr><tr>
+        <td>
+          70
+        </td>
+        <td>
+          1120
+        </td>
+        <td>
+          3367
+          -
+          3466
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #AEF1AE">
+          enemy.getDimensionComponent.radius.-(sentient.getDimensionComponent.radius.*(lostRadiusPercentage))
+        </td>
+      </tr><tr>
+        <td>
+          70
+        </td>
+        <td>
+          1119
+        </td>
+        <td>
+          3405
+          -
+          3465
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.*
+        </td>
+        <td style="background: #AEF1AE">
+          sentient.getDimensionComponent.radius.*(lostRadiusPercentage)
+        </td>
+      </tr><tr>
+        <td>
+          81
+        </td>
+        <td>
+          1124
+        </td>
+        <td>
+          3890
+          -
+          4013
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double./
+        </td>
+        <td style="background: #AEF1AE">
+          enemy.getDimensionComponent.radius./(it.unibo.osmos.redux.utils.MathUtils.euclideanDistance(sentient.getPositionComponent, enemy.getPositionComponent))
+        </td>
+      </tr><tr>
+        <td>
+          81
+        </td>
+        <td>
+          1123
+        </td>
+        <td>
+          3927
+          -
+          4013
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.MathUtils.euclideanDistance
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.MathUtils.euclideanDistance(sentient.getPositionComponent, enemy.getPositionComponent)
+        </td>
+      </tr><tr>
+        <td>
+          81
+        </td>
+        <td>
+          1122
+        </td>
+        <td>
+          3986
+          -
+          4012
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Position.getPositionComponent
+        </td>
+        <td style="background: #AEF1AE">
+          enemy.getPositionComponent
+        </td>
+      </tr><tr>
+        <td>
+          81
+        </td>
+        <td>
+          1121
+        </td>
+        <td>
+          3955
+          -
+          3984
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Position.getPositionComponent
+        </td>
+        <td style="background: #AEF1AE">
+          sentient.getPositionComponent
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

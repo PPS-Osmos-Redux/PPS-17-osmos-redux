@@ -1,0 +1,2147 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/components/editor/EditorLevelTypeContainer.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.components.editor
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.{MapShape, MapShapeType}
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.view.ViewConstants.Editor.{StartingLevelHeight, StartingLevelRadius, StartingLevelWidth}
+</span>5 <span style=''>import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
+</span>6 <span style=''>import it.unibo.osmos.redux.mvc.view.components.custom.TitledComboBox
+</span>7 <span style=''>import javafx.beans.binding.BooleanBinding
+</span>8 <span style=''>import scalafx.beans.property.ObjectProperty
+</span>9 <span style=''>import scalafx.scene.layout.{StackPane, VBox}
+</span>10 <span style=''>import scalafx.scene.paint.Color
+</span>11 <span style=''>import scalafx.scene.shape.{Circle, Rectangle, Shape}
+</span>12 <span style=''>
+</span>13 <span style=''>/** This class holds those variables and view components responsible to let the user choose the level type in the EditorScene
+</span>14 <span style=''>  *
+</span>15 <span style=''>  * @param editorLevelTypeContainerListener the listener
+</span>16 <span style=''>  * @param isContainerVisible               BooleanBinding which manages the panels visibility
+</span>17 <span style=''>  */
+</span>18 <span style=''>class EditorLevelTypeContainer(editorLevelTypeContainerListener: EditorLevelTypeContainerListener, isContainerVisible: BooleanBinding) {
+</span>19 <span style=''>
+</span>20 <span style=''>  /** Level Type */
+</span>21 <span style=''>  private val levelType: ObjectProperty[MapShapeType.Value] = </span><span style='background: #F0ADAD'>ObjectProperty(MapShapeType.Circle)</span><span style=''>
+</span>22 <span style=''>  private val levelTypeBox = </span><span style='background: #F0ADAD'>new TitledComboBox[MapShapeType.Value](&quot;Level Type:&quot;, MapShapeType.values.toSeq, mapType =&gt; levelType.value = mapType)</span><span style=''>
+</span>23 <span style=''>
+</span>24 <span style=''>  /** Pane containing the field to configure the circular level */
+</span>25 <span style=''>  private val circularLevelBuilder: CircleLevelCreator = </span><span style='background: #F0ADAD'>new</span><span style=''> CircleLevelCreator {
+</span>26 <span style=''>    </span><span style='background: #F0ADAD'>xCenter.value = 0.0</span><span style=''>
+</span>27 <span style=''>    </span><span style='background: #F0ADAD'>yCenter.value = 0.0</span><span style=''>
+</span>28 <span style=''>    </span><span style='background: #F0ADAD'>radius.value = StartingLevelRadius</span><span style=''>
+</span>29 <span style=''>  }
+</span>30 <span style=''>  /** Pane containing the field to configure the rectangular level */
+</span>31 <span style=''>  private val rectangularLevelBuilder: RectangleLevelCreator = </span><span style='background: #F0ADAD'>new</span><span style=''> RectangleLevelCreator {
+</span>32 <span style=''>    </span><span style='background: #F0ADAD'>visible = false</span><span style=''>
+</span>33 <span style=''>    </span><span style='background: #F0ADAD'>levelWidth.value = StartingLevelWidth</span><span style=''>
+</span>34 <span style=''>    </span><span style='background: #F0ADAD'>levelHeight.value = StartingLevelHeight</span><span style=''>
+</span>35 <span style=''>    </span><span style='background: #F0ADAD'>xCenter.value = 0.0</span><span style=''>
+</span>36 <span style=''>    </span><span style='background: #F0ADAD'>yCenter.value = 0.0</span><span style=''>
+</span>37 <span style=''>  }
+</span>38 <span style=''>
+</span>39 <span style=''>  /** The level container node */
+</span>40 <span style=''>  private val _levelTypeContainer: VBox = </span><span style='background: #F0ADAD'>new</span><span style=''> VBox(1.0) {
+</span>41 <span style=''>
+</span>42 <span style=''>    /* Adding the two builders */
+</span>43 <span style=''>    private val builderSeq = </span><span style='background: #F0ADAD'>Seq(circularLevelBuilder, rectangularLevelBuilder)</span><span style=''>
+</span>44 <span style=''>
+</span>45 <span style=''>    private val verticalStackPane = </span><span style='background: #F0ADAD'>new</span><span style=''> StackPane() {
+</span>46 <span style=''>      </span><span style='background: #F0ADAD'>children = builderSeq</span><span style=''>
+</span>47 <span style=''>      /** Reacting to change */
+</span>48 <span style=''>      </span><span style='background: #F0ADAD'>levelType.onChange({
+</span>49 <span style=''></span><span style='background: #F0ADAD'>        builderSeq.foreach(levelBuilder =&gt; levelBuilder.visible = false)
+</span>50 <span style=''></span><span style='background: #F0ADAD'>        val oldShape = currentLevelPlaceholder
+</span>51 <span style=''></span><span style='background: #F0ADAD'>        levelType.value match {
+</span>52 <span style=''></span><span style='background: #F0ADAD'>          case MapShapeType.Circle =&gt; circularLevelBuilder.visible = true; currentLevelPlaceholder = circularLevelPlaceholder
+</span>53 <span style=''></span><span style='background: #F0ADAD'>          case MapShapeType.Rectangle =&gt; rectangularLevelBuilder.visible = true; currentLevelPlaceholder = rectangularLevelPlaceholder
+</span>54 <span style=''></span><span style='background: #F0ADAD'>          case _ =&gt;
+</span>55 <span style=''></span><span style='background: #F0ADAD'>        }
+</span>56 <span style=''></span><span style='background: #F0ADAD'>        val newShape = currentLevelPlaceholder
+</span>57 <span style=''></span><span style='background: #F0ADAD'>        editorLevelTypeContainerListener.updatePlaceholder(oldShape, newShape)
+</span>58 <span style=''></span><span style='background: #F0ADAD'>      })</span><span style=''>
+</span>59 <span style=''>    }
+</span>60 <span style=''>
+</span>61 <span style=''>    </span><span style='background: #F0ADAD'>children = List(levelTypeBox.root, verticalStackPane)</span><span style=''>
+</span>62 <span style=''>  }
+</span>63 <span style=''>  /** The placeholder which models the circular level */
+</span>64 <span style=''>  private val circularLevelPlaceholder: Circle = </span><span style='background: #F0ADAD'>new</span><span style=''> Circle() {
+</span>65 <span style=''>    </span><span style='background: #F0ADAD'>centerX &lt;== circularLevelBuilder.xCenter + HalfWindowWidth</span><span style=''>
+</span>66 <span style=''>    </span><span style='background: #F0ADAD'>centerY &lt;== circularLevelBuilder.yCenter + HalfWindowHeight</span><span style=''>
+</span>67 <span style=''>    </span><span style='background: #F0ADAD'>radius &lt;== circularLevelBuilder.radius</span><span style=''>
+</span>68 <span style=''>    </span><span style='background: #F0ADAD'>stroke = Color.White</span><span style=''>
+</span>69 <span style=''>    </span><span style='background: #F0ADAD'>strokeWidth = 2.0</span><span style=''>
+</span>70 <span style=''>    </span><span style='background: #F0ADAD'>fill = Color.Transparent</span><span style=''>
+</span>71 <span style=''>    </span><span style='background: #F0ADAD'>mouseTransparent = true</span><span style=''>
+</span>72 <span style=''>    </span><span style='background: #F0ADAD'>visible &lt;== isContainerVisible</span><span style=''>
+</span>73 <span style=''>  }
+</span>74 <span style=''>  /** The placeholder which models the rectangular level */
+</span>75 <span style=''>  private val rectangularLevelPlaceholder: Rectangle = </span><span style='background: #F0ADAD'>new</span><span style=''> Rectangle() {
+</span>76 <span style=''>    </span><span style='background: #F0ADAD'>width &lt;== rectangularLevelBuilder.levelWidth</span><span style=''>
+</span>77 <span style=''>    </span><span style='background: #F0ADAD'>height &lt;== rectangularLevelBuilder.levelHeight</span><span style=''>
+</span>78 <span style=''>    </span><span style='background: #F0ADAD'>x &lt;== rectangularLevelBuilder.xCenter - rectangularLevelBuilder.levelWidth / 2 + HalfWindowWidth</span><span style=''>
+</span>79 <span style=''>    </span><span style='background: #F0ADAD'>y &lt;== rectangularLevelBuilder.yCenter - rectangularLevelBuilder.levelHeight / 2 + HalfWindowHeight</span><span style=''>
+</span>80 <span style=''>    </span><span style='background: #F0ADAD'>stroke = Color.White</span><span style=''>
+</span>81 <span style=''>    </span><span style='background: #F0ADAD'>strokeWidth = 2.0</span><span style=''>
+</span>82 <span style=''>    </span><span style='background: #F0ADAD'>fill = Color.Transparent</span><span style=''>
+</span>83 <span style=''>    </span><span style='background: #F0ADAD'>mouseTransparent = true</span><span style=''>
+</span>84 <span style=''>    </span><span style='background: #F0ADAD'>visible &lt;== isContainerVisible</span><span style=''>
+</span>85 <span style=''>  }
+</span>86 <span style=''>  /** The currently visible level placeholder */
+</span>87 <span style=''>  var currentLevelPlaceholder: Shape = </span><span style='background: #F0ADAD'>circularLevelPlaceholder</span><span style=''>
+</span>88 <span style=''>
+</span>89 <span style=''>  /** Getter which returns the level type container node
+</span>90 <span style=''>    *
+</span>91 <span style=''>    * @return the level type container node
+</span>92 <span style=''>    */
+</span>93 <span style=''>  def levelTypeContainer: VBox = </span><span style='background: #F0ADAD'>_levelTypeContainer</span><span style=''>
+</span>94 <span style=''>
+</span>95 <span style=''>  /** This method creates a MapShape based on the currently selected level type
+</span>96 <span style=''>    *
+</span>97 <span style=''>    * @return the currently selected MapShape
+</span>98 <span style=''>    */
+</span>99 <span style=''>  def createLevel(): MapShape = </span><span style='background: #F0ADAD'>levelType.value</span><span style=''> match {
+</span>100 <span style=''>    case MapShapeType.Circle =&gt; </span><span style='background: #F0ADAD'>circularLevelBuilder.create()</span><span style=''>
+</span>101 <span style=''>    case MapShapeType.Rectangle =&gt; </span><span style='background: #F0ADAD'>rectangularLevelBuilder.create()</span><span style=''>
+</span>102 <span style=''>  }
+</span>103 <span style=''>}
+</span>104 <span style=''>
+</span>105 <span style=''>/**
+</span>106 <span style=''>  * Trait used to notify EditorLevelTypeContainer events
+</span>107 <span style=''>  */
+</span>108 <span style=''>trait EditorLevelTypeContainerListener {
+</span>109 <span style=''>
+</span>110 <span style=''>  /** This method tells the listener to update the placeholder
+</span>111 <span style=''>    *
+</span>112 <span style=''>    * @param oldShape the old placeholder shape
+</span>113 <span style=''>    * @param newShape the new placeholder shape
+</span>114 <span style=''>    */
+</span>115 <span style=''>  def updatePlaceholder(oldShape: Shape, newShape: Shape)
+</span>116 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          3856
+        </td>
+        <td>
+          1122
+          -
+          1157
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.ObjectProperty.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.beans.property.ObjectProperty.apply[it.unibo.osmos.redux.mvc.controller.levels.structure.MapShapeType.Value](it.unibo.osmos.redux.mvc.controller.levels.structure.MapShapeType.Circle)
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          3855
+        </td>
+        <td>
+          1137
+          -
+          1156
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.MapShapeType.Circle
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.levels.structure.MapShapeType.Circle
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          3857
+        </td>
+        <td>
+          1226
+          -
+          1239
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;Level Type:&quot;
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          3860
+        </td>
+        <td>
+          1187
+          -
+          1187
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledComboBox.&lt;init&gt;$default$4
+        </td>
+        <td style="background: #F0ADAD">
+          custom.this.TitledComboBox.&lt;init&gt;$default$4[it.unibo.osmos.redux.mvc.controller.levels.structure.MapShapeType.Value]
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          3859
+        </td>
+        <td>
+          1279
+          -
+          1304
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.ObjectProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.levelType.value_=(mapType)
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          3858
+        </td>
+        <td>
+          1241
+          -
+          1266
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.SetLike.toSeq
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.levels.structure.MapShapeType.values.toSeq
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          3861
+        </td>
+        <td>
+          1187
+          -
+          1305
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledComboBox.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.components.custom.TitledComboBox[it.unibo.osmos.redux.mvc.controller.levels.structure.MapShapeType.Value](&quot;Level Type:&quot;, it.unibo.osmos.redux.mvc.controller.levels.structure.MapShapeType.values.toSeq, ((mapType: it.unibo.osmos.redux.mvc.controller.levels.structure.MapShapeType.Value) =&gt; EditorLevelTypeContainer.this.levelType.value_=(mapType)), custom.this.TitledComboBox.&lt;init&gt;$default$4[it.unibo.osmos.redux.mvc.controller.levels.structure.MapShapeType.Value])
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          3866
+        </td>
+        <td>
+          1431
+          -
+          1434
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorLevelTypeContainer.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          3862
+        </td>
+        <td>
+          1460
+          -
+          1479
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.DoubleProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.xCenter.value_=(0.0)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          3863
+        </td>
+        <td>
+          1484
+          -
+          1503
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.DoubleProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.yCenter.value_=(0.0)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          3865
+        </td>
+        <td>
+          1508
+          -
+          1542
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.DoubleProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.radius.value_=(it.unibo.osmos.redux.mvc.view.ViewConstants.Editor.StartingLevelRadius)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          3864
+        </td>
+        <td>
+          1523
+          -
+          1542
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Editor.StartingLevelRadius
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Editor.StartingLevelRadius
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          3874
+        </td>
+        <td>
+          1680
+          -
+          1683
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorLevelTypeContainer.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          3867
+        </td>
+        <td>
+          1712
+          -
+          1727
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.visible_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.visible_=(false)
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          3869
+        </td>
+        <td>
+          1732
+          -
+          1769
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.DoubleProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.levelWidth.value_=(it.unibo.osmos.redux.mvc.view.ViewConstants.Editor.StartingLevelWidth)
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          3868
+        </td>
+        <td>
+          1751
+          -
+          1769
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Editor.StartingLevelWidth
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Editor.StartingLevelWidth
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          3871
+        </td>
+        <td>
+          1774
+          -
+          1813
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.DoubleProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.levelHeight.value_=(it.unibo.osmos.redux.mvc.view.ViewConstants.Editor.StartingLevelHeight)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          3870
+        </td>
+        <td>
+          1794
+          -
+          1813
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Editor.StartingLevelHeight
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Editor.StartingLevelHeight
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          3872
+        </td>
+        <td>
+          1818
+          -
+          1837
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.DoubleProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.xCenter.value_=(0.0)
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          3873
+        </td>
+        <td>
+          1842
+          -
+          1861
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.DoubleProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.yCenter.value_=(0.0)
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          3899
+        </td>
+        <td>
+          1943
+          -
+          1946
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorLevelTypeContainer.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          3875
+        </td>
+        <td>
+          2027
+          -
+          2047
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorLevelTypeContainer.circularLevelBuilder
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.circularLevelBuilder
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          3877
+        </td>
+        <td>
+          2023
+          -
+          2073
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.Seq.apply[it.unibo.osmos.redux.mvc.view.components.editor.BaseEditorCreator[_ &gt;: it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.Rectangle with it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.Circle &lt;: Product with Serializable with it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape]](EditorLevelTypeContainer.this.circularLevelBuilder, EditorLevelTypeContainer.this.rectangularLevelBuilder)
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          3876
+        </td>
+        <td>
+          2049
+          -
+          2072
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorLevelTypeContainer.rectangularLevelBuilder
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.rectangularLevelBuilder
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          3894
+        </td>
+        <td>
+          2111
+          -
+          2114
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorLevelTypeContainer.$anon.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          3878
+        </td>
+        <td>
+          2146
+          -
+          2156
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorLevelTypeContainer.$anon.builderSeq
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.builderSeq
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          3879
+        </td>
+        <td>
+          2135
+          -
+          2156
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Pane.children_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.children_=($anon.this.builderSeq)
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          3893
+        </td>
+        <td>
+          2195
+          -
+          2793
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.value.ObservableValue.onChange
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.levelType.onChange[it.unibo.osmos.redux.mvc.controller.levels.structure.MapShapeType.Value]({
+  $anon.this.builderSeq.foreach[Unit](((levelBuilder: it.unibo.osmos.redux.mvc.view.components.editor.BaseEditorCreator[_ &gt;: it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.Rectangle with it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.Circle &lt;: Product with Serializable with it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape]) =&gt; levelBuilder.visible_=(false)));
+  val oldShape: scalafx.scene.shape.Shape = EditorLevelTypeContainer.this.currentLevelPlaceholder;
+  EditorLevelTypeContainer.this.levelType.value match {
+    case it.unibo.osmos.redux.mvc.controller.levels.structure.MapShapeType.Circle =&gt; {
+      EditorLevelTypeContainer.this.circularLevelBuilder.visible_=(true);
+      EditorLevelTypeContainer.this.currentLevelPlaceholder_=(EditorLevelTypeContainer.this.circularLevelPlaceholder)
+    }
+    case it.unibo.osmos.redux.mvc.controller.levels.structure.MapShapeType.Rectangle =&gt; {
+      EditorLevelTypeContainer.this.rectangularLevelBuilder.visible_=(true);
+      EditorLevelTypeContainer.this.currentLevelPlaceholder_=(EditorLevelTypeContainer.this.rectangularLevelPlaceholder)
+    }
+    case _ =&gt; ()
+  };
+  val newShape: scalafx.scene.shape.Shape = EditorLevelTypeContainer.this.currentLevelPlaceholder;
+  EditorLevelTypeContainer.this.editorLevelTypeContainerListener.updatePlaceholder(oldShape, newShape)
+})
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          3881
+        </td>
+        <td>
+          2224
+          -
+          2288
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.IterableLike.foreach
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.builderSeq.foreach[Unit](((levelBuilder: it.unibo.osmos.redux.mvc.view.components.editor.BaseEditorCreator[_ &gt;: it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.Rectangle with it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.Circle &lt;: Product with Serializable with it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape]) =&gt; levelBuilder.visible_=(false)))
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          3880
+        </td>
+        <td>
+          2259
+          -
+          2287
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.visible_=
+        </td>
+        <td style="background: #F0ADAD">
+          levelBuilder.visible_=(false)
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          3882
+        </td>
+        <td>
+          2312
+          -
+          2335
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorLevelTypeContainer.currentLevelPlaceholder
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.currentLevelPlaceholder
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          3883
+        </td>
+        <td>
+          2344
+          -
+          2359
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyObjectProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.levelType.value
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          3884
+        </td>
+        <td>
+          2406
+          -
+          2441
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.visible_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.circularLevelBuilder.visible_=(true)
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          3886
+        </td>
+        <td>
+          2443
+          -
+          2493
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorLevelTypeContainer.currentLevelPlaceholder_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.currentLevelPlaceholder_=(EditorLevelTypeContainer.this.circularLevelPlaceholder)
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          3885
+        </td>
+        <td>
+          2469
+          -
+          2493
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorLevelTypeContainer.circularLevelPlaceholder
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.circularLevelPlaceholder
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          3887
+        </td>
+        <td>
+          2535
+          -
+          2573
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.visible_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.rectangularLevelBuilder.visible_=(true)
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          3889
+        </td>
+        <td>
+          2575
+          -
+          2628
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorLevelTypeContainer.currentLevelPlaceholder_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.currentLevelPlaceholder_=(EditorLevelTypeContainer.this.rectangularLevelPlaceholder)
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          3888
+        </td>
+        <td>
+          2601
+          -
+          2628
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorLevelTypeContainer.rectangularLevelPlaceholder
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.rectangularLevelPlaceholder
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          3890
+        </td>
+        <td>
+          2646
+          -
+          2648
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          3891
+        </td>
+        <td>
+          2682
+          -
+          2705
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorLevelTypeContainer.currentLevelPlaceholder
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.currentLevelPlaceholder
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          3892
+        </td>
+        <td>
+          2714
+          -
+          2784
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorLevelTypeContainerListener.updatePlaceholder
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.editorLevelTypeContainerListener.updatePlaceholder(oldShape, newShape)
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          3896
+        </td>
+        <td>
+          2840
+          -
+          2857
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorLevelTypeContainer.$anon.verticalStackPane
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.verticalStackPane
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          3895
+        </td>
+        <td>
+          2821
+          -
+          2838
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledNode.root
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.levelTypeBox.root
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          3898
+        </td>
+        <td>
+          2805
+          -
+          2858
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Pane.children_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.children_=(scala.collection.immutable.List.apply[scalafx.scene.layout.Pane](EditorLevelTypeContainer.this.levelTypeBox.root, $anon.this.verticalStackPane))
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          3897
+        </td>
+        <td>
+          2816
+          -
+          2858
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.immutable.List.apply[scalafx.scene.layout.Pane](EditorLevelTypeContainer.this.levelTypeBox.root, $anon.this.verticalStackPane)
+        </td>
+      </tr><tr>
+        <td>
+          64
+        </td>
+        <td>
+          3918
+        </td>
+        <td>
+          2969
+          -
+          2972
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorLevelTypeContainer.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          3902
+        </td>
+        <td>
+          3000
+          -
+          3046
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.beans.binding.NumberBinding.sfxNumberBinding2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          binding.this.NumberBinding.sfxNumberBinding2jfx(EditorLevelTypeContainer.this.circularLevelBuilder.xCenter.+(it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth))
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          3901
+        </td>
+        <td>
+          3000
+          -
+          3046
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.binding.NumberExpression.+
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.circularLevelBuilder.xCenter.+(it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth)
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          3900
+        </td>
+        <td>
+          3031
+          -
+          3046
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          3903
+        </td>
+        <td>
+          2988
+          -
+          3046
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.centerX.&lt;==(binding.this.NumberBinding.sfxNumberBinding2jfx(EditorLevelTypeContainer.this.circularLevelBuilder.xCenter.+(it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth)))
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          3905
+        </td>
+        <td>
+          3063
+          -
+          3110
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.binding.NumberExpression.+
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.circularLevelBuilder.yCenter.+(it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowHeight)
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          3904
+        </td>
+        <td>
+          3094
+          -
+          3110
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowHeight
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowHeight
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          3907
+        </td>
+        <td>
+          3051
+          -
+          3110
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.centerY.&lt;==(binding.this.NumberBinding.sfxNumberBinding2jfx(EditorLevelTypeContainer.this.circularLevelBuilder.yCenter.+(it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowHeight)))
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          3906
+        </td>
+        <td>
+          3063
+          -
+          3110
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.beans.binding.NumberBinding.sfxNumberBinding2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          binding.this.NumberBinding.sfxNumberBinding2jfx(EditorLevelTypeContainer.this.circularLevelBuilder.yCenter.+(it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowHeight))
+        </td>
+      </tr><tr>
+        <td>
+          67
+        </td>
+        <td>
+          3908
+        </td>
+        <td>
+          3126
+          -
+          3153
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CircleLevelCreator.radius
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.circularLevelBuilder.radius
+        </td>
+      </tr><tr>
+        <td>
+          67
+        </td>
+        <td>
+          3909
+        </td>
+        <td>
+          3115
+          -
+          3153
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.radius.&lt;==(EditorLevelTypeContainer.this.circularLevelBuilder.radius)
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          3911
+        </td>
+        <td>
+          3158
+          -
+          3178
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.shape.Shape.stroke_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.stroke_=(scalafx.scene.paint.Color.White)
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          3910
+        </td>
+        <td>
+          3167
+          -
+          3178
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.scene.paint.Color.White
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.scene.paint.Color.White
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          3912
+        </td>
+        <td>
+          3183
+          -
+          3200
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.shape.Shape.strokeWidth_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.strokeWidth_=(2.0)
+        </td>
+      </tr><tr>
+        <td>
+          70
+        </td>
+        <td>
+          3914
+        </td>
+        <td>
+          3205
+          -
+          3229
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.shape.Shape.fill_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.fill_=(scalafx.scene.paint.Color.Transparent)
+        </td>
+      </tr><tr>
+        <td>
+          70
+        </td>
+        <td>
+          3913
+        </td>
+        <td>
+          3212
+          -
+          3229
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.scene.paint.Color.Transparent
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.scene.paint.Color.Transparent
+        </td>
+      </tr><tr>
+        <td>
+          71
+        </td>
+        <td>
+          3915
+        </td>
+        <td>
+          3234
+          -
+          3257
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.mouseTransparent_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.mouseTransparent_=(true)
+        </td>
+      </tr><tr>
+        <td>
+          72
+        </td>
+        <td>
+          3917
+        </td>
+        <td>
+          3262
+          -
+          3292
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.visible.&lt;==(EditorLevelTypeContainer.this.isContainerVisible)
+        </td>
+      </tr><tr>
+        <td>
+          72
+        </td>
+        <td>
+          3916
+        </td>
+        <td>
+          3274
+          -
+          3292
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorLevelTypeContainer.isContainerVisible
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.isContainerVisible
+        </td>
+      </tr><tr>
+        <td>
+          75
+        </td>
+        <td>
+          3943
+        </td>
+        <td>
+          3412
+          -
+          3415
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorLevelTypeContainer.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          76
+        </td>
+        <td>
+          3920
+        </td>
+        <td>
+          3434
+          -
+          3478
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.width.&lt;==(EditorLevelTypeContainer.this.rectangularLevelBuilder.levelWidth)
+        </td>
+      </tr><tr>
+        <td>
+          76
+        </td>
+        <td>
+          3919
+        </td>
+        <td>
+          3444
+          -
+          3478
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.RectangleLevelCreator.levelWidth
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.rectangularLevelBuilder.levelWidth
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          3922
+        </td>
+        <td>
+          3483
+          -
+          3529
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.height.&lt;==(EditorLevelTypeContainer.this.rectangularLevelBuilder.levelHeight)
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          3921
+        </td>
+        <td>
+          3494
+          -
+          3529
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.RectangleLevelCreator.levelHeight
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.rectangularLevelBuilder.levelHeight
+        </td>
+      </tr><tr>
+        <td>
+          78
+        </td>
+        <td>
+          3923
+        </td>
+        <td>
+          3574
+          -
+          3612
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.binding.NumberExpression./
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.rectangularLevelBuilder.levelWidth./(2)
+        </td>
+      </tr><tr>
+        <td>
+          78
+        </td>
+        <td>
+          3926
+        </td>
+        <td>
+          3540
+          -
+          3630
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.binding.NumberExpression.+
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.rectangularLevelBuilder.xCenter.-(binding.this.NumberBinding.sfxNumberBinding2jfx(EditorLevelTypeContainer.this.rectangularLevelBuilder.levelWidth./(2))).+(it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth)
+        </td>
+      </tr><tr>
+        <td>
+          78
+        </td>
+        <td>
+          3928
+        </td>
+        <td>
+          3534
+          -
+          3630
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.x.&lt;==(binding.this.NumberBinding.sfxNumberBinding2jfx(EditorLevelTypeContainer.this.rectangularLevelBuilder.xCenter.-(binding.this.NumberBinding.sfxNumberBinding2jfx(EditorLevelTypeContainer.this.rectangularLevelBuilder.levelWidth./(2))).+(it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth)))
+        </td>
+      </tr><tr>
+        <td>
+          78
+        </td>
+        <td>
+          3925
+        </td>
+        <td>
+          3615
+          -
+          3630
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth
+        </td>
+      </tr><tr>
+        <td>
+          78
+        </td>
+        <td>
+          3927
+        </td>
+        <td>
+          3540
+          -
+          3630
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.beans.binding.NumberBinding.sfxNumberBinding2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          binding.this.NumberBinding.sfxNumberBinding2jfx(EditorLevelTypeContainer.this.rectangularLevelBuilder.xCenter.-(binding.this.NumberBinding.sfxNumberBinding2jfx(EditorLevelTypeContainer.this.rectangularLevelBuilder.levelWidth./(2))).+(it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowWidth))
+        </td>
+      </tr><tr>
+        <td>
+          78
+        </td>
+        <td>
+          3924
+        </td>
+        <td>
+          3574
+          -
+          3612
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.beans.binding.NumberBinding.sfxNumberBinding2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          binding.this.NumberBinding.sfxNumberBinding2jfx(EditorLevelTypeContainer.this.rectangularLevelBuilder.levelWidth./(2))
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          3932
+        </td>
+        <td>
+          3641
+          -
+          3733
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.binding.NumberExpression.+
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.rectangularLevelBuilder.yCenter.-(binding.this.NumberBinding.sfxNumberBinding2jfx(EditorLevelTypeContainer.this.rectangularLevelBuilder.levelHeight./(2))).+(it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowHeight)
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          3929
+        </td>
+        <td>
+          3675
+          -
+          3714
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.binding.NumberExpression./
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.rectangularLevelBuilder.levelHeight./(2)
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          3931
+        </td>
+        <td>
+          3717
+          -
+          3733
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowHeight
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowHeight
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          3934
+        </td>
+        <td>
+          3635
+          -
+          3733
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.y.&lt;==(binding.this.NumberBinding.sfxNumberBinding2jfx(EditorLevelTypeContainer.this.rectangularLevelBuilder.yCenter.-(binding.this.NumberBinding.sfxNumberBinding2jfx(EditorLevelTypeContainer.this.rectangularLevelBuilder.levelHeight./(2))).+(it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowHeight)))
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          3930
+        </td>
+        <td>
+          3675
+          -
+          3714
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.beans.binding.NumberBinding.sfxNumberBinding2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          binding.this.NumberBinding.sfxNumberBinding2jfx(EditorLevelTypeContainer.this.rectangularLevelBuilder.levelHeight./(2))
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          3933
+        </td>
+        <td>
+          3641
+          -
+          3733
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.beans.binding.NumberBinding.sfxNumberBinding2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          binding.this.NumberBinding.sfxNumberBinding2jfx(EditorLevelTypeContainer.this.rectangularLevelBuilder.yCenter.-(binding.this.NumberBinding.sfxNumberBinding2jfx(EditorLevelTypeContainer.this.rectangularLevelBuilder.levelHeight./(2))).+(it.unibo.osmos.redux.mvc.view.ViewConstants.Window.HalfWindowHeight))
+        </td>
+      </tr><tr>
+        <td>
+          80
+        </td>
+        <td>
+          3935
+        </td>
+        <td>
+          3747
+          -
+          3758
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.scene.paint.Color.White
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.scene.paint.Color.White
+        </td>
+      </tr><tr>
+        <td>
+          80
+        </td>
+        <td>
+          3936
+        </td>
+        <td>
+          3738
+          -
+          3758
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.shape.Shape.stroke_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.stroke_=(scalafx.scene.paint.Color.White)
+        </td>
+      </tr><tr>
+        <td>
+          81
+        </td>
+        <td>
+          3937
+        </td>
+        <td>
+          3763
+          -
+          3780
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.shape.Shape.strokeWidth_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.strokeWidth_=(2.0)
+        </td>
+      </tr><tr>
+        <td>
+          82
+        </td>
+        <td>
+          3938
+        </td>
+        <td>
+          3792
+          -
+          3809
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.scene.paint.Color.Transparent
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.scene.paint.Color.Transparent
+        </td>
+      </tr><tr>
+        <td>
+          82
+        </td>
+        <td>
+          3939
+        </td>
+        <td>
+          3785
+          -
+          3809
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.shape.Shape.fill_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.fill_=(scalafx.scene.paint.Color.Transparent)
+        </td>
+      </tr><tr>
+        <td>
+          83
+        </td>
+        <td>
+          3940
+        </td>
+        <td>
+          3814
+          -
+          3837
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.mouseTransparent_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.mouseTransparent_=(true)
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          3941
+        </td>
+        <td>
+          3854
+          -
+          3872
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorLevelTypeContainer.isContainerVisible
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.isContainerVisible
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          3942
+        </td>
+        <td>
+          3842
+          -
+          3872
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.visible.&lt;==(EditorLevelTypeContainer.this.isContainerVisible)
+        </td>
+      </tr><tr>
+        <td>
+          87
+        </td>
+        <td>
+          3944
+        </td>
+        <td>
+          3965
+          -
+          3989
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorLevelTypeContainer.circularLevelPlaceholder
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.circularLevelPlaceholder
+        </td>
+      </tr><tr>
+        <td>
+          93
+        </td>
+        <td>
+          3945
+        </td>
+        <td>
+          4138
+          -
+          4157
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorLevelTypeContainer._levelTypeContainer
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this._levelTypeContainer
+        </td>
+      </tr><tr>
+        <td>
+          99
+        </td>
+        <td>
+          3946
+        </td>
+        <td>
+          4330
+          -
+          4345
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyObjectProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.levelType.value
+        </td>
+      </tr><tr>
+        <td>
+          100
+        </td>
+        <td>
+          3947
+        </td>
+        <td>
+          4386
+          -
+          4415
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CircleLevelCreator.create
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.circularLevelBuilder.create()
+        </td>
+      </tr><tr>
+        <td>
+          101
+        </td>
+        <td>
+          3948
+        </td>
+        <td>
+          4451
+          -
+          4483
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.RectangleLevelCreator.create
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelTypeContainer.this.rectangularLevelBuilder.create()
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

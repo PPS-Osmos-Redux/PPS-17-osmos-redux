@@ -1,0 +1,795 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/scenes/EditorLevelSelectionScene.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.scenes
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.view.components.custom.StyledButton
+</span>5 <span style=''>import it.unibo.osmos.redux.mvc.view.components.editor.{EditorLevelNode, EditorLevelNodeListener}
+</span>6 <span style=''>import scalafx.geometry.Pos
+</span>7 <span style=''>import scalafx.stage.Stage
+</span>8 <span style=''>
+</span>9 <span style=''>import scala.collection.mutable
+</span>10 <span style=''>
+</span>11 <span style=''>/** Scene in which the user can see the created custom levels
+</span>12 <span style=''>  *
+</span>13 <span style=''>  * @param parentStage the parent stage
+</span>14 <span style=''>  * @param listener    the listener
+</span>15 <span style=''>  */
+</span>16 <span style=''>class EditorLevelSelectionScene(override val parentStage: Stage, override val listener: EditorLevelSelectionSceneListener, previousSceneListener: BackClickListener) extends LevelSelectionScene(parentStage, listener, previousSceneListener)
+</span>17 <span style=''>  with EditorLevelNodeListener {
+</span>18 <span style=''>
+</span>19 <span style=''>  private val newLevelButton = </span><span style='background: #F0ADAD'>new</span><span style=''> StyledButton(&quot;Create new level&quot;) {
+</span>20 <span style=''>    </span><span style='background: #F0ADAD'>alignment = Pos.BottomCenter</span><span style=''>
+</span>21 <span style=''>    </span><span style='background: #F0ADAD'>alignmentInParent = Pos.BottomCenter</span><span style=''>
+</span>22 <span style=''>    /** We open the editor. On level saved we recreate the scene */
+</span>23 <span style=''>    </span><span style='background: #F0ADAD'>onAction = _ =&gt; parentStage.scene = new EditorScene(parentStage, listener, () =&gt; parentStage.scene = new EditorLevelSelectionScene(parentStage, listener, previousSceneListener))</span><span style=''>
+</span>24 <span style=''>  }
+</span>25 <span style=''>
+</span>26 <span style=''>  /** Add newLevelButton before goBack button */
+</span>27 <span style=''>  </span><span style='background: #F0ADAD'>buttonsContainer.children.add(buttonsContainer.children.size() - 1, newLevelButton)</span><span style=''>
+</span>28 <span style=''>
+</span>29 <span style=''>  override def onLevelPlayClick(levelInfo: LevelInfo, simulation: Boolean, custom: Boolean = false): Unit = </span><span style='background: #F0ADAD'>super.onLevelPlayClick(levelInfo, simulation, custom = true)</span><span style=''>
+</span>30 <span style=''>
+</span>31 <span style=''>  /** Custom levels are always available */
+</span>32 <span style=''>  override lazy val levels: mutable.Buffer[LevelInfo] = listener.getCustomLevels.toBuffer
+</span>33 <span style=''>
+</span>34 <span style=''>  override def loadLevels(): Unit = </span><span style='background: #F0ADAD'>levels foreach (level =&gt; levelsContainer.children.add(new EditorLevelNode(this, level)))</span><span style=''>
+</span>35 <span style=''>
+</span>36 <span style=''>  /** Overridden to manage custom levels */
+</span>37 <span style=''>  override def refreshLevels(): Unit = {
+</span>38 <span style=''>    </span><span style='background: #F0ADAD'>levels.clear()</span><span style=''>
+</span>39 <span style=''>    </span><span style='background: #F0ADAD'>levels.appendAll(listener.getCustomLevels)</span><span style=''>
+</span>40 <span style=''>  }
+</span>41 <span style=''>
+</span>42 <span style=''>  override def onLevelDeleteClick(level: String): Unit = </span><span style='background: #F0ADAD'>listener.onDeleteLevel(level, _ =&gt; parentStage.scene = new EditorLevelSelectionScene(parentStage, listener, previousSceneListener))</span><span style=''>
+</span>43 <span style=''>
+</span>44 <span style=''>}
+</span>45 <span style=''>
+</span>46 <span style=''>/** Trait which gets notified when a LevelSelectionScene event occurs */
+</span>47 <span style=''>trait EditorLevelSelectionSceneListener extends LevelSelectionSceneListener with EditorSceneListener {
+</span>48 <span style=''>
+</span>49 <span style=''>  /** This method retrieves the custom levels that must be shown as node
+</span>50 <span style=''>    *
+</span>51 <span style=''>    * @return a list of custom levels
+</span>52 <span style=''>    */
+</span>53 <span style=''>  def getCustomLevels: List[LevelInfo]
+</span>54 <span style=''>
+</span>55 <span style=''>  /** Called when the user wants to delete a custom level
+</span>56 <span style=''>    *
+</span>57 <span style=''>    * @param level    the level name
+</span>58 <span style=''>    * @param callback the callback
+</span>59 <span style=''>    */
+</span>60 <span style=''>  def onDeleteLevel(level: String, callback: Boolean =&gt; Unit): Unit
+</span>61 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          4429
+        </td>
+        <td>
+          822
+          -
+          825
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.EditorLevelSelectionScene.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          4416
+        </td>
+        <td>
+          865
+          -
+          893
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.delegate.AlignmentDelegate.alignment_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.alignment_=(scalafx.geometry.Pos.BottomCenter)
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          4415
+        </td>
+        <td>
+          877
+          -
+          893
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.geometry.Pos.BottomCenter
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.geometry.Pos.BottomCenter
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          4418
+        </td>
+        <td>
+          898
+          -
+          934
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.alignmentInParent_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.alignmentInParent_=(scalafx.geometry.Pos.BottomCenter)
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          4417
+        </td>
+        <td>
+          918
+          -
+          934
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.geometry.Pos.BottomCenter
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.geometry.Pos.BottomCenter
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          4422
+        </td>
+        <td>
+          1151
+          -
+          1159
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.EditorLevelSelectionScene.listener
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelSelectionScene.this.listener
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          4425
+        </td>
+        <td>
+          1088
+          -
+          1183
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.stage.Stage.scene_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelSelectionScene.this.parentStage.scene_=(new EditorLevelSelectionScene(EditorLevelSelectionScene.this.parentStage, EditorLevelSelectionScene.this.listener, EditorLevelSelectionScene.this.previousSceneListener))
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          4428
+        </td>
+        <td>
+          1007
+          -
+          1184
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.ButtonBase.onAction_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.onAction_=(((x$1: javafx.event.ActionEvent) =&gt; EditorLevelSelectionScene.this.parentStage.scene_=(new EditorScene(EditorLevelSelectionScene.this.parentStage, EditorLevelSelectionScene.this.listener, (() =&gt; EditorLevelSelectionScene.this.parentStage.scene_=(new EditorLevelSelectionScene(EditorLevelSelectionScene.this.parentStage, EditorLevelSelectionScene.this.listener, EditorLevelSelectionScene.this.previousSceneListener)))))))
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          4419
+        </td>
+        <td>
+          1059
+          -
+          1070
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.EditorLevelSelectionScene.parentStage
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelSelectionScene.this.parentStage
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          4421
+        </td>
+        <td>
+          1138
+          -
+          1149
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.EditorLevelSelectionScene.parentStage
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelSelectionScene.this.parentStage
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          4424
+        </td>
+        <td>
+          1108
+          -
+          1183
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.EditorLevelSelectionScene.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new EditorLevelSelectionScene(EditorLevelSelectionScene.this.parentStage, EditorLevelSelectionScene.this.listener, EditorLevelSelectionScene.this.previousSceneListener)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          4427
+        </td>
+        <td>
+          1023
+          -
+          1184
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.stage.Stage.scene_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelSelectionScene.this.parentStage.scene_=(new EditorScene(EditorLevelSelectionScene.this.parentStage, EditorLevelSelectionScene.this.listener, (() =&gt; EditorLevelSelectionScene.this.parentStage.scene_=(new EditorLevelSelectionScene(EditorLevelSelectionScene.this.parentStage, EditorLevelSelectionScene.this.listener, EditorLevelSelectionScene.this.previousSceneListener)))))
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          4426
+        </td>
+        <td>
+          1043
+          -
+          1184
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.EditorScene.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new EditorScene(EditorLevelSelectionScene.this.parentStage, EditorLevelSelectionScene.this.listener, (() =&gt; EditorLevelSelectionScene.this.parentStage.scene_=(new EditorLevelSelectionScene(EditorLevelSelectionScene.this.parentStage, EditorLevelSelectionScene.this.listener, EditorLevelSelectionScene.this.previousSceneListener))))
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          4420
+        </td>
+        <td>
+          1072
+          -
+          1080
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.EditorLevelSelectionScene.listener
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelSelectionScene.this.listener
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          4423
+        </td>
+        <td>
+          1161
+          -
+          1182
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.EditorLevelSelectionScene.previousSceneListener
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelSelectionScene.this.previousSceneListener
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          4431
+        </td>
+        <td>
+          1309
+          -
+          1323
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.EditorLevelSelectionScene.newLevelButton
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelSelectionScene.this.newLevelButton
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          4430
+        </td>
+        <td>
+          1271
+          -
+          1307
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.-
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelSelectionScene.this.buttonsContainer.children.size().-(1)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          4433
+        </td>
+        <td>
+          1241
+          -
+          1324
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.util.List.add
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelSelectionScene.this.buttonsContainer.children.add(EditorLevelSelectionScene.this.buttonsContainer.children.size().-(1), control.this.Button.sfxButton2jfx(EditorLevelSelectionScene.this.newLevelButton))
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          4432
+        </td>
+        <td>
+          1309
+          -
+          1323
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.scene.control.Button.sfxButton2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          control.this.Button.sfxButton2jfx(EditorLevelSelectionScene.this.newLevelButton)
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          4434
+        </td>
+        <td>
+          1434
+          -
+          1494
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.LevelSelectionScene.onLevelPlayClick
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelSelectionScene.super.onLevelPlayClick(levelInfo, simulation, true)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          4437
+        </td>
+        <td>
+          1692
+          -
+          1754
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.util.List.add
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelSelectionScene.this.levelsContainer.children.add(layout.this.VBox.sfxVBox2jfx(new it.unibo.osmos.redux.mvc.view.components.editor.EditorLevelNode(this, level)))
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          4436
+        </td>
+        <td>
+          1721
+          -
+          1753
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.scene.layout.VBox.sfxVBox2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          layout.this.VBox.sfxVBox2jfx(new it.unibo.osmos.redux.mvc.view.components.editor.EditorLevelNode(this, level))
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          4435
+        </td>
+        <td>
+          1721
+          -
+          1753
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.EditorLevelNode.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.components.editor.EditorLevelNode(this, level)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          4438
+        </td>
+        <td>
+          1667
+          -
+          1755
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.IterableLike.foreach
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelSelectionScene.this.levels.foreach[Boolean](((level: it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo) =&gt; EditorLevelSelectionScene.this.levelsContainer.children.add(layout.this.VBox.sfxVBox2jfx(new it.unibo.osmos.redux.mvc.view.components.editor.EditorLevelNode(this, level)))))
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          4439
+        </td>
+        <td>
+          1846
+          -
+          1860
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.mutable.BufferLike.clear
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelSelectionScene.this.levels.clear()
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          4440
+        </td>
+        <td>
+          1882
+          -
+          1906
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.EditorLevelSelectionSceneListener.getCustomLevels
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelSelectionScene.this.listener.getCustomLevels
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          4441
+        </td>
+        <td>
+          1865
+          -
+          1907
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.mutable.BufferLike.appendAll
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelSelectionScene.this.levels.appendAll(EditorLevelSelectionScene.this.listener.getCustomLevels)
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          4443
+        </td>
+        <td>
+          2068
+          -
+          2076
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.EditorLevelSelectionScene.listener
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelSelectionScene.this.listener
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          4446
+        </td>
+        <td>
+          2005
+          -
+          2100
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.stage.Stage.scene_=
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelSelectionScene.this.parentStage.scene_=(new EditorLevelSelectionScene(EditorLevelSelectionScene.this.parentStage, EditorLevelSelectionScene.this.listener, EditorLevelSelectionScene.this.previousSceneListener))
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          4445
+        </td>
+        <td>
+          2025
+          -
+          2100
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.EditorLevelSelectionScene.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new EditorLevelSelectionScene(EditorLevelSelectionScene.this.parentStage, EditorLevelSelectionScene.this.listener, EditorLevelSelectionScene.this.previousSceneListener)
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          4442
+        </td>
+        <td>
+          2055
+          -
+          2066
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.EditorLevelSelectionScene.parentStage
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelSelectionScene.this.parentStage
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          4444
+        </td>
+        <td>
+          2078
+          -
+          2099
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.EditorLevelSelectionScene.previousSceneListener
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelSelectionScene.this.previousSceneListener
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          4447
+        </td>
+        <td>
+          1970
+          -
+          2101
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.EditorLevelSelectionSceneListener.onDeleteLevel
+        </td>
+        <td style="background: #F0ADAD">
+          EditorLevelSelectionScene.this.listener.onDeleteLevel(level, ((x$2: Boolean) =&gt; EditorLevelSelectionScene.this.parentStage.scene_=(new EditorLevelSelectionScene(EditorLevelSelectionScene.this.parentStage, EditorLevelSelectionScene.this.listener, EditorLevelSelectionScene.this.previousSceneListener))))
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

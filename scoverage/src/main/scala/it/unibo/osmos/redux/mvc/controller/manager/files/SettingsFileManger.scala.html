@@ -1,0 +1,607 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/controller/manager/files/SettingsFileManger.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.controller.manager.files
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.mvc.controller.Setting
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.model.JsonProtocols._
+</span>5 <span style=''>import it.unibo.osmos.redux.utils.Constants.UserHomePaths.SettingFilePath
+</span>6 <span style=''>import spray.json.DefaultJsonProtocol._
+</span>7 <span style=''>import spray.json._
+</span>8 <span style=''>
+</span>9 <span style=''>import scala.util.{Failure, Success, Try}
+</span>10 <span style=''>
+</span>11 <span style=''>/** Defines operation on settings file */
+</span>12 <span style=''>object SettingsFileManger extends FileManager {
+</span>13 <span style=''>  override implicit val who: String = </span><span style='background: #AEF1AE'>&quot;SettingsFileManger&quot;</span><span style=''>
+</span>14 <span style=''>
+</span>15 <span style=''>  /** Save setting on file
+</span>16 <span style=''>    *
+</span>17 <span style=''>    * @param settings List[Setting]
+</span>18 <span style=''>    */
+</span>19 <span style=''>  def saveSettings(settings: List[Setting]): Unit = {
+</span>20 <span style=''>    </span><span style='background: #AEF1AE'>createDirectoriesTree(SettingFilePath)</span><span style=''>
+</span>21 <span style=''>    </span><span style='background: #AEF1AE'>saveToFile(SettingFilePath + jsonExtension, settings.toJson.prettyPrint)</span><span style=''>
+</span>22 <span style=''>  }
+</span>23 <span style=''>
+</span>24 <span style=''>  /** Load settings from file
+</span>25 <span style=''>    *
+</span>26 <span style=''>    * @return List[Setting]
+</span>27 <span style=''>    */
+</span>28 <span style=''>  def loadSettings(): List[Setting] = </span><span style='background: #AEF1AE'>loadFile(SettingFilePath + jsonExtension)</span><span style=''> match {
+</span>29 <span style=''>    case Some(settings) =&gt; </span><span style='background: #AEF1AE'>Try(settings.parseJson.convertTo[List[Setting]])</span><span style=''> match {
+</span>30 <span style=''>      case Success(value) =&gt; value
+</span>31 <span style=''>      case Failure(_) =&gt; </span><span style='background: #F0ADAD'>List()</span><span style=''>
+</span>32 <span style=''>    }
+</span>33 <span style=''>    case None =&gt; </span><span style='background: #F0ADAD'>List()</span><span style=''>
+</span>34 <span style=''>  }
+</span>35 <span style=''>
+</span>36 <span style=''>  /** Deletes settings file
+</span>37 <span style=''>    *
+</span>38 <span style=''>    * @return Try[Unit]
+</span>39 <span style=''>    */
+</span>40 <span style=''>  def deleteSettingsFile(): Try[Unit] = </span><span style='background: #AEF1AE'>deleteFile(SettingFilePath + jsonExtension)</span><span style=''>
+</span>41 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          2574
+        </td>
+        <td>
+          470
+          -
+          490
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;SettingsFileManger&quot;
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          2577
+        </td>
+        <td>
+          626
+          -
+          664
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.createDirectoriesTree
+        </td>
+        <td style="background: #AEF1AE">
+          SettingsFileManger.this.createDirectoriesTree(SettingsFileManger.this.stringPathToFile(it.unibo.osmos.redux.utils.Constants.UserHomePaths.SettingFilePath))
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          2576
+        </td>
+        <td>
+          648
+          -
+          663
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.stringPathToFile
+        </td>
+        <td style="background: #AEF1AE">
+          SettingsFileManger.this.stringPathToFile(it.unibo.osmos.redux.utils.Constants.UserHomePaths.SettingFilePath)
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          2575
+        </td>
+        <td>
+          648
+          -
+          663
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.UserHomePaths.SettingFilePath
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Constants.UserHomePaths.SettingFilePath
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          2580
+        </td>
+        <td>
+          680
+          -
+          711
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.stringPathToFile
+        </td>
+        <td style="background: #AEF1AE">
+          SettingsFileManger.this.stringPathToFile(it.unibo.osmos.redux.utils.Constants.UserHomePaths.SettingFilePath.+(SettingsFileManger.this.jsonExtension))
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          2583
+        </td>
+        <td>
+          713
+          -
+          740
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          spray.json.JsValue.prettyPrint
+        </td>
+        <td style="background: #AEF1AE">
+          spray.json.`package`.enrichAny[List[it.unibo.osmos.redux.mvc.controller.Setting]](settings).toJson(spray.json.DefaultJsonProtocol.listFormat[it.unibo.osmos.redux.mvc.controller.Setting](it.unibo.osmos.redux.mvc.model.JsonProtocols.settingFormatter)).prettyPrint
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          2579
+        </td>
+        <td>
+          680
+          -
+          711
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Constants.UserHomePaths.SettingFilePath.+(SettingsFileManger.this.jsonExtension)
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          2582
+        </td>
+        <td>
+          722
+          -
+          722
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          spray.json.CollectionFormats.listFormat
+        </td>
+        <td style="background: #AEF1AE">
+          spray.json.DefaultJsonProtocol.listFormat[it.unibo.osmos.redux.mvc.controller.Setting](it.unibo.osmos.redux.mvc.model.JsonProtocols.settingFormatter)
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          2585
+        </td>
+        <td>
+          679
+          -
+          679
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          2584
+        </td>
+        <td>
+          669
+          -
+          741
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.saveToFile
+        </td>
+        <td style="background: #AEF1AE">
+          SettingsFileManger.this.saveToFile(SettingsFileManger.this.stringPathToFile(it.unibo.osmos.redux.utils.Constants.UserHomePaths.SettingFilePath.+(SettingsFileManger.this.jsonExtension)), spray.json.`package`.enrichAny[List[it.unibo.osmos.redux.mvc.controller.Setting]](settings).toJson(spray.json.DefaultJsonProtocol.listFormat[it.unibo.osmos.redux.mvc.controller.Setting](it.unibo.osmos.redux.mvc.model.JsonProtocols.settingFormatter)).prettyPrint)
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          2578
+        </td>
+        <td>
+          698
+          -
+          711
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.jsonExtension
+        </td>
+        <td style="background: #AEF1AE">
+          SettingsFileManger.this.jsonExtension
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          2581
+        </td>
+        <td>
+          722
+          -
+          722
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.model.JsonProtocols.settingFormatter
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.model.JsonProtocols.settingFormatter
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          2586
+        </td>
+        <td>
+          883
+          -
+          896
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.jsonExtension
+        </td>
+        <td style="background: #AEF1AE">
+          SettingsFileManger.this.jsonExtension
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          2588
+        </td>
+        <td>
+          856
+          -
+          897
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.loadFile
+        </td>
+        <td style="background: #AEF1AE">
+          SettingsFileManger.this.loadFile(it.unibo.osmos.redux.utils.Constants.UserHomePaths.SettingFilePath.+(SettingsFileManger.this.jsonExtension))
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          2587
+        </td>
+        <td>
+          865
+          -
+          896
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Constants.UserHomePaths.SettingFilePath.+(SettingsFileManger.this.jsonExtension)
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          2589
+        </td>
+        <td>
+          965
+          -
+          965
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.model.JsonProtocols.settingFormatter
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.model.JsonProtocols.settingFormatter
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          2592
+        </td>
+        <td>
+          933
+          -
+          981
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.util.Try.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.util.Try.apply[List[it.unibo.osmos.redux.mvc.controller.Setting]](spray.json.`package`.enrichString(settings).parseJson.convertTo[List[it.unibo.osmos.redux.mvc.controller.Setting]](spray.json.DefaultJsonProtocol.listFormat[it.unibo.osmos.redux.mvc.controller.Setting](it.unibo.osmos.redux.mvc.model.JsonProtocols.settingFormatter)))
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          2591
+        </td>
+        <td>
+          937
+          -
+          980
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          spray.json.JsValue.convertTo
+        </td>
+        <td style="background: #AEF1AE">
+          spray.json.`package`.enrichString(settings).parseJson.convertTo[List[it.unibo.osmos.redux.mvc.controller.Setting]](spray.json.DefaultJsonProtocol.listFormat[it.unibo.osmos.redux.mvc.controller.Setting](it.unibo.osmos.redux.mvc.model.JsonProtocols.settingFormatter))
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          2590
+        </td>
+        <td>
+          965
+          -
+          965
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          spray.json.CollectionFormats.listFormat
+        </td>
+        <td style="background: #AEF1AE">
+          spray.json.DefaultJsonProtocol.listFormat[it.unibo.osmos.redux.mvc.controller.Setting](it.unibo.osmos.redux.mvc.model.JsonProtocols.settingFormatter)
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          2593
+        </td>
+        <td>
+          1050
+          -
+          1056
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.Nil
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.immutable.Nil
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          2594
+        </td>
+        <td>
+          1080
+          -
+          1086
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.Nil
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.immutable.Nil
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          2598
+        </td>
+        <td>
+          1197
+          -
+          1240
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.deleteFile
+        </td>
+        <td style="background: #AEF1AE">
+          SettingsFileManger.this.deleteFile(SettingsFileManger.this.stringPathToPath(it.unibo.osmos.redux.utils.Constants.UserHomePaths.SettingFilePath.+(SettingsFileManger.this.jsonExtension)))
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          2595
+        </td>
+        <td>
+          1226
+          -
+          1239
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.jsonExtension
+        </td>
+        <td style="background: #AEF1AE">
+          SettingsFileManger.this.jsonExtension
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          2597
+        </td>
+        <td>
+          1208
+          -
+          1239
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.stringPathToPath
+        </td>
+        <td style="background: #AEF1AE">
+          SettingsFileManger.this.stringPathToPath(it.unibo.osmos.redux.utils.Constants.UserHomePaths.SettingFilePath.+(SettingsFileManger.this.jsonExtension))
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          2596
+        </td>
+        <td>
+          1208
+          -
+          1239
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Constants.UserHomePaths.SettingFilePath.+(SettingsFileManger.this.jsonExtension)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

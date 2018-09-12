@@ -1,0 +1,527 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/main/AppLauncher.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.main
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.mvc.controller._
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.{MultiPlayerLevels, SinglePlayerLevels}
+</span>5 <span style=''>import it.unibo.osmos.redux.mvc.controller.manager.files.{LevelFileManager, SettingsFileManger, UserProgressFileManager}
+</span>6 <span style=''>import it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer
+</span>7 <span style=''>import it.unibo.osmos.redux.mvc.view.View
+</span>8 <span style=''>import scalafx.application.JFXApp
+</span>9 <span style=''>
+</span>10 <span style=''>/** Application entry point */
+</span>11 <span style=''>object AppLauncher extends JFXApp {
+</span>12 <span style=''>  </span><span style='background: #F0ADAD'>SettingsHolder.init(SettingsFileManger.loadSettings())</span><span style=''>
+</span>13 <span style=''>
+</span>14 <span style=''>  </span><span style='background: #F0ADAD'>SinglePlayerLevels.init(LevelFileManager.getLevelsConfigResourcesPath().getOrElse(List())
+</span>15 <span style=''></span><span style='background: #F0ADAD'>    .map(fileName =&gt; LevelFileManager.getResourceLevelInfo(fileName)))</span><span style=''>
+</span>16 <span style=''>  </span><span style='background: #F0ADAD'>MultiPlayerLevels.init(LevelFileManager.getLevelsConfigResourcesPath(true).getOrElse(List())
+</span>17 <span style=''></span><span style='background: #F0ADAD'>    .map(fileName =&gt; LevelFileManager.getResourceLevelInfo(fileName)))</span><span style=''>
+</span>18 <span style=''>
+</span>19 <span style=''>  </span><span style='background: #F0ADAD'>SinglePlayerLevels.updateUserStat(UserProgressFileManager.loadUserProgress())</span><span style=''>
+</span>20 <span style=''>  val controller: Controller = </span><span style='background: #F0ADAD'>new ControllerImpl</span><span style=''>
+</span>21 <span style=''>  </span><span style='background: #F0ADAD'>MusicPlayer.setController(controller)</span><span style=''>
+</span>22 <span style=''>  val view = </span><span style='background: #F0ADAD'>View(this)</span><span style=''>
+</span>23 <span style=''>  </span><span style='background: #F0ADAD'>view.setController(controller)</span><span style=''>
+</span>24 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          1171
+        </td>
+        <td>
+          527
+          -
+          560
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.SettingsFileManger.loadSettings
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.manager.files.SettingsFileManger.loadSettings()
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          1172
+        </td>
+        <td>
+          507
+          -
+          561
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.SettingsHolder.init
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.SettingsHolder.init(it.unibo.osmos.redux.mvc.controller.manager.files.SettingsFileManger.loadSettings())
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          1178
+        </td>
+        <td>
+          565
+          -
+          725
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.init
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.init(it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager.getLevelsConfigResourcesPath(it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager.getLevelsConfigResourcesPath$default$1).getOrElse[List[String]](scala.collection.immutable.Nil).map[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo], List[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]]](((fileName: String) =&gt; it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager.getResourceLevelInfo(fileName)))(immutable.this.List.canBuildFrom[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]]))
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          1174
+        </td>
+        <td>
+          647
+          -
+          653
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.Nil
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.immutable.Nil
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          1173
+        </td>
+        <td>
+          606
+          -
+          606
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager.getLevelsConfigResourcesPath$default$1
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager.getLevelsConfigResourcesPath$default$1
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          1177
+        </td>
+        <td>
+          589
+          -
+          724
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.immutable.List.map
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager.getLevelsConfigResourcesPath(it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager.getLevelsConfigResourcesPath$default$1).getOrElse[List[String]](scala.collection.immutable.Nil).map[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo], List[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]]](((fileName: String) =&gt; it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager.getResourceLevelInfo(fileName)))(immutable.this.List.canBuildFrom[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]])
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          1176
+        </td>
+        <td>
+          663
+          -
+          663
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.immutable.List.canBuildFrom
+        </td>
+        <td style="background: #F0ADAD">
+          immutable.this.List.canBuildFrom[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]]
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          1175
+        </td>
+        <td>
+          676
+          -
+          723
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager.getResourceLevelInfo
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager.getResourceLevelInfo(fileName)
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          1180
+        </td>
+        <td>
+          813
+          -
+          819
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.Nil
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.immutable.Nil
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          1179
+        </td>
+        <td>
+          797
+          -
+          801
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          1184
+        </td>
+        <td>
+          728
+          -
+          891
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.MultiPlayerLevels.init
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.levels.MultiPlayerLevels.init(it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager.getLevelsConfigResourcesPath(true).getOrElse[List[String]](scala.collection.immutable.Nil).map[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo], List[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]]](((fileName: String) =&gt; it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager.getResourceLevelInfo(fileName)))(immutable.this.List.canBuildFrom[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]]))
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          1183
+        </td>
+        <td>
+          751
+          -
+          890
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.immutable.List.map
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager.getLevelsConfigResourcesPath(true).getOrElse[List[String]](scala.collection.immutable.Nil).map[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo], List[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]]](((fileName: String) =&gt; it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager.getResourceLevelInfo(fileName)))(immutable.this.List.canBuildFrom[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]])
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          1182
+        </td>
+        <td>
+          829
+          -
+          829
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.immutable.List.canBuildFrom
+        </td>
+        <td style="background: #F0ADAD">
+          immutable.this.List.canBuildFrom[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]]
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          1181
+        </td>
+        <td>
+          842
+          -
+          889
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager.getResourceLevelInfo
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager.getResourceLevelInfo(fileName)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1186
+        </td>
+        <td>
+          895
+          -
+          972
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.updateUserStat
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.levels.SinglePlayerLevels.updateUserStat(it.unibo.osmos.redux.mvc.controller.manager.files.UserProgressFileManager.loadUserProgress())
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1185
+        </td>
+        <td>
+          929
+          -
+          971
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.UserProgressFileManager.loadUserProgress
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.manager.files.UserProgressFileManager.loadUserProgress()
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          1187
+        </td>
+        <td>
+          1004
+          -
+          1022
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.ControllerImpl.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.controller.ControllerImpl()
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          1189
+        </td>
+        <td>
+          1025
+          -
+          1062
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.setController
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.setController(AppLauncher.this.controller)
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          1188
+        </td>
+        <td>
+          1051
+          -
+          1061
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.main.AppLauncher.controller
+        </td>
+        <td style="background: #F0ADAD">
+          AppLauncher.this.controller
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          1190
+        </td>
+        <td>
+          1076
+          -
+          1086
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.View.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.View.apply(this)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          1192
+        </td>
+        <td>
+          1089
+          -
+          1119
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.View.setController
+        </td>
+        <td style="background: #F0ADAD">
+          AppLauncher.this.view.setController(AppLauncher.this.controller)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          1191
+        </td>
+        <td>
+          1108
+          -
+          1118
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.main.AppLauncher.controller
+        </td>
+        <td style="background: #F0ADAD">
+          AppLauncher.this.controller
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

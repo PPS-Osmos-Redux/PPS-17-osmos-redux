@@ -1,0 +1,291 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/multiplayer/common/ClientsManager.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.multiplayer.common
+</span>2 <span style=''>
+</span>3 <span style=''>import akka.actor.ActorRef
+</span>4 <span style=''>
+</span>5 <span style=''>import scala.collection.concurrent.TrieMap
+</span>6 <span style=''>import scala.util.Random
+</span>7 <span style=''>
+</span>8 <span style=''>trait ClientsManager {
+</span>9 <span style=''>
+</span>10 <span style=''>  protected val clients: TrieMap[String, ActorRef] = </span><span style='background: #F0ADAD'>TrieMap()</span><span style=''>
+</span>11 <span style=''>
+</span>12 <span style=''>  /** Generates the next temp id for a new client.
+</span>13 <span style=''>    *
+</span>14 <span style=''>    * @return The next temp id to add a new client.
+</span>15 <span style=''>    */
+</span>16 <span style=''>  def nextTempID: String
+</span>17 <span style=''>
+</span>18 <span style=''>  /** Adds a new client.
+</span>19 <span style=''>    *
+</span>20 <span style=''>    * @param tempID   The temp id
+</span>21 <span style=''>    * @param actorRef The actor ref
+</span>22 <span style=''>    * @return True, if the operation is s; otherwise false.
+</span>23 <span style=''>    */
+</span>24 <span style=''>  def addClient(tempID: String, actorRef: ActorRef): Boolean
+</span>25 <span style=''>
+</span>26 <span style=''>  /** Gets and remove the specified client.
+</span>27 <span style=''>    *
+</span>28 <span style=''>    * @param tempID The temp id of the client.
+</span>29 <span style=''>    * @return The Actor reference.
+</span>30 <span style=''>    */
+</span>31 <span style=''>  def getClient(tempID: String): Option[ActorRef]
+</span>32 <span style=''>
+</span>33 <span style=''>  /** Clears all clients from the manager. */
+</span>34 <span style=''>  def clearClients(): Unit
+</span>35 <span style=''>}
+</span>36 <span style=''>
+</span>37 <span style=''>object ClientsManager {
+</span>38 <span style=''>
+</span>39 <span style=''>  /** Creates a new clients manager instance.
+</span>40 <span style=''>    *
+</span>41 <span style=''>    * @param seed The random seed used to generate temp ids.
+</span>42 <span style=''>    * @return A new ClientsManager instance.
+</span>43 <span style=''>    */
+</span>44 <span style=''>  def apply(seed: Long = Long.MinValue): ClientsManager = </span><span style='background: #F0ADAD'>ClientsManagerImpl(new Random(seed))</span><span style=''>
+</span>45 <span style=''>
+</span>46 <span style=''>  private case class ClientsManagerImpl(private val random: Random) extends ClientsManager {
+</span>47 <span style=''>
+</span>48 <span style=''>    override def nextTempID: String = </span><span style='background: #F0ADAD'>random.alphanumeric.take(10).mkString</span><span style=''>
+</span>49 <span style=''>
+</span>50 <span style=''>    override def addClient(tempID: String, actorRef: ActorRef): Boolean = </span><span style='background: #F0ADAD'>clients.putIfAbsent(tempID, actorRef).isEmpty</span><span style=''>
+</span>51 <span style=''>
+</span>52 <span style=''>    override def getClient(tempID: String): Option[ActorRef] = {
+</span>53 <span style=''>      val result = </span><span style='background: #F0ADAD'>clients get tempID</span><span style=''>
+</span>54 <span style=''>      </span><span style='background: #F0ADAD'>clients -= tempID</span><span style=''>
+</span>55 <span style=''>      result
+</span>56 <span style=''>    }
+</span>57 <span style=''>
+</span>58 <span style=''>    override def clearClients(): Unit = </span><span style='background: #F0ADAD'>clients.clear()</span><span style=''>
+</span>59 <span style=''>  }
+</span>60 <span style=''>
+</span>61 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          1484
+        </td>
+        <td>
+          223
+          -
+          232
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenMapFactory.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.concurrent.TrieMap.apply[String, akka.actor.ActorRef]()
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          1485
+        </td>
+        <td>
+          1139
+          -
+          1155
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.util.Random.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new scala.util.Random(seed)
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          1486
+        </td>
+        <td>
+          1120
+          -
+          1156
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.common.ClientsManager.ClientsManagerImpl.apply
+        </td>
+        <td style="background: #F0ADAD">
+          ClientsManager.this.ClientsManagerImpl.apply(new scala.util.Random(seed))
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          1488
+        </td>
+        <td>
+          1290
+          -
+          1327
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.Stream.mkString
+        </td>
+        <td style="background: #F0ADAD">
+          ClientsManagerImpl.this.random.alphanumeric.take(10).mkString
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          1487
+        </td>
+        <td>
+          1315
+          -
+          1317
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          10
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          1489
+        </td>
+        <td>
+          1403
+          -
+          1448
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.isEmpty
+        </td>
+        <td style="background: #F0ADAD">
+          ClientsManagerImpl.this.clients.putIfAbsent(tempID, actorRef).isEmpty
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          1490
+        </td>
+        <td>
+          1534
+          -
+          1552
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.concurrent.TrieMap.get
+        </td>
+        <td style="background: #F0ADAD">
+          ClientsManagerImpl.this.clients.get(tempID)
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          1491
+        </td>
+        <td>
+          1559
+          -
+          1576
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.concurrent.TrieMap.-=
+        </td>
+        <td style="background: #F0ADAD">
+          ClientsManagerImpl.this.clients.-=(tempID)
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          1492
+        </td>
+        <td>
+          1637
+          -
+          1652
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.concurrent.TrieMap.clear
+        </td>
+        <td style="background: #F0ADAD">
+          ClientsManagerImpl.this.clients.clear()
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

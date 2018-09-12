@@ -1,0 +1,200 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/multiplayer/lobby/Lobby.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.multiplayer.lobby
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.multiplayer.players.Player
+</span>4 <span style=''>import it.unibo.osmos.redux.utils.Constants
+</span>5 <span style=''>
+</span>6 <span style=''>import scala.collection.mutable
+</span>7 <span style=''>
+</span>8 <span style=''>trait Lobby[T &lt;: Player] {
+</span>9 <span style=''>
+</span>10 <span style=''>  /** The maximum number of players in the lobby. */
+</span>11 <span style=''>  protected val maximumNumberOfPlayers: Int = </span><span style='background: #F0ADAD'>Constants.MultiPlayer.MaximumLobbyPlayersCount</span><span style=''>
+</span>12 <span style=''>  /** The map that holds the players. */
+</span>13 <span style=''>  protected var players: mutable.Map[String, T] = </span><span style='background: #F0ADAD'>mutable.Map()</span><span style=''>
+</span>14 <span style=''>
+</span>15 <span style=''>  /** Adds a new player.
+</span>16 <span style=''>    *
+</span>17 <span style=''>    * @param player The player
+</span>18 <span style=''>    */
+</span>19 <span style=''>  def addPlayer(player: T): Unit
+</span>20 <span style=''>
+</span>21 <span style=''>  /** Adds new players.
+</span>22 <span style=''>    *
+</span>23 <span style=''>    * @param players The list of players
+</span>24 <span style=''>    */
+</span>25 <span style=''>  def addPlayers(players: T*): Unit
+</span>26 <span style=''>
+</span>27 <span style=''>  /** Gets a player.
+</span>28 <span style=''>    *
+</span>29 <span style=''>    * @param username The username of the player to get
+</span>30 <span style=''>    * @return The player if it's found, otherwise none.
+</span>31 <span style=''>    */
+</span>32 <span style=''>  def getPlayer(username: String): Option[T]
+</span>33 <span style=''>
+</span>34 <span style=''>  /** Gets all players.
+</span>35 <span style=''>    *
+</span>36 <span style=''>    * @return The set of all players.
+</span>37 <span style=''>    */
+</span>38 <span style=''>  def getPlayers: Seq[T]
+</span>39 <span style=''>
+</span>40 <span style=''>  /** Removes a player.
+</span>41 <span style=''>    *
+</span>42 <span style=''>    * @param username The username of the player to remove.
+</span>43 <span style=''>    */
+</span>44 <span style=''>  def removePlayer(username: String): Unit
+</span>45 <span style=''>
+</span>46 <span style=''>  /** Defines if the lobby is full or not.
+</span>47 <span style=''>    *
+</span>48 <span style=''>    * @return True if the lobby is full; otherwise false.
+</span>49 <span style=''>    */
+</span>50 <span style=''>  def isFull: Boolean = </span><span style='background: #F0ADAD'>players.size == maximumNumberOfPlayers</span><span style=''>
+</span>51 <span style=''>
+</span>52 <span style=''>  /** Clears this instance. */
+</span>53 <span style=''>  def clear(): Unit = </span><span style='background: #F0ADAD'>players.clear()</span><span style=''>
+</span>54 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          1553
+        </td>
+        <td>
+          308
+          -
+          354
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.MultiPlayer.MaximumLobbyPlayersCount
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Constants.MultiPlayer.MaximumLobbyPlayersCount
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          1554
+        </td>
+        <td>
+          446
+          -
+          459
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenMapFactory.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.mutable.Map.apply[String, T]()
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          1556
+        </td>
+        <td>
+          1251
+          -
+          1289
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.==
+        </td>
+        <td style="background: #F0ADAD">
+          Lobby.this.players.size.==(Lobby.this.maximumNumberOfPlayers)
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          1555
+        </td>
+        <td>
+          1267
+          -
+          1289
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.lobby.Lobby.maximumNumberOfPlayers
+        </td>
+        <td style="background: #F0ADAD">
+          Lobby.this.maximumNumberOfPlayers
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          1557
+        </td>
+        <td>
+          1344
+          -
+          1359
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.mutable.MapLike.clear
+        </td>
+        <td style="background: #F0ADAD">
+          Lobby.this.players.clear()
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

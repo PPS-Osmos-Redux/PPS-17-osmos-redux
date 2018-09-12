@@ -1,0 +1,711 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/utils/MathUtils.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.utils
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.ecs.components.PositionComponent
+</span>4 <span style=''>
+</span>5 <span style=''>/** Utility class that offers math related useful methods */
+</span>6 <span style=''>object MathUtils {
+</span>7 <span style=''>
+</span>8 <span style=''>  /** Returns the normalized value of a number between a min and a max
+</span>9 <span style=''>    *
+</span>10 <span style=''>    * @param number the number
+</span>11 <span style=''>    * @param min    the min number
+</span>12 <span style=''>    * @param max    the max number
+</span>13 <span style=''>    * @return the normalized number between min and max
+</span>14 <span style=''>    */
+</span>15 <span style=''>  def normalize(number: Double, min: Double, max: Double): Double = </span><span style='background: #F0ADAD'>(number - min) / (max - min)</span><span style=''>
+</span>16 <span style=''>
+</span>17 <span style=''>  /** unitVector from point2 to point1
+</span>18 <span style=''>    *
+</span>19 <span style=''>    * @param point1
+</span>20 <span style=''>    * @param point2
+</span>21 <span style=''>    * @return unitVector
+</span>22 <span style=''>    */
+</span>23 <span style=''>  def unitVector(point1: Point, point2: Point): Vector = {
+</span>24 <span style=''>    </span><span style='background: #AEF1AE'>point1 subtract point2 normalized()</span><span style=''>
+</span>25 <span style=''>  }
+</span>26 <span style=''>
+</span>27 <span style=''>  /** Returns the square of Euclidean distance in 2D space
+</span>28 <span style=''>    *
+</span>29 <span style=''>    * @param point1 first point
+</span>30 <span style=''>    * @param point2 second point
+</span>31 <span style=''>    * @return square of Euclidean distance
+</span>32 <span style=''>    */
+</span>33 <span style=''>  def euclideanDistanceSq(point1: Point, point2: Point): Double =
+</span>34 <span style=''>    </span><span style='background: #AEF1AE'>Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2)</span><span style=''>
+</span>35 <span style=''>
+</span>36 <span style=''>  /** Returns the Euclidean distance in 2D space
+</span>37 <span style=''>    *
+</span>38 <span style=''>    * @param position1 first position
+</span>39 <span style=''>    * @param position2 second position
+</span>40 <span style=''>    * @return Euclidean distance
+</span>41 <span style=''>    */
+</span>42 <span style=''>  def euclideanDistance(position1: PositionComponent, position2: PositionComponent): Double =
+</span>43 <span style=''>    </span><span style='background: #AEF1AE'>euclideanDistance(position1.point, position2.point)</span><span style=''>
+</span>44 <span style=''>
+</span>45 <span style=''>  /** Returns the Euclidean distance in 2D space
+</span>46 <span style=''>    *
+</span>47 <span style=''>    * @param point1 first point
+</span>48 <span style=''>    * @param point2 second point
+</span>49 <span style=''>    * @return Euclidean distance
+</span>50 <span style=''>    */
+</span>51 <span style=''>  def euclideanDistance(point1: Point, point2: Point): Double =
+</span>52 <span style=''>    </span><span style='background: #AEF1AE'>Math.sqrt(Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2))</span><span style=''>
+</span>53 <span style=''>
+</span>54 <span style=''>  /** Returns the area of a circle of a given radius
+</span>55 <span style=''>    *
+</span>56 <span style=''>    * @param radius the radius
+</span>57 <span style=''>    * @return area
+</span>58 <span style=''>    */
+</span>59 <span style=''>  def circleArea(radius: Double): Double = </span><span style='background: #AEF1AE'>Math.pow(radius, 2) * Math.PI</span><span style=''>
+</span>60 <span style=''>
+</span>61 <span style=''>  /** Return the radius of a circle of a given area
+</span>62 <span style=''>    *
+</span>63 <span style=''>    * @param area the area
+</span>64 <span style=''>    * @return the radius
+</span>65 <span style=''>    */
+</span>66 <span style=''>  def areaToRadius(area: Double): Double = </span><span style='background: #AEF1AE'>Math.sqrt(area / Math.PI)</span><span style=''>
+</span>67 <span style=''>
+</span>68 <span style=''>  /** Method which limits a value between a minimum and a maximum ones
+</span>69 <span style=''>    *
+</span>70 <span style=''>    * @param value the value
+</span>71 <span style=''>    * @param min   the minimum value
+</span>72 <span style=''>    * @param max   the maximum value
+</span>73 <span style=''>    * @return the clamped value
+</span>74 <span style=''>    */
+</span>75 <span style=''>  def clamp(value: Double, min: Double, max: Double): Double = {
+</span>76 <span style=''>    value match {
+</span>77 <span style=''>      case v if </span><span style='background: #AEF1AE'>v &lt; min</span><span style=''> =&gt; min
+</span>78 <span style=''>      case v if </span><span style='background: #AEF1AE'>v &gt; max</span><span style=''> =&gt; max
+</span>79 <span style=''>      case _ =&gt; value
+</span>80 <span style=''>    }
+</span>81 <span style=''>  }
+</span>82 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          5505
+        </td>
+        <td>
+          488
+          -
+          516
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double./
+        </td>
+        <td style="background: #F0ADAD">
+          number.-(min)./(max.-(min))
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          5504
+        </td>
+        <td>
+          506
+          -
+          515
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #F0ADAD">
+          max.-(min)
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          5506
+        </td>
+        <td>
+          698
+          -
+          733
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.normalized
+        </td>
+        <td style="background: #AEF1AE">
+          point1.subtract(point2).normalized()
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          5511
+        </td>
+        <td>
+          1033
+          -
+          1052
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #AEF1AE">
+          point1.y.-(point2.y)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          5514
+        </td>
+        <td>
+          989
+          -
+          1056
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.+
+        </td>
+        <td style="background: #AEF1AE">
+          java.lang.Math.pow(point1.x.-(point2.x), 2.0).+(java.lang.Math.pow(point1.y.-(point2.y), 2.0))
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          5508
+        </td>
+        <td>
+          998
+          -
+          1017
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #AEF1AE">
+          point1.x.-(point2.x)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          5510
+        </td>
+        <td>
+          1044
+          -
+          1052
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.y
+        </td>
+        <td style="background: #AEF1AE">
+          point2.y
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          5513
+        </td>
+        <td>
+          1024
+          -
+          1056
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Math.pow
+        </td>
+        <td style="background: #AEF1AE">
+          java.lang.Math.pow(point1.y.-(point2.y), 2.0)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          5507
+        </td>
+        <td>
+          1009
+          -
+          1017
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.x
+        </td>
+        <td style="background: #AEF1AE">
+          point2.x
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          5509
+        </td>
+        <td>
+          1019
+          -
+          1020
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          2.0
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          5512
+        </td>
+        <td>
+          1054
+          -
+          1055
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          2.0
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          5517
+        </td>
+        <td>
+          1328
+          -
+          1379
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.MathUtils.euclideanDistance
+        </td>
+        <td style="background: #AEF1AE">
+          MathUtils.this.euclideanDistance(position1.point, position2.point)
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          5516
+        </td>
+        <td>
+          1363
+          -
+          1378
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.point
+        </td>
+        <td style="background: #AEF1AE">
+          position2.point
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          5515
+        </td>
+        <td>
+          1346
+          -
+          1361
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.point
+        </td>
+        <td style="background: #AEF1AE">
+          position1.point
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          5520
+        </td>
+        <td>
+          1649
+          -
+          1650
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          2.0
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          5523
+        </td>
+        <td>
+          1684
+          -
+          1685
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          2.0
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          5526
+        </td>
+        <td>
+          1609
+          -
+          1687
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Math.sqrt
+        </td>
+        <td style="background: #AEF1AE">
+          java.lang.Math.sqrt(java.lang.Math.pow(point1.x.-(point2.x), 2.0).+(java.lang.Math.pow(point1.y.-(point2.y), 2.0)))
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          5525
+        </td>
+        <td>
+          1619
+          -
+          1686
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.+
+        </td>
+        <td style="background: #AEF1AE">
+          java.lang.Math.pow(point1.x.-(point2.x), 2.0).+(java.lang.Math.pow(point1.y.-(point2.y), 2.0))
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          5519
+        </td>
+        <td>
+          1628
+          -
+          1647
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #AEF1AE">
+          point1.x.-(point2.x)
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          5522
+        </td>
+        <td>
+          1663
+          -
+          1682
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #AEF1AE">
+          point1.y.-(point2.y)
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          5524
+        </td>
+        <td>
+          1654
+          -
+          1686
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Math.pow
+        </td>
+        <td style="background: #AEF1AE">
+          java.lang.Math.pow(point1.y.-(point2.y), 2.0)
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          5518
+        </td>
+        <td>
+          1639
+          -
+          1647
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.x
+        </td>
+        <td style="background: #AEF1AE">
+          point2.x
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          5521
+        </td>
+        <td>
+          1674
+          -
+          1682
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.y
+        </td>
+        <td style="background: #AEF1AE">
+          point2.y
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          5527
+        </td>
+        <td>
+          1848
+          -
+          1877
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.*
+        </td>
+        <td style="background: #AEF1AE">
+          java.lang.Math.pow(radius, 2.0).*(3.141592653589793)
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          5529
+        </td>
+        <td>
+          2039
+          -
+          2064
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Math.sqrt
+        </td>
+        <td style="background: #AEF1AE">
+          java.lang.Math.sqrt(area./(3.141592653589793))
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          5528
+        </td>
+        <td>
+          2049
+          -
+          2063
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double./
+        </td>
+        <td style="background: #AEF1AE">
+          area./(3.141592653589793)
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          5530
+        </td>
+        <td>
+          2384
+          -
+          2391
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.&lt;
+        </td>
+        <td style="background: #AEF1AE">
+          v.&lt;(min)
+        </td>
+      </tr><tr>
+        <td>
+          78
+        </td>
+        <td>
+          5531
+        </td>
+        <td>
+          2415
+          -
+          2422
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          v.&gt;(max)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

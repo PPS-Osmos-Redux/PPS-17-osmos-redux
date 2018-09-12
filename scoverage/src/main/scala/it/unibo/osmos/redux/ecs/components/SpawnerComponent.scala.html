@@ -1,0 +1,581 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/ecs/components/SpawnerComponent.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.components
+</span>2 <span style=''>
+</span>3 <span style=''>import scala.collection.mutable
+</span>4 <span style=''>
+</span>5 <span style=''>/** Spawner Component */
+</span>6 <span style=''>trait SpawnerComponent extends Component {
+</span>7 <span style=''>
+</span>8 <span style=''>  /** Stack */
+</span>9 <span style=''>  protected val actionQueue: mutable.Queue[SpawnAction] = </span><span style='background: #AEF1AE'>mutable.Queue()</span><span style=''>
+</span>10 <span style=''>
+</span>11 <span style=''>  /** Getter. Defines whether the spawner can spawn new entities or not.
+</span>12 <span style=''>    *
+</span>13 <span style=''>    * @return True, if the spawner can spawn; otherwise false.
+</span>14 <span style=''>    */
+</span>15 <span style=''>  def canSpawn: Boolean
+</span>16 <span style=''>
+</span>17 <span style=''>  /** Setter. Defines whether the spawner can spawn new entities or not.
+</span>18 <span style=''>    *
+</span>19 <span style=''>    * @param value True, if the spawner can spawn; otherwise false.
+</span>20 <span style=''>    */
+</span>21 <span style=''>  def canSpawn_(value: Boolean): Unit
+</span>22 <span style=''>
+</span>23 <span style=''>  /** Enqueue one or more spawn action.
+</span>24 <span style=''>    *
+</span>25 <span style=''>    * @param actions The spawn actions.
+</span>26 <span style=''>    */
+</span>27 <span style=''>  def enqueueActions(actions: SpawnAction*): Unit
+</span>28 <span style=''>
+</span>29 <span style=''>  /** Gets a spawn action to perform.
+</span>30 <span style=''>    *
+</span>31 <span style=''>    * @return The spawn action.
+</span>32 <span style=''>    */
+</span>33 <span style=''>  def dequeueAction(): Option[SpawnAction]
+</span>34 <span style=''>
+</span>35 <span style=''>  /** Gets all spawn actions to perform.
+</span>36 <span style=''>    *
+</span>37 <span style=''>    * @return The spawn actions list.
+</span>38 <span style=''>    */
+</span>39 <span style=''>  def dequeueActions(): List[SpawnAction]
+</span>40 <span style=''>
+</span>41 <span style=''>  /** Clears all queued spawn actions.
+</span>42 <span style=''>    */
+</span>43 <span style=''>  def clearActions(): Unit
+</span>44 <span style=''>
+</span>45 <span style=''>  /** Copy this instance.
+</span>46 <span style=''>    *
+</span>47 <span style=''>    * @return A new spawner component.
+</span>48 <span style=''>    */
+</span>49 <span style=''>  def copy(): SpawnerComponent
+</span>50 <span style=''>}
+</span>51 <span style=''>
+</span>52 <span style=''>object SpawnerComponent {
+</span>53 <span style=''>  def apply(canSpawn: Boolean): SpawnerComponent = </span><span style='background: #AEF1AE'>SpawnerComponentImpl(canSpawn)</span><span style=''>
+</span>54 <span style=''>
+</span>55 <span style=''>  private case class SpawnerComponentImpl(var _canSpawn: Boolean) extends SpawnerComponent {
+</span>56 <span style=''>
+</span>57 <span style=''>    override def canSpawn_(canSpawn: Boolean): Unit = </span><span style='background: #AEF1AE'>_canSpawn = canSpawn</span><span style=''>
+</span>58 <span style=''>
+</span>59 <span style=''>    override def dequeueAction(): Option[SpawnAction] = if (</span><span style='background: #F0ADAD'>actionQueue.nonEmpty</span><span style=''>) </span><span style='background: #F0ADAD'>Some(actionQueue.dequeue())</span><span style=''> else </span><span style='background: #F0ADAD'>None</span><span style=''>
+</span>60 <span style=''>
+</span>61 <span style=''>    override def dequeueActions(): List[SpawnAction] = </span><span style='background: #AEF1AE'>actionQueue.dequeueAll(_ =&gt; true).toList</span><span style=''>
+</span>62 <span style=''>
+</span>63 <span style=''>    override def clearActions(): Unit = </span><span style='background: #AEF1AE'>actionQueue.clear()</span><span style=''>
+</span>64 <span style=''>
+</span>65 <span style=''>    override def copy(): SpawnerComponent = {
+</span>66 <span style=''>      val copy = </span><span style='background: #F0ADAD'>SpawnerComponentImpl(canSpawn)</span><span style=''>
+</span>67 <span style=''>      </span><span style='background: #F0ADAD'>this.actionQueue.foreach(a =&gt; {
+</span>68 <span style=''></span><span style='background: #F0ADAD'>        copy.enqueueActions(SpawnAction(a.position.copy(), a.dimension.copy(), a.speed.copy()))
+</span>69 <span style=''></span><span style='background: #F0ADAD'>      })</span><span style=''>
+</span>70 <span style=''>      copy
+</span>71 <span style=''>    }
+</span>72 <span style=''>
+</span>73 <span style=''>    override def canSpawn: Boolean = </span><span style='background: #AEF1AE'>_canSpawn</span><span style=''>
+</span>74 <span style=''>
+</span>75 <span style=''>    override def enqueueActions(actions: SpawnAction*): Unit = </span><span style='background: #AEF1AE'>actionQueue.enqueue(actions: _*)</span><span style=''>
+</span>76 <span style=''>  }
+</span>77 <span style=''>
+</span>78 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          35
+        </td>
+        <td>
+          220
+          -
+          235
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.collection.mutable.Queue.apply[it.unibo.osmos.redux.ecs.components.SpawnAction]()
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          36
+        </td>
+        <td>
+          1273
+          -
+          1303
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpawnerComponent.SpawnerComponentImpl.apply
+        </td>
+        <td style="background: #AEF1AE">
+          SpawnerComponent.this.SpawnerComponentImpl.apply(canSpawn)
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          37
+        </td>
+        <td>
+          1453
+          -
+          1473
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpawnerComponent.SpawnerComponentImpl._canSpawn_=
+        </td>
+        <td style="background: #AEF1AE">
+          SpawnerComponentImpl.this._canSpawn_=(canSpawn)
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          41
+        </td>
+        <td>
+          1557
+          -
+          1584
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Some.apply[it.unibo.osmos.redux.ecs.components.SpawnAction](SpawnerComponentImpl.this.actionQueue.dequeue())
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          38
+        </td>
+        <td>
+          1535
+          -
+          1555
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.TraversableOnce.nonEmpty
+        </td>
+        <td style="background: #F0ADAD">
+          SpawnerComponentImpl.this.actionQueue.nonEmpty
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          40
+        </td>
+        <td>
+          1557
+          -
+          1584
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Some.apply[it.unibo.osmos.redux.ecs.components.SpawnAction](SpawnerComponentImpl.this.actionQueue.dequeue())
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          43
+        </td>
+        <td>
+          1590
+          -
+          1594
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #F0ADAD">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          39
+        </td>
+        <td>
+          1562
+          -
+          1583
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.mutable.Queue.dequeue
+        </td>
+        <td style="background: #F0ADAD">
+          SpawnerComponentImpl.this.actionQueue.dequeue()
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          42
+        </td>
+        <td>
+          1590
+          -
+          1594
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #F0ADAD">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          44
+        </td>
+        <td>
+          1679
+          -
+          1683
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          45
+        </td>
+        <td>
+          1651
+          -
+          1691
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.TraversableOnce.toList
+        </td>
+        <td style="background: #AEF1AE">
+          SpawnerComponentImpl.this.actionQueue.dequeueAll(((x$1: it.unibo.osmos.redux.ecs.components.SpawnAction) =&gt; true)).toList
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          46
+        </td>
+        <td>
+          1733
+          -
+          1752
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.mutable.MutableList.clear
+        </td>
+        <td style="background: #AEF1AE">
+          SpawnerComponentImpl.this.actionQueue.clear()
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          47
+        </td>
+        <td>
+          1838
+          -
+          1846
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpawnerComponent.SpawnerComponentImpl.canSpawn
+        </td>
+        <td style="background: #F0ADAD">
+          SpawnerComponentImpl.this.canSpawn
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          48
+        </td>
+        <td>
+          1817
+          -
+          1847
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpawnerComponent.SpawnerComponentImpl.apply
+        </td>
+        <td style="background: #F0ADAD">
+          SpawnerComponent.this.SpawnerComponentImpl.apply(SpawnerComponentImpl.this.canSpawn)
+        </td>
+      </tr><tr>
+        <td>
+          67
+        </td>
+        <td>
+          54
+        </td>
+        <td>
+          1854
+          -
+          1990
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.LinearSeqOptimized.foreach
+        </td>
+        <td style="background: #F0ADAD">
+          this.actionQueue.foreach[Unit](((a: it.unibo.osmos.redux.ecs.components.SpawnAction) =&gt; copy.enqueueActions(SpawnAction.apply(a.position.copy(), a.dimension.copy(), a.speed.copy()))))
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          50
+        </td>
+        <td>
+          1945
+          -
+          1963
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.copy
+        </td>
+        <td style="background: #F0ADAD">
+          a.dimension.copy()
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          53
+        </td>
+        <td>
+          1894
+          -
+          1981
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpawnerComponent.SpawnerComponentImpl.enqueueActions
+        </td>
+        <td style="background: #F0ADAD">
+          copy.enqueueActions(SpawnAction.apply(a.position.copy(), a.dimension.copy(), a.speed.copy()))
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          49
+        </td>
+        <td>
+          1926
+          -
+          1943
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.copy
+        </td>
+        <td style="background: #F0ADAD">
+          a.position.copy()
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          52
+        </td>
+        <td>
+          1914
+          -
+          1980
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpawnAction.apply
+        </td>
+        <td style="background: #F0ADAD">
+          SpawnAction.apply(a.position.copy(), a.dimension.copy(), a.speed.copy())
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          51
+        </td>
+        <td>
+          1965
+          -
+          1979
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpeedComponent.copy
+        </td>
+        <td style="background: #F0ADAD">
+          a.speed.copy()
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          55
+        </td>
+        <td>
+          2046
+          -
+          2055
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpawnerComponent.SpawnerComponentImpl._canSpawn
+        </td>
+        <td style="background: #AEF1AE">
+          SpawnerComponentImpl.this._canSpawn
+        </td>
+      </tr><tr>
+        <td>
+          75
+        </td>
+        <td>
+          56
+        </td>
+        <td>
+          2120
+          -
+          2152
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.mutable.Queue.enqueue
+        </td>
+        <td style="background: #AEF1AE">
+          SpawnerComponentImpl.this.actionQueue.enqueue((actions: _*))
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

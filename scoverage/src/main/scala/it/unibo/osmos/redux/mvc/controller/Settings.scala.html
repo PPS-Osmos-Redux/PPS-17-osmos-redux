@@ -1,0 +1,741 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/controller/Settings.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.controller
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.mvc.controller.manager.files.SettingsFileManger
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer
+</span>5 <span style=''>import it.unibo.osmos.redux.utils.Logger
+</span>6 <span style=''>
+</span>7 <span style=''>/** Manages settings */
+</span>8 <span style=''>object SettingsHolder extends SettingsEventObserver {
+</span>9 <span style=''>  implicit val who: String = </span><span style='background: #F0ADAD'>&quot;Settings&quot;</span><span style=''>
+</span>10 <span style=''>
+</span>11 <span style=''>  var settings: List[Setting] = </span><span style='background: #F0ADAD'>List()</span><span style=''>
+</span>12 <span style=''>
+</span>13 <span style=''>  /** Initialize settings list
+</span>14 <span style=''>    *
+</span>15 <span style=''>    * @param loadedSettings List[Setting]
+</span>16 <span style=''>    */
+</span>17 <span style=''>  def init(loadedSettings: List[Setting]): Unit = </span><span style='background: #F0ADAD'>loadedSettings.foreach(setting =&gt; sendSettingToDestination(setting))</span><span style=''>
+</span>18 <span style=''>
+</span>19 <span style=''>  private def sendSettingToDestination(setting: Setting): Unit = setting match {
+</span>20 <span style=''>    case vol: Volume =&gt; </span><span style='background: #F0ADAD'>MusicPlayer.changeVolume(vol.value)</span><span style=''>
+</span>21 <span style=''>    case _ =&gt; </span><span style='background: #F0ADAD'>Logger.log(&quot;Error setting not managed &quot; + setting)</span><span style=''>
+</span>22 <span style=''>  }
+</span>23 <span style=''>
+</span>24 <span style=''>  override def notify(settingsEvent: SettingsEvent): Unit = settingsEvent match {
+</span>25 <span style=''>    case mpEvent: MusicPlayerEvent =&gt;
+</span>26 <span style=''>      </span><span style='background: #F0ADAD'>createOrUpdateSetting(mpEvent.volume, mpEvent.volume.settingType)</span><span style=''>
+</span>27 <span style=''>    case _ =&gt; </span><span style='background: #F0ADAD'>Logger.log(&quot;Error settings event not managed &quot; + settingsEvent)</span><span style=''>
+</span>28 <span style=''>  }
+</span>29 <span style=''>
+</span>30 <span style=''>  private def createOrUpdateSetting(setting: Setting, settingType: SettingsTypes.Value): Unit =
+</span>31 <span style=''>    if (</span><span style='background: #F0ADAD'>settings.map(_.settingType).contains(settingType)</span><span style=''>) {
+</span>32 <span style=''>      </span><span style='background: #F0ADAD'>settings = settings.updated(indexOf(settingType), setting)</span><span style=''>
+</span>33 <span style=''>    } else {
+</span>34 <span style=''>      </span><span style='background: #F0ADAD'>settings = setting :: settings</span><span style=''>
+</span>35 <span style=''>    }
+</span>36 <span style=''>
+</span>37 <span style=''>  private def indexOf(settingType: SettingsTypes.Value): Int = </span><span style='background: #F0ADAD'>settings.map(st =&gt; st.settingType).indexOf(settingType)</span><span style=''>
+</span>38 <span style=''>
+</span>39 <span style=''>  /** saves settings */
+</span>40 <span style=''>  def saveSettings(): Unit = </span><span style='background: #F0ADAD'>SettingsFileManger.saveSettings(settings)</span><span style=''>
+</span>41 <span style=''>}
+</span>42 <span style=''>
+</span>43 <span style=''>
+</span>44 <span style=''>/** Trait extended by settings events */
+</span>45 <span style=''>sealed trait SettingsEvent
+</span>46 <span style=''>
+</span>47 <span style=''>/** Music player event
+</span>48 <span style=''>  *
+</span>49 <span style=''>  * @param volume Double
+</span>50 <span style=''>  */
+</span>51 <span style=''>case class MusicPlayerEvent(volume: Volume) extends SettingsEvent
+</span>52 <span style=''>
+</span>53 <span style=''>/** Trait extends by a settings event generator */
+</span>54 <span style=''>trait Observable {
+</span>55 <span style=''>  def subscribe(observer: SettingsEventObserver)
+</span>56 <span style=''>}
+</span>57 <span style=''>
+</span>58 <span style=''>/** Trait extended by settings event handler */
+</span>59 <span style=''>trait SettingsEventObserver {
+</span>60 <span style=''>  /** Setting event
+</span>61 <span style=''>    *
+</span>62 <span style=''>    * @param settingsEvent SettingsEvent
+</span>63 <span style=''>    */
+</span>64 <span style=''>  def notify(settingsEvent: SettingsEvent)
+</span>65 <span style=''>}
+</span>66 <span style=''>
+</span>67 <span style=''>/** Defines settings types */
+</span>68 <span style=''>object SettingsTypes extends Enumeration {
+</span>69 <span style=''>  val Volume: SettingsTypes.Value = </span><span style='background: #AEF1AE'>Value</span><span style=''>
+</span>70 <span style=''>}
+</span>71 <span style=''>
+</span>72 <span style=''>
+</span>73 <span style=''>/** Trait extended by setting */
+</span>74 <span style=''>sealed trait Setting {
+</span>75 <span style=''>  /* Setting type */
+</span>76 <span style=''>  val settingType: SettingsTypes.Value
+</span>77 <span style=''>}
+</span>78 <span style=''>
+</span>79 <span style=''>/** Defines volume setting
+</span>80 <span style=''>  *
+</span>81 <span style=''>  * @param value volume value
+</span>82 <span style=''>  */
+</span>83 <span style=''>case class Volume(var value: Double) extends Setting {
+</span>84 <span style=''>  override val settingType: SettingsTypes.Value = </span><span style='background: #AEF1AE'>SettingsTypes.Volume</span><span style=''>
+</span>85 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          2211
+        </td>
+        <td>
+          340
+          -
+          350
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;Settings&quot;
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          2212
+        </td>
+        <td>
+          384
+          -
+          390
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.Nil
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.immutable.Nil
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          2214
+        </td>
+        <td>
+          528
+          -
+          596
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.foreach
+        </td>
+        <td style="background: #F0ADAD">
+          loadedSettings.foreach[Unit](((setting: it.unibo.osmos.redux.mvc.controller.Setting) =&gt; SettingsHolder.this.sendSettingToDestination(setting)))
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          2213
+        </td>
+        <td>
+          562
+          -
+          595
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.SettingsHolder.sendSettingToDestination
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsHolder.this.sendSettingToDestination(setting)
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          2215
+        </td>
+        <td>
+          728
+          -
+          737
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.Volume.value
+        </td>
+        <td style="background: #F0ADAD">
+          vol.value
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          2216
+        </td>
+        <td>
+          703
+          -
+          738
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.changeVolume
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.MusicPlayer.changeVolume(vol.value)
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          2218
+        </td>
+        <td>
+          763
+          -
+          763
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.SettingsHolder.who
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsHolder.this.who
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          2217
+        </td>
+        <td>
+          764
+          -
+          802
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;Error setting not managed &quot;.+(setting)
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          2219
+        </td>
+        <td>
+          753
+          -
+          803
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Logger.log
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Logger.log(&quot;Error setting not managed &quot;.+(setting))(SettingsHolder.this.who)
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          2221
+        </td>
+        <td>
+          973
+          -
+          999
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.Volume.settingType
+        </td>
+        <td style="background: #F0ADAD">
+          mpEvent.volume.settingType
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          2220
+        </td>
+        <td>
+          957
+          -
+          971
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.MusicPlayerEvent.volume
+        </td>
+        <td style="background: #F0ADAD">
+          mpEvent.volume
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          2222
+        </td>
+        <td>
+          935
+          -
+          1000
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.SettingsHolder.createOrUpdateSetting
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsHolder.this.createOrUpdateSetting(mpEvent.volume, mpEvent.volume.settingType)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          2224
+        </td>
+        <td>
+          1025
+          -
+          1025
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.SettingsHolder.who
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsHolder.this.who
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          2223
+        </td>
+        <td>
+          1026
+          -
+          1077
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;Error settings event not managed &quot;.+(settingsEvent)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          2225
+        </td>
+        <td>
+          1015
+          -
+          1078
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Logger.log
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Logger.log(&quot;Error settings event not managed &quot;.+(settingsEvent))(SettingsHolder.this.who)
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          2226
+        </td>
+        <td>
+          1188
+          -
+          1237
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.LinearSeqOptimized.contains
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsHolder.this.settings.map[it.unibo.osmos.redux.mvc.controller.SettingsTypes.Value, List[it.unibo.osmos.redux.mvc.controller.SettingsTypes.Value]](((x$1: it.unibo.osmos.redux.mvc.controller.Setting) =&gt; x$1.settingType))(immutable.this.List.canBuildFrom[it.unibo.osmos.redux.mvc.controller.SettingsTypes.Value]).contains[it.unibo.osmos.redux.mvc.controller.SettingsTypes.Value](settingType)
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          2227
+        </td>
+        <td>
+          1275
+          -
+          1295
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.SettingsHolder.indexOf
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsHolder.this.indexOf(settingType)
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          2230
+        </td>
+        <td>
+          1247
+          -
+          1305
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.SettingsHolder.settings_=
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsHolder.this.settings_=(SettingsHolder.this.settings.updated[it.unibo.osmos.redux.mvc.controller.Setting, List[it.unibo.osmos.redux.mvc.controller.Setting]](SettingsHolder.this.indexOf(settingType), setting)(immutable.this.List.canBuildFrom[it.unibo.osmos.redux.mvc.controller.Setting]))
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          2229
+        </td>
+        <td>
+          1258
+          -
+          1305
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.SeqLike.updated
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsHolder.this.settings.updated[it.unibo.osmos.redux.mvc.controller.Setting, List[it.unibo.osmos.redux.mvc.controller.Setting]](SettingsHolder.this.indexOf(settingType), setting)(immutable.this.List.canBuildFrom[it.unibo.osmos.redux.mvc.controller.Setting])
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          2228
+        </td>
+        <td>
+          1274
+          -
+          1274
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.immutable.List.canBuildFrom
+        </td>
+        <td style="background: #F0ADAD">
+          immutable.this.List.canBuildFrom[it.unibo.osmos.redux.mvc.controller.Setting]
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          2231
+        </td>
+        <td>
+          1247
+          -
+          1305
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.SettingsHolder.settings_=
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsHolder.this.settings_=(SettingsHolder.this.settings.updated[it.unibo.osmos.redux.mvc.controller.Setting, List[it.unibo.osmos.redux.mvc.controller.Setting]](SettingsHolder.this.indexOf(settingType), setting)(immutable.this.List.canBuildFrom[it.unibo.osmos.redux.mvc.controller.Setting]))
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          2233
+        </td>
+        <td>
+          1325
+          -
+          1355
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.SettingsHolder.settings_=
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsHolder.this.settings_=({
+  &lt;synthetic&gt; &lt;artifact&gt; val x$2: it.unibo.osmos.redux.mvc.controller.Setting = setting;
+  SettingsHolder.this.settings.::[it.unibo.osmos.redux.mvc.controller.Setting](x$2)
+})
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          2232
+        </td>
+        <td>
+          1344
+          -
+          1355
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.::
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsHolder.this.settings.::[it.unibo.osmos.redux.mvc.controller.Setting](x$2)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          2234
+        </td>
+        <td>
+          1325
+          -
+          1355
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.SettingsHolder.settings_=
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsHolder.this.settings_=({
+  &lt;synthetic&gt; &lt;artifact&gt; val x$2: it.unibo.osmos.redux.mvc.controller.Setting = setting;
+  SettingsHolder.this.settings.::[it.unibo.osmos.redux.mvc.controller.Setting](x$2)
+})
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          2235
+        </td>
+        <td>
+          1426
+          -
+          1481
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.GenSeqLike.indexOf
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsHolder.this.settings.map[it.unibo.osmos.redux.mvc.controller.SettingsTypes.Value, List[it.unibo.osmos.redux.mvc.controller.SettingsTypes.Value]](((st: it.unibo.osmos.redux.mvc.controller.Setting) =&gt; st.settingType))(immutable.this.List.canBuildFrom[it.unibo.osmos.redux.mvc.controller.SettingsTypes.Value]).indexOf[it.unibo.osmos.redux.mvc.controller.SettingsTypes.Value](settingType)
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          2236
+        </td>
+        <td>
+          1568
+          -
+          1576
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.SettingsHolder.settings
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsHolder.this.settings
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          2237
+        </td>
+        <td>
+          1536
+          -
+          1577
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.SettingsFileManger.saveSettings
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.manager.files.SettingsFileManger.saveSettings(SettingsHolder.this.settings)
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          2238
+        </td>
+        <td>
+          2204
+          -
+          2209
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Enumeration.Value
+        </td>
+        <td style="background: #AEF1AE">
+          SettingsTypes.this.Value
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          2239
+        </td>
+        <td>
+          2504
+          -
+          2524
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.SettingsTypes.Volume
+        </td>
+        <td style="background: #AEF1AE">
+          SettingsTypes.Volume
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

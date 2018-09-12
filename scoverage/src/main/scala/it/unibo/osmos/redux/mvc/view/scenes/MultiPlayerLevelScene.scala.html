@@ -1,0 +1,332 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/scenes/MultiPlayerLevelScene.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.scenes
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.view.components.level.LevelScreen
+</span>5 <span style=''>import it.unibo.osmos.redux.mvc.view.context.{LevelContext, MultiPlayerLevelContext, MultiPlayerLevelContextListener}
+</span>6 <span style=''>import scalafx.animation.FadeTransition
+</span>7 <span style=''>import scalafx.scene.paint.Color
+</span>8 <span style=''>import scalafx.stage.Stage
+</span>9 <span style=''>import scalafx.util.Duration
+</span>10 <span style=''>
+</span>11 <span style=''>/** This scene holds and manages a single level played in multiplayer mode
+</span>12 <span style=''>  *
+</span>13 <span style=''>  * @param parentStage       the parent stage
+</span>14 <span style=''>  * @param levelInfo         the level info
+</span>15 <span style=''>  * @param listener          the listener
+</span>16 <span style=''>  * @param backClickListener the back click listener
+</span>17 <span style=''>  */
+</span>18 <span style=''>class MultiPlayerLevelScene(override val parentStage: Stage, override val levelInfo: LevelInfo, override val listener: LevelSceneListener, override val backClickListener: BackClickListener)
+</span>19 <span style=''>  extends LevelScene(parentStage, levelInfo, listener, backClickListener) with MultiPlayerLevelContextListener {
+</span>20 <span style=''>
+</span>21 <span style=''>  /** The level context, created with the MultiPlayerLevelScene. It must be a MultiPlayerLevelContext */
+</span>22 <span style=''>  override def levelContext: Option[_ &lt;: LevelContext] = </span><span style='background: #F0ADAD'>_levelContext</span><span style=''>
+</span>23 <span style=''>
+</span>24 <span style=''>  override def levelContext_=(levelContext: LevelContext): Unit = levelContext match {
+</span>25 <span style=''>    case mplc: MultiPlayerLevelContext =&gt; </span><span style='background: #F0ADAD'>_levelContext = Option(mplc)</span><span style=''>
+</span>26 <span style=''>    case _ =&gt; </span><span style='background: #F0ADAD'>throw new IllegalArgumentException(&quot;MultiPLayerLevelScene must use a MultiPlayerLevelContext&quot;)</span><span style=''>
+</span>27 <span style=''>  }
+</span>28 <span style=''>
+</span>29 <span style=''>  </span><span style='background: #F0ADAD'>onKeyPressed = _ =&gt; {}</span><span style=''>
+</span>30 <span style=''>
+</span>31 <span style=''>  /** Called when we lost as a server */
+</span>32 <span style=''>  override def onLevelLostAsServer(): Unit = {
+</span>33 <span style=''>    </span><span style='background: #F0ADAD'>LevelState.inputEnabled = false</span><span style=''>
+</span>34 <span style=''>
+</span>35 <span style=''>    /** Creating an end screen with a button */
+</span>36 <span style=''>    val endScreenAsServer = </span><span style='background: #F0ADAD'>LevelScreen.Builder(this)
+</span>37 <span style=''></span><span style='background: #F0ADAD'>      .withText(&quot;You lost, but other players are still playing. Please wait...&quot;, 50, Color.White)
+</span>38 <span style=''></span><span style='background: #F0ADAD'>      .build()</span><span style=''>
+</span>39 <span style=''>    </span><span style='background: #F0ADAD'>endScreenAsServer.opacity = 0.0</span><span style=''>
+</span>40 <span style=''>
+</span>41 <span style=''>    /** Fade in/fade out transition */
+</span>42 <span style=''>    </span><span style='background: #F0ADAD'>new FadeTransition(Duration.apply(3000), canvas) {
+</span>43 <span style=''></span><span style='background: #F0ADAD'>      fromValue = 1.0
+</span>44 <span style=''></span><span style='background: #F0ADAD'>      toValue = 0.0
+</span>45 <span style=''></span><span style='background: #F0ADAD'>      onFinished = _ =&gt; {
+</span>46 <span style=''></span><span style='background: #F0ADAD'>        /** Remove all the contents and add the end screen */
+</span>47 <span style=''></span><span style='background: #F0ADAD'>        content.clear()
+</span>48 <span style=''></span><span style='background: #F0ADAD'>        content.add(endScreenAsServer)
+</span>49 <span style=''></span><span style='background: #F0ADAD'>        new FadeTransition(Duration.apply(3000), endScreenAsServer) {
+</span>50 <span style=''></span><span style='background: #F0ADAD'>          fromValue = 0.0
+</span>51 <span style=''></span><span style='background: #F0ADAD'>          toValue = 1.0
+</span>52 <span style=''></span><span style='background: #F0ADAD'>        }.play()
+</span>53 <span style=''></span><span style='background: #F0ADAD'>      }
+</span>54 <span style=''></span><span style='background: #F0ADAD'>    }.play()</span><span style=''>
+</span>55 <span style=''>  }
+</span>56 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          5012
+        </td>
+        <td>
+          1165
+          -
+          1178
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.LevelScene._levelContext
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerLevelScene.this._levelContext
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          5014
+        </td>
+        <td>
+          1309
+          -
+          1337
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.LevelScene._levelContext_=
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerLevelScene.this._levelContext_=(scala.Option.apply[it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContext](mplc))
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          5013
+        </td>
+        <td>
+          1325
+          -
+          1337
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Option.apply[it.unibo.osmos.redux.mvc.view.context.MultiPlayerLevelContext](mplc)
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          5015
+        </td>
+        <td>
+          1352
+          -
+          1446
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.IllegalArgumentException(&quot;MultiPLayerLevelScene must use a MultiPlayerLevelContext&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          5017
+        </td>
+        <td>
+          1454
+          -
+          1476
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Scene.onKeyPressed_=
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerLevelScene.this.onKeyPressed_=(((x$1: javafx.scene.input.KeyEvent) =&gt; ()))
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          5016
+        </td>
+        <td>
+          1474
+          -
+          1476
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          5018
+        </td>
+        <td>
+          1570
+          -
+          1601
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.LevelScene.LevelState.inputEnabled_=
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerLevelScene.this.LevelState.inputEnabled_=(false)
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          5019
+        </td>
+        <td>
+          1679
+          -
+          1817
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.level.LevelScreen.Builder.build
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.components.level.LevelScreen.Builder.apply(this).withText(&quot;You lost, but other players are still playing. Please wait...&quot;, 50.0, scalafx.scene.paint.Color.White).build()
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          5020
+        </td>
+        <td>
+          1822
+          -
+          1853
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.opacity_=
+        </td>
+        <td style="background: #F0ADAD">
+          endScreenAsServer.opacity_=(0.0)
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          5021
+        </td>
+        <td>
+          1898
+          -
+          2299
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.animation.Animation.play
+        </td>
+        <td style="background: #F0ADAD">
+          {
+  final class $anon extends scalafx.animation.FadeTransition {
+    def &lt;init&gt;(): &lt;$anon: scalafx.animation.FadeTransition&gt; = {
+      $anon.super.&lt;init&gt;(scalafx.util.Duration.apply(3000.0), MultiPlayerLevelScene.this.canvas);
+      ()
+    };
+    $anon.this.fromValue_=(1.0);
+    $anon.this.toValue_=(0.0);
+    $anon.this.onFinished_=(((x$2: javafx.event.ActionEvent) =&gt; {
+      MultiPlayerLevelScene.this.content.clear();
+      MultiPlayerLevelScene.this.content.add(layout.this.VBox.sfxVBox2jfx(endScreenAsServer));
+      {
+  final class $anon extends scalafx.animation.FadeTransition {
+    def &lt;init&gt;(): &lt;$anon: scalafx.animation.FadeTransition&gt; = {
+      $anon.super.&lt;init&gt;(scalafx.util.Duration.apply(3000.0), endScreenAsServer);
+      ()
+    };
+    $anon.this.fromValue_=(0.0);
+    $anon.this.toValue_=(1.0)
+  };
+  new $anon()
+}.play()
+    }))
+  };
+  new $anon()
+}.play()
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

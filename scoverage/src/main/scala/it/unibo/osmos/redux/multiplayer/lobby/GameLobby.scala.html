@@ -1,0 +1,488 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/multiplayer/lobby/GameLobby.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.multiplayer.lobby
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.multiplayer.players.Player
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
+</span>5 <span style=''>import it.unibo.osmos.redux.mvc.view.context.LobbyContext
+</span>6 <span style=''>
+</span>7 <span style=''>case class GameLobby[T &lt;: Player](private val lobbyContext: LobbyContext) extends AbstractLobby[T](lobbyContext) {
+</span>8 <span style=''>
+</span>9 <span style=''>  override def addPlayers(players: T*): Unit = </span><span style='background: #F0ADAD'>players foreach addPlayer</span><span style=''>
+</span>10 <span style=''>
+</span>11 <span style=''>  override def addPlayer(player: T): Unit = {
+</span>12 <span style=''>    if (</span><span style='background: #F0ADAD'>getPlayer(player.getUsername).nonEmpty</span><span style=''>) </span><span style='background: #F0ADAD'>throw new IllegalArgumentException(&quot;Cannot add player to lobby because the username is already specified&quot;)</span><span style=''>
+</span>13 <span style=''>    </span><span style='background: #F0ADAD'>players += (player.getUsername -&gt; player)</span><span style=''>
+</span>14 <span style=''>    </span><span style='background: #F0ADAD'>notifyUserAdded(new User(player, false))</span><span style=''>
+</span>15 <span style=''>  }
+</span>16 <span style=''>
+</span>17 <span style=''>  override def getPlayer(username: String): Option[T] = </span><span style='background: #F0ADAD'>players get username</span><span style=''>
+</span>18 <span style=''>
+</span>19 <span style=''>  override def getPlayers: Seq[T] = </span><span style='background: #F0ADAD'>players.values.toList</span><span style=''>
+</span>20 <span style=''>
+</span>21 <span style=''>  override def removePlayer(username: String): Unit = {
+</span>22 <span style=''>    </span><span style='background: #F0ADAD'>notifyUserRemoved(new User(players(username), false))</span><span style=''>
+</span>23 <span style=''>    </span><span style='background: #F0ADAD'>players -= username</span><span style=''>
+</span>24 <span style=''>  }
+</span>25 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          1533
+        </td>
+        <td>
+          406
+          -
+          415
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.lobby.GameLobby.addPlayer
+        </td>
+        <td style="background: #F0ADAD">
+          GameLobby.this.addPlayer(player)
+        </td>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          1534
+        </td>
+        <td>
+          390
+          -
+          415
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.IterableLike.foreach
+        </td>
+        <td style="background: #F0ADAD">
+          players.foreach[Unit]({
+  ((player: T) =&gt; GameLobby.this.addPlayer(player))
+})
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          1536
+        </td>
+        <td>
+          471
+          -
+          509
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.nonEmpty
+        </td>
+        <td style="background: #F0ADAD">
+          GameLobby.this.getPlayer(player.getUsername).nonEmpty
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          1539
+        </td>
+        <td>
+          467
+          -
+          467
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          1535
+        </td>
+        <td>
+          481
+          -
+          499
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.Player.getUsername
+        </td>
+        <td style="background: #F0ADAD">
+          player.getUsername
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          1538
+        </td>
+        <td>
+          511
+          -
+          617
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.IllegalArgumentException(&quot;Cannot add player to lobby because the username is already specified&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          1537
+        </td>
+        <td>
+          511
+          -
+          617
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.IllegalArgumentException(&quot;Cannot add player to lobby because the username is already specified&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          1540
+        </td>
+        <td>
+          467
+          -
+          467
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          1542
+        </td>
+        <td>
+          622
+          -
+          663
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.mutable.MapLike.+=
+        </td>
+        <td style="background: #F0ADAD">
+          GameLobby.this.players.+=(scala.Predef.ArrowAssoc[String](player.getUsername).-&gt;[T](player))
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          1541
+        </td>
+        <td>
+          634
+          -
+          662
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Predef.ArrowAssoc.-&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Predef.ArrowAssoc[String](player.getUsername).-&gt;[T](player)
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          1544
+        </td>
+        <td>
+          668
+          -
+          708
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.lobby.AbstractLobby.notifyUserAdded
+        </td>
+        <td style="background: #F0ADAD">
+          GameLobby.this.notifyUserAdded(new it.unibo.osmos.redux.mvc.view.components.multiplayer.User(player, false))
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          1543
+        </td>
+        <td>
+          684
+          -
+          707
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.multiplayer.User.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.components.multiplayer.User(player, false)
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          1545
+        </td>
+        <td>
+          770
+          -
+          790
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.MapLike.get
+        </td>
+        <td style="background: #F0ADAD">
+          GameLobby.this.players.get(username)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1546
+        </td>
+        <td>
+          828
+          -
+          849
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.TraversableOnce.toList
+        </td>
+        <td style="background: #F0ADAD">
+          GameLobby.this.players.values.toList
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          1548
+        </td>
+        <td>
+          957
+          -
+          962
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          false
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          1550
+        </td>
+        <td>
+          911
+          -
+          964
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.lobby.AbstractLobby.notifyUserRemoved
+        </td>
+        <td style="background: #F0ADAD">
+          GameLobby.this.notifyUserRemoved(new it.unibo.osmos.redux.mvc.view.components.multiplayer.User(GameLobby.this.players.apply(username), false))
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          1547
+        </td>
+        <td>
+          938
+          -
+          955
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.MapLike.apply
+        </td>
+        <td style="background: #F0ADAD">
+          GameLobby.this.players.apply(username)
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          1549
+        </td>
+        <td>
+          929
+          -
+          963
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.multiplayer.User.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.components.multiplayer.User(GameLobby.this.players.apply(username), false)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          1551
+        </td>
+        <td>
+          969
+          -
+          988
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.mutable.MapLike.-=
+        </td>
+        <td style="background: #F0ADAD">
+          GameLobby.this.players.-=(username)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          1552
+        </td>
+        <td>
+          977
+          -
+          977
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

@@ -1,0 +1,934 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/components/custom/TitledIntegerField.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.components.custom
+</span>2 <span style=''>
+</span>3 <span style=''>import scalafx.beans.property.{IntegerProperty, StringProperty}
+</span>4 <span style=''>import scalafx.scene.control.TextFormatter.Change
+</span>5 <span style=''>import scalafx.scene.control.{TextField, TextFormatter}
+</span>6 <span style=''>import scalafx.util.converter.{IntStringConverter, NumberStringConverter}
+</span>7 <span style=''>
+</span>8 <span style=''>/** TextField with a Title which controls the user inputs, checking that the text inserted is an Integer
+</span>9 <span style=''>  *
+</span>10 <span style=''>  * @param title           the text shown
+</span>11 <span style=''>  * @param integerProperty the IntegerProperty which gets constantly updated
+</span>12 <span style=''>  */
+</span>13 <span style=''>class TitledIntegerField(override val title: StringProperty, private val integerProperty: IntegerProperty) extends TitledNode[TextField](title, vertical = false) {
+</span>14 <span style=''>
+</span>15 <span style=''>  /**
+</span>16 <span style=''>    * The maximum value
+</span>17 <span style=''>    */
+</span>18 <span style=''>  var maxValue: Int = </span><span style='background: #F0ADAD'>Int.MaxValue</span><span style=''>
+</span>19 <span style=''>  /**
+</span>20 <span style=''>    * The minimum value
+</span>21 <span style=''>    */
+</span>22 <span style=''>  var minValue: Int = </span><span style='background: #F0ADAD'>Int.MinValue</span><span style=''>
+</span>23 <span style=''>
+</span>24 <span style=''>  /** Secondary constructor which uses a simple String as a title
+</span>25 <span style=''>    *
+</span>26 <span style=''>    * @param title           the String title
+</span>27 <span style=''>    * @param integerProperty the IntegerProperty
+</span>28 <span style=''>    */
+</span>29 <span style=''>  def this(title: String, integerProperty: IntegerProperty) {
+</span>30 <span style=''>    </span><span style='background: #F0ADAD'>this(StringProperty(title), integerProperty)</span><span style=''>
+</span>31 <span style=''>  }
+</span>32 <span style=''>
+</span>33 <span style=''>  /** The node that will be shown after the text
+</span>34 <span style=''>    *
+</span>35 <span style=''>    * @return a node of type N &lt;: Node
+</span>36 <span style=''>    */
+</span>37 <span style=''>  override def innerNode: TextField = </span><span style='background: #F0ADAD'>new</span><span style=''> TextField() {
+</span>38 <span style=''>    </span><span style='background: #F0ADAD'>text.delegate.bindBidirectional(integerProperty, new NumberStringConverter)</span><span style=''>
+</span>39 <span style=''>    </span><span style='background: #F0ADAD'>editable = true</span><span style=''>
+</span>40 <span style=''>    </span><span style='background: #F0ADAD'>prefWidth &lt;== maxWidth</span><span style=''>
+</span>41 <span style=''>    </span><span style='background: #F0ADAD'>textFormatter = new TextFormatter[Int](new IntStringConverter, 0, { c: Change =&gt; {
+</span>42 <span style=''></span><span style='background: #F0ADAD'>      val input = c.getText
+</span>43 <span style=''></span><span style='background: #F0ADAD'>      val isNumber = input.matches(&quot;\\d+&quot;)
+</span>44 <span style=''></span><span style='background: #F0ADAD'>      if (!isNumber) c.setText(&quot;&quot;)
+</span>45 <span style=''></span><span style='background: #F0ADAD'>      if (isNumber &amp;&amp; (maxValue &lt; c.getControlNewText.toInt || minValue &gt; c.getControlNewText.toInt)) c.setText(&quot;&quot;)
+</span>46 <span style=''></span><span style='background: #F0ADAD'>      c
+</span>47 <span style=''></span><span style='background: #F0ADAD'>    }
+</span>48 <span style=''></span><span style='background: #F0ADAD'>    })</span><span style=''>
+</span>49 <span style=''>  }
+</span>50 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          3507
+        </td>
+        <td>
+          759
+          -
+          771
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          2147483647
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          3508
+        </td>
+        <td>
+          831
+          -
+          843
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          -2147483648
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          3511
+        </td>
+        <td>
+          1079
+          -
+          1079
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          3510
+        </td>
+        <td>
+          1085
+          -
+          1129
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledIntegerField.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          TitledIntegerField.this.&lt;init&gt;(scalafx.beans.property.StringProperty.apply(title), integerProperty)
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          3509
+        </td>
+        <td>
+          1090
+          -
+          1111
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.StringProperty.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.beans.property.StringProperty.apply(title)
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          3545
+        </td>
+        <td>
+          1274
+          -
+          1277
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledIntegerField.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          3516
+        </td>
+        <td>
+          1345
+          -
+          1370
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.util.converter.NumberStringConverter.sfxNumberStringConverter2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          converter.this.NumberStringConverter.sfxNumberStringConverter2jfx(new scalafx.util.converter.NumberStringConverter(converter.this.NumberStringConverter.&lt;init&gt;$default$1))
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          3513
+        </td>
+        <td>
+          1328
+          -
+          1343
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.beans.property.IntegerProperty.sfxIntegerProperty2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          property.this.IntegerProperty.sfxIntegerProperty2jfx(TitledIntegerField.this.integerProperty)
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          3512
+        </td>
+        <td>
+          1328
+          -
+          1343
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledIntegerField.integerProperty
+        </td>
+        <td style="background: #F0ADAD">
+          TitledIntegerField.this.integerProperty
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          3515
+        </td>
+        <td>
+          1345
+          -
+          1370
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.util.converter.NumberStringConverter.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new scalafx.util.converter.NumberStringConverter(converter.this.NumberStringConverter.&lt;init&gt;$default$1)
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          3517
+        </td>
+        <td>
+          1296
+          -
+          1371
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.beans.property.StringProperty.bindBidirectional
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.text.delegate.bindBidirectional[Number](property.this.IntegerProperty.sfxIntegerProperty2jfx(TitledIntegerField.this.integerProperty), converter.this.NumberStringConverter.sfxNumberStringConverter2jfx(new scalafx.util.converter.NumberStringConverter(converter.this.NumberStringConverter.&lt;init&gt;$default$1)))
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          3514
+        </td>
+        <td>
+          1345
+          -
+          1345
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.util.converter.NumberStringConverter.&lt;init&gt;$default$1
+        </td>
+        <td style="background: #F0ADAD">
+          converter.this.NumberStringConverter.&lt;init&gt;$default$1
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          3518
+        </td>
+        <td>
+          1376
+          -
+          1391
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.TextInputControl.editable_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.editable_=(true)
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          3519
+        </td>
+        <td>
+          1410
+          -
+          1418
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.scene.layout.Region.maxWidth
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.maxWidth
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          3520
+        </td>
+        <td>
+          1396
+          -
+          1418
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.prefWidth.&lt;==($anon.this.maxWidth)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          3543
+        </td>
+        <td>
+          1439
+          -
+          1748
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.TextFormatter.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new scalafx.scene.control.TextFormatter[Int](util.this.StringConverter.sfxStringConverter2jfx[Int](new scalafx.util.converter.IntStringConverter(converter.this.IntStringConverter.&lt;init&gt;$default$1)), 0, ((c: scalafx.scene.control.TextFormatter.Change) =&gt; {
+  val input: String = TextFormatter.this.Change.sfxTextFormatterChange2jfx[Nothing](c).getText();
+  val isNumber: Boolean = input.matches(&quot;\\d+&quot;);
+  if (isNumber.unary_!)
+    TextFormatter.this.Change.sfxTextFormatterChange2jfx[Nothing](c).setText(&quot;&quot;)
+  else
+    ();
+  if (isNumber.&amp;&amp;(TitledIntegerField.this.maxValue.&lt;(scala.Predef.augmentString(TextFormatter.this.Change.sfxTextFormatterChange2jfx[Nothing](c).getControlNewText()).toInt).||(TitledIntegerField.this.minValue.&gt;(scala.Predef.augmentString(TextFormatter.this.Change.sfxTextFormatterChange2jfx[Nothing](c).getControlNewText()).toInt))))
+    TextFormatter.this.Change.sfxTextFormatterChange2jfx[Nothing](c).setText(&quot;&quot;)
+  else
+    ();
+  c
+}))
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          3522
+        </td>
+        <td>
+          1462
+          -
+          1484
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.util.converter.IntStringConverter.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new scalafx.util.converter.IntStringConverter(converter.this.IntStringConverter.&lt;init&gt;$default$1)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          3521
+        </td>
+        <td>
+          1462
+          -
+          1462
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.util.converter.IntStringConverter.&lt;init&gt;$default$1
+        </td>
+        <td style="background: #F0ADAD">
+          converter.this.IntStringConverter.&lt;init&gt;$default$1
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          3524
+        </td>
+        <td>
+          1486
+          -
+          1487
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          0
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          3544
+        </td>
+        <td>
+          1423
+          -
+          1748
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.TextInputControl.textFormatter_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.textFormatter_=(new scalafx.scene.control.TextFormatter[Int](util.this.StringConverter.sfxStringConverter2jfx[Int](new scalafx.util.converter.IntStringConverter(converter.this.IntStringConverter.&lt;init&gt;$default$1)), 0, ((c: scalafx.scene.control.TextFormatter.Change) =&gt; {
+  val input: String = TextFormatter.this.Change.sfxTextFormatterChange2jfx[Nothing](c).getText();
+  val isNumber: Boolean = input.matches(&quot;\\d+&quot;);
+  if (isNumber.unary_!)
+    TextFormatter.this.Change.sfxTextFormatterChange2jfx[Nothing](c).setText(&quot;&quot;)
+  else
+    ();
+  if (isNumber.&amp;&amp;(TitledIntegerField.this.maxValue.&lt;(scala.Predef.augmentString(TextFormatter.this.Change.sfxTextFormatterChange2jfx[Nothing](c).getControlNewText()).toInt).||(TitledIntegerField.this.minValue.&gt;(scala.Predef.augmentString(TextFormatter.this.Change.sfxTextFormatterChange2jfx[Nothing](c).getControlNewText()).toInt))))
+    TextFormatter.this.Change.sfxTextFormatterChange2jfx[Nothing](c).setText(&quot;&quot;)
+  else
+    ();
+  c
+})))
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          3523
+        </td>
+        <td>
+          1462
+          -
+          1484
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.util.StringConverter.sfxStringConverter2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          util.this.StringConverter.sfxStringConverter2jfx[Int](new scalafx.util.converter.IntStringConverter(converter.this.IntStringConverter.&lt;init&gt;$default$1))
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          3525
+        </td>
+        <td>
+          1524
+          -
+          1533
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.control.TextFormatter.Change.getText
+        </td>
+        <td style="background: #F0ADAD">
+          TextFormatter.this.Change.sfxTextFormatterChange2jfx[Nothing](c).getText()
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          3526
+        </td>
+        <td>
+          1555
+          -
+          1576
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.matches
+        </td>
+        <td style="background: #F0ADAD">
+          input.matches(&quot;\\d+&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          3531
+        </td>
+        <td>
+          1583
+          -
+          1583
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          3528
+        </td>
+        <td>
+          1598
+          -
+          1611
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.control.TextFormatter.Change.setText
+        </td>
+        <td style="background: #F0ADAD">
+          TextFormatter.this.Change.sfxTextFormatterChange2jfx[Nothing](c).setText(&quot;&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          3530
+        </td>
+        <td>
+          1583
+          -
+          1583
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          3527
+        </td>
+        <td>
+          1587
+          -
+          1596
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #F0ADAD">
+          isNumber.unary_!
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          3529
+        </td>
+        <td>
+          1598
+          -
+          1611
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          javafx.scene.control.TextFormatter.Change.setText
+        </td>
+        <td style="background: #F0ADAD">
+          TextFormatter.this.Change.sfxTextFormatterChange2jfx[Nothing](c).setText(&quot;&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          3540
+        </td>
+        <td>
+          1714
+          -
+          1727
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          javafx.scene.control.TextFormatter.Change.setText
+        </td>
+        <td style="background: #F0ADAD">
+          TextFormatter.this.Change.sfxTextFormatterChange2jfx[Nothing](c).setText(&quot;&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          3534
+        </td>
+        <td>
+          1686
+          -
+          1705
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.control.TextFormatter.Change.getControlNewText
+        </td>
+        <td style="background: #F0ADAD">
+          TextFormatter.this.Change.sfxTextFormatterChange2jfx[Nothing](c).getControlNewText()
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          3537
+        </td>
+        <td>
+          1635
+          -
+          1711
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.||
+        </td>
+        <td style="background: #F0ADAD">
+          TitledIntegerField.this.maxValue.&lt;(scala.Predef.augmentString(TextFormatter.this.Change.sfxTextFormatterChange2jfx[Nothing](c).getControlNewText()).toInt).||(TitledIntegerField.this.minValue.&gt;(scala.Predef.augmentString(TextFormatter.this.Change.sfxTextFormatterChange2jfx[Nothing](c).getControlNewText()).toInt))
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          3539
+        </td>
+        <td>
+          1714
+          -
+          1727
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.control.TextFormatter.Change.setText
+        </td>
+        <td style="background: #F0ADAD">
+          TextFormatter.this.Change.sfxTextFormatterChange2jfx[Nothing](c).setText(&quot;&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          3533
+        </td>
+        <td>
+          1646
+          -
+          1671
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.StringLike.toInt
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Predef.augmentString(TextFormatter.this.Change.sfxTextFormatterChange2jfx[Nothing](c).getControlNewText()).toInt
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          3542
+        </td>
+        <td>
+          1618
+          -
+          1618
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          3536
+        </td>
+        <td>
+          1675
+          -
+          1711
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          TitledIntegerField.this.minValue.&gt;(scala.Predef.augmentString(TextFormatter.this.Change.sfxTextFormatterChange2jfx[Nothing](c).getControlNewText()).toInt)
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          3535
+        </td>
+        <td>
+          1686
+          -
+          1711
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.StringLike.toInt
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Predef.augmentString(TextFormatter.this.Change.sfxTextFormatterChange2jfx[Nothing](c).getControlNewText()).toInt
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          3538
+        </td>
+        <td>
+          1622
+          -
+          1712
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.&amp;&amp;
+        </td>
+        <td style="background: #F0ADAD">
+          isNumber.&amp;&amp;(TitledIntegerField.this.maxValue.&lt;(scala.Predef.augmentString(TextFormatter.this.Change.sfxTextFormatterChange2jfx[Nothing](c).getControlNewText()).toInt).||(TitledIntegerField.this.minValue.&gt;(scala.Predef.augmentString(TextFormatter.this.Change.sfxTextFormatterChange2jfx[Nothing](c).getControlNewText()).toInt)))
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          3532
+        </td>
+        <td>
+          1646
+          -
+          1665
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.control.TextFormatter.Change.getControlNewText
+        </td>
+        <td style="background: #F0ADAD">
+          TextFormatter.this.Change.sfxTextFormatterChange2jfx[Nothing](c).getControlNewText()
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          3541
+        </td>
+        <td>
+          1618
+          -
+          1618
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

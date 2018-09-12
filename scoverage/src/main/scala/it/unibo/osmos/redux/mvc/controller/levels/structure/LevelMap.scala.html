@@ -1,0 +1,170 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/controller/levels/structure/LevelMap.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.controller.levels.structure
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.utils.Point
+</span>4 <span style=''>
+</span>5 <span style=''>/** Map shape types. */
+</span>6 <span style=''>object MapShapeType extends Enumeration {
+</span>7 <span style=''>  val Circle, Rectangle = </span><span style='background: #AEF1AE'>Value</span><span style=''>
+</span>8 <span style=''>}
+</span>9 <span style=''>
+</span>10 <span style=''>/** Define map shape and map center point. */
+</span>11 <span style=''>sealed trait MapShape {
+</span>12 <span style=''>  val mapShape: MapShapeType.Value
+</span>13 <span style=''>  val center: Point
+</span>14 <span style=''>}
+</span>15 <span style=''>
+</span>16 <span style=''>
+</span>17 <span style=''>object MapShape {
+</span>18 <span style=''>
+</span>19 <span style=''>  /** Rectangular level map.
+</span>20 <span style=''>    *
+</span>21 <span style=''>    * @param center center of map
+</span>22 <span style=''>    * @param height rectangle height
+</span>23 <span style=''>    * @param base   rectangle base
+</span>24 <span style=''>    */
+</span>25 <span style=''>  case class Rectangle(override val center: Point, height: Double, base: Double) extends MapShape {
+</span>26 <span style=''>    override val mapShape: MapShapeType.Value = </span><span style='background: #AEF1AE'>MapShapeType.Rectangle</span><span style=''>
+</span>27 <span style=''>  }
+</span>28 <span style=''>
+</span>29 <span style=''>  /** Circular level map.
+</span>30 <span style=''>    *
+</span>31 <span style=''>    * @param center center of map
+</span>32 <span style=''>    * @param radius circle radius
+</span>33 <span style=''>    */
+</span>34 <span style=''>  case class Circle(override val center: Point, radius: Double) extends MapShape {
+</span>35 <span style=''>    override val mapShape: MapShapeType.Value = </span><span style='background: #AEF1AE'>MapShapeType.Circle</span><span style=''>
+</span>36 <span style=''>  }
+</span>37 <span style=''>
+</span>38 <span style=''>}
+</span>39 <span style=''>
+</span>40 <span style=''>/** Defines a level map with MapShape and collision with edges rule.
+</span>41 <span style=''>  *
+</span>42 <span style=''>  * @param mapShape      MapShape
+</span>43 <span style=''>  * @param collisionRule CollisionRules.Value
+</span>44 <span style=''>  */
+</span>45 <span style=''>case class LevelMap(mapShape: MapShape, collisionRule: CollisionRules.Value)
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          7
+        </td>
+        <td>
+          2403
+        </td>
+        <td>
+          195
+          -
+          195
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Enumeration.Value
+        </td>
+        <td style="background: #AEF1AE">
+          MapShapeType.this.Value
+        </td>
+      </tr><tr>
+        <td>
+          7
+        </td>
+        <td>
+          2404
+        </td>
+        <td>
+          195
+          -
+          200
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Enumeration.Value
+        </td>
+        <td style="background: #AEF1AE">
+          MapShapeType.this.Value
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          2405
+        </td>
+        <td>
+          648
+          -
+          670
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.MapShapeType.Rectangle
+        </td>
+        <td style="background: #AEF1AE">
+          MapShapeType.Rectangle
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          2406
+        </td>
+        <td>
+          914
+          -
+          933
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.MapShapeType.Circle
+        </td>
+        <td style="background: #AEF1AE">
+          MapShapeType.Circle
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

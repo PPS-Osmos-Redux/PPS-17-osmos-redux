@@ -1,0 +1,159 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/components/instructions/GameInstructionScreen.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.components.instructions
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.mvc.view.components.level.LevelScreen
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.view.components.level.LevelScreen.LevelScreenImpl
+</span>5 <span style=''>import it.unibo.osmos.redux.mvc.view.scenes.BaseScene
+</span>6 <span style=''>
+</span>7 <span style=''>/** Container holding a single instruction screen showing the game controls and instructions
+</span>8 <span style=''>  *
+</span>9 <span style=''>  * @param scene the scene in which the screen is held
+</span>10 <span style=''>  */
+</span>11 <span style=''>class GameInstructionScreen(val scene: BaseScene) {
+</span>12 <span style=''>
+</span>13 <span style=''>  /** The instruction screen */
+</span>14 <span style=''>  private val _instructionScreen = </span><span style='background: #F0ADAD'>LevelScreen.Builder(scene)
+</span>15 <span style=''></span><span style='background: #F0ADAD'>    .withText(&quot;Game Controls &amp; Instruction&quot;, 50)
+</span>16 <span style=''></span><span style='background: #F0ADAD'>    .withText(&quot;Click on the screen to eject mass and move in the opposite click direction&quot;)
+</span>17 <span style=''></span><span style='background: #F0ADAD'>    .withText(&quot;On collision the bigger cell will absorb the smaller one&quot;)
+</span>18 <span style=''></span><span style='background: #F0ADAD'>    .withText(&quot;Wheel up/down to zoom in/out&quot;)
+</span>19 <span style=''></span><span style='background: #F0ADAD'>    .withText(&quot;Press [esc] to stop game (single player only)&quot;)
+</span>20 <span style=''></span><span style='background: #F0ADAD'>    .withText(&quot;Press [up] or [right] arrow key to speed up game time (single player only)&quot;)
+</span>21 <span style=''></span><span style='background: #F0ADAD'>    .withText(&quot;Press [down] or [left] arrow key to slow down game time (single player only)&quot;)
+</span>22 <span style=''></span><span style='background: #F0ADAD'>    .withText(&quot;Press [C] to show/hide the game controls&quot;, 20)
+</span>23 <span style=''></span><span style='background: #F0ADAD'>    .build()</span><span style=''>
+</span>24 <span style=''>
+</span>25 <span style=''>  /** Instruction screen getter */
+</span>26 <span style=''>  def instructionScreen: LevelScreenImpl = </span><span style='background: #F0ADAD'>_instructionScreen</span><span style=''>
+</span>27 <span style=''>
+</span>28 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          4040
+        </td>
+        <td>
+          543
+          -
+          1154
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.level.LevelScreen.Builder.build
+        </td>
+        <td style="background: #F0ADAD">
+          {
+  &lt;artifact&gt; val qual$8: it.unibo.osmos.redux.mvc.view.components.level.LevelScreen.Builder = {
+    &lt;artifact&gt; val qual$7: it.unibo.osmos.redux.mvc.view.components.level.LevelScreen.Builder = {
+      &lt;artifact&gt; val qual$6: it.unibo.osmos.redux.mvc.view.components.level.LevelScreen.Builder = {
+        &lt;artifact&gt; val qual$5: it.unibo.osmos.redux.mvc.view.components.level.LevelScreen.Builder = {
+          &lt;artifact&gt; val qual$4: it.unibo.osmos.redux.mvc.view.components.level.LevelScreen.Builder = {
+            &lt;artifact&gt; val qual$3: it.unibo.osmos.redux.mvc.view.components.level.LevelScreen.Builder = {
+              &lt;artifact&gt; val qual$2: it.unibo.osmos.redux.mvc.view.components.level.LevelScreen.Builder = {
+                &lt;artifact&gt; val qual$1: it.unibo.osmos.redux.mvc.view.components.level.LevelScreen.Builder = it.unibo.osmos.redux.mvc.view.components.level.LevelScreen.Builder.apply(GameInstructionScreen.this.scene);
+                &lt;artifact&gt; val x$1: String = &quot;Game Controls &amp; Instruction&quot;;
+                &lt;artifact&gt; val x$2: Double = 50.0;
+                &lt;artifact&gt; val x$3: scalafx.scene.paint.Color = qual$1.withText$default$3;
+                qual$1.withText(x$1, x$2, x$3)
+              };
+              &lt;artifact&gt; val x$4: String = &quot;Click on the screen to eject mass and move in the opposite click direction&quot;;
+              &lt;artifact&gt; val x$5: Double = qual$2.withText$default$2;
+              &lt;artifact&gt; val x$6: scalafx.scene.paint.Color = qual$2.withText$default$3;
+              qual$2.withText(x$4, x$5, x$6)
+            };
+            &lt;artifact&gt; val x$7: String = &quot;On collision the bigger cell will absorb the smaller one&quot;;
+            &lt;artifact&gt; val x$8: Double = qual$3.withText$default$2;
+            &lt;artifact&gt; val x$9: scalafx.scene.paint.Color = qual$3.withText$default$3;
+            qual$3.withText(x$7, x$8, x$9)
+          };
+          &lt;artifact&gt; val x$10: String = &quot;Wheel up/down to zoom in/out&quot;;
+          &lt;artifact&gt; val x$11: Double = qual$4.withText$default$2;
+          &lt;artifact&gt; val x$12: scalafx.scene.paint.Color = qual$4.withText$default$3;
+          qual$4.withText(x$10, x$11, x$12)
+        };
+        &lt;artifact&gt; val x$13: String = &quot;Press [esc] to stop game (single player only)&quot;;
+        &lt;artifact&gt; val x$14: Double = qual$5.withText$default$2;
+        &lt;artifact&gt; val x$15: scalafx.scene.paint.Color = qual$5.withText$default$3;
+        qual$5.withText(x$13, x$14, x$15)
+      };
+      &lt;artifact&gt; val x$16: String = &quot;Press [up] or [right] arrow key to speed up game time (single player only)&quot;;
+      &lt;artifact&gt; val x$17: Double = qual$6.withText$default$2;
+      &lt;artifact&gt; val x$18: scalafx.scene.paint.Color = qual$6.withText$default$3;
+      qual$6.withText(x$16, x$17, x$18)
+    };
+    &lt;artifact&gt; val x$19: String = &quot;Press [down] or [left] arrow key to slow down game time (single player only)&quot;;
+    &lt;artifact&gt; val x$20: Double = qual$7.withText$default$2;
+    &lt;artifact&gt; val x$21: scalafx.scene.paint.Color = qual$7.withText$default$3;
+    qual$7.withText(x$19, x$20, x$21)
+  };
+  &lt;artifact&gt; val x$22: String = &quot;Press [C] to show/hide the game controls&quot;;
+  &lt;artifact&gt; val x$23: Double = 20.0;
+  &lt;artifact&gt; val x$24: scalafx.scene.paint.Color = qual$8.withText$default$3;
+  qual$8.withText(x$22, x$23, x$24)
+}.build()
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          4041
+        </td>
+        <td>
+          1234
+          -
+          1252
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.instructions.GameInstructionScreen._instructionScreen
+        </td>
+        <td style="background: #F0ADAD">
+          GameInstructionScreen.this._instructionScreen
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

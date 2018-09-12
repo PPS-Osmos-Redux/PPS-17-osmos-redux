@@ -1,0 +1,1698 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/components/editor/CellEntityCreator.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.components.editor
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.ecs.entities.{CellBuilder, CellEntity, EntityType}
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField
+</span>5 <span style=''>import scalafx.beans.property.{DoubleProperty, ObjectProperty}
+</span>6 <span style=''>import scalafx.scene.control.{Label, TextField}
+</span>7 <span style=''>import scalafx.scene.layout.{HBox, VBox}
+</span>8 <span style=''>
+</span>9 <span style=''>/** A panel showing input nodes which is also capable of providing the requested CellEntity */
+</span>10 <span style=''>class CellEntityCreator extends BaseEditorCreator[CellEntity] with EditorCellBuilderConfigurator {
+</span>11 <span style=''>
+</span>12 <span style=''>  /** Position node */
+</span>13 <span style=''>  val x: ObjectProperty[Double] = </span><span style='background: #AEF1AE'>ObjectProperty(300)</span><span style=''>
+</span>14 <span style=''>  val y: ObjectProperty[Double] = </span><span style='background: #AEF1AE'>ObjectProperty(300)</span><span style=''>
+</span>15 <span style=''>  val positionNode = </span><span style='background: #AEF1AE'>new VBox(2.0, new Label(&quot;Position&quot;), new HBox(new Label(&quot;x: &quot;), new TextField() {
+</span>16 <span style=''></span><span style='background: #AEF1AE'>    editable = false
+</span>17 <span style=''></span><span style='background: #AEF1AE'>    text &lt;== x.asString()
+</span>18 <span style=''></span><span style='background: #AEF1AE'>  }), new HBox(new Label(&quot;y: &quot;), new TextField() {
+</span>19 <span style=''></span><span style='background: #AEF1AE'>    editable = false
+</span>20 <span style=''></span><span style='background: #AEF1AE'>    text &lt;== y.asString()
+</span>21 <span style=''></span><span style='background: #AEF1AE'>  }))</span><span style=''>
+</span>22 <span style=''>  /** Radius node */
+</span>23 <span style=''>  val radius: ObjectProperty[Double] = </span><span style='background: #AEF1AE'>ObjectProperty(50)</span><span style=''>
+</span>24 <span style=''>  /** Speed node */
+</span>25 <span style=''>  val xSpeed: DoubleProperty = </span><span style='background: #AEF1AE'>DoubleProperty(0.0)</span><span style=''>
+</span>26 <span style=''>  val ySpeed: DoubleProperty = </span><span style='background: #AEF1AE'>DoubleProperty(0.0)</span><span style=''>
+</span>27 <span style=''>  val speedNode = </span><span style='background: #AEF1AE'>new VBox(2.0, new Label(&quot;Speed&quot;),
+</span>28 <span style=''></span><span style='background: #AEF1AE'>    new TitledDoubleField(&quot;x: &quot;, xSpeed).innerNode,
+</span>29 <span style=''></span><span style='background: #AEF1AE'>    new TitledDoubleField(&quot;y: &quot;, ySpeed).innerNode
+</span>30 <span style=''></span><span style='background: #AEF1AE'>  )</span><span style=''>
+</span>31 <span style=''>  /** Acceleration node */
+</span>32 <span style=''>  val xAcceleration: DoubleProperty = </span><span style='background: #AEF1AE'>DoubleProperty(0.0)</span><span style=''>
+</span>33 <span style=''>  val yAcceleration: DoubleProperty = </span><span style='background: #AEF1AE'>DoubleProperty(0.0)</span><span style=''>
+</span>34 <span style=''>  val accelerationNode = </span><span style='background: #AEF1AE'>new VBox(2.0, new Label(&quot;Acceleration&quot;),
+</span>35 <span style=''></span><span style='background: #AEF1AE'>    new TitledDoubleField(&quot;x: &quot;, xAcceleration).innerNode,
+</span>36 <span style=''></span><span style='background: #AEF1AE'>    new TitledDoubleField(&quot;y: &quot;, yAcceleration).innerNode
+</span>37 <span style=''></span><span style='background: #AEF1AE'>  )</span><span style=''>
+</span>38 <span style=''>  private val radiusNode = </span><span style='background: #AEF1AE'>new HBox(new Label(&quot;Radius: &quot;), new TextField() {
+</span>39 <span style=''></span><span style='background: #AEF1AE'>    editable = false
+</span>40 <span style=''></span><span style='background: #AEF1AE'>    text &lt;== radius.asString()
+</span>41 <span style=''></span><span style='background: #AEF1AE'>  })</span><span style=''>
+</span>42 <span style=''>  private[this] var _entityType: EntityType.Value = </span><span style='background: #AEF1AE'>EntityType.Matter</span><span style=''>
+</span>43 <span style=''>
+</span>44 <span style=''>  def entityType_=(value: EntityType.Value): Unit = {
+</span>45 <span style=''>    _entityType = value
+</span>46 <span style=''>  }
+</span>47 <span style=''>
+</span>48 <span style=''>  </span><span style='background: #AEF1AE'>children = Seq(positionNode, radiusNode, speedNode, accelerationNode)</span><span style=''>
+</span>49 <span style=''>
+</span>50 <span style=''>  override def create(): CellEntity = {
+</span>51 <span style=''>    val builder = </span><span style='background: #AEF1AE'>CellBuilder()</span><span style=''>
+</span>52 <span style=''>    </span><span style='background: #AEF1AE'>configureBuilder(builder)</span><span style=''>
+</span>53 <span style=''>    </span><span style='background: #AEF1AE'>builder.buildCellEntity()</span><span style=''>
+</span>54 <span style=''>  }
+</span>55 <span style=''>
+</span>56 <span style=''>  /** Method that configures the basic cell builder. It may be overridden by other cell entity creators
+</span>57 <span style=''>    *
+</span>58 <span style=''>    * @param builder the cell builder
+</span>59 <span style=''>    */
+</span>60 <span style=''>  override def configureBuilder(builder: CellBuilder, withEntityType: Boolean = true): Unit = {
+</span>61 <span style=''>    </span><span style='background: #AEF1AE'>builder
+</span>62 <span style=''></span><span style='background: #AEF1AE'>      .visible(true)
+</span>63 <span style=''></span><span style='background: #AEF1AE'>      .collidable(true)
+</span>64 <span style=''></span><span style='background: #AEF1AE'>      .withPosition(x.value, y.value)
+</span>65 <span style=''></span><span style='background: #AEF1AE'>      .withDimension(radius.value)
+</span>66 <span style=''></span><span style='background: #AEF1AE'>      .withSpeed(xSpeed.value, ySpeed.value)
+</span>67 <span style=''></span><span style='background: #AEF1AE'>      .withAcceleration(xAcceleration.value, yAcceleration.value)</span><span style=''>
+</span>68 <span style=''>    if (withEntityType) </span><span style='background: #AEF1AE'>builder.withEntityType(_entityType)</span><span style=''>
+</span>69 <span style=''>  }
+</span>70 <span style=''>
+</span>71 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          3592
+        </td>
+        <td>
+          614
+          -
+          633
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.ObjectProperty.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scalafx.beans.property.ObjectProperty.apply[Double](300.0)
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          3593
+        </td>
+        <td>
+          668
+          -
+          687
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.ObjectProperty.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scalafx.beans.property.ObjectProperty.apply[Double](300.0)
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          3600
+        </td>
+        <td>
+          773
+          -
+          776
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          3594
+        </td>
+        <td>
+          718
+          -
+          721
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          2.0
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          3608
+        </td>
+        <td>
+          709
+          -
+          941
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.VBox.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new scalafx.scene.layout.VBox(2.0, new scalafx.scene.control.Label(&quot;Position&quot;), new scalafx.scene.layout.HBox(new scalafx.scene.control.Label(&quot;x: &quot;), {
+  final class $anon extends scalafx.scene.control.TextField {
+    def &lt;init&gt;(): &lt;$anon: scalafx.scene.control.TextField&gt; = {
+      $anon.super.&lt;init&gt;(control.this.TextField.&lt;init&gt;$default$1);
+      ()
+    };
+    $anon.this.editable_=(false);
+    $anon.this.text.&lt;==(property.this.ObjectProperty.sfxObjectProperty2jfx[Double](CellEntityCreator.this.x).asString())
+  };
+  new $anon()
+}), new scalafx.scene.layout.HBox(new scalafx.scene.control.Label(&quot;y: &quot;), {
+  final class $anon extends scalafx.scene.control.TextField {
+    def &lt;init&gt;(): &lt;$anon: scalafx.scene.control.TextField&gt; = {
+      $anon.super.&lt;init&gt;(control.this.TextField.&lt;init&gt;$default$1);
+      ()
+    };
+    $anon.this.editable_=(false);
+    $anon.this.text.&lt;==(property.this.ObjectProperty.sfxObjectProperty2jfx[Double](CellEntityCreator.this.y).asString())
+  };
+  new $anon()
+}))
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          3596
+        </td>
+        <td>
+          755
+          -
+          771
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.Label.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new scalafx.scene.control.Label(&quot;x: &quot;)
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          3595
+        </td>
+        <td>
+          723
+          -
+          744
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.Label.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new scalafx.scene.control.Label(&quot;Position&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          3601
+        </td>
+        <td>
+          746
+          -
+          842
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.HBox.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new scalafx.scene.layout.HBox(new scalafx.scene.control.Label(&quot;x: &quot;), {
+  final class $anon extends scalafx.scene.control.TextField {
+    def &lt;init&gt;(): &lt;$anon: scalafx.scene.control.TextField&gt; = {
+      $anon.super.&lt;init&gt;(control.this.TextField.&lt;init&gt;$default$1);
+      ()
+    };
+    $anon.this.editable_=(false);
+    $anon.this.text.&lt;==(property.this.ObjectProperty.sfxObjectProperty2jfx[Double](CellEntityCreator.this.x).asString())
+  };
+  new $anon()
+})
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          3597
+        </td>
+        <td>
+          795
+          -
+          811
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.TextInputControl.editable_=
+        </td>
+        <td style="background: #AEF1AE">
+          $anon.this.editable_=(false)
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          3599
+        </td>
+        <td>
+          816
+          -
+          837
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #AEF1AE">
+          $anon.this.text.&lt;==(property.this.ObjectProperty.sfxObjectProperty2jfx[Double](CellEntityCreator.this.x).asString())
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          3598
+        </td>
+        <td>
+          825
+          -
+          837
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.beans.binding.ObjectExpression.asString
+        </td>
+        <td style="background: #AEF1AE">
+          property.this.ObjectProperty.sfxObjectProperty2jfx[Double](CellEntityCreator.this.x).asString()
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          3606
+        </td>
+        <td>
+          871
+          -
+          874
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          3602
+        </td>
+        <td>
+          853
+          -
+          869
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.Label.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new scalafx.scene.control.Label(&quot;y: &quot;)
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          3607
+        </td>
+        <td>
+          844
+          -
+          940
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.HBox.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new scalafx.scene.layout.HBox(new scalafx.scene.control.Label(&quot;y: &quot;), {
+  final class $anon extends scalafx.scene.control.TextField {
+    def &lt;init&gt;(): &lt;$anon: scalafx.scene.control.TextField&gt; = {
+      $anon.super.&lt;init&gt;(control.this.TextField.&lt;init&gt;$default$1);
+      ()
+    };
+    $anon.this.editable_=(false);
+    $anon.this.text.&lt;==(property.this.ObjectProperty.sfxObjectProperty2jfx[Double](CellEntityCreator.this.y).asString())
+  };
+  new $anon()
+})
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          3603
+        </td>
+        <td>
+          893
+          -
+          909
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.TextInputControl.editable_=
+        </td>
+        <td style="background: #AEF1AE">
+          $anon.this.editable_=(false)
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          3605
+        </td>
+        <td>
+          914
+          -
+          935
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #AEF1AE">
+          $anon.this.text.&lt;==(property.this.ObjectProperty.sfxObjectProperty2jfx[Double](CellEntityCreator.this.y).asString())
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          3604
+        </td>
+        <td>
+          923
+          -
+          935
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.beans.binding.ObjectExpression.asString
+        </td>
+        <td style="background: #AEF1AE">
+          property.this.ObjectProperty.sfxObjectProperty2jfx[Double](CellEntityCreator.this.y).asString()
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          3609
+        </td>
+        <td>
+          1002
+          -
+          1020
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.ObjectProperty.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scalafx.beans.property.ObjectProperty.apply[Double](50.0)
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          3610
+        </td>
+        <td>
+          1072
+          -
+          1091
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.DoubleProperty.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scalafx.beans.property.DoubleProperty.apply(0.0)
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          3611
+        </td>
+        <td>
+          1123
+          -
+          1142
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.DoubleProperty.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scalafx.beans.property.DoubleProperty.apply(0.0)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          3612
+        </td>
+        <td>
+          1170
+          -
+          1173
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          2.0
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          3620
+        </td>
+        <td>
+          1161
+          -
+          1301
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.VBox.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new scalafx.scene.layout.VBox(2.0, new scalafx.scene.control.Label(&quot;Speed&quot;), new it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField(&quot;x: &quot;, CellEntityCreator.this.xSpeed).innerNode, new it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField(&quot;y: &quot;, CellEntityCreator.this.ySpeed).innerNode)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          3613
+        </td>
+        <td>
+          1175
+          -
+          1193
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.Label.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new scalafx.scene.control.Label(&quot;Speed&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          3615
+        </td>
+        <td>
+          1228
+          -
+          1234
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator.xSpeed
+        </td>
+        <td style="background: #AEF1AE">
+          CellEntityCreator.this.xSpeed
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          3614
+        </td>
+        <td>
+          1221
+          -
+          1226
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;x: &quot;
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          3616
+        </td>
+        <td>
+          1199
+          -
+          1245
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField.innerNode
+        </td>
+        <td style="background: #AEF1AE">
+          new it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField(&quot;x: &quot;, CellEntityCreator.this.xSpeed).innerNode
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          3618
+        </td>
+        <td>
+          1280
+          -
+          1286
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator.ySpeed
+        </td>
+        <td style="background: #AEF1AE">
+          CellEntityCreator.this.ySpeed
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          3617
+        </td>
+        <td>
+          1273
+          -
+          1278
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;y: &quot;
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          3619
+        </td>
+        <td>
+          1251
+          -
+          1297
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField.innerNode
+        </td>
+        <td style="background: #AEF1AE">
+          new it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField(&quot;y: &quot;, CellEntityCreator.this.ySpeed).innerNode
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          3621
+        </td>
+        <td>
+          1367
+          -
+          1386
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.DoubleProperty.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scalafx.beans.property.DoubleProperty.apply(0.0)
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          3622
+        </td>
+        <td>
+          1425
+          -
+          1444
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.DoubleProperty.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scalafx.beans.property.DoubleProperty.apply(0.0)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          3624
+        </td>
+        <td>
+          1484
+          -
+          1509
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.Label.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new scalafx.scene.control.Label(&quot;Acceleration&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          3623
+        </td>
+        <td>
+          1479
+          -
+          1482
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          2.0
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          3631
+        </td>
+        <td>
+          1470
+          -
+          1631
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.VBox.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new scalafx.scene.layout.VBox(2.0, new scalafx.scene.control.Label(&quot;Acceleration&quot;), new it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField(&quot;x: &quot;, CellEntityCreator.this.xAcceleration).innerNode, new it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField(&quot;y: &quot;, CellEntityCreator.this.yAcceleration).innerNode)
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          3627
+        </td>
+        <td>
+          1515
+          -
+          1568
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField.innerNode
+        </td>
+        <td style="background: #AEF1AE">
+          new it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField(&quot;x: &quot;, CellEntityCreator.this.xAcceleration).innerNode
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          3626
+        </td>
+        <td>
+          1544
+          -
+          1557
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator.xAcceleration
+        </td>
+        <td style="background: #AEF1AE">
+          CellEntityCreator.this.xAcceleration
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          3625
+        </td>
+        <td>
+          1537
+          -
+          1542
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;x: &quot;
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          3630
+        </td>
+        <td>
+          1574
+          -
+          1627
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField.innerNode
+        </td>
+        <td style="background: #AEF1AE">
+          new it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField(&quot;y: &quot;, CellEntityCreator.this.yAcceleration).innerNode
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          3629
+        </td>
+        <td>
+          1603
+          -
+          1616
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator.yAcceleration
+        </td>
+        <td style="background: #AEF1AE">
+          CellEntityCreator.this.yAcceleration
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          3628
+        </td>
+        <td>
+          1596
+          -
+          1601
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;y: &quot;
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          3636
+        </td>
+        <td>
+          1691
+          -
+          1694
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          3632
+        </td>
+        <td>
+          1668
+          -
+          1689
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.Label.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new scalafx.scene.control.Label(&quot;Radius: &quot;)
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          3637
+        </td>
+        <td>
+          1659
+          -
+          1765
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.HBox.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new scalafx.scene.layout.HBox(new scalafx.scene.control.Label(&quot;Radius: &quot;), {
+  final class $anon extends scalafx.scene.control.TextField {
+    def &lt;init&gt;(): &lt;$anon: scalafx.scene.control.TextField&gt; = {
+      $anon.super.&lt;init&gt;(control.this.TextField.&lt;init&gt;$default$1);
+      ()
+    };
+    $anon.this.editable_=(false);
+    $anon.this.text.&lt;==(property.this.ObjectProperty.sfxObjectProperty2jfx[Double](CellEntityCreator.this.radius).asString())
+  };
+  new $anon()
+})
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          3633
+        </td>
+        <td>
+          1713
+          -
+          1729
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.TextInputControl.editable_=
+        </td>
+        <td style="background: #AEF1AE">
+          $anon.this.editable_=(false)
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          3635
+        </td>
+        <td>
+          1734
+          -
+          1760
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #AEF1AE">
+          $anon.this.text.&lt;==(property.this.ObjectProperty.sfxObjectProperty2jfx[Double](CellEntityCreator.this.radius).asString())
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          3634
+        </td>
+        <td>
+          1743
+          -
+          1760
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.beans.binding.ObjectExpression.asString
+        </td>
+        <td style="background: #AEF1AE">
+          property.this.ObjectProperty.sfxObjectProperty2jfx[Double](CellEntityCreator.this.radius).asString()
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          3638
+        </td>
+        <td>
+          1818
+          -
+          1835
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityType.Matter
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.entities.EntityType.Matter
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          3639
+        </td>
+        <td>
+          1937
+          -
+          1949
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator.positionNode
+        </td>
+        <td style="background: #AEF1AE">
+          CellEntityCreator.this.positionNode
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          3642
+        </td>
+        <td>
+          1974
+          -
+          1990
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator.accelerationNode
+        </td>
+        <td style="background: #AEF1AE">
+          CellEntityCreator.this.accelerationNode
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          3641
+        </td>
+        <td>
+          1963
+          -
+          1972
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator.speedNode
+        </td>
+        <td style="background: #AEF1AE">
+          CellEntityCreator.this.speedNode
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          3644
+        </td>
+        <td>
+          1922
+          -
+          1991
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Pane.children_=
+        </td>
+        <td style="background: #AEF1AE">
+          CellEntityCreator.this.children_=(scala.collection.Seq.apply[scalafx.scene.layout.Pane with scalafx.delegate.AlignmentDelegate[_ &gt;: javafx.scene.layout.HBox with javafx.scene.layout.VBox &lt;: javafx.scene.layout.Pane]](CellEntityCreator.this.positionNode, CellEntityCreator.this.radiusNode, CellEntityCreator.this.speedNode, CellEntityCreator.this.accelerationNode))
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          3640
+        </td>
+        <td>
+          1951
+          -
+          1961
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator.radiusNode
+        </td>
+        <td style="background: #AEF1AE">
+          CellEntityCreator.this.radiusNode
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          3643
+        </td>
+        <td>
+          1933
+          -
+          1991
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.collection.Seq.apply[scalafx.scene.layout.Pane with scalafx.delegate.AlignmentDelegate[_ &gt;: javafx.scene.layout.HBox with javafx.scene.layout.VBox &lt;: javafx.scene.layout.Pane]](CellEntityCreator.this.positionNode, CellEntityCreator.this.radiusNode, CellEntityCreator.this.speedNode, CellEntityCreator.this.accelerationNode)
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          3645
+        </td>
+        <td>
+          2051
+          -
+          2064
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.apply()
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          3647
+        </td>
+        <td>
+          2069
+          -
+          2094
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator.configureBuilder
+        </td>
+        <td style="background: #AEF1AE">
+          CellEntityCreator.this.configureBuilder(builder, CellEntityCreator.this.configureBuilder$default$2)
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          3646
+        </td>
+        <td>
+          2069
+          -
+          2069
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator.configureBuilder$default$2
+        </td>
+        <td style="background: #AEF1AE">
+          CellEntityCreator.this.configureBuilder$default$2
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          3648
+        </td>
+        <td>
+          2099
+          -
+          2124
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.buildCellEntity
+        </td>
+        <td style="background: #AEF1AE">
+          builder.buildCellEntity()
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          3649
+        </td>
+        <td>
+          2408
+          -
+          2412
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          3650
+        </td>
+        <td>
+          2432
+          -
+          2436
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          64
+        </td>
+        <td>
+          3652
+        </td>
+        <td>
+          2467
+          -
+          2474
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyObjectProperty.value
+        </td>
+        <td style="background: #AEF1AE">
+          CellEntityCreator.this.y.value
+        </td>
+      </tr><tr>
+        <td>
+          64
+        </td>
+        <td>
+          3651
+        </td>
+        <td>
+          2458
+          -
+          2465
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyObjectProperty.value
+        </td>
+        <td style="background: #AEF1AE">
+          CellEntityCreator.this.x.value
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          3653
+        </td>
+        <td>
+          2497
+          -
+          2509
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyObjectProperty.value
+        </td>
+        <td style="background: #AEF1AE">
+          CellEntityCreator.this.radius.value
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          3654
+        </td>
+        <td>
+          2528
+          -
+          2540
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyDoubleProperty.value
+        </td>
+        <td style="background: #AEF1AE">
+          CellEntityCreator.this.xSpeed.value
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          3655
+        </td>
+        <td>
+          2542
+          -
+          2554
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyDoubleProperty.value
+        </td>
+        <td style="background: #AEF1AE">
+          CellEntityCreator.this.ySpeed.value
+        </td>
+      </tr><tr>
+        <td>
+          67
+        </td>
+        <td>
+          3657
+        </td>
+        <td>
+          2601
+          -
+          2620
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyDoubleProperty.value
+        </td>
+        <td style="background: #AEF1AE">
+          CellEntityCreator.this.yAcceleration.value
+        </td>
+      </tr><tr>
+        <td>
+          67
+        </td>
+        <td>
+          3656
+        </td>
+        <td>
+          2580
+          -
+          2599
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyDoubleProperty.value
+        </td>
+        <td style="background: #AEF1AE">
+          CellEntityCreator.this.xAcceleration.value
+        </td>
+      </tr><tr>
+        <td>
+          67
+        </td>
+        <td>
+          3658
+        </td>
+        <td>
+          2385
+          -
+          2621
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.withAcceleration
+        </td>
+        <td style="background: #AEF1AE">
+          builder.visible(true).collidable(true).withPosition(CellEntityCreator.this.x.value, CellEntityCreator.this.y.value).withDimension(CellEntityCreator.this.radius.value).withSpeed(CellEntityCreator.this.xSpeed.value, CellEntityCreator.this.ySpeed.value).withAcceleration(CellEntityCreator.this.xAcceleration.value, CellEntityCreator.this.yAcceleration.value)
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          3663
+        </td>
+        <td>
+          2626
+          -
+          2626
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          3659
+        </td>
+        <td>
+          2669
+          -
+          2680
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CellEntityCreator._entityType
+        </td>
+        <td style="background: #AEF1AE">
+          CellEntityCreator.this._entityType
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          3662
+        </td>
+        <td>
+          2646
+          -
+          2681
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          {
+  builder.withEntityType(CellEntityCreator.this._entityType);
+  ()
+}
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          3664
+        </td>
+        <td>
+          2626
+          -
+          2626
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          3661
+        </td>
+        <td>
+          2668
+          -
+          2668
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          3660
+        </td>
+        <td>
+          2646
+          -
+          2681
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.withEntityType
+        </td>
+        <td style="background: #AEF1AE">
+          builder.withEntityType(CellEntityCreator.this._entityType)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

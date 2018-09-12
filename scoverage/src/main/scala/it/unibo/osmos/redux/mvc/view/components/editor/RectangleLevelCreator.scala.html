@@ -1,0 +1,1128 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/components/editor/RectangleLevelCreator.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.components.editor
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.view.ViewConstants
+</span>5 <span style=''>import it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField
+</span>6 <span style=''>import it.unibo.osmos.redux.utils.Point
+</span>7 <span style=''>import scalafx.beans.property.DoubleProperty
+</span>8 <span style=''>import scalafx.scene.control.Label
+</span>9 <span style=''>import scalafx.scene.layout.VBox
+</span>10 <span style=''>
+</span>11 <span style=''>/** A panel showing input nodes which is also capable of providing the requested rectangular level */
+</span>12 <span style=''>class RectangleLevelCreator extends BaseEditorCreator[MapShape.Rectangle] {
+</span>13 <span style=''>
+</span>14 <span style=''>  /** Center */
+</span>15 <span style=''>  val xCenter: DoubleProperty = </span><span style='background: #AEF1AE'>DoubleProperty(0.0)</span><span style=''>
+</span>16 <span style=''>  val yCenter: DoubleProperty = </span><span style='background: #AEF1AE'>DoubleProperty(0.0)</span><span style=''>
+</span>17 <span style=''>  /** Level width node */
+</span>18 <span style=''>  val levelWidth: DoubleProperty = </span><span style='background: #AEF1AE'>DoubleProperty(0.0)</span><span style=''>
+</span>19 <span style=''>  val maxLevelWidth: Double = </span><span style='background: #AEF1AE'>ViewConstants.Editor.MaxLevelWidth</span><span style=''>
+</span>20 <span style=''>  /** Level height node */
+</span>21 <span style=''>  val levelHeight: DoubleProperty = </span><span style='background: #AEF1AE'>DoubleProperty(0.0)</span><span style=''>
+</span>22 <span style=''>  val maxLevelHeight: Double = </span><span style='background: #AEF1AE'>ViewConstants.Editor.MaxLevelHeight</span><span style=''>
+</span>23 <span style=''>  private val centerNode = </span><span style='background: #AEF1AE'>new VBox(2.0, new Label(&quot;Center&quot;),
+</span>24 <span style=''></span><span style='background: #AEF1AE'>    new TitledDoubleField(&quot;x: &quot;, xCenter).innerNode,
+</span>25 <span style=''></span><span style='background: #AEF1AE'>    new TitledDoubleField(&quot;y: &quot;, yCenter).innerNode
+</span>26 <span style=''></span><span style='background: #AEF1AE'>  )</span><span style=''>
+</span>27 <span style=''>  private val widthNode = </span><span style='background: #AEF1AE'>new VBox(2.0, new Label(s&quot;Width (max $maxLevelWidth)&quot;),
+</span>28 <span style=''></span><span style='background: #AEF1AE'>    new TitledDoubleField(&quot;Width: &quot;, levelWidth, 1.0, maxLevelWidth).innerNode,
+</span>29 <span style=''></span><span style='background: #AEF1AE'>  )</span><span style=''>
+</span>30 <span style=''>  private val heightNode = </span><span style='background: #AEF1AE'>new VBox(2.0, new Label(s&quot;Height (max $maxLevelHeight)&quot;),
+</span>31 <span style=''></span><span style='background: #AEF1AE'>    new TitledDoubleField(&quot;Height: &quot;, levelHeight, 1.0, maxLevelHeight).innerNode,
+</span>32 <span style=''></span><span style='background: #AEF1AE'>  )</span><span style=''>
+</span>33 <span style=''>
+</span>34 <span style=''>  </span><span style='background: #AEF1AE'>children = Seq(centerNode, widthNode, heightNode)</span><span style=''>
+</span>35 <span style=''>
+</span>36 <span style=''>  override def create(): MapShape.Rectangle = </span><span style='background: #AEF1AE'>MapShape.Rectangle(Point(xCenter.value, yCenter.value), levelHeight.value, levelWidth.value)</span><span style=''>
+</span>37 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          3979
+        </td>
+        <td>
+          631
+          -
+          650
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.DoubleProperty.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scalafx.beans.property.DoubleProperty.apply(0.0)
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          3980
+        </td>
+        <td>
+          683
+          -
+          702
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.DoubleProperty.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scalafx.beans.property.DoubleProperty.apply(0.0)
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          3981
+        </td>
+        <td>
+          764
+          -
+          783
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.DoubleProperty.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scalafx.beans.property.DoubleProperty.apply(0.0)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          3982
+        </td>
+        <td>
+          814
+          -
+          848
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Editor.MaxLevelWidth
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Editor.MaxLevelWidth
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          3983
+        </td>
+        <td>
+          912
+          -
+          931
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.DoubleProperty.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scalafx.beans.property.DoubleProperty.apply(0.0)
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          3984
+        </td>
+        <td>
+          963
+          -
+          998
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Editor.MaxLevelHeight
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Editor.MaxLevelHeight
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          3986
+        </td>
+        <td>
+          1040
+          -
+          1059
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.Label.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new scalafx.scene.control.Label(&quot;Center&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          3985
+        </td>
+        <td>
+          1035
+          -
+          1038
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          2.0
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          3993
+        </td>
+        <td>
+          1026
+          -
+          1169
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.VBox.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new scalafx.scene.layout.VBox(2.0, new scalafx.scene.control.Label(&quot;Center&quot;), new it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField(&quot;x: &quot;, RectangleLevelCreator.this.xCenter).innerNode, new it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField(&quot;y: &quot;, RectangleLevelCreator.this.yCenter).innerNode)
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          3989
+        </td>
+        <td>
+          1065
+          -
+          1112
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField.innerNode
+        </td>
+        <td style="background: #AEF1AE">
+          new it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField(&quot;x: &quot;, RectangleLevelCreator.this.xCenter).innerNode
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          3988
+        </td>
+        <td>
+          1094
+          -
+          1101
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.RectangleLevelCreator.xCenter
+        </td>
+        <td style="background: #AEF1AE">
+          RectangleLevelCreator.this.xCenter
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          3987
+        </td>
+        <td>
+          1087
+          -
+          1092
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;x: &quot;
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          3991
+        </td>
+        <td>
+          1147
+          -
+          1154
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.RectangleLevelCreator.yCenter
+        </td>
+        <td style="background: #AEF1AE">
+          RectangleLevelCreator.this.yCenter
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          3990
+        </td>
+        <td>
+          1140
+          -
+          1145
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;y: &quot;
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          3992
+        </td>
+        <td>
+          1118
+          -
+          1165
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField.innerNode
+        </td>
+        <td style="background: #AEF1AE">
+          new it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField(&quot;y: &quot;, RectangleLevelCreator.this.yCenter).innerNode
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          3995
+        </td>
+        <td>
+          1222
+          -
+          1234
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;Width (max &quot;
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          3998
+        </td>
+        <td>
+          1220
+          -
+          1249
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.StringContext.s
+        </td>
+        <td style="background: #AEF1AE">
+          scala.StringContext.apply(&quot;Width (max &quot;, &quot;)&quot;).s(RectangleLevelCreator.this.maxLevelWidth)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          3997
+        </td>
+        <td>
+          1234
+          -
+          1247
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.RectangleLevelCreator.maxLevelWidth
+        </td>
+        <td style="background: #AEF1AE">
+          RectangleLevelCreator.this.maxLevelWidth
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          3994
+        </td>
+        <td>
+          1205
+          -
+          1208
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          2.0
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          4005
+        </td>
+        <td>
+          1196
+          -
+          1335
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.VBox.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new scalafx.scene.layout.VBox(2.0, new scalafx.scene.control.Label(scala.StringContext.apply(&quot;Width (max &quot;, &quot;)&quot;).s(RectangleLevelCreator.this.maxLevelWidth)), new it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField(&quot;Width: &quot;, RectangleLevelCreator.this.levelWidth, 1.0, RectangleLevelCreator.this.maxLevelWidth).innerNode)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          3996
+        </td>
+        <td>
+          1247
+          -
+          1249
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;)&quot;
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          3999
+        </td>
+        <td>
+          1210
+          -
+          1250
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.Label.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new scalafx.scene.control.Label(scala.StringContext.apply(&quot;Width (max &quot;, &quot;)&quot;).s(RectangleLevelCreator.this.maxLevelWidth))
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          4004
+        </td>
+        <td>
+          1256
+          -
+          1330
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField.innerNode
+        </td>
+        <td style="background: #AEF1AE">
+          new it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField(&quot;Width: &quot;, RectangleLevelCreator.this.levelWidth, 1.0, RectangleLevelCreator.this.maxLevelWidth).innerNode
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          4000
+        </td>
+        <td>
+          1278
+          -
+          1287
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;Width: &quot;
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          4003
+        </td>
+        <td>
+          1306
+          -
+          1319
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.RectangleLevelCreator.maxLevelWidth
+        </td>
+        <td style="background: #AEF1AE">
+          RectangleLevelCreator.this.maxLevelWidth
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          4002
+        </td>
+        <td>
+          1301
+          -
+          1304
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          1.0
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          4001
+        </td>
+        <td>
+          1289
+          -
+          1299
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.RectangleLevelCreator.levelWidth
+        </td>
+        <td style="background: #AEF1AE">
+          RectangleLevelCreator.this.levelWidth
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          4007
+        </td>
+        <td>
+          1389
+          -
+          1402
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;Height (max &quot;
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          4006
+        </td>
+        <td>
+          1372
+          -
+          1375
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          2.0
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          4009
+        </td>
+        <td>
+          1402
+          -
+          1416
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.RectangleLevelCreator.maxLevelHeight
+        </td>
+        <td style="background: #AEF1AE">
+          RectangleLevelCreator.this.maxLevelHeight
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          4011
+        </td>
+        <td>
+          1377
+          -
+          1419
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.Label.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new scalafx.scene.control.Label(scala.StringContext.apply(&quot;Height (max &quot;, &quot;)&quot;).s(RectangleLevelCreator.this.maxLevelHeight))
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          4017
+        </td>
+        <td>
+          1363
+          -
+          1507
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.VBox.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new scalafx.scene.layout.VBox(2.0, new scalafx.scene.control.Label(scala.StringContext.apply(&quot;Height (max &quot;, &quot;)&quot;).s(RectangleLevelCreator.this.maxLevelHeight)), new it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField(&quot;Height: &quot;, RectangleLevelCreator.this.levelHeight, 1.0, RectangleLevelCreator.this.maxLevelHeight).innerNode)
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          4008
+        </td>
+        <td>
+          1416
+          -
+          1418
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;)&quot;
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          4010
+        </td>
+        <td>
+          1387
+          -
+          1418
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.StringContext.s
+        </td>
+        <td style="background: #AEF1AE">
+          scala.StringContext.apply(&quot;Height (max &quot;, &quot;)&quot;).s(RectangleLevelCreator.this.maxLevelHeight)
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          4013
+        </td>
+        <td>
+          1459
+          -
+          1470
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.RectangleLevelCreator.levelHeight
+        </td>
+        <td style="background: #AEF1AE">
+          RectangleLevelCreator.this.levelHeight
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          4016
+        </td>
+        <td>
+          1425
+          -
+          1502
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField.innerNode
+        </td>
+        <td style="background: #AEF1AE">
+          new it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField(&quot;Height: &quot;, RectangleLevelCreator.this.levelHeight, 1.0, RectangleLevelCreator.this.maxLevelHeight).innerNode
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          4015
+        </td>
+        <td>
+          1477
+          -
+          1491
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.RectangleLevelCreator.maxLevelHeight
+        </td>
+        <td style="background: #AEF1AE">
+          RectangleLevelCreator.this.maxLevelHeight
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          4012
+        </td>
+        <td>
+          1447
+          -
+          1457
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;Height: &quot;
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          4014
+        </td>
+        <td>
+          1472
+          -
+          1475
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          1.0
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          4022
+        </td>
+        <td>
+          1511
+          -
+          1560
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Pane.children_=
+        </td>
+        <td style="background: #AEF1AE">
+          RectangleLevelCreator.this.children_=(scala.collection.Seq.apply[scalafx.scene.layout.VBox](RectangleLevelCreator.this.centerNode, RectangleLevelCreator.this.widthNode, RectangleLevelCreator.this.heightNode))
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          4018
+        </td>
+        <td>
+          1526
+          -
+          1536
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.RectangleLevelCreator.centerNode
+        </td>
+        <td style="background: #AEF1AE">
+          RectangleLevelCreator.this.centerNode
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          4021
+        </td>
+        <td>
+          1522
+          -
+          1560
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.collection.Seq.apply[scalafx.scene.layout.VBox](RectangleLevelCreator.this.centerNode, RectangleLevelCreator.this.widthNode, RectangleLevelCreator.this.heightNode)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          4020
+        </td>
+        <td>
+          1549
+          -
+          1559
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.RectangleLevelCreator.heightNode
+        </td>
+        <td style="background: #AEF1AE">
+          RectangleLevelCreator.this.heightNode
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          4019
+        </td>
+        <td>
+          1538
+          -
+          1547
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.RectangleLevelCreator.widthNode
+        </td>
+        <td style="background: #AEF1AE">
+          RectangleLevelCreator.this.widthNode
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          4024
+        </td>
+        <td>
+          1648
+          -
+          1661
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyDoubleProperty.value
+        </td>
+        <td style="background: #AEF1AE">
+          RectangleLevelCreator.this.yCenter.value
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          4027
+        </td>
+        <td>
+          1683
+          -
+          1699
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyDoubleProperty.value
+        </td>
+        <td style="background: #AEF1AE">
+          RectangleLevelCreator.this.levelWidth.value
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          4023
+        </td>
+        <td>
+          1633
+          -
+          1646
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyDoubleProperty.value
+        </td>
+        <td style="background: #AEF1AE">
+          RectangleLevelCreator.this.xCenter.value
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          4026
+        </td>
+        <td>
+          1664
+          -
+          1681
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyDoubleProperty.value
+        </td>
+        <td style="background: #AEF1AE">
+          RectangleLevelCreator.this.levelHeight.value
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          4025
+        </td>
+        <td>
+          1627
+          -
+          1662
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Point.apply(RectangleLevelCreator.this.xCenter.value, RectangleLevelCreator.this.yCenter.value)
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          4028
+        </td>
+        <td>
+          1608
+          -
+          1700
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.Rectangle.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.Rectangle.apply(it.unibo.osmos.redux.utils.Point.apply(RectangleLevelCreator.this.xCenter.value, RectangleLevelCreator.this.yCenter.value), RectangleLevelCreator.this.levelHeight.value, RectangleLevelCreator.this.levelWidth.value)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

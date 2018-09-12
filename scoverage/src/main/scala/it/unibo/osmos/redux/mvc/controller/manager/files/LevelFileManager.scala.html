@@ -1,0 +1,2490 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/controller/manager/files/LevelFileManager.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.controller.manager.files
+</span>2 <span style=''>
+</span>3 <span style=''>import java.io.File
+</span>4 <span style=''>import java.nio.file.{Files, Path, Paths}
+</span>5 <span style=''>
+</span>6 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.{Level, LevelInfo}
+</span>7 <span style=''>import it.unibo.osmos.redux.mvc.model.JsonProtocols._
+</span>8 <span style=''>import it.unibo.osmos.redux.utils.Constants.UserHomePaths._
+</span>9 <span style=''>import it.unibo.osmos.redux.utils.Logger
+</span>10 <span style=''>import spray.json.DefaultJsonProtocol._
+</span>11 <span style=''>import spray.json._
+</span>12 <span style=''>
+</span>13 <span style=''>import scala.util.{Failure, Success, Try}
+</span>14 <span style=''>
+</span>15 <span style=''>/** Defines operation on levels files */
+</span>16 <span style=''>object LevelFileManager extends FileManager {
+</span>17 <span style=''>
+</span>18 <span style=''>  implicit val who: String = </span><span style='background: #AEF1AE'>&quot;LevelFileManager&quot;</span><span style=''>
+</span>19 <span style=''>
+</span>20 <span style=''>  /** Get a list of file names who contain single player or multiPlayer levels
+</span>21 <span style=''>    *
+</span>22 <span style=''>    * @param multiPlayer true if is required multiPlayer level files name
+</span>23 <span style=''>    * @return an Option of List[String]
+</span>24 <span style=''>    */
+</span>25 <span style=''>  def getLevelsConfigResourcesPath(multiPlayer: Boolean = false): Option[List[String]] = {
+</span>26 <span style=''>    import it.unibo.osmos.redux.utils.Constants.ResourcesPaths._
+</span>27 <span style=''>    val configPath = </span><span style='background: #AEF1AE'>(if (multiPlayer) </span><span style='background: #F0ADAD'>ConfigMultiPlayer</span><span style='background: #AEF1AE'> else ConfigSinglePlayer) + jsonExtension</span><span style=''>
+</span>28 <span style=''>    </span><span style='background: #AEF1AE'>Try(getResourcesFileText(configPath).parseJson.convertTo[List[String]]).toOption</span><span style=''>
+</span>29 <span style=''>  }
+</span>30 <span style=''>
+</span>31 <span style=''>  /** Reads a file from the resources folder.
+</span>32 <span style=''>    *
+</span>33 <span style=''>    * @param chosenLevel levels name
+</span>34 <span style=''>    * @return content of file as Level wrapped into an Option
+</span>35 <span style=''>    */
+</span>36 <span style=''>  def getLevelFromResource(chosenLevel: String, isMultiPlayer: Boolean = false): Option[Level] = {
+</span>37 <span style=''>    import it.unibo.osmos.redux.utils.Constants.ResourcesPaths._
+</span>38 <span style=''>    val levelsPath = </span><span style='background: #AEF1AE'>(if (isMultiPlayer) MultiPlayerLevelsPath else SinglePlayerLevelsPath) + chosenLevel + jsonExtension</span><span style=''>
+</span>39 <span style=''>    </span><span style='background: #AEF1AE'>textToLevel(getResourcesFileText(levelsPath))</span><span style=''> match {
+</span>40 <span style=''>      case Success(level) =&gt; </span><span style='background: #AEF1AE'>level.checkCellPosition()</span><span style=''>
+</span>41 <span style=''>        </span><span style='background: #AEF1AE'>Some(level)</span><span style=''>
+</span>42 <span style=''>      case Failure(e: Throwable) =&gt; </span><span style='background: #F0ADAD'>Logger.log(e.printStackTrace().toString)</span><span style=''>; </span><span style='background: #F0ADAD'>None</span><span style=''>
+</span>43 <span style=''>    }
+</span>44 <span style=''>  }
+</span>45 <span style=''>
+</span>46 <span style=''>  private def textToLevel(text: String): Try[Level] = </span><span style='background: #AEF1AE'>Try(text.parseJson.convertTo[Level])</span><span style=''>
+</span>47 <span style=''>
+</span>48 <span style=''>  /** Save a custom level into user home.
+</span>49 <span style=''>    *
+</span>50 <span style=''>    * @param level Level
+</span>51 <span style=''>    * @return true if the operation is completed with success
+</span>52 <span style=''>    */
+</span>53 <span style=''>  def saveCustomLevel(level: Level): Boolean = {
+</span>54 <span style=''>    val filePath = </span><span style='background: #AEF1AE'>processFilePath(level.levelInfo.name)</span><span style=''>
+</span>55 <span style=''>    val levelFile = </span><span style='background: #AEF1AE'>new File(filePath._1.toUri)</span><span style=''>
+</span>56 <span style=''>    </span><span style='background: #AEF1AE'>level.levelInfo.name = filePath._2</span><span style=''>
+</span>57 <span style=''>    </span><span style='background: #AEF1AE'>createDirectoriesTree(levelFile)</span><span style=''>
+</span>58 <span style=''>    </span><span style='background: #AEF1AE'>saveToFile(levelFile, level.toJson.prettyPrint)</span><span style=''>
+</span>59 <span style=''>  }
+</span>60 <span style=''>
+</span>61 <span style=''>  /** Delete a custom level file.
+</span>62 <span style=''>    *
+</span>63 <span style=''>    * @param levelName the name of the file
+</span>64 <span style=''>    * @return Try[Unit]
+</span>65 <span style=''>    */
+</span>66 <span style=''>  def deleteCustomLevel(levelName: String): Try[Unit] = </span><span style='background: #AEF1AE'>deleteFile(Paths.get(LevelsDirectory + levelName + jsonExtension))</span><span style=''>
+</span>67 <span style=''>
+</span>68 <span style=''>  /** Load level from file saved into user home directory
+</span>69 <span style=''>    *
+</span>70 <span style=''>    * @param fileName the name of the file
+</span>71 <span style=''>    * @return an Option with the required Level if it doesn't fail
+</span>72 <span style=''>    */
+</span>73 <span style=''>  def getCustomLevel(implicit fileName: String): Option[Level] =
+</span>74 <span style=''>    </span><span style='background: #AEF1AE'>loadFile(LevelsDirectory + fileName + jsonExtension)</span><span style=''> match {
+</span>75 <span style=''>      case Some(text) =&gt; </span><span style='background: #AEF1AE'>textToLevel(text)</span><span style=''> match {
+</span>76 <span style=''>        case Success(level) =&gt; </span><span style='background: #AEF1AE'>level.checkCellPosition()</span><span style=''>
+</span>77 <span style=''>          </span><span style='background: #AEF1AE'>Some(level)</span><span style=''>
+</span>78 <span style=''>        case Failure(_) =&gt; </span><span style='background: #F0ADAD'>Logger.log(&quot;Error: convertion of custom level &quot; + fileName + &quot; is failed&quot;)(who)</span><span style=''>
+</span>79 <span style=''>          </span><span style='background: #F0ADAD'>None</span><span style=''>
+</span>80 <span style=''>      }
+</span>81 <span style=''>      case _ =&gt; </span><span style='background: #AEF1AE'>None</span><span style=''>
+</span>82 <span style=''>    }
+</span>83 <span style=''>
+</span>84 <span style=''>  /** Read from file the custom levels info
+</span>85 <span style=''>    *
+</span>86 <span style=''>    * @return if exists a list of LevelInfo
+</span>87 <span style=''>    */
+</span>88 <span style=''>  def getCustomLevelsInfo: Try[List[LevelInfo]] = {
+</span>89 <span style=''>    /*Create directory tree for avoid NullPointer exception later*/
+</span>90 <span style=''>    </span><span style='background: #F0ADAD'>createDirectoriesTree(new File(LevelsDirectory + &quot;rnd.txt&quot;))</span><span style=''>
+</span>91 <span style=''>    </span><span style='background: #F0ADAD'>Try(new File(LevelsDirectory).listFiles((_, name) =&gt; name.endsWith(jsonExtension))
+</span>92 <span style=''></span><span style='background: #F0ADAD'>      .map(f =&gt; loadLevelInfo(f))
+</span>93 <span style=''></span><span style='background: #F0ADAD'>      .filter(optLvl =&gt; optLvl.isDefined).map(opt =&gt; opt.get).toList)</span><span style=''>
+</span>94 <span style=''>  }
+</span>95 <span style=''>
+</span>96 <span style=''>  private def loadLevelInfo(implicit fileName: String): Option[LevelInfo] =
+</span>97 <span style=''>    </span><span style='background: #F0ADAD'>loadFile(LevelsDirectory + fileName + jsonExtension)</span><span style=''> match {
+</span>98 <span style=''>      case Some(text) =&gt; </span><span style='background: #F0ADAD'>textToLevelInfo(text).toOption</span><span style=''>
+</span>99 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>None</span><span style=''>
+</span>100 <span style=''>    }
+</span>101 <span style=''>
+</span>102 <span style=''>  private def textToLevelInfo(text: String): Try[LevelInfo] = </span><span style='background: #F0ADAD'>Try(text.parseJson.convertTo[LevelInfo])</span><span style=''>
+</span>103 <span style=''>
+</span>104 <span style=''>  /** Read from file into resources the levels info
+</span>105 <span style=''>    *
+</span>106 <span style=''>    * @return Option[LevelInfo]
+</span>107 <span style=''>    */
+</span>108 <span style=''>  def getResourceLevelInfo(filePath: String): Option[LevelInfo] = {
+</span>109 <span style=''>    </span><span style='background: #AEF1AE'>Try(getResourcesFileText(filePath).parseJson.convertTo[LevelInfo])</span><span style=''> match {
+</span>110 <span style=''>      case Success(value) =&gt; </span><span style='background: #AEF1AE'>Some(value)</span><span style=''>
+</span>111 <span style=''>      case Failure(_) =&gt; </span><span style='background: #F0ADAD'>Logger.log(&quot;File not found into resources: &quot; + filePath)</span><span style=''>
+</span>112 <span style=''>        </span><span style='background: #F0ADAD'>None</span><span style=''>
+</span>113 <span style=''>    }
+</span>114 <span style=''>  }
+</span>115 <span style=''>
+</span>116 <span style=''>  private def processFilePath(fileName: String, index: Option[Int] = None): (Path, String) = {
+</span>117 <span style=''>    val uniqueName = </span><span style='background: #AEF1AE'>fileName + index.getOrElse(&quot;&quot;)</span><span style=''>
+</span>118 <span style=''>    val path = </span><span style='background: #AEF1AE'>DefaultFS.getPath(LevelsDirectory + uniqueName + jsonExtension)</span><span style=''>
+</span>119 <span style=''>    if (</span><span style='background: #AEF1AE'>Files.exists(path)</span><span style=''>) {
+</span>120 <span style=''>      </span><span style='background: #AEF1AE'>processFilePath(fileName, if (index.isDefined) </span><span style='background: #F0ADAD'>Some(index.get + 1)</span><span style='background: #AEF1AE'> else Some(1))</span><span style=''>
+</span>121 <span style=''>    } else {
+</span>122 <span style=''>      </span><span style='background: #AEF1AE'>(path, uniqueName)</span><span style=''>
+</span>123 <span style=''>    }
+</span>124 <span style=''>  }
+</span>125 <span style=''>
+</span>126 <span style=''>  private implicit def getFileNameWithoutJsonExtension(file: File): String = </span><span style='background: #F0ADAD'>file.getName.substring(0, file.getName.length - jsonExtension.length)</span><span style=''>
+</span>127 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          2464
+        </td>
+        <td>
+          577
+          -
+          595
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;LevelFileManager&quot;
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          2470
+        </td>
+        <td>
+          980
+          -
+          1056
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #AEF1AE">
+          if (multiPlayer)
+  it.unibo.osmos.redux.utils.Constants.ResourcesPaths.ConfigMultiPlayer
+else
+  it.unibo.osmos.redux.utils.Constants.ResourcesPaths.ConfigSinglePlayer.+(LevelFileManager.this.jsonExtension)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          2469
+        </td>
+        <td>
+          1043
+          -
+          1056
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.jsonExtension
+        </td>
+        <td style="background: #AEF1AE">
+          LevelFileManager.this.jsonExtension
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          2466
+        </td>
+        <td>
+          998
+          -
+          1015
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.ResourcesPaths.ConfigMultiPlayer
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Constants.ResourcesPaths.ConfigMultiPlayer
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          2468
+        </td>
+        <td>
+          1021
+          -
+          1039
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.ResourcesPaths.ConfigSinglePlayer
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Constants.ResourcesPaths.ConfigSinglePlayer
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          2465
+        </td>
+        <td>
+          998
+          -
+          1015
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.ResourcesPaths.ConfigMultiPlayer
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Constants.ResourcesPaths.ConfigMultiPlayer
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          2467
+        </td>
+        <td>
+          1021
+          -
+          1039
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.ResourcesPaths.ConfigSinglePlayer
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Constants.ResourcesPaths.ConfigSinglePlayer
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          2472
+        </td>
+        <td>
+          1117
+          -
+          1117
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          spray.json.BasicFormats.StringJsonFormat
+        </td>
+        <td style="background: #AEF1AE">
+          spray.json.DefaultJsonProtocol.StringJsonFormat
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          2475
+        </td>
+        <td>
+          1061
+          -
+          1141
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.util.Try.toOption
+        </td>
+        <td style="background: #AEF1AE">
+          scala.util.Try.apply[List[String]](spray.json.`package`.enrichString(LevelFileManager.this.getResourcesFileText(configPath)).parseJson.convertTo[List[String]](spray.json.DefaultJsonProtocol.listFormat[String](spray.json.DefaultJsonProtocol.StringJsonFormat))).toOption
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          2474
+        </td>
+        <td>
+          1065
+          -
+          1131
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          spray.json.JsValue.convertTo
+        </td>
+        <td style="background: #AEF1AE">
+          spray.json.`package`.enrichString(LevelFileManager.this.getResourcesFileText(configPath)).parseJson.convertTo[List[String]](spray.json.DefaultJsonProtocol.listFormat[String](spray.json.DefaultJsonProtocol.StringJsonFormat))
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          2471
+        </td>
+        <td>
+          1065
+          -
+          1097
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.getResourcesFileText
+        </td>
+        <td style="background: #AEF1AE">
+          LevelFileManager.this.getResourcesFileText(configPath)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          2473
+        </td>
+        <td>
+          1117
+          -
+          1117
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          spray.json.CollectionFormats.listFormat
+        </td>
+        <td style="background: #AEF1AE">
+          spray.json.DefaultJsonProtocol.listFormat[String](spray.json.DefaultJsonProtocol.StringJsonFormat)
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          2479
+        </td>
+        <td>
+          1537
+          -
+          1559
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.ResourcesPaths.SinglePlayerLevelsPath
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Constants.ResourcesPaths.SinglePlayerLevelsPath
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          2478
+        </td>
+        <td>
+          1537
+          -
+          1559
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.ResourcesPaths.SinglePlayerLevelsPath
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Constants.ResourcesPaths.SinglePlayerLevelsPath
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          2481
+        </td>
+        <td>
+          1490
+          -
+          1590
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #AEF1AE">
+          if (isMultiPlayer)
+  it.unibo.osmos.redux.utils.Constants.ResourcesPaths.MultiPlayerLevelsPath
+else
+  it.unibo.osmos.redux.utils.Constants.ResourcesPaths.SinglePlayerLevelsPath.+(chosenLevel).+(LevelFileManager.this.jsonExtension)
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          2477
+        </td>
+        <td>
+          1510
+          -
+          1531
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.ResourcesPaths.MultiPlayerLevelsPath
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Constants.ResourcesPaths.MultiPlayerLevelsPath
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          2480
+        </td>
+        <td>
+          1577
+          -
+          1590
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.jsonExtension
+        </td>
+        <td style="background: #AEF1AE">
+          LevelFileManager.this.jsonExtension
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          2476
+        </td>
+        <td>
+          1510
+          -
+          1531
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.ResourcesPaths.MultiPlayerLevelsPath
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Constants.ResourcesPaths.MultiPlayerLevelsPath
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          2483
+        </td>
+        <td>
+          1595
+          -
+          1640
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager.textToLevel
+        </td>
+        <td style="background: #AEF1AE">
+          LevelFileManager.this.textToLevel(LevelFileManager.this.getResourcesFileText(levelsPath))
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          2482
+        </td>
+        <td>
+          1607
+          -
+          1639
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.getResourcesFileText
+        </td>
+        <td style="background: #AEF1AE">
+          LevelFileManager.this.getResourcesFileText(levelsPath)
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          2484
+        </td>
+        <td>
+          1678
+          -
+          1703
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.Level.checkCellPosition
+        </td>
+        <td style="background: #AEF1AE">
+          level.checkCellPosition()
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          2485
+        </td>
+        <td>
+          1712
+          -
+          1723
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Some.apply[it.unibo.osmos.redux.mvc.controller.levels.structure.Level](level)
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          2488
+        </td>
+        <td>
+          1760
+          -
+          1800
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Logger.log
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Logger.log(e.printStackTrace().toString())(LevelFileManager.this.who)
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          2487
+        </td>
+        <td>
+          1770
+          -
+          1770
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager.who
+        </td>
+        <td style="background: #F0ADAD">
+          LevelFileManager.this.who
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          2486
+        </td>
+        <td>
+          1771
+          -
+          1799
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Any.toString
+        </td>
+        <td style="background: #F0ADAD">
+          e.printStackTrace().toString()
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          2489
+        </td>
+        <td>
+          1802
+          -
+          1806
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #F0ADAD">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          2490
+        </td>
+        <td>
+          1900
+          -
+          1900
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.model.JsonProtocols.levelFormatter
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.model.JsonProtocols.levelFormatter
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          2492
+        </td>
+        <td>
+          1872
+          -
+          1908
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.util.Try.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.util.Try.apply[it.unibo.osmos.redux.mvc.controller.levels.structure.Level](spray.json.`package`.enrichString(text).parseJson.convertTo[it.unibo.osmos.redux.mvc.controller.levels.structure.Level](it.unibo.osmos.redux.mvc.model.JsonProtocols.levelFormatter))
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          2491
+        </td>
+        <td>
+          1876
+          -
+          1907
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          spray.json.JsValue.convertTo
+        </td>
+        <td style="background: #AEF1AE">
+          spray.json.`package`.enrichString(text).parseJson.convertTo[it.unibo.osmos.redux.mvc.controller.levels.structure.Level](it.unibo.osmos.redux.mvc.model.JsonProtocols.levelFormatter)
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          2493
+        </td>
+        <td>
+          2136
+          -
+          2156
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo.name
+        </td>
+        <td style="background: #AEF1AE">
+          level.levelInfo.name
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          2495
+        </td>
+        <td>
+          2120
+          -
+          2157
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager.processFilePath
+        </td>
+        <td style="background: #AEF1AE">
+          LevelFileManager.this.processFilePath(level.levelInfo.name, LevelFileManager.this.processFilePath$default$2)
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          2494
+        </td>
+        <td>
+          2120
+          -
+          2120
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager.processFilePath$default$2
+        </td>
+        <td style="background: #AEF1AE">
+          LevelFileManager.this.processFilePath$default$2
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          2496
+        </td>
+        <td>
+          2187
+          -
+          2204
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.nio.file.Path.toUri
+        </td>
+        <td style="background: #AEF1AE">
+          filePath._1.toUri()
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          2497
+        </td>
+        <td>
+          2178
+          -
+          2205
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.io.File.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new java.io.File(filePath._1.toUri())
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          2499
+        </td>
+        <td>
+          2210
+          -
+          2244
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo.name_=
+        </td>
+        <td style="background: #AEF1AE">
+          level.levelInfo.name_=(filePath._2)
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          2498
+        </td>
+        <td>
+          2233
+          -
+          2244
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._2
+        </td>
+        <td style="background: #AEF1AE">
+          filePath._2
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          2500
+        </td>
+        <td>
+          2249
+          -
+          2281
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.createDirectoriesTree
+        </td>
+        <td style="background: #AEF1AE">
+          LevelFileManager.this.createDirectoriesTree(levelFile)
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          2502
+        </td>
+        <td>
+          2308
+          -
+          2332
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          spray.json.JsValue.prettyPrint
+        </td>
+        <td style="background: #AEF1AE">
+          spray.json.`package`.enrichAny[it.unibo.osmos.redux.mvc.controller.levels.structure.Level](level).toJson(it.unibo.osmos.redux.mvc.model.JsonProtocols.levelFormatter).prettyPrint
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          2501
+        </td>
+        <td>
+          2314
+          -
+          2314
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.model.JsonProtocols.levelFormatter
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.model.JsonProtocols.levelFormatter
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          2503
+        </td>
+        <td>
+          2286
+          -
+          2333
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.saveToFile
+        </td>
+        <td style="background: #AEF1AE">
+          LevelFileManager.this.saveToFile(levelFile, spray.json.`package`.enrichAny[it.unibo.osmos.redux.mvc.controller.levels.structure.Level](level).toJson(it.unibo.osmos.redux.mvc.model.JsonProtocols.levelFormatter).prettyPrint)
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          2505
+        </td>
+        <td>
+          2531
+          -
+          2574
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Constants.UserHomePaths.LevelsDirectory.+(levelName).+(LevelFileManager.this.jsonExtension)
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          2504
+        </td>
+        <td>
+          2561
+          -
+          2574
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.jsonExtension
+        </td>
+        <td style="background: #AEF1AE">
+          LevelFileManager.this.jsonExtension
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          2507
+        </td>
+        <td>
+          2510
+          -
+          2576
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.deleteFile
+        </td>
+        <td style="background: #AEF1AE">
+          LevelFileManager.this.deleteFile(java.nio.file.Paths.get(it.unibo.osmos.redux.utils.Constants.UserHomePaths.LevelsDirectory.+(levelName).+(LevelFileManager.this.jsonExtension)))
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          2506
+        </td>
+        <td>
+          2521
+          -
+          2575
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.nio.file.Paths.get
+        </td>
+        <td style="background: #AEF1AE">
+          java.nio.file.Paths.get(it.unibo.osmos.redux.utils.Constants.UserHomePaths.LevelsDirectory.+(levelName).+(LevelFileManager.this.jsonExtension))
+        </td>
+      </tr><tr>
+        <td>
+          74
+        </td>
+        <td>
+          2508
+        </td>
+        <td>
+          2866
+          -
+          2879
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.jsonExtension
+        </td>
+        <td style="background: #AEF1AE">
+          LevelFileManager.this.jsonExtension
+        </td>
+      </tr><tr>
+        <td>
+          74
+        </td>
+        <td>
+          2510
+        </td>
+        <td>
+          2828
+          -
+          2880
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.loadFile
+        </td>
+        <td style="background: #AEF1AE">
+          LevelFileManager.this.loadFile(it.unibo.osmos.redux.utils.Constants.UserHomePaths.LevelsDirectory.+(fileName).+(LevelFileManager.this.jsonExtension))
+        </td>
+      </tr><tr>
+        <td>
+          74
+        </td>
+        <td>
+          2509
+        </td>
+        <td>
+          2837
+          -
+          2879
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Constants.UserHomePaths.LevelsDirectory.+(fileName).+(LevelFileManager.this.jsonExtension)
+        </td>
+      </tr><tr>
+        <td>
+          75
+        </td>
+        <td>
+          2511
+        </td>
+        <td>
+          2914
+          -
+          2931
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager.textToLevel
+        </td>
+        <td style="background: #AEF1AE">
+          LevelFileManager.this.textToLevel(text)
+        </td>
+      </tr><tr>
+        <td>
+          76
+        </td>
+        <td>
+          2512
+        </td>
+        <td>
+          2971
+          -
+          2996
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.Level.checkCellPosition
+        </td>
+        <td style="background: #AEF1AE">
+          level.checkCellPosition()
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          2513
+        </td>
+        <td>
+          3007
+          -
+          3018
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Some.apply[it.unibo.osmos.redux.mvc.controller.levels.structure.Level](level)
+        </td>
+      </tr><tr>
+        <td>
+          78
+        </td>
+        <td>
+          2514
+        </td>
+        <td>
+          3057
+          -
+          3119
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;Error: convertion of custom level &quot;.+(fileName).+(&quot; is failed&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          78
+        </td>
+        <td>
+          2516
+        </td>
+        <td>
+          3046
+          -
+          3125
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Logger.log
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Logger.log(&quot;Error: convertion of custom level &quot;.+(fileName).+(&quot; is failed&quot;))(LevelFileManager.this.who)
+        </td>
+      </tr><tr>
+        <td>
+          78
+        </td>
+        <td>
+          2515
+        </td>
+        <td>
+          3121
+          -
+          3124
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager.who
+        </td>
+        <td style="background: #F0ADAD">
+          LevelFileManager.this.who
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          2517
+        </td>
+        <td>
+          3136
+          -
+          3140
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #F0ADAD">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          81
+        </td>
+        <td>
+          2518
+        </td>
+        <td>
+          3165
+          -
+          3169
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #AEF1AE">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          90
+        </td>
+        <td>
+          2520
+        </td>
+        <td>
+          3424
+          -
+          3461
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.io.File.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new java.io.File(it.unibo.osmos.redux.utils.Constants.UserHomePaths.LevelsDirectory.+(&quot;rnd.txt&quot;))
+        </td>
+      </tr><tr>
+        <td>
+          90
+        </td>
+        <td>
+          2519
+        </td>
+        <td>
+          3433
+          -
+          3460
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Constants.UserHomePaths.LevelsDirectory.+(&quot;rnd.txt&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          90
+        </td>
+        <td>
+          2521
+        </td>
+        <td>
+          3402
+          -
+          3462
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.createDirectoriesTree
+        </td>
+        <td style="background: #F0ADAD">
+          LevelFileManager.this.createDirectoriesTree(new java.io.File(it.unibo.osmos.redux.utils.Constants.UserHomePaths.LevelsDirectory.+(&quot;rnd.txt&quot;)))
+        </td>
+      </tr><tr>
+        <td>
+          91
+        </td>
+        <td>
+          2523
+        </td>
+        <td>
+          3534
+          -
+          3547
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.jsonExtension
+        </td>
+        <td style="background: #F0ADAD">
+          LevelFileManager.this.jsonExtension
+        </td>
+      </tr><tr>
+        <td>
+          91
+        </td>
+        <td>
+          2522
+        </td>
+        <td>
+          3480
+          -
+          3495
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.UserHomePaths.LevelsDirectory
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Constants.UserHomePaths.LevelsDirectory
+        </td>
+      </tr><tr>
+        <td>
+          91
+        </td>
+        <td>
+          2525
+        </td>
+        <td>
+          3471
+          -
+          3549
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.io.File.listFiles
+        </td>
+        <td style="background: #F0ADAD">
+          new java.io.File(it.unibo.osmos.redux.utils.Constants.UserHomePaths.LevelsDirectory).listFiles(((x$1: java.io.File, name: String) =&gt; name.endsWith(LevelFileManager.this.jsonExtension)))
+        </td>
+      </tr><tr>
+        <td>
+          91
+        </td>
+        <td>
+          2524
+        </td>
+        <td>
+          3520
+          -
+          3548
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.endsWith
+        </td>
+        <td style="background: #F0ADAD">
+          name.endsWith(LevelFileManager.this.jsonExtension)
+        </td>
+      </tr><tr>
+        <td>
+          91
+        </td>
+        <td>
+          2536
+        </td>
+        <td>
+          3467
+          -
+          3653
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.util.Try.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.util.Try.apply[List[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]](scala.Predef.refArrayOps[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo](scala.Predef.refArrayOps[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]](scala.Predef.refArrayOps[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]](scala.Predef.refArrayOps[java.io.File](new java.io.File(it.unibo.osmos.redux.utils.Constants.UserHomePaths.LevelsDirectory).listFiles(((x$1: java.io.File, name: String) =&gt; name.endsWith(LevelFileManager.this.jsonExtension)))).map[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo], Array[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]]](((f: java.io.File) =&gt; LevelFileManager.this.loadLevelInfo(LevelFileManager.this.getFileNameWithoutJsonExtension(f))))(scala.this.Array.canBuildFrom[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]]((ClassTag.apply[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]](classOf[scala.Option]): scala.reflect.ClassTag[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]])))).filter(((optLvl: Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]) =&gt; optLvl.isDefined))).map[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo, Array[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]](((opt: Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]) =&gt; opt.get))(scala.this.Array.canBuildFrom[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]((ClassTag.apply[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo](classOf[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]): scala.reflect.ClassTag[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo])))).toList)
+        </td>
+      </tr><tr>
+        <td>
+          92
+        </td>
+        <td>
+          2529
+        </td>
+        <td>
+          3471
+          -
+          3583
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.TraversableLike.map
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Predef.refArrayOps[java.io.File](new java.io.File(it.unibo.osmos.redux.utils.Constants.UserHomePaths.LevelsDirectory).listFiles(((x$1: java.io.File, name: String) =&gt; name.endsWith(LevelFileManager.this.jsonExtension)))).map[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo], Array[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]]](((f: java.io.File) =&gt; LevelFileManager.this.loadLevelInfo(LevelFileManager.this.getFileNameWithoutJsonExtension(f))))(scala.this.Array.canBuildFrom[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]]((ClassTag.apply[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]](classOf[scala.Option]): scala.reflect.ClassTag[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]])))
+        </td>
+      </tr><tr>
+        <td>
+          92
+        </td>
+        <td>
+          2526
+        </td>
+        <td>
+          3580
+          -
+          3581
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager.getFileNameWithoutJsonExtension
+        </td>
+        <td style="background: #F0ADAD">
+          LevelFileManager.this.getFileNameWithoutJsonExtension(f)
+        </td>
+      </tr><tr>
+        <td>
+          92
+        </td>
+        <td>
+          2528
+        </td>
+        <td>
+          3560
+          -
+          3560
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.Array.canBuildFrom
+        </td>
+        <td style="background: #F0ADAD">
+          scala.this.Array.canBuildFrom[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]]((ClassTag.apply[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]](classOf[scala.Option]): scala.reflect.ClassTag[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]]))
+        </td>
+      </tr><tr>
+        <td>
+          92
+        </td>
+        <td>
+          2527
+        </td>
+        <td>
+          3566
+          -
+          3582
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager.loadLevelInfo
+        </td>
+        <td style="background: #F0ADAD">
+          LevelFileManager.this.loadLevelInfo(LevelFileManager.this.getFileNameWithoutJsonExtension(f))
+        </td>
+      </tr><tr>
+        <td>
+          93
+        </td>
+        <td>
+          2532
+        </td>
+        <td>
+          3637
+          -
+          3644
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.get
+        </td>
+        <td style="background: #F0ADAD">
+          opt.get
+        </td>
+      </tr><tr>
+        <td>
+          93
+        </td>
+        <td>
+          2535
+        </td>
+        <td>
+          3471
+          -
+          3652
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.TraversableOnce.toList
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Predef.refArrayOps[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo](scala.Predef.refArrayOps[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]](scala.Predef.refArrayOps[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]](scala.Predef.refArrayOps[java.io.File](new java.io.File(it.unibo.osmos.redux.utils.Constants.UserHomePaths.LevelsDirectory).listFiles(((x$1: java.io.File, name: String) =&gt; name.endsWith(LevelFileManager.this.jsonExtension)))).map[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo], Array[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]]](((f: java.io.File) =&gt; LevelFileManager.this.loadLevelInfo(LevelFileManager.this.getFileNameWithoutJsonExtension(f))))(scala.this.Array.canBuildFrom[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]]((ClassTag.apply[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]](classOf[scala.Option]): scala.reflect.ClassTag[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]])))).filter(((optLvl: Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]) =&gt; optLvl.isDefined))).map[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo, Array[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]](((opt: Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]) =&gt; opt.get))(scala.this.Array.canBuildFrom[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]((ClassTag.apply[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo](classOf[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]): scala.reflect.ClassTag[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo])))).toList
+        </td>
+      </tr><tr>
+        <td>
+          93
+        </td>
+        <td>
+          2534
+        </td>
+        <td>
+          3471
+          -
+          3645
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.TraversableLike.map
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Predef.refArrayOps[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]](scala.Predef.refArrayOps[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]](scala.Predef.refArrayOps[java.io.File](new java.io.File(it.unibo.osmos.redux.utils.Constants.UserHomePaths.LevelsDirectory).listFiles(((x$1: java.io.File, name: String) =&gt; name.endsWith(LevelFileManager.this.jsonExtension)))).map[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo], Array[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]]](((f: java.io.File) =&gt; LevelFileManager.this.loadLevelInfo(LevelFileManager.this.getFileNameWithoutJsonExtension(f))))(scala.this.Array.canBuildFrom[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]]((ClassTag.apply[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]](classOf[scala.Option]): scala.reflect.ClassTag[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]])))).filter(((optLvl: Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]) =&gt; optLvl.isDefined))).map[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo, Array[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]](((opt: Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]) =&gt; opt.get))(scala.this.Array.canBuildFrom[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]((ClassTag.apply[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo](classOf[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]): scala.reflect.ClassTag[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo])))
+        </td>
+      </tr><tr>
+        <td>
+          93
+        </td>
+        <td>
+          2531
+        </td>
+        <td>
+          3471
+          -
+          3625
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.TraversableLike.filter
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Predef.refArrayOps[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]](scala.Predef.refArrayOps[java.io.File](new java.io.File(it.unibo.osmos.redux.utils.Constants.UserHomePaths.LevelsDirectory).listFiles(((x$1: java.io.File, name: String) =&gt; name.endsWith(LevelFileManager.this.jsonExtension)))).map[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo], Array[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]]](((f: java.io.File) =&gt; LevelFileManager.this.loadLevelInfo(LevelFileManager.this.getFileNameWithoutJsonExtension(f))))(scala.this.Array.canBuildFrom[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]]((ClassTag.apply[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]](classOf[scala.Option]): scala.reflect.ClassTag[Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]])))).filter(((optLvl: Option[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]) =&gt; optLvl.isDefined))
+        </td>
+      </tr><tr>
+        <td>
+          93
+        </td>
+        <td>
+          2533
+        </td>
+        <td>
+          3629
+          -
+          3629
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.Array.canBuildFrom
+        </td>
+        <td style="background: #F0ADAD">
+          scala.this.Array.canBuildFrom[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]((ClassTag.apply[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo](classOf[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]): scala.reflect.ClassTag[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo]))
+        </td>
+      </tr><tr>
+        <td>
+          93
+        </td>
+        <td>
+          2530
+        </td>
+        <td>
+          3608
+          -
+          3624
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.isDefined
+        </td>
+        <td style="background: #F0ADAD">
+          optLvl.isDefined
+        </td>
+      </tr><tr>
+        <td>
+          97
+        </td>
+        <td>
+          2538
+        </td>
+        <td>
+          3748
+          -
+          3790
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Constants.UserHomePaths.LevelsDirectory.+(fileName).+(LevelFileManager.this.jsonExtension)
+        </td>
+      </tr><tr>
+        <td>
+          97
+        </td>
+        <td>
+          2537
+        </td>
+        <td>
+          3777
+          -
+          3790
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.jsonExtension
+        </td>
+        <td style="background: #F0ADAD">
+          LevelFileManager.this.jsonExtension
+        </td>
+      </tr><tr>
+        <td>
+          97
+        </td>
+        <td>
+          2539
+        </td>
+        <td>
+          3739
+          -
+          3791
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.loadFile
+        </td>
+        <td style="background: #F0ADAD">
+          LevelFileManager.this.loadFile(it.unibo.osmos.redux.utils.Constants.UserHomePaths.LevelsDirectory.+(fileName).+(LevelFileManager.this.jsonExtension))
+        </td>
+      </tr><tr>
+        <td>
+          98
+        </td>
+        <td>
+          2540
+        </td>
+        <td>
+          3825
+          -
+          3855
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.util.Try.toOption
+        </td>
+        <td style="background: #F0ADAD">
+          LevelFileManager.this.textToLevelInfo(text).toOption
+        </td>
+      </tr><tr>
+        <td>
+          99
+        </td>
+        <td>
+          2541
+        </td>
+        <td>
+          3872
+          -
+          3876
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #F0ADAD">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          102
+        </td>
+        <td>
+          2544
+        </td>
+        <td>
+          3946
+          -
+          3986
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.util.Try.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.util.Try.apply[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo](spray.json.`package`.enrichString(text).parseJson.convertTo[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo](it.unibo.osmos.redux.mvc.model.JsonProtocols.LevelInfoFormatter))
+        </td>
+      </tr><tr>
+        <td>
+          102
+        </td>
+        <td>
+          2543
+        </td>
+        <td>
+          3950
+          -
+          3985
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          spray.json.JsValue.convertTo
+        </td>
+        <td style="background: #F0ADAD">
+          spray.json.`package`.enrichString(text).parseJson.convertTo[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo](it.unibo.osmos.redux.mvc.model.JsonProtocols.LevelInfoFormatter)
+        </td>
+      </tr><tr>
+        <td>
+          102
+        </td>
+        <td>
+          2542
+        </td>
+        <td>
+          3974
+          -
+          3974
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.model.JsonProtocols.LevelInfoFormatter
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.model.JsonProtocols.LevelInfoFormatter
+        </td>
+      </tr><tr>
+        <td>
+          109
+        </td>
+        <td>
+          2547
+        </td>
+        <td>
+          4161
+          -
+          4222
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          spray.json.JsValue.convertTo
+        </td>
+        <td style="background: #AEF1AE">
+          spray.json.`package`.enrichString(LevelFileManager.this.getResourcesFileText(filePath)).parseJson.convertTo[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo](it.unibo.osmos.redux.mvc.model.JsonProtocols.LevelInfoFormatter)
+        </td>
+      </tr><tr>
+        <td>
+          109
+        </td>
+        <td>
+          2546
+        </td>
+        <td>
+          4211
+          -
+          4211
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.model.JsonProtocols.LevelInfoFormatter
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.model.JsonProtocols.LevelInfoFormatter
+        </td>
+      </tr><tr>
+        <td>
+          109
+        </td>
+        <td>
+          2545
+        </td>
+        <td>
+          4161
+          -
+          4191
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.getResourcesFileText
+        </td>
+        <td style="background: #AEF1AE">
+          LevelFileManager.this.getResourcesFileText(filePath)
+        </td>
+      </tr><tr>
+        <td>
+          109
+        </td>
+        <td>
+          2548
+        </td>
+        <td>
+          4157
+          -
+          4223
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.util.Try.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.util.Try.apply[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo](spray.json.`package`.enrichString(LevelFileManager.this.getResourcesFileText(filePath)).parseJson.convertTo[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo](it.unibo.osmos.redux.mvc.model.JsonProtocols.LevelInfoFormatter))
+        </td>
+      </tr><tr>
+        <td>
+          110
+        </td>
+        <td>
+          2549
+        </td>
+        <td>
+          4261
+          -
+          4272
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Some.apply[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo](value)
+        </td>
+      </tr><tr>
+        <td>
+          111
+        </td>
+        <td>
+          2550
+        </td>
+        <td>
+          4309
+          -
+          4353
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;File not found into resources: &quot;.+(filePath)
+        </td>
+      </tr><tr>
+        <td>
+          111
+        </td>
+        <td>
+          2552
+        </td>
+        <td>
+          4298
+          -
+          4354
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Logger.log
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Logger.log(&quot;File not found into resources: &quot;.+(filePath))(LevelFileManager.this.who)
+        </td>
+      </tr><tr>
+        <td>
+          111
+        </td>
+        <td>
+          2551
+        </td>
+        <td>
+          4308
+          -
+          4308
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager.who
+        </td>
+        <td style="background: #F0ADAD">
+          LevelFileManager.this.who
+        </td>
+      </tr><tr>
+        <td>
+          112
+        </td>
+        <td>
+          2553
+        </td>
+        <td>
+          4363
+          -
+          4367
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #F0ADAD">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          117
+        </td>
+        <td>
+          2555
+        </td>
+        <td>
+          4495
+          -
+          4525
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #AEF1AE">
+          fileName.+(index.getOrElse[Any](&quot;&quot;))
+        </td>
+      </tr><tr>
+        <td>
+          117
+        </td>
+        <td>
+          2554
+        </td>
+        <td>
+          4506
+          -
+          4525
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.getOrElse
+        </td>
+        <td style="background: #AEF1AE">
+          index.getOrElse[Any](&quot;&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          118
+        </td>
+        <td>
+          2556
+        </td>
+        <td>
+          4590
+          -
+          4603
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.FileManager.jsonExtension
+        </td>
+        <td style="background: #AEF1AE">
+          LevelFileManager.this.jsonExtension
+        </td>
+      </tr><tr>
+        <td>
+          118
+        </td>
+        <td>
+          2558
+        </td>
+        <td>
+          4541
+          -
+          4604
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.nio.file.FileSystem.getPath
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Constants.UserHomePaths.DefaultFS.getPath(it.unibo.osmos.redux.utils.Constants.UserHomePaths.LevelsDirectory.+(uniqueName).+(LevelFileManager.this.jsonExtension))
+        </td>
+      </tr><tr>
+        <td>
+          118
+        </td>
+        <td>
+          2557
+        </td>
+        <td>
+          4559
+          -
+          4603
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Constants.UserHomePaths.LevelsDirectory.+(uniqueName).+(LevelFileManager.this.jsonExtension)
+        </td>
+      </tr><tr>
+        <td>
+          119
+        </td>
+        <td>
+          2559
+        </td>
+        <td>
+          4613
+          -
+          4631
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.nio.file.Files.exists
+        </td>
+        <td style="background: #AEF1AE">
+          java.nio.file.Files.exists(path)
+        </td>
+      </tr><tr>
+        <td>
+          120
+        </td>
+        <td>
+          2565
+        </td>
+        <td>
+          4713
+          -
+          4720
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Some.apply[Int](1)
+        </td>
+      </tr><tr>
+        <td>
+          120
+        </td>
+        <td>
+          2562
+        </td>
+        <td>
+          4688
+          -
+          4707
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Some.apply[Int](index.get.+(1))
+        </td>
+      </tr><tr>
+        <td>
+          120
+        </td>
+        <td>
+          2561
+        </td>
+        <td>
+          4693
+          -
+          4706
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.+
+        </td>
+        <td style="background: #F0ADAD">
+          index.get.+(1)
+        </td>
+      </tr><tr>
+        <td>
+          120
+        </td>
+        <td>
+          2564
+        </td>
+        <td>
+          4713
+          -
+          4720
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Some.apply[Int](1)
+        </td>
+      </tr><tr>
+        <td>
+          120
+        </td>
+        <td>
+          2567
+        </td>
+        <td>
+          4641
+          -
+          4721
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager.processFilePath
+        </td>
+        <td style="background: #AEF1AE">
+          LevelFileManager.this.processFilePath(fileName, if (index.isDefined)
+  scala.Some.apply[Int](index.get.+(1))
+else
+  scala.Some.apply[Int](1))
+        </td>
+      </tr><tr>
+        <td>
+          120
+        </td>
+        <td>
+          2566
+        </td>
+        <td>
+          4641
+          -
+          4721
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.files.LevelFileManager.processFilePath
+        </td>
+        <td style="background: #AEF1AE">
+          LevelFileManager.this.processFilePath(fileName, if (index.isDefined)
+  scala.Some.apply[Int](index.get.+(1))
+else
+  scala.Some.apply[Int](1))
+        </td>
+      </tr><tr>
+        <td>
+          120
+        </td>
+        <td>
+          2560
+        </td>
+        <td>
+          4671
+          -
+          4686
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.isDefined
+        </td>
+        <td style="background: #AEF1AE">
+          index.isDefined
+        </td>
+      </tr><tr>
+        <td>
+          120
+        </td>
+        <td>
+          2563
+        </td>
+        <td>
+          4688
+          -
+          4707
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Some.apply[Int](index.get.+(1))
+        </td>
+      </tr><tr>
+        <td>
+          122
+        </td>
+        <td>
+          2568
+        </td>
+        <td>
+          4741
+          -
+          4759
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Tuple2.apply[java.nio.file.Path, String](path, uniqueName)
+        </td>
+      </tr><tr>
+        <td>
+          122
+        </td>
+        <td>
+          2569
+        </td>
+        <td>
+          4741
+          -
+          4759
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Tuple2.apply[java.nio.file.Path, String](path, uniqueName)
+        </td>
+      </tr><tr>
+        <td>
+          126
+        </td>
+        <td>
+          2571
+        </td>
+        <td>
+          4896
+          -
+          4916
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.length
+        </td>
+        <td style="background: #F0ADAD">
+          LevelFileManager.this.jsonExtension.length()
+        </td>
+      </tr><tr>
+        <td>
+          126
+        </td>
+        <td>
+          2570
+        </td>
+        <td>
+          4871
+          -
+          4872
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          0
+        </td>
+      </tr><tr>
+        <td>
+          126
+        </td>
+        <td>
+          2573
+        </td>
+        <td>
+          4848
+          -
+          4917
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.substring
+        </td>
+        <td style="background: #F0ADAD">
+          file.getName().substring(0, file.getName().length().-(LevelFileManager.this.jsonExtension.length()))
+        </td>
+      </tr><tr>
+        <td>
+          126
+        </td>
+        <td>
+          2572
+        </td>
+        <td>
+          4874
+          -
+          4916
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.-
+        </td>
+        <td style="background: #F0ADAD">
+          file.getName().length().-(LevelFileManager.this.jsonExtension.length())
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

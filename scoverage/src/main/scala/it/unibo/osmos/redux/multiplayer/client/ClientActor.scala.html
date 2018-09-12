@@ -1,0 +1,676 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/multiplayer/client/ClientActor.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.multiplayer.client
+</span>2 <span style=''>
+</span>3 <span style=''>import akka.actor.{Actor, ActorRef, Props, Terminated}
+</span>4 <span style=''>import it.unibo.osmos.redux.multiplayer.client.ClientActor.{Ready, StartWatching}
+</span>5 <span style=''>import it.unibo.osmos.redux.multiplayer.server.ServerActor._
+</span>6 <span style=''>import it.unibo.osmos.redux.mvc.view.events._
+</span>7 <span style=''>import it.unibo.osmos.redux.utils.Logger
+</span>8 <span style=''>
+</span>9 <span style=''>/** Client actor implementation.
+</span>10 <span style=''>  *
+</span>11 <span style=''>  * @param client The client to bind.
+</span>12 <span style=''>  */
+</span>13 <span style=''>class ClientActor(private val client: Client) extends Actor {
+</span>14 <span style=''>
+</span>15 <span style=''>  implicit val who: String = </span><span style='background: #F0ADAD'>&quot;ClientActor&quot;</span><span style=''>
+</span>16 <span style=''>
+</span>17 <span style=''>  override def receive: Receive = {
+</span>18 <span style=''>
+</span>19 <span style=''>    case StartWatching(serverRef: ActorRef) =&gt; </span><span style='background: #F0ADAD'>context.watch(serverRef)</span><span style=''>
+</span>20 <span style=''>
+</span>21 <span style=''>    case LobbyClosed =&gt; </span><span style='background: #F0ADAD'>context.unwatch(sender)</span><span style=''>; </span><span style='background: #F0ADAD'>client.closeLobby(false)</span><span style=''>; </span><span style='background: #F0ADAD'>client.kill()</span><span style=''>
+</span>22 <span style=''>
+</span>23 <span style=''>    case PlayerEnteredLobby(player) =&gt; </span><span style='background: #F0ADAD'>client.addPlayerToLobby(player)</span><span style=''>
+</span>24 <span style=''>
+</span>25 <span style=''>    case PlayerLeftLobby(username) =&gt; </span><span style='background: #F0ADAD'>client.removePlayerFromLobby(username)</span><span style=''>
+</span>26 <span style=''>
+</span>27 <span style=''>    case UpdateGame(entities) =&gt; </span><span style='background: #F0ADAD'>client.notifyRedraw(entities)</span><span style=''>
+</span>28 <span style=''>
+</span>29 <span style=''>    case GameStarted(uuid, levelInfo, mapShape) =&gt; </span><span style='background: #F0ADAD'>client.startGame(uuid, levelInfo, mapShape)</span><span style=''>; </span><span style='background: #F0ADAD'>sender ! Ready</span><span style=''>
+</span>30 <span style=''>
+</span>31 <span style=''>    case GameEnded(victory) =&gt; </span><span style='background: #F0ADAD'>context.unwatch(sender)</span><span style=''>; </span><span style='background: #F0ADAD'>client.stopGame(victory)</span><span style=''>
+</span>32 <span style=''>
+</span>33 <span style=''>    case Terminated(_) =&gt; </span><span style='background: #F0ADAD'>client.closeLobby(false)</span><span style=''>; </span><span style='background: #F0ADAD'>client.kill()</span><span style=''>
+</span>34 <span style=''>
+</span>35 <span style=''>    case unknownMessage =&gt; </span><span style='background: #F0ADAD'>Logger.log(&quot;Received unknown message: &quot; + unknownMessage)</span><span style=''>
+</span>36 <span style=''>  }
+</span>37 <span style=''>}
+</span>38 <span style=''>
+</span>39 <span style=''>/** Client actor helper object */
+</span>40 <span style=''>object ClientActor {
+</span>41 <span style=''>  def props(client: Client): Props = </span><span style='background: #F0ADAD'>Props(new ClientActor(client))</span><span style=''>
+</span>42 <span style=''>
+</span>43 <span style=''>  /** Tells himself to start watching the server actor.
+</span>44 <span style=''>    *
+</span>45 <span style=''>    * @param serverRef The server actor reference
+</span>46 <span style=''>    */
+</span>47 <span style=''>  final case class StartWatching(serverRef: ActorRef)
+</span>48 <span style=''>
+</span>49 <span style=''>  /** Asks the server to begin handshaking.
+</span>50 <span style=''>    *
+</span>51 <span style=''>    * @param actorRef It's own actor reference
+</span>52 <span style=''>    */
+</span>53 <span style=''>  final case class Connect(actorRef: ActorRef)
+</span>54 <span style=''>
+</span>55 <span style=''>  /** Tells the server that a specific player is disconnecting.
+</span>56 <span style=''>    *
+</span>57 <span style=''>    * @param username The username of the player
+</span>58 <span style=''>    */
+</span>59 <span style=''>  final case class Disconnect(username: String)
+</span>60 <span style=''>
+</span>61 <span style=''>  /** Asks the server to enter the lobby.
+</span>62 <span style=''>    *
+</span>63 <span style=''>    * @param clientID The client temp id (received from handshaking)
+</span>64 <span style=''>    * @param username The chosen username
+</span>65 <span style=''>    */
+</span>66 <span style=''>  final case class EnterLobby(clientID: String, username: String)
+</span>67 <span style=''>
+</span>68 <span style=''>  /** Tells the server that a player leaves the lobby.
+</span>69 <span style=''>    *
+</span>70 <span style=''>    * @param username The username of the player
+</span>71 <span style=''>    */
+</span>72 <span style=''>  final case class LeaveLobby(username: String)
+</span>73 <span style=''>
+</span>74 <span style=''>  /** Sends to the server the user triggered mouse event to process, to let him move the entity.
+</span>75 <span style=''>    *
+</span>76 <span style=''>    * @param event The mouse event.
+</span>77 <span style=''>    */
+</span>78 <span style=''>  final case class PlayerInput(event: MouseEventWrapper)
+</span>79 <span style=''>
+</span>80 <span style=''>  /** Tells the server that a player leaves the game.
+</span>81 <span style=''>    *
+</span>82 <span style=''>    * @param username The username of the player
+</span>83 <span style=''>    */
+</span>84 <span style=''>  final case class LeaveGame(username: String)
+</span>85 <span style=''>
+</span>86 <span style=''>  /** Replies to the server, after receiving a game started message, that it's ready to receive updates */
+</span>87 <span style=''>  final case object Ready
+</span>88 <span style=''>
+</span>89 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          1421
+        </td>
+        <td>
+          507
+          -
+          520
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;ClientActor&quot;
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          1444
+        </td>
+        <td>
+          556
+          -
+          556
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.client.ClientActor.$anonfun.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anonfun()
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1423
+        </td>
+        <td>
+          619
+          -
+          619
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1422
+        </td>
+        <td>
+          606
+          -
+          630
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          akka.actor.ActorContext.watch
+        </td>
+        <td style="background: #F0ADAD">
+          ClientActor.this.context.watch(serverRef)
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          1425
+        </td>
+        <td>
+          656
+          -
+          679
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          akka.actor.ActorContext.unwatch
+        </td>
+        <td style="background: #F0ADAD">
+          ClientActor.this.context.unwatch(ClientActor.this.sender())
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          1424
+        </td>
+        <td>
+          672
+          -
+          678
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          akka.actor.Actor.sender
+        </td>
+        <td style="background: #F0ADAD">
+          ClientActor.this.sender()
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          1427
+        </td>
+        <td>
+          707
+          -
+          720
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.client.Client.kill
+        </td>
+        <td style="background: #F0ADAD">
+          ClientActor.this.client.kill()
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          1426
+        </td>
+        <td>
+          681
+          -
+          705
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.client.Client.closeLobby
+        </td>
+        <td style="background: #F0ADAD">
+          ClientActor.this.client.closeLobby(false)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          1428
+        </td>
+        <td>
+          761
+          -
+          792
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.client.Client.addPlayerToLobby
+        </td>
+        <td style="background: #F0ADAD">
+          ClientActor.this.client.addPlayerToLobby(player)
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          1429
+        </td>
+        <td>
+          832
+          -
+          870
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.client.Client.removePlayerFromLobby
+        </td>
+        <td style="background: #F0ADAD">
+          ClientActor.this.client.removePlayerFromLobby(username)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          1430
+        </td>
+        <td>
+          905
+          -
+          934
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.client.Client.notifyRedraw
+        </td>
+        <td style="background: #F0ADAD">
+          ClientActor.this.client.notifyRedraw(entities)
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          1432
+        </td>
+        <td>
+          1032
+          -
+          1038
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          akka.actor.Actor.sender
+        </td>
+        <td style="background: #F0ADAD">
+          ClientActor.this.sender()
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          1434
+        </td>
+        <td>
+          1039
+          -
+          1039
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          akka.actor.Actor.self
+        </td>
+        <td style="background: #F0ADAD">
+          ClientActor.this.self
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          1431
+        </td>
+        <td>
+          987
+          -
+          1030
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.client.Client.startGame
+        </td>
+        <td style="background: #F0ADAD">
+          ClientActor.this.client.startGame(uuid, levelInfo, mapShape)
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          1433
+        </td>
+        <td>
+          1041
+          -
+          1046
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.client.ClientActor.Ready
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.multiplayer.client.ClientActor.Ready
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          1435
+        </td>
+        <td>
+          1032
+          -
+          1046
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          akka.actor.ScalaActorRef.!
+        </td>
+        <td style="background: #F0ADAD">
+          actor.this.`package`.actorRef2Scala(ClientActor.this.sender()).!(it.unibo.osmos.redux.multiplayer.client.ClientActor.Ready)(ClientActor.this.self)
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          1438
+        </td>
+        <td>
+          1104
+          -
+          1128
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.client.Client.stopGame
+        </td>
+        <td style="background: #F0ADAD">
+          ClientActor.this.client.stopGame(victory)
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          1437
+        </td>
+        <td>
+          1079
+          -
+          1102
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          akka.actor.ActorContext.unwatch
+        </td>
+        <td style="background: #F0ADAD">
+          ClientActor.this.context.unwatch(ClientActor.this.sender())
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          1436
+        </td>
+        <td>
+          1095
+          -
+          1101
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          akka.actor.Actor.sender
+        </td>
+        <td style="background: #F0ADAD">
+          ClientActor.this.sender()
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          1440
+        </td>
+        <td>
+          1182
+          -
+          1195
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.client.Client.kill
+        </td>
+        <td style="background: #F0ADAD">
+          ClientActor.this.client.kill()
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          1439
+        </td>
+        <td>
+          1156
+          -
+          1180
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.client.Client.closeLobby
+        </td>
+        <td style="background: #F0ADAD">
+          ClientActor.this.client.closeLobby(false)
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          1441
+        </td>
+        <td>
+          1235
+          -
+          1280
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;Received unknown message: &quot;.+(unknownMessage)
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          1443
+        </td>
+        <td>
+          1224
+          -
+          1281
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Logger.log
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Logger.log(&quot;Received unknown message: &quot;.+(unknownMessage))(ClientActor.this.who)
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          1442
+        </td>
+        <td>
+          1234
+          -
+          1234
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.client.ClientActor.who
+        </td>
+        <td style="background: #F0ADAD">
+          ClientActor.this.who
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          1446
+        </td>
+        <td>
+          1381
+          -
+          1411
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          akka.actor.Props.apply
+        </td>
+        <td style="background: #F0ADAD">
+          akka.actor.Props.apply[it.unibo.osmos.redux.multiplayer.client.ClientActor](new ClientActor(client))((ClassTag.apply[it.unibo.osmos.redux.multiplayer.client.ClientActor](classOf[it.unibo.osmos.redux.multiplayer.client.ClientActor]): scala.reflect.ClassTag[it.unibo.osmos.redux.multiplayer.client.ClientActor]))
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          1445
+        </td>
+        <td>
+          1387
+          -
+          1410
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.client.ClientActor.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new ClientActor(client)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

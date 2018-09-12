@@ -1,0 +1,786 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/components/editor/CircleLevelCreator.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.components.editor
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.view.ViewConstants
+</span>5 <span style=''>import it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField
+</span>6 <span style=''>import it.unibo.osmos.redux.utils.Point
+</span>7 <span style=''>import scalafx.beans.property.DoubleProperty
+</span>8 <span style=''>import scalafx.scene.control.Label
+</span>9 <span style=''>import scalafx.scene.layout.VBox
+</span>10 <span style=''>
+</span>11 <span style=''>/** A panel showing input nodes which is also capable of providing the requested circular level */
+</span>12 <span style=''>class CircleLevelCreator extends BaseEditorCreator[MapShape.Circle] {
+</span>13 <span style=''>
+</span>14 <span style=''>  /** Center */
+</span>15 <span style=''>  val xCenter: DoubleProperty = </span><span style='background: #AEF1AE'>DoubleProperty(0.0)</span><span style=''>
+</span>16 <span style=''>  val yCenter: DoubleProperty = </span><span style='background: #AEF1AE'>DoubleProperty(0.0)</span><span style=''>
+</span>17 <span style=''>  /** Radius node */
+</span>18 <span style=''>  val radius: DoubleProperty = </span><span style='background: #AEF1AE'>DoubleProperty(0.0)</span><span style=''>
+</span>19 <span style=''>  val maxRadius: Double = </span><span style='background: #AEF1AE'>ViewConstants.Editor.MaxLevelRadius</span><span style=''>
+</span>20 <span style=''>  private val centerNode = </span><span style='background: #AEF1AE'>new VBox(2.0, new Label(&quot;Center&quot;),
+</span>21 <span style=''></span><span style='background: #AEF1AE'>    new TitledDoubleField(&quot;x: &quot;, xCenter).innerNode,
+</span>22 <span style=''></span><span style='background: #AEF1AE'>    new TitledDoubleField(&quot;y: &quot;, yCenter).innerNode
+</span>23 <span style=''></span><span style='background: #AEF1AE'>  )</span><span style=''>
+</span>24 <span style=''>  private val radiusNode = </span><span style='background: #AEF1AE'>new VBox(2.0, new Label(s&quot;Radius (max: $maxRadius)&quot;),
+</span>25 <span style=''></span><span style='background: #AEF1AE'>    new TitledDoubleField(&quot;radius: &quot;, radius, 1.0, maxRadius).innerNode,
+</span>26 <span style=''></span><span style='background: #AEF1AE'>  )</span><span style=''>
+</span>27 <span style=''>
+</span>28 <span style=''>  </span><span style='background: #AEF1AE'>children = Seq(centerNode, radiusNode)</span><span style=''>
+</span>29 <span style=''>
+</span>30 <span style=''>  override def create(): MapShape.Circle = </span><span style='background: #AEF1AE'>MapShape.Circle(Point(xCenter.value, yCenter.value), radius.value)</span><span style=''>
+</span>31 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          3665
+        </td>
+        <td>
+          622
+          -
+          641
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.DoubleProperty.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scalafx.beans.property.DoubleProperty.apply(0.0)
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          3666
+        </td>
+        <td>
+          674
+          -
+          693
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.DoubleProperty.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scalafx.beans.property.DoubleProperty.apply(0.0)
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          3667
+        </td>
+        <td>
+          746
+          -
+          765
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.DoubleProperty.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scalafx.beans.property.DoubleProperty.apply(0.0)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          3668
+        </td>
+        <td>
+          792
+          -
+          827
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Editor.MaxLevelRadius
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Editor.MaxLevelRadius
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          3677
+        </td>
+        <td>
+          855
+          -
+          998
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.VBox.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new scalafx.scene.layout.VBox(2.0, new scalafx.scene.control.Label(&quot;Center&quot;), new it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField(&quot;x: &quot;, CircleLevelCreator.this.xCenter).innerNode, new it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField(&quot;y: &quot;, CircleLevelCreator.this.yCenter).innerNode)
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          3670
+        </td>
+        <td>
+          869
+          -
+          888
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.Label.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new scalafx.scene.control.Label(&quot;Center&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          3669
+        </td>
+        <td>
+          864
+          -
+          867
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          2.0
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          3672
+        </td>
+        <td>
+          923
+          -
+          930
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CircleLevelCreator.xCenter
+        </td>
+        <td style="background: #AEF1AE">
+          CircleLevelCreator.this.xCenter
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          3671
+        </td>
+        <td>
+          916
+          -
+          921
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;x: &quot;
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          3673
+        </td>
+        <td>
+          894
+          -
+          941
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField.innerNode
+        </td>
+        <td style="background: #AEF1AE">
+          new it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField(&quot;x: &quot;, CircleLevelCreator.this.xCenter).innerNode
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          3675
+        </td>
+        <td>
+          976
+          -
+          983
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CircleLevelCreator.yCenter
+        </td>
+        <td style="background: #AEF1AE">
+          CircleLevelCreator.this.yCenter
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          3674
+        </td>
+        <td>
+          969
+          -
+          974
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;y: &quot;
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          3676
+        </td>
+        <td>
+          947
+          -
+          994
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField.innerNode
+        </td>
+        <td style="background: #AEF1AE">
+          new it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField(&quot;y: &quot;, CircleLevelCreator.this.yCenter).innerNode
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          3681
+        </td>
+        <td>
+          1066
+          -
+          1075
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CircleLevelCreator.maxRadius
+        </td>
+        <td style="background: #AEF1AE">
+          CircleLevelCreator.this.maxRadius
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          3683
+        </td>
+        <td>
+          1040
+          -
+          1078
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.Label.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new scalafx.scene.control.Label(scala.StringContext.apply(&quot;Radius (max: &quot;, &quot;)&quot;).s(CircleLevelCreator.this.maxRadius))
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          3689
+        </td>
+        <td>
+          1026
+          -
+          1156
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.VBox.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new scalafx.scene.layout.VBox(2.0, new scalafx.scene.control.Label(scala.StringContext.apply(&quot;Radius (max: &quot;, &quot;)&quot;).s(CircleLevelCreator.this.maxRadius)), new it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField(&quot;radius: &quot;, CircleLevelCreator.this.radius, 1.0, CircleLevelCreator.this.maxRadius).innerNode)
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          3680
+        </td>
+        <td>
+          1075
+          -
+          1077
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;)&quot;
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          3682
+        </td>
+        <td>
+          1050
+          -
+          1077
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.StringContext.s
+        </td>
+        <td style="background: #AEF1AE">
+          scala.StringContext.apply(&quot;Radius (max: &quot;, &quot;)&quot;).s(CircleLevelCreator.this.maxRadius)
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          3679
+        </td>
+        <td>
+          1052
+          -
+          1066
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;Radius (max: &quot;
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          3678
+        </td>
+        <td>
+          1035
+          -
+          1038
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          2.0
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          3684
+        </td>
+        <td>
+          1106
+          -
+          1116
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;radius: &quot;
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          3686
+        </td>
+        <td>
+          1126
+          -
+          1129
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          1.0
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          3688
+        </td>
+        <td>
+          1084
+          -
+          1151
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField.innerNode
+        </td>
+        <td style="background: #AEF1AE">
+          new it.unibo.osmos.redux.mvc.view.components.custom.TitledDoubleField(&quot;radius: &quot;, CircleLevelCreator.this.radius, 1.0, CircleLevelCreator.this.maxRadius).innerNode
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          3685
+        </td>
+        <td>
+          1118
+          -
+          1124
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CircleLevelCreator.radius
+        </td>
+        <td style="background: #AEF1AE">
+          CircleLevelCreator.this.radius
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          3687
+        </td>
+        <td>
+          1131
+          -
+          1140
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CircleLevelCreator.maxRadius
+        </td>
+        <td style="background: #AEF1AE">
+          CircleLevelCreator.this.maxRadius
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          3690
+        </td>
+        <td>
+          1175
+          -
+          1185
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CircleLevelCreator.centerNode
+        </td>
+        <td style="background: #AEF1AE">
+          CircleLevelCreator.this.centerNode
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          3693
+        </td>
+        <td>
+          1160
+          -
+          1198
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Pane.children_=
+        </td>
+        <td style="background: #AEF1AE">
+          CircleLevelCreator.this.children_=(scala.collection.Seq.apply[scalafx.scene.layout.VBox](CircleLevelCreator.this.centerNode, CircleLevelCreator.this.radiusNode))
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          3692
+        </td>
+        <td>
+          1171
+          -
+          1198
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.collection.Seq.apply[scalafx.scene.layout.VBox](CircleLevelCreator.this.centerNode, CircleLevelCreator.this.radiusNode)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          3691
+        </td>
+        <td>
+          1187
+          -
+          1197
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.editor.CircleLevelCreator.radiusNode
+        </td>
+        <td style="background: #AEF1AE">
+          CircleLevelCreator.this.radiusNode
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          3695
+        </td>
+        <td>
+          1280
+          -
+          1293
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyDoubleProperty.value
+        </td>
+        <td style="background: #AEF1AE">
+          CircleLevelCreator.this.yCenter.value
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          3698
+        </td>
+        <td>
+          1243
+          -
+          1309
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.Circle.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.Circle.apply(it.unibo.osmos.redux.utils.Point.apply(CircleLevelCreator.this.xCenter.value, CircleLevelCreator.this.yCenter.value), CircleLevelCreator.this.radius.value)
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          3697
+        </td>
+        <td>
+          1296
+          -
+          1308
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyDoubleProperty.value
+        </td>
+        <td style="background: #AEF1AE">
+          CircleLevelCreator.this.radius.value
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          3694
+        </td>
+        <td>
+          1265
+          -
+          1278
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyDoubleProperty.value
+        </td>
+        <td style="background: #AEF1AE">
+          CircleLevelCreator.this.xCenter.value
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          3696
+        </td>
+        <td>
+          1259
+          -
+          1294
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Point.apply(CircleLevelCreator.this.xCenter.value, CircleLevelCreator.this.yCenter.value)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

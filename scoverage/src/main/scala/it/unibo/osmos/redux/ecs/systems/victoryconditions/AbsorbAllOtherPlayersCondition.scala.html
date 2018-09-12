@@ -1,0 +1,163 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/ecs/systems/victoryconditions/AbsorbAllOtherPlayersCondition.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.systems.victoryconditions
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.ecs.entities.EntityType
+</span>4 <span style=''>import it.unibo.osmos.redux.ecs.entities.properties.composed.DeathProperty
+</span>5 <span style=''>
+</span>6 <span style=''>import scala.collection.mutable.ListBuffer
+</span>7 <span style=''>
+</span>8 <span style=''>/** class implementing absorb all other players
+</span>9 <span style=''>  *
+</span>10 <span style=''>  * victory is fulfilled when there are no more players to absorb left
+</span>11 <span style=''>  */
+</span>12 <span style=''>case class AbsorbAllOtherPlayersCondition() extends AbstractVictoryCondition {
+</span>13 <span style=''>
+</span>14 <span style=''>  override def check(playerCellEntity: DeathProperty, entityList: ListBuffer[DeathProperty]): Boolean = {
+</span>15 <span style=''>    </span><span style='background: #F0ADAD'>!entityList.exists(entity =&gt; entity.getTypeComponent.typeEntity == EntityType.Controlled &amp;&amp; entity.getUUID != playerCellEntity.getUUID)</span><span style=''>
+</span>16 <span style=''>  }
+</span>17 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          1147
+        </td>
+        <td>
+          660
+          -
+          684
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Property.getUUID
+        </td>
+        <td style="background: #F0ADAD">
+          playerCellEntity.getUUID
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          1150
+        </td>
+        <td>
+          550
+          -
+          685
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #F0ADAD">
+          entityList.exists(((entity: it.unibo.osmos.redux.ecs.entities.properties.composed.DeathProperty) =&gt; entity.getTypeComponent.typeEntity.==(it.unibo.osmos.redux.ecs.entities.EntityType.Controlled).&amp;&amp;(entity.getUUID.!=(playerCellEntity.getUUID)))).unary_!
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          1149
+        </td>
+        <td>
+          579
+          -
+          684
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.&amp;&amp;
+        </td>
+        <td style="background: #F0ADAD">
+          entity.getTypeComponent.typeEntity.==(it.unibo.osmos.redux.ecs.entities.EntityType.Controlled).&amp;&amp;(entity.getUUID.!=(playerCellEntity.getUUID))
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          1146
+        </td>
+        <td>
+          617
+          -
+          638
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityType.Controlled
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.entities.EntityType.Controlled
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          1148
+        </td>
+        <td>
+          642
+          -
+          684
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.!=
+        </td>
+        <td style="background: #F0ADAD">
+          entity.getUUID.!=(playerCellEntity.getUUID)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

@@ -1,0 +1,671 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/components/level/LevelScreen.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.components.level
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.mvc.view.components.custom.StyledButton
+</span>4 <span style=''>import javafx.event.{ActionEvent, EventHandler}
+</span>5 <span style=''>import scalafx.geometry.Pos
+</span>6 <span style=''>import scalafx.scene.layout.VBox
+</span>7 <span style=''>import scalafx.scene.paint.Color
+</span>8 <span style=''>import scalafx.scene.text.{Font, Text}
+</span>9 <span style=''>import scalafx.scene.{Node, Scene}
+</span>10 <span style=''>
+</span>11 <span style=''>import scala.collection.mutable
+</span>12 <span style=''>
+</span>13 <span style=''>/** A simple splash screen shown at the beginning of the level */
+</span>14 <span style=''>object LevelScreen {
+</span>15 <span style=''>
+</span>16 <span style=''>  /** Builder. The provided scene is used to determine the screen width and height
+</span>17 <span style=''>    *
+</span>18 <span style=''>    * @param parentScene the scene in which the screen will be shown
+</span>19 <span style=''>    */
+</span>20 <span style=''>  case class Builder(private val parentScene: Scene) {
+</span>21 <span style=''>
+</span>22 <span style=''>    /** The components which will be added to the screen, in order from top to bottom */
+</span>23 <span style=''>    private var components: mutable.ListBuffer[Node] = </span><span style='background: #F0ADAD'>mutable.ListBuffer()</span><span style=''>
+</span>24 <span style=''>
+</span>25 <span style=''>    /** This method adds a Text to the screen
+</span>26 <span style=''>      *
+</span>27 <span style=''>      * @param text  the text
+</span>28 <span style=''>      * @param size  the text size
+</span>29 <span style=''>      * @param color the text color
+</span>30 <span style=''>      * @return the builder itself
+</span>31 <span style=''>      */
+</span>32 <span style=''>    def withText(text: String, size: Double = 30, color: Color = Color.White): Builder = {
+</span>33 <span style=''>      </span><span style='background: #F0ADAD'>components += new Text(text) {
+</span>34 <span style=''></span><span style='background: #F0ADAD'>        font = Font.font(&quot;Verdana&quot;, size)
+</span>35 <span style=''></span><span style='background: #F0ADAD'>        fill = color
+</span>36 <span style=''></span><span style='background: #F0ADAD'>      }</span><span style=''>
+</span>37 <span style=''>      this
+</span>38 <span style=''>    }
+</span>39 <span style=''>
+</span>40 <span style=''>    /** This method adds a Button to the screen
+</span>41 <span style=''>      *
+</span>42 <span style=''>      * @param text    the text
+</span>43 <span style=''>      * @param onClick the handler that will be executed on the button click
+</span>44 <span style=''>      * @return the builder itself
+</span>45 <span style=''>      */
+</span>46 <span style=''>    def withButton(text: String, onClick: EventHandler[ActionEvent]): Builder = {
+</span>47 <span style=''>      </span><span style='background: #F0ADAD'>components += new StyledButton(text) {
+</span>48 <span style=''></span><span style='background: #F0ADAD'>        onAction = onClick
+</span>49 <span style=''></span><span style='background: #F0ADAD'>      }</span><span style=''>
+</span>50 <span style=''>      this
+</span>51 <span style=''>    }
+</span>52 <span style=''>
+</span>53 <span style=''>    /** This method adds a node to the screen
+</span>54 <span style=''>      *
+</span>55 <span style=''>      * @param node the node
+</span>56 <span style=''>      * @return the builder itself
+</span>57 <span style=''>      */
+</span>58 <span style=''>    def withNode(node: Node): Builder = {
+</span>59 <span style=''>      </span><span style='background: #F0ADAD'>components += node</span><span style=''>
+</span>60 <span style=''>      this
+</span>61 <span style=''>    }
+</span>62 <span style=''>
+</span>63 <span style=''>    /** This method creates a LevelScreenImpl with the provided components
+</span>64 <span style=''>      *
+</span>65 <span style=''>      * @return a LevelScreenImpl
+</span>66 <span style=''>      */
+</span>67 <span style=''>    def build(): LevelScreenImpl = </span><span style='background: #F0ADAD'>new LevelScreenImpl(parentScene, components)</span><span style=''>
+</span>68 <span style=''>  }
+</span>69 <span style=''>
+</span>70 <span style=''>  /** A protected class representing a black level screen
+</span>71 <span style=''>    *
+</span>72 <span style=''>    * @param parentScene the parent scene
+</span>73 <span style=''>    * @param components  the screen nodes/components, shown in order top to bottom
+</span>74 <span style=''>    */
+</span>75 <span style=''>  class LevelScreenImpl(parentScene: Scene, components: Seq[Node]) extends VBox(spacing = 4) {
+</span>76 <span style=''>    </span><span style='background: #F0ADAD'>prefWidth &lt;== parentScene.width</span><span style=''>
+</span>77 <span style=''>    </span><span style='background: #F0ADAD'>prefHeight &lt;== parentScene.height</span><span style=''>
+</span>78 <span style=''>    </span><span style='background: #F0ADAD'>alignment = Pos.Center</span><span style=''>
+</span>79 <span style=''>    </span><span style='background: #F0ADAD'>alignmentInParent = Pos.Center</span><span style=''>
+</span>80 <span style=''>    </span><span style='background: #F0ADAD'>parentScene fill = Color.Black</span><span style=''>
+</span>81 <span style=''>
+</span>82 <span style=''>    </span><span style='background: #F0ADAD'>children = components</span><span style=''>
+</span>83 <span style=''>
+</span>84 <span style=''>  }
+</span>85 <span style=''>
+</span>86 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          4149
+        </td>
+        <td>
+          827
+          -
+          847
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.mutable.ListBuffer.apply[scalafx.scene.Node]()
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          4153
+        </td>
+        <td>
+          1159
+          -
+          1162
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.level.LevelScreen.Builder.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          4154
+        </td>
+        <td>
+          1145
+          -
+          1246
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.mutable.ListBuffer.+=
+        </td>
+        <td style="background: #F0ADAD">
+          Builder.this.components.+=({
+  final class $anon extends scalafx.scene.text.Text {
+    def &lt;init&gt;(): &lt;$anon: scalafx.scene.text.Text&gt; = {
+      $anon.super.&lt;init&gt;(text);
+      ()
+    };
+    $anon.this.font_=(scalafx.scene.text.Font.font(&quot;Verdana&quot;, size));
+    $anon.this.fill_=(color)
+  };
+  new $anon()
+})
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          4150
+        </td>
+        <td>
+          1191
+          -
+          1217
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.text.Font.font
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.scene.text.Font.font(&quot;Verdana&quot;, size)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          4151
+        </td>
+        <td>
+          1184
+          -
+          1217
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.text.Text.font_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.font_=(scalafx.scene.text.Font.font(&quot;Verdana&quot;, size))
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          4152
+        </td>
+        <td>
+          1226
+          -
+          1238
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.shape.Shape.fill_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.fill_=(color)
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          4156
+        </td>
+        <td>
+          1576
+          -
+          1579
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.level.LevelScreen.Builder.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          4157
+        </td>
+        <td>
+          1562
+          -
+          1635
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.mutable.ListBuffer.+=
+        </td>
+        <td style="background: #F0ADAD">
+          Builder.this.components.+=({
+  final class $anon extends it.unibo.osmos.redux.mvc.view.components.custom.StyledButton {
+    def &lt;init&gt;(): &lt;$anon: it.unibo.osmos.redux.mvc.view.components.custom.StyledButton&gt; = {
+      $anon.super.&lt;init&gt;(text);
+      ()
+    };
+    $anon.this.onAction_=(onClick)
+  };
+  new $anon()
+})
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          4155
+        </td>
+        <td>
+          1609
+          -
+          1627
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.ButtonBase.onAction_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.onAction_=(onClick)
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          4158
+        </td>
+        <td>
+          1829
+          -
+          1847
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.mutable.ListBuffer.+=
+        </td>
+        <td style="background: #F0ADAD">
+          Builder.this.components.+=(node)
+        </td>
+      </tr><tr>
+        <td>
+          67
+        </td>
+        <td>
+          4159
+        </td>
+        <td>
+          2047
+          -
+          2058
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.level.LevelScreen.Builder.parentScene
+        </td>
+        <td style="background: #F0ADAD">
+          Builder.this.parentScene
+        </td>
+      </tr><tr>
+        <td>
+          67
+        </td>
+        <td>
+          4161
+        </td>
+        <td>
+          2027
+          -
+          2071
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.level.LevelScreen.LevelScreenImpl.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new LevelScreen.this.LevelScreenImpl(Builder.this.parentScene, Builder.this.components)
+        </td>
+      </tr><tr>
+        <td>
+          67
+        </td>
+        <td>
+          4160
+        </td>
+        <td>
+          2060
+          -
+          2070
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.level.LevelScreen.Builder.components
+        </td>
+        <td style="background: #F0ADAD">
+          Builder.this.components
+        </td>
+      </tr><tr>
+        <td>
+          76
+        </td>
+        <td>
+          4162
+        </td>
+        <td>
+          2386
+          -
+          2403
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.scene.Scene.width
+        </td>
+        <td style="background: #F0ADAD">
+          LevelScreenImpl.this.parentScene.width
+        </td>
+      </tr><tr>
+        <td>
+          76
+        </td>
+        <td>
+          4163
+        </td>
+        <td>
+          2372
+          -
+          2403
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          LevelScreenImpl.this.prefWidth.&lt;==(LevelScreenImpl.this.parentScene.width)
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          4165
+        </td>
+        <td>
+          2408
+          -
+          2441
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          LevelScreenImpl.this.prefHeight.&lt;==(LevelScreenImpl.this.parentScene.height)
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          4164
+        </td>
+        <td>
+          2423
+          -
+          2441
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.scene.Scene.height
+        </td>
+        <td style="background: #F0ADAD">
+          LevelScreenImpl.this.parentScene.height
+        </td>
+      </tr><tr>
+        <td>
+          78
+        </td>
+        <td>
+          4167
+        </td>
+        <td>
+          2446
+          -
+          2468
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.delegate.AlignmentDelegate.alignment_=
+        </td>
+        <td style="background: #F0ADAD">
+          LevelScreenImpl.this.alignment_=(scalafx.geometry.Pos.Center)
+        </td>
+      </tr><tr>
+        <td>
+          78
+        </td>
+        <td>
+          4166
+        </td>
+        <td>
+          2458
+          -
+          2468
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.geometry.Pos.Center
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.geometry.Pos.Center
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          4168
+        </td>
+        <td>
+          2493
+          -
+          2503
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.geometry.Pos.Center
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.geometry.Pos.Center
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          4169
+        </td>
+        <td>
+          2473
+          -
+          2503
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.alignmentInParent_=
+        </td>
+        <td style="background: #F0ADAD">
+          LevelScreenImpl.this.alignmentInParent_=(scalafx.geometry.Pos.Center)
+        </td>
+      </tr><tr>
+        <td>
+          80
+        </td>
+        <td>
+          4171
+        </td>
+        <td>
+          2508
+          -
+          2538
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Scene.fill_=
+        </td>
+        <td style="background: #F0ADAD">
+          LevelScreenImpl.this.parentScene.fill_=(scalafx.scene.paint.Color.Black)
+        </td>
+      </tr><tr>
+        <td>
+          80
+        </td>
+        <td>
+          4170
+        </td>
+        <td>
+          2527
+          -
+          2538
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.scene.paint.Color.Black
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.scene.paint.Color.Black
+        </td>
+      </tr><tr>
+        <td>
+          82
+        </td>
+        <td>
+          4173
+        </td>
+        <td>
+          2544
+          -
+          2565
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Pane.children_=
+        </td>
+        <td style="background: #F0ADAD">
+          LevelScreenImpl.this.children_=(LevelScreenImpl.this.components)
+        </td>
+      </tr><tr>
+        <td>
+          82
+        </td>
+        <td>
+          4172
+        </td>
+        <td>
+          2555
+          -
+          2565
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.level.LevelScreen.LevelScreenImpl.components
+        </td>
+        <td style="background: #F0ADAD">
+          LevelScreenImpl.this.components
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

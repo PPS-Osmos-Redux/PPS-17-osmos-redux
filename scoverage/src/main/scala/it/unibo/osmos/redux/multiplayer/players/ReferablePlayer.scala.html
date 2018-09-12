@@ -1,0 +1,447 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/multiplayer/players/ReferablePlayer.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.multiplayer.players
+</span>2 <span style=''>
+</span>3 <span style=''>import akka.actor.ActorRef
+</span>4 <span style=''>
+</span>5 <span style=''>trait Referable {
+</span>6 <span style=''>
+</span>7 <span style=''>  /** The uuid */
+</span>8 <span style=''>  private var uuid: String = </span><span style='background: #F0ADAD'>&quot;&quot;</span><span style=''>
+</span>9 <span style=''>
+</span>10 <span style=''>  /** Gets the UUID of the player.
+</span>11 <span style=''>    *
+</span>12 <span style=''>    * @return The UUID
+</span>13 <span style=''>    */
+</span>14 <span style=''>  def getUUID: String = </span><span style='background: #F0ADAD'>uuid</span><span style=''>
+</span>15 <span style=''>
+</span>16 <span style=''>  /** Sets the UUID of the player.
+</span>17 <span style=''>    *
+</span>18 <span style=''>    * @param uuid The UUID
+</span>19 <span style=''>    */
+</span>20 <span style=''>  def setUUID(uuid: String): Unit = </span><span style='background: #F0ADAD'>this.uuid = uuid</span><span style=''>
+</span>21 <span style=''>
+</span>22 <span style=''>  /** The actor ref.
+</span>23 <span style=''>    *
+</span>24 <span style=''>    * @return The actor ref
+</span>25 <span style=''>    */
+</span>26 <span style=''>  def getActorRef: ActorRef
+</span>27 <span style=''>}
+</span>28 <span style=''>
+</span>29 <span style=''>trait Alive {
+</span>30 <span style=''>
+</span>31 <span style=''>  private var alive: Boolean = </span><span style='background: #F0ADAD'>true</span><span style=''>
+</span>32 <span style=''>
+</span>33 <span style=''>  /** Sets the liveness of the player.
+</span>34 <span style=''>    *
+</span>35 <span style=''>    * @param isAlive If the player is alive or not.
+</span>36 <span style=''>    */
+</span>37 <span style=''>  def setLiveness(isAlive: Boolean): Unit = </span><span style='background: #F0ADAD'>alive = isAlive</span><span style=''>
+</span>38 <span style=''>
+</span>39 <span style=''>  /** Determines whether the player is alive or not.
+</span>40 <span style=''>    *
+</span>41 <span style=''>    * @return If the player is alive or not.
+</span>42 <span style=''>    */
+</span>43 <span style=''>  def isAlive: Boolean = </span><span style='background: #F0ADAD'>alive</span><span style=''>
+</span>44 <span style=''>}
+</span>45 <span style=''>
+</span>46 <span style=''>/** Lobby user with references
+</span>47 <span style=''>  *
+</span>48 <span style=''>  * @param username The username
+</span>49 <span style=''>  * @param address  The address
+</span>50 <span style=''>  * @param port     The port
+</span>51 <span style=''>  * @param actorRef The actor reference
+</span>52 <span style=''>  */
+</span>53 <span style=''>class ReferablePlayer(private val username: String, private val address: String, private val port: Int, private val actorRef: ActorRef) extends BasePlayer(username, address, port) with Referable with Alive {
+</span>54 <span style=''>
+</span>55 <span style=''>  /** Secondary constructor.
+</span>56 <span style=''>    *
+</span>57 <span style=''>    * @param basicPlayer The BasicPlayer.
+</span>58 <span style=''>    * @param actorRef    The actor reference.
+</span>59 <span style=''>    * @return A new ReferablePlayer instance.
+</span>60 <span style=''>    */
+</span>61 <span style=''>  def this(basicPlayer: BasePlayer, actorRef: ActorRef) = </span><span style='background: #F0ADAD'>this(basicPlayer.getUsername, basicPlayer.getAddress, basicPlayer.getPort, actorRef)</span><span style=''>
+</span>62 <span style=''>
+</span>63 <span style=''>  override def getActorRef: ActorRef = </span><span style='background: #F0ADAD'>actorRef</span><span style=''>
+</span>64 <span style=''>
+</span>65 <span style=''>  /** Creates a BasicPlayer object from this instance.
+</span>66 <span style=''>    *
+</span>67 <span style=''>    * @return The basic player object
+</span>68 <span style=''>    */
+</span>69 <span style=''>  def toBasicPlayer: BasePlayer = </span><span style='background: #F0ADAD'>BasePlayer(username, address, port)</span><span style=''>
+</span>70 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          1561
+        </td>
+        <td>
+          144
+          -
+          146
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;&quot;
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          1562
+        </td>
+        <td>
+          243
+          -
+          247
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.Referable.uuid
+        </td>
+        <td style="background: #F0ADAD">
+          Referable.this.uuid
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          1563
+        </td>
+        <td>
+          360
+          -
+          376
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.Referable.uuid_=
+        </td>
+        <td style="background: #F0ADAD">
+          this.uuid_=(uuid)
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          1564
+        </td>
+        <td>
+          517
+          -
+          521
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          1565
+        </td>
+        <td>
+          671
+          -
+          686
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.Alive.alive_=
+        </td>
+        <td style="background: #F0ADAD">
+          Alive.this.alive_=(isAlive)
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          1566
+        </td>
+        <td>
+          824
+          -
+          829
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.Alive.alive
+        </td>
+        <td style="background: #F0ADAD">
+          Alive.this.alive
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          1569
+        </td>
+        <td>
+          1504
+          -
+          1523
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.BasePlayer.getPort
+        </td>
+        <td style="background: #F0ADAD">
+          basicPlayer.getPort
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          1568
+        </td>
+        <td>
+          1480
+          -
+          1502
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.BasePlayer.getAddress
+        </td>
+        <td style="background: #F0ADAD">
+          basicPlayer.getAddress
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          1571
+        </td>
+        <td>
+          1450
+          -
+          1450
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          1567
+        </td>
+        <td>
+          1455
+          -
+          1478
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.BasePlayer.getUsername
+        </td>
+        <td style="background: #F0ADAD">
+          basicPlayer.getUsername
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          1570
+        </td>
+        <td>
+          1450
+          -
+          1534
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.ReferablePlayer.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ReferablePlayer.this.&lt;init&gt;(basicPlayer.getUsername, basicPlayer.getAddress, basicPlayer.getPort, actorRef)
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          1572
+        </td>
+        <td>
+          1575
+          -
+          1583
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.ReferablePlayer.actorRef
+        </td>
+        <td style="background: #F0ADAD">
+          ReferablePlayer.this.actorRef
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          1575
+        </td>
+        <td>
+          1755
+          -
+          1759
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.ReferablePlayer.port
+        </td>
+        <td style="background: #F0ADAD">
+          ReferablePlayer.this.port
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          1574
+        </td>
+        <td>
+          1746
+          -
+          1753
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.ReferablePlayer.address
+        </td>
+        <td style="background: #F0ADAD">
+          ReferablePlayer.this.address
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          1573
+        </td>
+        <td>
+          1736
+          -
+          1744
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.ReferablePlayer.username
+        </td>
+        <td style="background: #F0ADAD">
+          ReferablePlayer.this.username
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          1576
+        </td>
+        <td>
+          1725
+          -
+          1760
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.BasePlayer.apply
+        </td>
+        <td style="background: #F0ADAD">
+          BasePlayer.apply(ReferablePlayer.this.username, ReferablePlayer.this.address, ReferablePlayer.this.port)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

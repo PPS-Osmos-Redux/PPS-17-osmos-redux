@@ -1,0 +1,698 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/ecs/systems/sentientRule/EscapeFromBoundaryRule.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.systems.sentientRule
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.ecs.entities.CellBuilder
+</span>4 <span style=''>import it.unibo.osmos.redux.ecs.entities.properties.composed.SentientProperty
+</span>5 <span style=''>import it.unibo.osmos.redux.ecs.systems.borderconditions.{CircularBorder, RectangularBorder}
+</span>6 <span style=''>import it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils._
+</span>7 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.{Circle, Rectangle}
+</span>8 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.{CollisionRules, Level}
+</span>9 <span style=''>import it.unibo.osmos.redux.utils.Constants.Sentient._
+</span>10 <span style=''>import it.unibo.osmos.redux.utils.{Point, Vector}
+</span>11 <span style=''>
+</span>12 <span style=''>/** compute the acceleration to avoid the boundary in according with boundary collision rule
+</span>13 <span style=''>  *
+</span>14 <span style=''>  * @param levelInfo level that contain collision rule
+</span>15 <span style=''>  */
+</span>16 <span style=''>case class EscapeFromBoundaryRule(levelInfo: Level) extends SentientRule {
+</span>17 <span style=''>
+</span>18 <span style=''>  private val bounceRule = </span><span style='background: #AEF1AE'>levelInfo.levelMap.mapShape</span><span style=''> match {
+</span>19 <span style=''>    case shape: Rectangle =&gt; </span><span style='background: #AEF1AE'>RectangularBorder(Point(shape.center.x, shape.center.y), CollisionRules.bouncing, shape.base, shape.height)</span><span style=''>
+</span>20 <span style=''>    case shape: Circle =&gt; </span><span style='background: #F0ADAD'>CircularBorder(Point(shape.center.x, shape.center.y), CollisionRules.bouncing, shape.radius)</span><span style=''>
+</span>21 <span style=''>    case _ =&gt; </span><span style='background: #F0ADAD'>throw new IllegalArgumentException</span><span style=''>
+</span>22 <span style=''>  }
+</span>23 <span style=''>
+</span>24 <span style=''>  override def computeRule(sentient: SentientProperty, previousAcceleration: Vector): Vector = {
+</span>25 <span style=''>    </span><span style='background: #AEF1AE'>escapeFromBoundary(sentient, previousAcceleration)</span><span style=''>
+</span>26 <span style=''>  }
+</span>27 <span style=''>
+</span>28 <span style=''>  //compute the acceleration to avoid the boundary in according with boundary collision rule
+</span>29 <span style=''>  private def escapeFromBoundary(sentient: SentientProperty, previousAcceleration: Vector): Vector = </span><span style='background: #AEF1AE'>levelInfo.levelMap.collisionRule</span><span style=''> match {
+</span>30 <span style=''>    case CollisionRules.instantDeath =&gt;
+</span>31 <span style=''>      val actualSpeed = </span><span style='background: #AEF1AE'>sentient.getSpeedComponent.vector add previousAcceleration</span><span style=''>
+</span>32 <span style=''>      val sentientCopy = </span><span style='background: #AEF1AE'>CellBuilder()
+</span>33 <span style=''></span><span style='background: #AEF1AE'>        .withPosition(sentient.getPositionComponent)
+</span>34 <span style=''></span><span style='background: #AEF1AE'>        .withDimension(sentient.getDimensionComponent.radius + getDesiredSeparation(actualSpeed))
+</span>35 <span style=''></span><span style='background: #AEF1AE'>        .withSpeed(actualSpeed.x, actualSpeed.y).buildSentientEntity()</span><span style=''>
+</span>36 <span style=''>      </span><span style='background: #AEF1AE'>bounceRule.checkAndSolveCollision(sentientCopy)</span><span style=''>
+</span>37 <span style=''>      if (</span><span style='background: #AEF1AE'>sentientCopy.getSpeedComponent.vector == actualSpeed</span><span style=''>) {
+</span>38 <span style=''>        </span><span style='background: #AEF1AE'>Vector.zero()</span><span style=''>
+</span>39 <span style=''>      } else </span><span style='background: #AEF1AE'>{
+</span>40 <span style=''></span><span style='background: #AEF1AE'>        val steer = computeSteer(actualSpeed, sentientCopy.getSpeedComponent.vector normalized())
+</span>41 <span style=''></span><span style='background: #AEF1AE'>        steer multiply WeightOfEscapeAccelerationFromBoundary
+</span>42 <span style=''></span><span style='background: #AEF1AE'>      }</span><span style=''>
+</span>43 <span style=''>    case _ =&gt; </span><span style='background: #AEF1AE'>Vector.zero()</span><span style=''>
+</span>44 <span style=''>  }
+</span>45 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          1027
+        </td>
+        <td>
+          887
+          -
+          914
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.LevelMap.mapShape
+        </td>
+        <td style="background: #AEF1AE">
+          EscapeFromBoundaryRule.this.levelInfo.levelMap.mapShape
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1028
+        </td>
+        <td>
+          976
+          -
+          990
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.x
+        </td>
+        <td style="background: #AEF1AE">
+          shape.center.x
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1031
+        </td>
+        <td>
+          1009
+          -
+          1032
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CollisionRules.bouncing
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CollisionRules.bouncing
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1034
+        </td>
+        <td>
+          952
+          -
+          1059
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.apply(it.unibo.osmos.redux.utils.Point.apply(shape.center.x, shape.center.y), it.unibo.osmos.redux.mvc.controller.levels.structure.CollisionRules.bouncing, shape.base, shape.height)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1033
+        </td>
+        <td>
+          1046
+          -
+          1058
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.Rectangle.height
+        </td>
+        <td style="background: #AEF1AE">
+          shape.height
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1030
+        </td>
+        <td>
+          970
+          -
+          1007
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Point.apply(shape.center.x, shape.center.y)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1029
+        </td>
+        <td>
+          992
+          -
+          1006
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.y
+        </td>
+        <td style="background: #AEF1AE">
+          shape.center.y
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1032
+        </td>
+        <td>
+          1034
+          -
+          1044
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.Rectangle.base
+        </td>
+        <td style="background: #AEF1AE">
+          shape.base
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          1037
+        </td>
+        <td>
+          1101
+          -
+          1138
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Point.apply(shape.center.x, shape.center.y)
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          1040
+        </td>
+        <td>
+          1086
+          -
+          1178
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.CircularBorder.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.systems.borderconditions.CircularBorder.apply(it.unibo.osmos.redux.utils.Point.apply(shape.center.x, shape.center.y), it.unibo.osmos.redux.mvc.controller.levels.structure.CollisionRules.bouncing, shape.radius)
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          1036
+        </td>
+        <td>
+          1123
+          -
+          1137
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.y
+        </td>
+        <td style="background: #F0ADAD">
+          shape.center.y
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          1039
+        </td>
+        <td>
+          1165
+          -
+          1177
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.Circle.radius
+        </td>
+        <td style="background: #F0ADAD">
+          shape.radius
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          1038
+        </td>
+        <td>
+          1140
+          -
+          1163
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CollisionRules.bouncing
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CollisionRules.bouncing
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          1035
+        </td>
+        <td>
+          1107
+          -
+          1121
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.x
+        </td>
+        <td style="background: #F0ADAD">
+          shape.center.x
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          1041
+        </td>
+        <td>
+          1193
+          -
+          1227
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.IllegalArgumentException()
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          1042
+        </td>
+        <td>
+          1334
+          -
+          1384
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.sentientRule.EscapeFromBoundaryRule.escapeFromBoundary
+        </td>
+        <td style="background: #AEF1AE">
+          EscapeFromBoundaryRule.this.escapeFromBoundary(sentient, previousAcceleration)
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          1043
+        </td>
+        <td>
+          1584
+          -
+          1616
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.LevelMap.collisionRule
+        </td>
+        <td style="background: #AEF1AE">
+          EscapeFromBoundaryRule.this.levelInfo.levelMap.collisionRule
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          1044
+        </td>
+        <td>
+          1689
+          -
+          1747
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.add
+        </td>
+        <td style="background: #AEF1AE">
+          sentient.getSpeedComponent.vector.add(previousAcceleration)
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          1045
+        </td>
+        <td>
+          1773
+          -
+          2008
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.buildSentientEntity
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.apply().withPosition(sentient.getPositionComponent).withDimension(sentient.getDimensionComponent.radius.+(it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.getDesiredSeparation(actualSpeed))).withSpeed(actualSpeed.x, actualSpeed.y).buildSentientEntity()
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          1046
+        </td>
+        <td>
+          2015
+          -
+          2062
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.checkAndSolveCollision
+        </td>
+        <td style="background: #AEF1AE">
+          EscapeFromBoundaryRule.this.bounceRule.checkAndSolveCollision(sentientCopy)
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          1047
+        </td>
+        <td>
+          2073
+          -
+          2125
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.==
+        </td>
+        <td style="background: #AEF1AE">
+          sentientCopy.getSpeedComponent.vector.==(actualSpeed)
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          1049
+        </td>
+        <td>
+          2137
+          -
+          2150
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.zero
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Vector.zero()
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          1048
+        </td>
+        <td>
+          2137
+          -
+          2150
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.zero
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Vector.zero()
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          1054
+        </td>
+        <td>
+          2164
+          -
+          2333
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          {
+  val steer: it.unibo.osmos.redux.utils.Vector = it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.computeSteer(actualSpeed, sentientCopy.getSpeedComponent.vector.normalized());
+  steer.multiply(it.unibo.osmos.redux.utils.Constants.Sentient.WeightOfEscapeAccelerationFromBoundary)
+}
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          1051
+        </td>
+        <td>
+          2186
+          -
+          2263
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.computeSteer
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.computeSteer(actualSpeed, sentientCopy.getSpeedComponent.vector.normalized())
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          1050
+        </td>
+        <td>
+          2212
+          -
+          2262
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.normalized
+        </td>
+        <td style="background: #AEF1AE">
+          sentientCopy.getSpeedComponent.vector.normalized()
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          1052
+        </td>
+        <td>
+          2287
+          -
+          2325
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.Sentient.WeightOfEscapeAccelerationFromBoundary
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Constants.Sentient.WeightOfEscapeAccelerationFromBoundary
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          1053
+        </td>
+        <td>
+          2272
+          -
+          2325
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.multiply
+        </td>
+        <td style="background: #AEF1AE">
+          steer.multiply(it.unibo.osmos.redux.utils.Constants.Sentient.WeightOfEscapeAccelerationFromBoundary)
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          1055
+        </td>
+        <td>
+          2348
+          -
+          2361
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.zero
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Vector.zero()
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

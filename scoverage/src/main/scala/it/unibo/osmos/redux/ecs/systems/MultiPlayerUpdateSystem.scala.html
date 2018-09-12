@@ -1,0 +1,485 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/ecs/systems/MultiPlayerUpdateSystem.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.systems
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.ecs.entities.properties.composed.DrawableProperty
+</span>4 <span style=''>import it.unibo.osmos.redux.multiplayer.server.ServerActor.UpdateGame
+</span>5 <span style=''>import it.unibo.osmos.redux.multiplayer.server.{Server, ServerState}
+</span>6 <span style=''>import it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity
+</span>7 <span style=''>
+</span>8 <span style=''>/** System that sends the entities to draw to all connected clients.
+</span>9 <span style=''>  *
+</span>10 <span style=''>  * @param server The server used to send message to clients.
+</span>11 <span style=''>  */
+</span>12 <span style=''>case class MultiPlayerUpdateSystem(server: Server) extends AbstractSystem[DrawableProperty] {
+</span>13 <span style=''>
+</span>14 <span style=''>  override def update(): Unit = if (</span><span style='background: #F0ADAD'>server.getState == ServerState.Game</span><span style=''>) </span><span style='background: #F0ADAD'>server.broadcastMessage(UpdateGame(getEntities))</span><span style=''>
+</span>15 <span style=''>
+</span>16 <span style=''>  private def getEntities: Seq[DrawableEntity] =
+</span>17 <span style=''>    </span><span style='background: #F0ADAD'>entities filter (_.getVisibleComponent.isVisible) map wrapToDrawable</span><span style=''>
+</span>18 <span style=''>
+</span>19 <span style=''>  private def wrapToDrawable(entity: DrawableProperty): DrawableEntity =
+</span>20 <span style=''>    </span><span style='background: #F0ADAD'>new DrawableEntity(entity.getUUID, entity.getPositionComponent.point, entity.getDimensionComponent.radius,
+</span>21 <span style=''></span><span style='background: #F0ADAD'>      (entity.getSpeedComponent.vector.x, entity.getSpeedComponent.vector.y), entity.getTypeComponent.typeEntity)</span><span style=''>
+</span>22 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          774
+        </td>
+        <td>
+          593
+          -
+          628
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.==
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerUpdateSystem.this.server.getState.==(it.unibo.osmos.redux.multiplayer.server.ServerState.Game)
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          777
+        </td>
+        <td>
+          630
+          -
+          678
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.broadcastMessage
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerUpdateSystem.this.server.broadcastMessage(it.unibo.osmos.redux.multiplayer.server.ServerActor.UpdateGame.apply(MultiPlayerUpdateSystem.this.getEntities))
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          779
+        </td>
+        <td>
+          589
+          -
+          589
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          773
+        </td>
+        <td>
+          612
+          -
+          628
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerState.Game
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.multiplayer.server.ServerState.Game
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          776
+        </td>
+        <td>
+          654
+          -
+          677
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.UpdateGame.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.UpdateGame.apply(MultiPlayerUpdateSystem.this.getEntities)
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          775
+        </td>
+        <td>
+          665
+          -
+          676
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.MultiPlayerUpdateSystem.getEntities
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerUpdateSystem.this.getEntities
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          778
+        </td>
+        <td>
+          630
+          -
+          678
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.broadcastMessage
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerUpdateSystem.this.server.broadcastMessage(it.unibo.osmos.redux.multiplayer.server.ServerActor.UpdateGame.apply(MultiPlayerUpdateSystem.this.getEntities))
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          780
+        </td>
+        <td>
+          589
+          -
+          589
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          783
+        </td>
+        <td>
+          783
+          -
+          783
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.mutable.ListBuffer.canBuildFrom
+        </td>
+        <td style="background: #F0ADAD">
+          mutable.this.ListBuffer.canBuildFrom[it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity]
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          782
+        </td>
+        <td>
+          787
+          -
+          801
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.MultiPlayerUpdateSystem.wrapToDrawable
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerUpdateSystem.this.wrapToDrawable(entity)
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          784
+        </td>
+        <td>
+          733
+          -
+          801
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.TraversableLike.map
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerUpdateSystem.this.entities.filter(((x$1: it.unibo.osmos.redux.ecs.entities.properties.composed.DrawableProperty) =&gt; x$1.getVisibleComponent.isVisible)).map[it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity, Seq[it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity]]({
+  ((entity: it.unibo.osmos.redux.ecs.entities.properties.composed.DrawableProperty) =&gt; MultiPlayerUpdateSystem.this.wrapToDrawable(entity))
+})(mutable.this.ListBuffer.canBuildFrom[it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity])
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          781
+        </td>
+        <td>
+          750
+          -
+          781
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.VisibleComponent.isVisible
+        </td>
+        <td style="background: #F0ADAD">
+          x$1.getVisibleComponent.isVisible
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          792
+        </td>
+        <td>
+          880
+          -
+          1100
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.drawables.DrawableEntity(entity.getUUID, entity.getPositionComponent.point, entity.getDimensionComponent.radius, scala.Tuple2.apply[Double, Double](entity.getSpeedComponent.vector.x, entity.getSpeedComponent.vector.y), entity.getTypeComponent.typeEntity)
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          786
+        </td>
+        <td>
+          915
+          -
+          948
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.point
+        </td>
+        <td style="background: #F0ADAD">
+          entity.getPositionComponent.point
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          785
+        </td>
+        <td>
+          899
+          -
+          913
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Property.getUUID
+        </td>
+        <td style="background: #F0ADAD">
+          entity.getUUID
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          787
+        </td>
+        <td>
+          950
+          -
+          985
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.radius
+        </td>
+        <td style="background: #F0ADAD">
+          entity.getDimensionComponent.radius
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          788
+        </td>
+        <td>
+          994
+          -
+          1027
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.x
+        </td>
+        <td style="background: #F0ADAD">
+          entity.getSpeedComponent.vector.x
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          791
+        </td>
+        <td>
+          1065
+          -
+          1099
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.TypeComponent.typeEntity
+        </td>
+        <td style="background: #F0ADAD">
+          entity.getTypeComponent.typeEntity
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          790
+        </td>
+        <td>
+          993
+          -
+          1063
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Tuple2.apply[Double, Double](entity.getSpeedComponent.vector.x, entity.getSpeedComponent.vector.y)
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          789
+        </td>
+        <td>
+          1029
+          -
+          1062
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.y
+        </td>
+        <td style="background: #F0ADAD">
+          entity.getSpeedComponent.vector.y
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

@@ -1,0 +1,235 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/ecs/components/SpeedComponent.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.components
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.utils.Vector
+</span>4 <span style=''>
+</span>5 <span style=''>/** Component of the speed vector */
+</span>6 <span style=''>trait SpeedComponent extends VectorComponent {
+</span>7 <span style=''>
+</span>8 <span style=''>  /** Makes a defensive copy of this instance.
+</span>9 <span style=''>    *
+</span>10 <span style=''>    * @return The new instance.
+</span>11 <span style=''>    */
+</span>12 <span style=''>  override def copy(): SpeedComponent = </span><span style='background: #AEF1AE'>SpeedComponent(vector.x, vector.y)</span><span style=''>
+</span>13 <span style=''>}
+</span>14 <span style=''>
+</span>15 <span style=''>object SpeedComponent {
+</span>16 <span style=''>  def apply(speedX: Double, speedY: Double): SpeedComponent = </span><span style='background: #AEF1AE'>SpeedComponentImpl(Vector(speedX, speedY))</span><span style=''>
+</span>17 <span style=''>
+</span>18 <span style=''>  def apply(speed: Vector): SpeedComponent = </span><span style='background: #AEF1AE'>SpeedComponentImpl(speed)</span><span style=''>
+</span>19 <span style=''>
+</span>20 <span style=''>  private case class SpeedComponentImpl(var _speedVector: Vector) extends SpeedComponent {
+</span>21 <span style=''>    override def vector: Vector = </span><span style='background: #AEF1AE'>_speedVector</span><span style=''>
+</span>22 <span style=''>
+</span>23 <span style=''>    override def vector_(vector: Vector): Unit = </span><span style='background: #AEF1AE'>_speedVector = vector</span><span style=''>
+</span>24 <span style=''>  }
+</span>25 <span style=''>
+</span>26 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          59
+        </td>
+        <td>
+          319
+          -
+          327
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.x
+        </td>
+        <td style="background: #AEF1AE">
+          SpeedComponent.this.vector.x
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          61
+        </td>
+        <td>
+          304
+          -
+          338
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpeedComponent.apply
+        </td>
+        <td style="background: #AEF1AE">
+          SpeedComponent.apply(SpeedComponent.this.vector.x, SpeedComponent.this.vector.y)
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          60
+        </td>
+        <td>
+          329
+          -
+          337
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.y
+        </td>
+        <td style="background: #AEF1AE">
+          SpeedComponent.this.vector.y
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          62
+        </td>
+        <td>
+          447
+          -
+          469
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Vector.apply(speedX, speedY)
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          63
+        </td>
+        <td>
+          428
+          -
+          470
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpeedComponent.SpeedComponentImpl.apply
+        </td>
+        <td style="background: #AEF1AE">
+          SpeedComponent.this.SpeedComponentImpl.apply(it.unibo.osmos.redux.utils.Vector.apply(speedX, speedY))
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          64
+        </td>
+        <td>
+          517
+          -
+          542
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpeedComponent.SpeedComponentImpl.apply
+        </td>
+        <td style="background: #AEF1AE">
+          SpeedComponent.this.SpeedComponentImpl.apply(speed)
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          65
+        </td>
+        <td>
+          669
+          -
+          681
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpeedComponent.SpeedComponentImpl._speedVector
+        </td>
+        <td style="background: #AEF1AE">
+          SpeedComponentImpl.this._speedVector
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          66
+        </td>
+        <td>
+          732
+          -
+          753
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpeedComponent.SpeedComponentImpl._speedVector_=
+        </td>
+        <td style="background: #AEF1AE">
+          SpeedComponentImpl.this._speedVector_=(vector)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

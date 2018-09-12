@@ -1,0 +1,1290 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/components/instructions/GameLegendScreen.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.components.instructions
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.view.ViewConstants.Window._
+</span>5 <span style=''>import it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox
+</span>6 <span style=''>import it.unibo.osmos.redux.mvc.view.components.level.LevelScreen
+</span>7 <span style=''>import it.unibo.osmos.redux.mvc.view.components.level.LevelScreen.LevelScreenImpl
+</span>8 <span style=''>import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
+</span>9 <span style=''>import it.unibo.osmos.redux.mvc.view.scenes.BaseScene
+</span>10 <span style=''>import scalafx.geometry.{Insets, Pos}
+</span>11 <span style=''>import scalafx.scene.layout.HBox
+</span>12 <span style=''>import scalafx.scene.paint.Color
+</span>13 <span style=''>import scalafx.scene.text.Text
+</span>14 <span style=''>
+</span>15 <span style=''>/** Container holding a single legend screen showing the game entities
+</span>16 <span style=''>  *
+</span>17 <span style=''>  * @param scene the scene in which the screen is held
+</span>18 <span style=''>  */
+</span>19 <span style=''>class GameLegendScreen(val scene: BaseScene) {
+</span>20 <span style=''>
+</span>21 <span style=''>  private val playerBox = </span><span style='background: #F0ADAD'>new</span><span style=''> BaseHBox {
+</span>22 <span style=''>    </span><span style='background: #F0ADAD'>alignment = Pos.Center</span><span style=''>
+</span>23 <span style=''>    </span><span style='background: #F0ADAD'>margin = Insets(0.0, 0.0, 50.0, 0.0)</span><span style=''>
+</span>24 <span style=''>    </span><span style='background: #F0ADAD'>children = Seq(new EntityDescriptionBox(ImageLoader.getImage(PlayerCellTexture), &quot;[Player]\n\nThis is your cell&quot;) {
+</span>25 <span style=''></span><span style='background: #F0ADAD'>      alignment = Pos.Center
+</span>26 <span style=''></span><span style='background: #F0ADAD'>    })</span><span style=''>
+</span>27 <span style=''>  }
+</span>28 <span style=''>  private val firstBox = </span><span style='background: #F0ADAD'>new</span><span style=''> BaseHBox {
+</span>29 <span style=''>    </span><span style='background: #F0ADAD'>children = Seq(new EntityDescriptionBox(ImageLoader.getImage(CellTexture), &quot;[Matter]\n\nA simple enemy cell&quot;),
+</span>30 <span style=''></span><span style='background: #F0ADAD'>      new EntityDescriptionBox(ImageLoader.getImage(AntiMatterTexture), &quot;[AntiMatter]\n\nTouching this cell will reduce your size&quot;))</span><span style=''>
+</span>31 <span style=''>  }
+</span>32 <span style=''>  private val secondBox = </span><span style='background: #F0ADAD'>new</span><span style=''> BaseHBox {
+</span>33 <span style=''>    </span><span style='background: #F0ADAD'>children = Seq(new EntityDescriptionBox(ImageLoader.getImage(AttractiveTexture), &quot;[Attractive]\n\nThis cell will attract other cells&quot;),
+</span>34 <span style=''></span><span style='background: #F0ADAD'>      new EntityDescriptionBox(ImageLoader.getImage(RepulsiveTexture), &quot;[Repulsive]\n\nThis cell will repulse other cells away&quot;))</span><span style=''>
+</span>35 <span style=''>  }
+</span>36 <span style=''>  private val thirdBox = </span><span style='background: #F0ADAD'>new</span><span style=''> BaseHBox {
+</span>37 <span style=''>    </span><span style='background: #F0ADAD'>children = Seq(new EntityDescriptionBox(ImageLoader.getImage(SentientTexture), &quot;[Sentient]\n\nThis cell will try to win the game&quot;),
+</span>38 <span style=''></span><span style='background: #F0ADAD'>      new EntityDescriptionBox(ImageLoader.getImage(ControllerTexture), &quot;[Controlled]\n\nThis cell is controlled by another player&quot;))</span><span style=''>
+</span>39 <span style=''>  }
+</span>40 <span style=''>  /** The legend screen */
+</span>41 <span style=''>  private val _legendScreen = </span><span style='background: #F0ADAD'>LevelScreen.Builder(scene)
+</span>42 <span style=''></span><span style='background: #F0ADAD'>    .withNode(playerBox)
+</span>43 <span style=''></span><span style='background: #F0ADAD'>    .withNode(firstBox)
+</span>44 <span style=''></span><span style='background: #F0ADAD'>    .withNode(secondBox)
+</span>45 <span style=''></span><span style='background: #F0ADAD'>    .withNode(thirdBox)
+</span>46 <span style=''></span><span style='background: #F0ADAD'>    .withNode(new Text(&quot;Press [L] to hide the game legend&quot;) {
+</span>47 <span style=''></span><span style='background: #F0ADAD'>      style = &quot;-fx-font-size: 20pt&quot;
+</span>48 <span style=''></span><span style='background: #F0ADAD'>      fill = Color.White
+</span>49 <span style=''></span><span style='background: #F0ADAD'>    })
+</span>50 <span style=''></span><span style='background: #F0ADAD'>    .build()</span><span style=''>
+</span>51 <span style=''>
+</span>52 <span style=''>  /** Legend screen getter
+</span>53 <span style=''>    *
+</span>54 <span style=''>    * @return the legend screen
+</span>55 <span style=''>    */
+</span>56 <span style=''>  def legendScreen: LevelScreenImpl = </span><span style='background: #F0ADAD'>_legendScreen</span><span style=''>
+</span>57 <span style=''>
+</span>58 <span style=''>  private class BaseHBox extends HBox() {
+</span>59 <span style=''>    </span><span style='background: #F0ADAD'>margin = Insets(10.0, 0.0, 10.0, 0.0)</span><span style=''>
+</span>60 <span style=''>    </span><span style='background: #F0ADAD'>prefWidth = DefaultWindowWidth</span><span style=''>
+</span>61 <span style=''>    </span><span style='background: #F0ADAD'>minWidth = DefaultWindowWidth</span><span style=''>
+</span>62 <span style=''>    </span><span style='background: #F0ADAD'>maxWidth = DefaultWindowWidth</span><span style=''>
+</span>63 <span style=''>    </span><span style='background: #F0ADAD'>alignment = Pos.CenterLeft</span><span style=''>
+</span>64 <span style=''>  }
+</span>65 <span style=''>
+</span>66 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          4051
+        </td>
+        <td>
+          874
+          -
+          877
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.instructions.GameLegendScreen.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          4042
+        </td>
+        <td>
+          905
+          -
+          915
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.geometry.Pos.Center
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.geometry.Pos.Center
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          4043
+        </td>
+        <td>
+          893
+          -
+          915
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.delegate.AlignmentDelegate.alignment_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.alignment_=(scalafx.geometry.Pos.Center)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          4045
+        </td>
+        <td>
+          920
+          -
+          956
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.margin_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.margin_=(scalafx.geometry.Insets.apply(0.0, 0.0, 50.0, 0.0))
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          4044
+        </td>
+        <td>
+          929
+          -
+          956
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.geometry.Insets.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.geometry.Insets.apply(0.0, 0.0, 50.0, 0.0)
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          4049
+        </td>
+        <td>
+          972
+          -
+          1112
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.Seq.apply[it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox]({
+  final class $anon extends it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox {
+    def &lt;init&gt;(): &lt;$anon: it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox&gt; = {
+      $anon.super.&lt;init&gt;(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.PlayerCellTexture), &quot;[Player]\n\nThis is your cell&quot;);
+      ()
+    };
+    $anon.this.alignment_=(scalafx.geometry.Pos.Center)
+  };
+  new $anon()
+})
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          4048
+        </td>
+        <td>
+          976
+          -
+          979
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.instructions.GameLegendScreen.$anon.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          4050
+        </td>
+        <td>
+          961
+          -
+          1112
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Pane.children_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.children_=(scala.collection.Seq.apply[it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox]({
+  final class $anon extends it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox {
+    def &lt;init&gt;(): &lt;$anon: it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox&gt; = {
+      $anon.super.&lt;init&gt;(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.PlayerCellTexture), &quot;[Player]\n\nThis is your cell&quot;);
+      ()
+    };
+    $anon.this.alignment_=(scalafx.geometry.Pos.Center)
+  };
+  new $anon()
+}))
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          4047
+        </td>
+        <td>
+          1083
+          -
+          1105
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.delegate.AlignmentDelegate.alignment_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.alignment_=(scalafx.geometry.Pos.Center)
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          4046
+        </td>
+        <td>
+          1095
+          -
+          1105
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.geometry.Pos.Center
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.geometry.Pos.Center
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          4062
+        </td>
+        <td>
+          1142
+          -
+          1145
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.instructions.GameLegendScreen.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          4060
+        </td>
+        <td>
+          1172
+          -
+          1404
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.Seq.apply[it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox](new it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture), &quot;[Matter]\n\nA simple enemy cell&quot;), new it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AntiMatterTexture), &quot;[AntiMatter]\n\nTouching this cell will reduce your size&quot;))
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          4054
+        </td>
+        <td>
+          1236
+          -
+          1269
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;[Matter]\n\nA simple enemy cell&quot;
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          4053
+        </td>
+        <td>
+          1201
+          -
+          1234
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture)
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          4061
+        </td>
+        <td>
+          1161
+          -
+          1404
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Pane.children_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.children_=(scala.collection.Seq.apply[it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox](new it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture), &quot;[Matter]\n\nA simple enemy cell&quot;), new it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AntiMatterTexture), &quot;[AntiMatter]\n\nTouching this cell will reduce your size&quot;)))
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          4052
+        </td>
+        <td>
+          1222
+          -
+          1233
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          4055
+        </td>
+        <td>
+          1176
+          -
+          1270
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture), &quot;[Matter]\n\nA simple enemy cell&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          4058
+        </td>
+        <td>
+          1344
+          -
+          1402
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;[AntiMatter]\n\nTouching this cell will reduce your size&quot;
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          4057
+        </td>
+        <td>
+          1303
+          -
+          1342
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AntiMatterTexture)
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          4056
+        </td>
+        <td>
+          1324
+          -
+          1341
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AntiMatterTexture
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AntiMatterTexture
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          4059
+        </td>
+        <td>
+          1278
+          -
+          1403
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AntiMatterTexture), &quot;[AntiMatter]\n\nTouching this cell will reduce your size&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          4073
+        </td>
+        <td>
+          1435
+          -
+          1438
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.instructions.GameLegendScreen.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          4066
+        </td>
+        <td>
+          1469
+          -
+          1588
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AttractiveTexture), &quot;[Attractive]\n\nThis cell will attract other cells&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          4072
+        </td>
+        <td>
+          1454
+          -
+          1719
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Pane.children_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.children_=(scala.collection.Seq.apply[it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox](new it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AttractiveTexture), &quot;[Attractive]\n\nThis cell will attract other cells&quot;), new it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.RepulsiveTexture), &quot;[Repulsive]\n\nThis cell will repulse other cells away&quot;)))
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          4063
+        </td>
+        <td>
+          1515
+          -
+          1532
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AttractiveTexture
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AttractiveTexture
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          4071
+        </td>
+        <td>
+          1465
+          -
+          1719
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.Seq.apply[it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox](new it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AttractiveTexture), &quot;[Attractive]\n\nThis cell will attract other cells&quot;), new it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.RepulsiveTexture), &quot;[Repulsive]\n\nThis cell will repulse other cells away&quot;))
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          4065
+        </td>
+        <td>
+          1535
+          -
+          1587
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;[Attractive]\n\nThis cell will attract other cells&quot;
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          4064
+        </td>
+        <td>
+          1494
+          -
+          1533
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AttractiveTexture)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          4067
+        </td>
+        <td>
+          1642
+          -
+          1658
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.RepulsiveTexture
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.RepulsiveTexture
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          4069
+        </td>
+        <td>
+          1661
+          -
+          1717
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;[Repulsive]\n\nThis cell will repulse other cells away&quot;
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          4068
+        </td>
+        <td>
+          1621
+          -
+          1659
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.RepulsiveTexture)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          4070
+        </td>
+        <td>
+          1596
+          -
+          1718
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.RepulsiveTexture), &quot;[Repulsive]\n\nThis cell will repulse other cells away&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          4084
+        </td>
+        <td>
+          1749
+          -
+          1752
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.instructions.GameLegendScreen.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          4076
+        </td>
+        <td>
+          1847
+          -
+          1897
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;[Sentient]\n\nThis cell will try to win the game&quot;
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          4075
+        </td>
+        <td>
+          1808
+          -
+          1845
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.SentientTexture)
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          4074
+        </td>
+        <td>
+          1829
+          -
+          1844
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.SentientTexture
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.SentientTexture
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          4083
+        </td>
+        <td>
+          1768
+          -
+          2033
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Pane.children_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.children_=(scala.collection.Seq.apply[it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox](new it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.SentientTexture), &quot;[Sentient]\n\nThis cell will try to win the game&quot;), new it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.ControllerTexture), &quot;[Controlled]\n\nThis cell is controlled by another player&quot;)))
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          4077
+        </td>
+        <td>
+          1783
+          -
+          1898
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.SentientTexture), &quot;[Sentient]\n\nThis cell will try to win the game&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          4082
+        </td>
+        <td>
+          1779
+          -
+          2033
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.Seq.apply[it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox](new it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.SentientTexture), &quot;[Sentient]\n\nThis cell will try to win the game&quot;), new it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.ControllerTexture), &quot;[Controlled]\n\nThis cell is controlled by another player&quot;))
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          4078
+        </td>
+        <td>
+          1952
+          -
+          1969
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.ControllerTexture
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.ControllerTexture
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          4081
+        </td>
+        <td>
+          1906
+          -
+          2032
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.components.custom.EntityDescriptionBox(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.ControllerTexture), &quot;[Controlled]\n\nThis cell is controlled by another player&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          4080
+        </td>
+        <td>
+          1972
+          -
+          2031
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;[Controlled]\n\nThis cell is controlled by another player&quot;
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          4079
+        </td>
+        <td>
+          1931
+          -
+          1970
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.ControllerTexture)
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          4085
+        </td>
+        <td>
+          2095
+          -
+          2362
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.level.LevelScreen.Builder.build
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.components.level.LevelScreen.Builder.apply(GameLegendScreen.this.scene).withNode(GameLegendScreen.this.playerBox).withNode(GameLegendScreen.this.firstBox).withNode(GameLegendScreen.this.secondBox).withNode(GameLegendScreen.this.thirdBox).withNode({
+  final class $anon extends scalafx.scene.text.Text {
+    def &lt;init&gt;(): &lt;$anon: scalafx.scene.text.Text&gt; = {
+      $anon.super.&lt;init&gt;(&quot;Press [L] to hide the game legend&quot;);
+      ()
+    };
+    $anon.this.style_=(&quot;-fx-font-size: 20pt&quot;);
+    $anon.this.fill_=(scalafx.scene.paint.Color.White)
+  };
+  new $anon()
+}).build()
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          4086
+        </td>
+        <td>
+          2474
+          -
+          2487
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.instructions.GameLegendScreen._legendScreen
+        </td>
+        <td style="background: #F0ADAD">
+          GameLegendScreen.this._legendScreen
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          4087
+        </td>
+        <td>
+          2544
+          -
+          2572
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.geometry.Insets.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.geometry.Insets.apply(10.0, 0.0, 10.0, 0.0)
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          4088
+        </td>
+        <td>
+          2535
+          -
+          2572
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.margin_=
+        </td>
+        <td style="background: #F0ADAD">
+          BaseHBox.this.margin_=(scalafx.geometry.Insets.apply(10.0, 0.0, 10.0, 0.0))
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          4090
+        </td>
+        <td>
+          2577
+          -
+          2607
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Region.prefWidth_=
+        </td>
+        <td style="background: #F0ADAD">
+          BaseHBox.this.prefWidth_=(it.unibo.osmos.redux.mvc.view.ViewConstants.Window.DefaultWindowWidth)
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          4089
+        </td>
+        <td>
+          2589
+          -
+          2607
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.DefaultWindowWidth
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.DefaultWindowWidth
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          4092
+        </td>
+        <td>
+          2612
+          -
+          2641
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Region.minWidth_=
+        </td>
+        <td style="background: #F0ADAD">
+          BaseHBox.this.minWidth_=(it.unibo.osmos.redux.mvc.view.ViewConstants.Window.DefaultWindowWidth)
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          4091
+        </td>
+        <td>
+          2623
+          -
+          2641
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.DefaultWindowWidth
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.DefaultWindowWidth
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          4093
+        </td>
+        <td>
+          2657
+          -
+          2675
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.DefaultWindowWidth
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Window.DefaultWindowWidth
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          4094
+        </td>
+        <td>
+          2646
+          -
+          2675
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Region.maxWidth_=
+        </td>
+        <td style="background: #F0ADAD">
+          BaseHBox.this.maxWidth_=(it.unibo.osmos.redux.mvc.view.ViewConstants.Window.DefaultWindowWidth)
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          4096
+        </td>
+        <td>
+          2680
+          -
+          2706
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.delegate.AlignmentDelegate.alignment_=
+        </td>
+        <td style="background: #F0ADAD">
+          BaseHBox.this.alignment_=(scalafx.geometry.Pos.CenterLeft)
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          4095
+        </td>
+        <td>
+          2692
+          -
+          2706
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.geometry.Pos.CenterLeft
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.geometry.Pos.CenterLeft
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

@@ -1,0 +1,118 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/context/LevelContextType.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.context
+</span>2 <span style=''>
+</span>3 <span style=''>/** Enumeration representing the type of level the user is playing */
+</span>4 <span style=''>object LevelContextType extends Enumeration {
+</span>5 <span style=''>
+</span>6 <span style=''>  /** The level is played in normal (campaign) mode */
+</span>7 <span style=''>  val normal: LevelContextType.Value = </span><span style='background: #AEF1AE'>Value(0, &quot;Normal&quot;)</span><span style=''>
+</span>8 <span style=''>
+</span>9 <span style=''>  /** The level is played in simulation mode */
+</span>10 <span style=''>  val simulation: LevelContextType.Value = </span><span style='background: #AEF1AE'>Value(1, &quot;Simulation&quot;)</span><span style=''>
+</span>11 <span style=''>
+</span>12 <span style=''>  /** The level is played in multiplayer mode */
+</span>13 <span style=''>  val multiplayer: LevelContextType.Value = </span><span style='background: #AEF1AE'>Value(2, &quot;Multiplayer&quot;)</span><span style=''>
+</span>14 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          7
+        </td>
+        <td>
+          4282
+        </td>
+        <td>
+          258
+          -
+          276
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Enumeration.Value
+        </td>
+        <td style="background: #AEF1AE">
+          LevelContextType.this.Value(0, &quot;Normal&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          4283
+        </td>
+        <td>
+          369
+          -
+          391
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Enumeration.Value
+        </td>
+        <td style="background: #AEF1AE">
+          LevelContextType.this.Value(1, &quot;Simulation&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          4284
+        </td>
+        <td>
+          486
+          -
+          509
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Enumeration.Value
+        </td>
+        <td style="background: #AEF1AE">
+          LevelContextType.this.Value(2, &quot;Multiplayer&quot;)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

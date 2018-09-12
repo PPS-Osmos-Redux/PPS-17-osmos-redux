@@ -1,0 +1,558 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/ecs/systems/GravitySystem.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.systems
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.ecs.entities.EntityType
+</span>4 <span style=''>import it.unibo.osmos.redux.ecs.entities.properties.composed.{GravityProperty, MovableProperty}
+</span>5 <span style=''>import it.unibo.osmos.redux.utils.MathUtils
+</span>6 <span style=''>
+</span>7 <span style=''>/** System managing the gravity cell */
+</span>8 <span style=''>case class GravitySystem() extends AbstractSystem2[MovableProperty, GravityProperty]() {
+</span>9 <span style=''>
+</span>10 <span style=''>  override def update(): Unit = </span><span style='background: #AEF1AE'>for (
+</span>11 <span style=''></span><span style='background: #AEF1AE'>    gravityEntity &lt;- entitiesSecondType; //for each gravity entity
+</span>12 <span style=''></span><span style='background: #AEF1AE'>    entity &lt;- entities; //for each movable entity
+</span>13 <span style=''></span><span style='background: #AEF1AE'>    if !entity.equals(gravityEntity); //with entity not equal gravityEntity
+</span>14 <span style=''></span><span style='background: #AEF1AE'>    if !entity.getPositionComponent.point.equals(gravityEntity.getPositionComponent.point) //with center of entity not equal of center of gravityEntity(theory impossible)
+</span>15 <span style=''></span><span style='background: #AEF1AE'>  ) yield updateAcceleration(gravityEntity, entity)</span><span style=''>
+</span>16 <span style=''>
+</span>17 <span style=''>
+</span>18 <span style=''>  private def updateAcceleration(gravityProperty: GravityProperty, movableProperty: MovableProperty): Unit = {
+</span>19 <span style=''>    val gravityCenter = </span><span style='background: #AEF1AE'>gravityProperty.getPositionComponent.point</span><span style=''>
+</span>20 <span style=''>    val entityCenter = </span><span style='background: #AEF1AE'>movableProperty.getPositionComponent.point</span><span style=''>
+</span>21 <span style=''>    val distance = </span><span style='background: #AEF1AE'>MathUtils.euclideanDistanceSq(gravityCenter, entityCenter)</span><span style=''>
+</span>22 <span style=''>    val typeOfForce = </span><span style='background: #AEF1AE'>getTypeOfForce(gravityProperty.getTypeComponent.typeEntity)</span><span style=''>
+</span>23 <span style=''>    val gravityAcceleration = </span><span style='background: #AEF1AE'>(gravityProperty.getMassComponent.mass / distance) * typeOfForce</span><span style=''>
+</span>24 <span style=''>    val unitVector = </span><span style='background: #AEF1AE'>MathUtils.unitVector(gravityCenter, entityCenter)</span><span style=''>
+</span>25 <span style=''>    val acceleration = </span><span style='background: #AEF1AE'>movableProperty.getAccelerationComponent</span><span style=''>
+</span>26 <span style=''>    </span><span style='background: #AEF1AE'>acceleration.vector_(acceleration.vector add (unitVector multiply gravityAcceleration))</span><span style=''>
+</span>27 <span style=''>  }
+</span>28 <span style=''>
+</span>29 <span style=''>  private def getTypeOfForce(typeOfForce: EntityType.Value): Double = typeOfForce match {
+</span>30 <span style=''>    case EntityType.Attractive =&gt; </span><span style='background: #AEF1AE'>1</span><span style=''>
+</span>31 <span style=''>    case EntityType.Repulsive =&gt; </span><span style='background: #AEF1AE'>-1</span><span style=''>
+</span>32 <span style=''>    case _ =&gt; </span><span style='background: #F0ADAD'>0</span><span style=''>
+</span>33 <span style=''>  }
+</span>34 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          654
+        </td>
+        <td>
+          421
+          -
+          421
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          653
+        </td>
+        <td>
+          397
+          -
+          818
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.TraversableLike.flatMap
+        </td>
+        <td style="background: #AEF1AE">
+          GravitySystem.this.entitiesSecondType.flatMap[Unit, Any](((gravityEntity: it.unibo.osmos.redux.ecs.entities.properties.composed.GravityProperty) =&gt; GravitySystem.this.entities.withFilter(((entity: it.unibo.osmos.redux.ecs.entities.properties.composed.MovableProperty) =&gt; entity.equals(gravityEntity).unary_!)).withFilter(((entity: it.unibo.osmos.redux.ecs.entities.properties.composed.MovableProperty) =&gt; entity.getPositionComponent.point.equals(gravityEntity.getPositionComponent.point).unary_!)).map[Unit, scala.collection.mutable.ListBuffer[Unit]](((entity: it.unibo.osmos.redux.ecs.entities.properties.composed.MovableProperty) =&gt; GravitySystem.this.updateAcceleration(gravityEntity, entity)))(mutable.this.ListBuffer.canBuildFrom[Unit])))(mutable.this.ListBuffer.canBuildFrom[Unit])
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          652
+        </td>
+        <td>
+          421
+          -
+          421
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.mutable.ListBuffer.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          mutable.this.ListBuffer.canBuildFrom[Unit]
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          651
+        </td>
+        <td>
+          474
+          -
+          818
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.generic.FilterMonadic.map
+        </td>
+        <td style="background: #AEF1AE">
+          GravitySystem.this.entities.withFilter(((entity: it.unibo.osmos.redux.ecs.entities.properties.composed.MovableProperty) =&gt; entity.equals(gravityEntity).unary_!)).withFilter(((entity: it.unibo.osmos.redux.ecs.entities.properties.composed.MovableProperty) =&gt; entity.getPositionComponent.point.equals(gravityEntity.getPositionComponent.point).unary_!)).map[Unit, scala.collection.mutable.ListBuffer[Unit]](((entity: it.unibo.osmos.redux.ecs.entities.properties.composed.MovableProperty) =&gt; GravitySystem.this.updateAcceleration(gravityEntity, entity)))(mutable.this.ListBuffer.canBuildFrom[Unit])
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          650
+        </td>
+        <td>
+          481
+          -
+          481
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.mutable.ListBuffer.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          mutable.this.ListBuffer.canBuildFrom[Unit]
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          646
+        </td>
+        <td>
+          527
+          -
+          556
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #AEF1AE">
+          entity.equals(gravityEntity).unary_!
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          648
+        </td>
+        <td>
+          603
+          -
+          686
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #AEF1AE">
+          entity.getPositionComponent.point.equals(gravityEntity.getPositionComponent.point).unary_!
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          647
+        </td>
+        <td>
+          645
+          -
+          685
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.point
+        </td>
+        <td style="background: #AEF1AE">
+          gravityEntity.getPositionComponent.point
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          649
+        </td>
+        <td>
+          777
+          -
+          818
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.GravitySystem.updateAcceleration
+        </td>
+        <td style="background: #AEF1AE">
+          GravitySystem.this.updateAcceleration(gravityEntity, entity)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          655
+        </td>
+        <td>
+          956
+          -
+          998
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.point
+        </td>
+        <td style="background: #AEF1AE">
+          gravityProperty.getPositionComponent.point
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          656
+        </td>
+        <td>
+          1022
+          -
+          1064
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.point
+        </td>
+        <td style="background: #AEF1AE">
+          movableProperty.getPositionComponent.point
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          657
+        </td>
+        <td>
+          1084
+          -
+          1142
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.MathUtils.euclideanDistanceSq
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.MathUtils.euclideanDistanceSq(gravityCenter, entityCenter)
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          659
+        </td>
+        <td>
+          1165
+          -
+          1224
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.GravitySystem.getTypeOfForce
+        </td>
+        <td style="background: #AEF1AE">
+          GravitySystem.this.getTypeOfForce(gravityProperty.getTypeComponent.typeEntity)
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          658
+        </td>
+        <td>
+          1180
+          -
+          1223
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.TypeComponent.typeEntity
+        </td>
+        <td style="background: #AEF1AE">
+          gravityProperty.getTypeComponent.typeEntity
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          660
+        </td>
+        <td>
+          1255
+          -
+          1319
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.*
+        </td>
+        <td style="background: #AEF1AE">
+          gravityProperty.getMassComponent.mass./(distance).*(typeOfForce)
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          661
+        </td>
+        <td>
+          1341
+          -
+          1390
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.MathUtils.unitVector
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.MathUtils.unitVector(gravityCenter, entityCenter)
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          662
+        </td>
+        <td>
+          1414
+          -
+          1454
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Acceleration.getAccelerationComponent
+        </td>
+        <td style="background: #AEF1AE">
+          movableProperty.getAccelerationComponent
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          663
+        </td>
+        <td>
+          1505
+          -
+          1544
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.multiply
+        </td>
+        <td style="background: #AEF1AE">
+          unitVector.multiply(gravityAcceleration)
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          665
+        </td>
+        <td>
+          1459
+          -
+          1546
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.VectorComponent.vector_
+        </td>
+        <td style="background: #AEF1AE">
+          acceleration.vector_(acceleration.vector.add(unitVector.multiply(gravityAcceleration)))
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          664
+        </td>
+        <td>
+          1480
+          -
+          1545
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.add
+        </td>
+        <td style="background: #AEF1AE">
+          acceleration.vector.add(unitVector.multiply(gravityAcceleration))
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          666
+        </td>
+        <td>
+          1676
+          -
+          1677
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          1.0
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          667
+        </td>
+        <td>
+          1711
+          -
+          1713
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          -1.0
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          668
+        </td>
+        <td>
+          1728
+          -
+          1729
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          0.0
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

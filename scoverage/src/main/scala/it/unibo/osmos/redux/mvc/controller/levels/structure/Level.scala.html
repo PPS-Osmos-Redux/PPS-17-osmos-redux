@@ -1,0 +1,1505 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/controller/levels/structure/Level.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.controller.levels.structure
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.ecs.entities.CellEntity
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.{Circle, Rectangle}
+</span>5 <span style=''>import it.unibo.osmos.redux.utils.{Logger, MathUtils, Point}
+</span>6 <span style=''>
+</span>7 <span style=''>/** List of cell types. */
+</span>8 <span style=''>object CellType {
+</span>9 <span style=''>  val sentientCell = </span><span style='background: #AEF1AE'>&quot;sentientCell&quot;</span><span style=''>
+</span>10 <span style=''>  val gravityCell = </span><span style='background: #AEF1AE'>&quot;gravityCell&quot;</span><span style=''>
+</span>11 <span style=''>  val playerCell = </span><span style='background: #AEF1AE'>&quot;playerCell&quot;</span><span style=''>
+</span>12 <span style=''>  val basicCell = </span><span style='background: #AEF1AE'>&quot;basicCell&quot;</span><span style=''>
+</span>13 <span style=''>}
+</span>14 <span style=''>
+</span>15 <span style=''>/** Level configuration
+</span>16 <span style=''>  *
+</span>17 <span style=''>  * @param levelInfo LevelInfo
+</span>18 <span style=''>  * @param levelMap  LevelMap
+</span>19 <span style=''>  * @param entities  List[CellEntity]
+</span>20 <span style=''>  */
+</span>21 <span style=''>case class Level(var levelInfo: LevelInfo,
+</span>22 <span style=''>                 levelMap: LevelMap,
+</span>23 <span style=''>                 var entities: List[CellEntity]) {
+</span>24 <span style=''>
+</span>25 <span style=''>  implicit val who: String = </span><span style='background: #AEF1AE'>&quot;Level&quot;</span><span style=''>
+</span>26 <span style=''>
+</span>27 <span style=''>  /** Check if the cells are into the map boundaries */
+</span>28 <span style=''>  def checkCellPosition(): Unit = </span><span style='background: #AEF1AE'>levelMap.mapShape</span><span style=''> match {
+</span>29 <span style=''>    case rectangle: Rectangle =&gt; </span><span style='background: #AEF1AE'>rectangularMapCheck(rectangle)</span><span style=''>
+</span>30 <span style=''>    case circle: Circle =&gt; </span><span style='background: #AEF1AE'>circularMapCheck(circle)</span><span style=''>
+</span>31 <span style=''>    case _ =&gt; </span><span style='background: #F0ADAD'>Logger.log(&quot;Map shape not managed [checkCellPosition]&quot;)</span><span style=''>
+</span>32 <span style=''>  }
+</span>33 <span style=''>
+</span>34 <span style=''>  private def rectangularMapCheck(rectangle: Rectangle): Unit = {
+</span>35 <span style=''>    /*calculate map bound*/
+</span>36 <span style=''>    var westMiddlePointX = </span><span style='background: #AEF1AE'>rectangle.center.x - (rectangle.base / 2)</span><span style=''>
+</span>37 <span style=''>    var northMiddlePointY = </span><span style='background: #AEF1AE'>rectangle.center.y - (rectangle.height / 2)</span><span style=''>
+</span>38 <span style=''>    //const for translate point if they are negative
+</span>39 <span style=''>    val kx: Double = if (</span><span style='background: #AEF1AE'>westMiddlePointX &lt; 0</span><span style=''>) </span><span style='background: #AEF1AE'>-westMiddlePointX</span><span style=''> else </span><span style='background: #F0ADAD'>0</span><span style=''>
+</span>40 <span style=''>    val ky: Double = if (</span><span style='background: #AEF1AE'>northMiddlePointY &lt; 0</span><span style=''>) </span><span style='background: #AEF1AE'>-northMiddlePointY</span><span style=''> else </span><span style='background: #F0ADAD'>0</span><span style=''>
+</span>41 <span style=''>
+</span>42 <span style=''>    westMiddlePointX = </span><span style='background: #AEF1AE'>westMiddlePointX + kx</span><span style=''>
+</span>43 <span style=''>    northMiddlePointY = </span><span style='background: #AEF1AE'>northMiddlePointY + ky</span><span style=''>
+</span>44 <span style=''>    val southMiddlePointY = </span><span style='background: #AEF1AE'>northMiddlePointY + rectangle.height</span><span style=''>
+</span>45 <span style=''>    val eastMiddlePointX = </span><span style='background: #AEF1AE'>westMiddlePointX + rectangle.base</span><span style=''>
+</span>46 <span style=''>    </span><span style='background: #AEF1AE'>entities = entities.filterNot(ent =&gt; {
+</span>47 <span style=''></span><span style='background: #AEF1AE'>      //calculate cell point
+</span>48 <span style=''></span><span style='background: #AEF1AE'>      val cellCenter = Point(ent.getPositionComponent.point.x + kx, ent.getPositionComponent.point.y + ky)
+</span>49 <span style=''></span><span style='background: #AEF1AE'>      val topY = cellCenter.y - ent.getDimensionComponent.radius
+</span>50 <span style=''></span><span style='background: #AEF1AE'>      val rightX = cellCenter.x + ent.getDimensionComponent.radius
+</span>51 <span style=''></span><span style='background: #AEF1AE'>      val bottomY = topY + 2 * ent.getDimensionComponent.radius
+</span>52 <span style=''></span><span style='background: #AEF1AE'>      val leftX = rightX - 2 * ent.getDimensionComponent.radius
+</span>53 <span style=''></span><span style='background: #AEF1AE'>      //check if cell is into map
+</span>54 <span style=''></span><span style='background: #AEF1AE'>      !(leftX &gt;= westMiddlePointX &amp;&amp; rightX &lt;= eastMiddlePointX) || !(topY &gt;= northMiddlePointY &amp;&amp; bottomY &lt;= southMiddlePointY)
+</span>55 <span style=''></span><span style='background: #AEF1AE'>    })</span><span style=''>
+</span>56 <span style=''>  }
+</span>57 <span style=''>
+</span>58 <span style=''>  private def circularMapCheck(circle: Circle): Unit =
+</span>59 <span style=''>    </span><span style='background: #AEF1AE'>entities = entities.map(ent =&gt; (ent, MathUtils.euclideanDistance(ent.getPositionComponent.point,
+</span>60 <span style=''></span><span style='background: #AEF1AE'>      Point(circle.center.x, circle.center.y)) +
+</span>61 <span style=''></span><span style='background: #AEF1AE'>      ent.getDimensionComponent.radius))
+</span>62 <span style=''></span><span style='background: #AEF1AE'>      .filterNot(tup =&gt; tup._2 &gt; circle.radius)
+</span>63 <span style=''></span><span style='background: #AEF1AE'>      .map(t =&gt; t._1)</span><span style=''>
+</span>64 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          2336
+        </td>
+        <td>
+          331
+          -
+          345
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;sentientCell&quot;
+        </td>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          2337
+        </td>
+        <td>
+          366
+          -
+          379
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;gravityCell&quot;
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          2338
+        </td>
+        <td>
+          399
+          -
+          411
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;playerCell&quot;
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          2339
+        </td>
+        <td>
+          430
+          -
+          441
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;basicCell&quot;
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          2340
+        </td>
+        <td>
+          738
+          -
+          745
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;Level&quot;
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          2341
+        </td>
+        <td>
+          837
+          -
+          854
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.LevelMap.mapShape
+        </td>
+        <td style="background: #AEF1AE">
+          Level.this.levelMap.mapShape
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          2342
+        </td>
+        <td>
+          896
+          -
+          926
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.Level.rectangularMapCheck
+        </td>
+        <td style="background: #AEF1AE">
+          Level.this.rectangularMapCheck(rectangle)
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          2343
+        </td>
+        <td>
+          954
+          -
+          978
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.Level.circularMapCheck
+        </td>
+        <td style="background: #AEF1AE">
+          Level.this.circularMapCheck(circle)
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          2344
+        </td>
+        <td>
+          1004
+          -
+          1047
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;Map shape not managed [checkCellPosition]&quot;
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          2346
+        </td>
+        <td>
+          993
+          -
+          1048
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Logger.log
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Logger.log(&quot;Map shape not managed [checkCellPosition]&quot;)(Level.this.who)
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          2345
+        </td>
+        <td>
+          1003
+          -
+          1003
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.Level.who
+        </td>
+        <td style="background: #F0ADAD">
+          Level.this.who
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          2347
+        </td>
+        <td>
+          1197
+          -
+          1215
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double./
+        </td>
+        <td style="background: #AEF1AE">
+          rectangle.base./(2)
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          2348
+        </td>
+        <td>
+          1175
+          -
+          1216
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #AEF1AE">
+          rectangle.center.x.-(rectangle.base./(2))
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          2350
+        </td>
+        <td>
+          1245
+          -
+          1288
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #AEF1AE">
+          rectangle.center.y.-(rectangle.height./(2))
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          2349
+        </td>
+        <td>
+          1267
+          -
+          1287
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double./
+        </td>
+        <td style="background: #AEF1AE">
+          rectangle.height./(2)
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          2353
+        </td>
+        <td>
+          1389
+          -
+          1406
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          scala.Double.unary_-
+        </td>
+        <td style="background: #AEF1AE">
+          westMiddlePointX.unary_-
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          2352
+        </td>
+        <td>
+          1389
+          -
+          1406
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Double.unary_-
+        </td>
+        <td style="background: #AEF1AE">
+          westMiddlePointX.unary_-
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          2355
+        </td>
+        <td>
+          1412
+          -
+          1413
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          0.0
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          2354
+        </td>
+        <td>
+          1412
+          -
+          1413
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          0.0
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          2351
+        </td>
+        <td>
+          1367
+          -
+          1387
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.&lt;
+        </td>
+        <td style="background: #AEF1AE">
+          westMiddlePointX.&lt;(0)
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          2356
+        </td>
+        <td>
+          1439
+          -
+          1460
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.&lt;
+        </td>
+        <td style="background: #AEF1AE">
+          northMiddlePointY.&lt;(0)
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          2359
+        </td>
+        <td>
+          1486
+          -
+          1487
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          0.0
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          2358
+        </td>
+        <td>
+          1462
+          -
+          1480
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          scala.Double.unary_-
+        </td>
+        <td style="background: #AEF1AE">
+          northMiddlePointY.unary_-
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          2357
+        </td>
+        <td>
+          1462
+          -
+          1480
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Double.unary_-
+        </td>
+        <td style="background: #AEF1AE">
+          northMiddlePointY.unary_-
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          2360
+        </td>
+        <td>
+          1486
+          -
+          1487
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          0.0
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          2361
+        </td>
+        <td>
+          1512
+          -
+          1533
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.+
+        </td>
+        <td style="background: #AEF1AE">
+          westMiddlePointX.+(kx)
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          2362
+        </td>
+        <td>
+          1558
+          -
+          1580
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.+
+        </td>
+        <td style="background: #AEF1AE">
+          northMiddlePointY.+(ky)
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          2364
+        </td>
+        <td>
+          1609
+          -
+          1645
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.+
+        </td>
+        <td style="background: #AEF1AE">
+          northMiddlePointY.+(rectangle.height)
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          2363
+        </td>
+        <td>
+          1629
+          -
+          1645
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.Rectangle.height
+        </td>
+        <td style="background: #AEF1AE">
+          rectangle.height
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          2365
+        </td>
+        <td>
+          1692
+          -
+          1706
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.Rectangle.base
+        </td>
+        <td style="background: #AEF1AE">
+          rectangle.base
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          2366
+        </td>
+        <td>
+          1673
+          -
+          1706
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.+
+        </td>
+        <td style="background: #AEF1AE">
+          westMiddlePointX.+(rectangle.base)
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          2387
+        </td>
+        <td>
+          1711
+          -
+          2315
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.Level.entities_=
+        </td>
+        <td style="background: #AEF1AE">
+          Level.this.entities_=(Level.this.entities.filterNot(((ent: it.unibo.osmos.redux.ecs.entities.CellEntity) =&gt; {
+  val cellCenter: it.unibo.osmos.redux.utils.Point = it.unibo.osmos.redux.utils.Point.apply(ent.getPositionComponent.point.x.+(kx), ent.getPositionComponent.point.y.+(ky));
+  val topY: Double = cellCenter.y.-(ent.getDimensionComponent.radius);
+  val rightX: Double = cellCenter.x.+(ent.getDimensionComponent.radius);
+  val bottomY: Double = topY.+(2.*(ent.getDimensionComponent.radius));
+  val leftX: Double = rightX.-(2.*(ent.getDimensionComponent.radius));
+  leftX.&gt;=(westMiddlePointX).&amp;&amp;(rightX.&lt;=(eastMiddlePointX)).unary_!.||(topY.&gt;=(northMiddlePointY).&amp;&amp;(bottomY.&lt;=(southMiddlePointY)).unary_!)
+})))
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          2386
+        </td>
+        <td>
+          1722
+          -
+          2315
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.TraversableLike.filterNot
+        </td>
+        <td style="background: #AEF1AE">
+          Level.this.entities.filterNot(((ent: it.unibo.osmos.redux.ecs.entities.CellEntity) =&gt; {
+  val cellCenter: it.unibo.osmos.redux.utils.Point = it.unibo.osmos.redux.utils.Point.apply(ent.getPositionComponent.point.x.+(kx), ent.getPositionComponent.point.y.+(ky));
+  val topY: Double = cellCenter.y.-(ent.getDimensionComponent.radius);
+  val rightX: Double = cellCenter.x.+(ent.getDimensionComponent.radius);
+  val bottomY: Double = topY.+(2.*(ent.getDimensionComponent.radius));
+  val leftX: Double = rightX.-(2.*(ent.getDimensionComponent.radius));
+  leftX.&gt;=(westMiddlePointX).&amp;&amp;(rightX.&lt;=(eastMiddlePointX)).unary_!.||(topY.&gt;=(northMiddlePointY).&amp;&amp;(bottomY.&lt;=(southMiddlePointY)).unary_!)
+}))
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          2368
+        </td>
+        <td>
+          1847
+          -
+          1884
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.+
+        </td>
+        <td style="background: #AEF1AE">
+          ent.getPositionComponent.point.y.+(ky)
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          2367
+        </td>
+        <td>
+          1808
+          -
+          1845
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.+
+        </td>
+        <td style="background: #AEF1AE">
+          ent.getPositionComponent.point.x.+(kx)
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          2369
+        </td>
+        <td>
+          1802
+          -
+          1885
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Point.apply(ent.getPositionComponent.point.x.+(kx), ent.getPositionComponent.point.y.+(ky))
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          2371
+        </td>
+        <td>
+          1903
+          -
+          1950
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #AEF1AE">
+          cellCenter.y.-(ent.getDimensionComponent.radius)
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          2370
+        </td>
+        <td>
+          1918
+          -
+          1950
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.radius
+        </td>
+        <td style="background: #AEF1AE">
+          ent.getDimensionComponent.radius
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          2373
+        </td>
+        <td>
+          1970
+          -
+          2017
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.+
+        </td>
+        <td style="background: #AEF1AE">
+          cellCenter.x.+(ent.getDimensionComponent.radius)
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          2372
+        </td>
+        <td>
+          1985
+          -
+          2017
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.radius
+        </td>
+        <td style="background: #AEF1AE">
+          ent.getDimensionComponent.radius
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          2374
+        </td>
+        <td>
+          2045
+          -
+          2046
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          2
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          2376
+        </td>
+        <td>
+          2045
+          -
+          2081
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.*
+        </td>
+        <td style="background: #AEF1AE">
+          2.*(ent.getDimensionComponent.radius)
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          2375
+        </td>
+        <td>
+          2049
+          -
+          2081
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.radius
+        </td>
+        <td style="background: #AEF1AE">
+          ent.getDimensionComponent.radius
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          2377
+        </td>
+        <td>
+          2038
+          -
+          2081
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.+
+        </td>
+        <td style="background: #AEF1AE">
+          topY.+(2.*(ent.getDimensionComponent.radius))
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          2380
+        </td>
+        <td>
+          2109
+          -
+          2145
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.*
+        </td>
+        <td style="background: #AEF1AE">
+          2.*(ent.getDimensionComponent.radius)
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          2379
+        </td>
+        <td>
+          2113
+          -
+          2145
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.radius
+        </td>
+        <td style="background: #AEF1AE">
+          ent.getDimensionComponent.radius
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          2381
+        </td>
+        <td>
+          2100
+          -
+          2145
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #AEF1AE">
+          rightX.-(2.*(ent.getDimensionComponent.radius))
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          2378
+        </td>
+        <td>
+          2109
+          -
+          2110
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          2
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          2383
+        </td>
+        <td>
+          2279
+          -
+          2307
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.&lt;=
+        </td>
+        <td style="background: #AEF1AE">
+          bottomY.&lt;=(southMiddlePointY)
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          2385
+        </td>
+        <td>
+          2186
+          -
+          2308
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.||
+        </td>
+        <td style="background: #AEF1AE">
+          leftX.&gt;=(westMiddlePointX).&amp;&amp;(rightX.&lt;=(eastMiddlePointX)).unary_!.||(topY.&gt;=(northMiddlePointY).&amp;&amp;(bottomY.&lt;=(southMiddlePointY)).unary_!)
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          2382
+        </td>
+        <td>
+          2217
+          -
+          2243
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.&lt;=
+        </td>
+        <td style="background: #AEF1AE">
+          rightX.&lt;=(eastMiddlePointX)
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          2384
+        </td>
+        <td>
+          2248
+          -
+          2308
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #AEF1AE">
+          topY.&gt;=(northMiddlePointY).&amp;&amp;(bottomY.&lt;=(southMiddlePointY)).unary_!
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          2401
+        </td>
+        <td>
+          2380
+          -
+          2636
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.Level.entities_=
+        </td>
+        <td style="background: #AEF1AE">
+          Level.this.entities_=(Level.this.entities.map[(it.unibo.osmos.redux.ecs.entities.CellEntity, Double), List[(it.unibo.osmos.redux.ecs.entities.CellEntity, Double)]](((ent: it.unibo.osmos.redux.ecs.entities.CellEntity) =&gt; scala.Tuple2.apply[it.unibo.osmos.redux.ecs.entities.CellEntity, Double](ent, it.unibo.osmos.redux.utils.MathUtils.euclideanDistance(ent.getPositionComponent.point, it.unibo.osmos.redux.utils.Point.apply(circle.center.x, circle.center.y)).+(ent.getDimensionComponent.radius))))(immutable.this.List.canBuildFrom[(it.unibo.osmos.redux.ecs.entities.CellEntity, Double)]).filterNot(((tup: (it.unibo.osmos.redux.ecs.entities.CellEntity, Double)) =&gt; tup._2.&gt;(circle.radius))).map[it.unibo.osmos.redux.ecs.entities.CellEntity, List[it.unibo.osmos.redux.ecs.entities.CellEntity]](((t: (it.unibo.osmos.redux.ecs.entities.CellEntity, Double)) =&gt; t._1))(immutable.this.List.canBuildFrom[it.unibo.osmos.redux.ecs.entities.CellEntity]))
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          2394
+        </td>
+        <td>
+          2411
+          -
+          2565
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Tuple2.apply[it.unibo.osmos.redux.ecs.entities.CellEntity, Double](ent, it.unibo.osmos.redux.utils.MathUtils.euclideanDistance(ent.getPositionComponent.point, it.unibo.osmos.redux.utils.Point.apply(circle.center.x, circle.center.y)).+(ent.getDimensionComponent.radius))
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          2388
+        </td>
+        <td>
+          2445
+          -
+          2475
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.point
+        </td>
+        <td style="background: #AEF1AE">
+          ent.getPositionComponent.point
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          2395
+        </td>
+        <td>
+          2403
+          -
+          2403
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.immutable.List.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          immutable.this.List.canBuildFrom[(it.unibo.osmos.redux.ecs.entities.CellEntity, Double)]
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          2389
+        </td>
+        <td>
+          2489
+          -
+          2504
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.x
+        </td>
+        <td style="background: #AEF1AE">
+          circle.center.x
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          2391
+        </td>
+        <td>
+          2483
+          -
+          2522
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Point.apply(circle.center.x, circle.center.y)
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          2390
+        </td>
+        <td>
+          2506
+          -
+          2521
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.y
+        </td>
+        <td style="background: #AEF1AE">
+          circle.center.y
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          2393
+        </td>
+        <td>
+          2417
+          -
+          2564
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.+
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.MathUtils.euclideanDistance(ent.getPositionComponent.point, it.unibo.osmos.redux.utils.Point.apply(circle.center.x, circle.center.y)).+(ent.getDimensionComponent.radius)
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          2392
+        </td>
+        <td>
+          2532
+          -
+          2564
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.radius
+        </td>
+        <td style="background: #AEF1AE">
+          ent.getDimensionComponent.radius
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          2397
+        </td>
+        <td>
+          2591
+          -
+          2613
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          tup._2.&gt;(circle.radius)
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          2396
+        </td>
+        <td>
+          2600
+          -
+          2613
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.Circle.radius
+        </td>
+        <td style="background: #AEF1AE">
+          circle.radius
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          2398
+        </td>
+        <td>
+          2631
+          -
+          2635
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._1
+        </td>
+        <td style="background: #AEF1AE">
+          t._1
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          2400
+        </td>
+        <td>
+          2391
+          -
+          2636
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.immutable.List.map
+        </td>
+        <td style="background: #AEF1AE">
+          Level.this.entities.map[(it.unibo.osmos.redux.ecs.entities.CellEntity, Double), List[(it.unibo.osmos.redux.ecs.entities.CellEntity, Double)]](((ent: it.unibo.osmos.redux.ecs.entities.CellEntity) =&gt; scala.Tuple2.apply[it.unibo.osmos.redux.ecs.entities.CellEntity, Double](ent, it.unibo.osmos.redux.utils.MathUtils.euclideanDistance(ent.getPositionComponent.point, it.unibo.osmos.redux.utils.Point.apply(circle.center.x, circle.center.y)).+(ent.getDimensionComponent.radius))))(immutable.this.List.canBuildFrom[(it.unibo.osmos.redux.ecs.entities.CellEntity, Double)]).filterNot(((tup: (it.unibo.osmos.redux.ecs.entities.CellEntity, Double)) =&gt; tup._2.&gt;(circle.radius))).map[it.unibo.osmos.redux.ecs.entities.CellEntity, List[it.unibo.osmos.redux.ecs.entities.CellEntity]](((t: (it.unibo.osmos.redux.ecs.entities.CellEntity, Double)) =&gt; t._1))(immutable.this.List.canBuildFrom[it.unibo.osmos.redux.ecs.entities.CellEntity])
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          2399
+        </td>
+        <td>
+          2625
+          -
+          2625
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.immutable.List.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          immutable.this.List.canBuildFrom[it.unibo.osmos.redux.ecs.entities.CellEntity]
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

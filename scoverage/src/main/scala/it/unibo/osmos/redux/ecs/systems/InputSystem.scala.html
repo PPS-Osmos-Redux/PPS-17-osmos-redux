@@ -1,0 +1,979 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/ecs/systems/InputSystem.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.systems
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.ecs.components.{DimensionComponent, PositionComponent, SpawnAction, SpeedComponent}
+</span>4 <span style=''>import it.unibo.osmos.redux.ecs.entities.properties.composed.InputProperty
+</span>5 <span style=''>import it.unibo.osmos.redux.utils.{InputEventQueue, MathUtils, Point}
+</span>6 <span style=''>
+</span>7 <span style=''>/** System managing the player's mouse click inputs */
+</span>8 <span style=''>case class InputSystem() extends AbstractSystem[InputProperty] {
+</span>9 <span style=''>
+</span>10 <span style=''>  /** Acceleration coefficient to apply to each input movement */
+</span>11 <span style=''>  private val accelerationCoefficient: Double = </span><span style='background: #AEF1AE'>0.8</span><span style=''>
+</span>12 <span style=''>  /** The lost mass spawn point offset (starting from the
+</span>13 <span style=''>    * entity's perimeter, where to spawn lost mass due to movement)
+</span>14 <span style=''>    */
+</span>15 <span style=''>  private val lostMassSpawnOffset: Double = </span><span style='background: #AEF1AE'>0.1</span><span style=''>
+</span>16 <span style=''>  /** The amount of lost mass for each movement */
+</span>17 <span style=''>  private val lostMassPercentage: Double = </span><span style='background: #AEF1AE'>0.05</span><span style=''>
+</span>18 <span style=''>  /** The initial velocity of the lost mass */
+</span>19 <span style=''>  private val lostMassInitialVelocity: Double = </span><span style='background: #AEF1AE'>4.0</span><span style=''>
+</span>20 <span style=''>
+</span>21 <span style=''>  override def update(): Unit = {
+</span>22 <span style=''>
+</span>23 <span style=''>    //retrieve all input events
+</span>24 <span style=''>    val inputEvents = </span><span style='background: #AEF1AE'>InputEventQueue.dequeueAll()</span><span style=''>
+</span>25 <span style=''>
+</span>26 <span style=''>    </span><span style='background: #AEF1AE'>entities foreach (e =&gt; {
+</span>27 <span style=''></span><span style='background: #AEF1AE'>      val accel = e.getAccelerationComponent
+</span>28 <span style=''></span><span style='background: #AEF1AE'>      val pos = e.getPositionComponent
+</span>29 <span style=''></span><span style='background: #AEF1AE'>      val spawner = e.getSpawnerComponent
+</span>30 <span style=''></span><span style='background: #AEF1AE'>      val dim = e.getDimensionComponent
+</span>31 <span style=''></span><span style='background: #AEF1AE'>
+</span>32 <span style=''></span><span style='background: #AEF1AE'>      inputEvents filter (_.uuid == e.getUUID) foreach (ev =&gt; {
+</span>33 <span style=''></span><span style='background: #AEF1AE'>
+</span>34 <span style=''></span><span style='background: #AEF1AE'>        //compute new acceleration direction
+</span>35 <span style=''></span><span style='background: #AEF1AE'>        val directionAcceleration = MathUtils.unitVector(pos.point, ev.point)
+</span>36 <span style=''></span><span style='background: #AEF1AE'>        //apply acceleration
+</span>37 <span style=''></span><span style='background: #AEF1AE'>        accel.vector_(accel.vector add (directionAcceleration multiply accelerationCoefficient))
+</span>38 <span style=''></span><span style='background: #AEF1AE'>
+</span>39 <span style=''></span><span style='background: #AEF1AE'>        //create a new spawn action
+</span>40 <span style=''></span><span style='background: #AEF1AE'>        val loseMassAmount = dim.radius * lostMassPercentage
+</span>41 <span style=''></span><span style='background: #AEF1AE'>        val directionVector = MathUtils.unitVector(ev.point, pos.point)
+</span>42 <span style=''></span><span style='background: #AEF1AE'>        val spawnPoint = pos.point add (directionVector multiply (dim.radius + lostMassSpawnOffset + loseMassAmount))
+</span>43 <span style=''></span><span style='background: #AEF1AE'>
+</span>44 <span style=''></span><span style='background: #AEF1AE'>        //enqueue spawner action
+</span>45 <span style=''></span><span style='background: #AEF1AE'>        spawner.enqueueActions(SpawnAction(
+</span>46 <span style=''></span><span style='background: #AEF1AE'>          PositionComponent(Point(spawnPoint.x, spawnPoint.y)),
+</span>47 <span style=''></span><span style='background: #AEF1AE'>          DimensionComponent(loseMassAmount),
+</span>48 <span style=''></span><span style='background: #AEF1AE'>          SpeedComponent(directionVector multiply lostMassInitialVelocity)))
+</span>49 <span style=''></span><span style='background: #AEF1AE'>
+</span>50 <span style=''></span><span style='background: #AEF1AE'>        //make entity lose mass
+</span>51 <span style=''></span><span style='background: #AEF1AE'>        dim.radius_(dim.radius - loseMassAmount / 2)
+</span>52 <span style=''></span><span style='background: #AEF1AE'>      })
+</span>53 <span style=''></span><span style='background: #AEF1AE'>    })</span><span style=''>
+</span>54 <span style=''>  }
+</span>55 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          669
+        </td>
+        <td>
+          535
+          -
+          538
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          0.8
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          670
+        </td>
+        <td>
+          716
+          -
+          719
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          0.1
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          671
+        </td>
+        <td>
+          814
+          -
+          818
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          0.05
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          672
+        </td>
+        <td>
+          914
+          -
+          917
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          4.0
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          673
+        </td>
+        <td>
+          1008
+          -
+          1036
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.InputEventQueue.dequeueAll
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.InputEventQueue.dequeueAll()
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          709
+        </td>
+        <td>
+          1042
+          -
+          2202
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.TraversableForwarder.foreach
+        </td>
+        <td style="background: #AEF1AE">
+          InputSystem.this.entities.foreach[Unit](((e: it.unibo.osmos.redux.ecs.entities.properties.composed.InputProperty) =&gt; {
+  val accel: it.unibo.osmos.redux.ecs.components.AccelerationComponent = e.getAccelerationComponent;
+  val pos: it.unibo.osmos.redux.ecs.components.PositionComponent = e.getPositionComponent;
+  val spawner: it.unibo.osmos.redux.ecs.components.SpawnerComponent = e.getSpawnerComponent;
+  val dim: it.unibo.osmos.redux.ecs.components.DimensionComponent = e.getDimensionComponent;
+  inputEvents.filter(((x$1: it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper) =&gt; x$1.uuid.==(e.getUUID))).foreach[Unit](((ev: it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper) =&gt; {
+    val directionAcceleration: it.unibo.osmos.redux.utils.Vector = it.unibo.osmos.redux.utils.MathUtils.unitVector(pos.point, ev.point);
+    accel.vector_(accel.vector.add(directionAcceleration.multiply(InputSystem.this.accelerationCoefficient)));
+    val loseMassAmount: Double = dim.radius.*(InputSystem.this.lostMassPercentage);
+    val directionVector: it.unibo.osmos.redux.utils.Vector = it.unibo.osmos.redux.utils.MathUtils.unitVector(ev.point, pos.point);
+    val spawnPoint: it.unibo.osmos.redux.utils.Point = pos.point.add(directionVector.multiply(dim.radius.+(InputSystem.this.lostMassSpawnOffset).+(loseMassAmount)));
+    spawner.enqueueActions(it.unibo.osmos.redux.ecs.components.SpawnAction.apply(it.unibo.osmos.redux.ecs.components.PositionComponent.apply(it.unibo.osmos.redux.utils.Point.apply(spawnPoint.x, spawnPoint.y)), it.unibo.osmos.redux.ecs.components.DimensionComponent.apply(loseMassAmount), it.unibo.osmos.redux.ecs.components.SpeedComponent.apply(directionVector.multiply(InputSystem.this.lostMassInitialVelocity))));
+    dim.radius_(dim.radius.-(loseMassAmount./(2)))
+  }))
+}))
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          674
+        </td>
+        <td>
+          1085
+          -
+          1111
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Acceleration.getAccelerationComponent
+        </td>
+        <td style="background: #AEF1AE">
+          e.getAccelerationComponent
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          675
+        </td>
+        <td>
+          1128
+          -
+          1150
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Position.getPositionComponent
+        </td>
+        <td style="background: #AEF1AE">
+          e.getPositionComponent
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          676
+        </td>
+        <td>
+          1171
+          -
+          1192
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Spawner.getSpawnerComponent
+        </td>
+        <td style="background: #AEF1AE">
+          e.getSpawnerComponent
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          677
+        </td>
+        <td>
+          1209
+          -
+          1232
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Dimension.getDimensionComponent
+        </td>
+        <td style="background: #AEF1AE">
+          e.getDimensionComponent
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          678
+        </td>
+        <td>
+          1270
+          -
+          1279
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Property.getUUID
+        </td>
+        <td style="background: #AEF1AE">
+          e.getUUID
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          708
+        </td>
+        <td>
+          1240
+          -
+          2195
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.IterableLike.foreach
+        </td>
+        <td style="background: #AEF1AE">
+          inputEvents.filter(((x$1: it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper) =&gt; x$1.uuid.==(e.getUUID))).foreach[Unit](((ev: it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper) =&gt; {
+  val directionAcceleration: it.unibo.osmos.redux.utils.Vector = it.unibo.osmos.redux.utils.MathUtils.unitVector(pos.point, ev.point);
+  accel.vector_(accel.vector.add(directionAcceleration.multiply(InputSystem.this.accelerationCoefficient)));
+  val loseMassAmount: Double = dim.radius.*(InputSystem.this.lostMassPercentage);
+  val directionVector: it.unibo.osmos.redux.utils.Vector = it.unibo.osmos.redux.utils.MathUtils.unitVector(ev.point, pos.point);
+  val spawnPoint: it.unibo.osmos.redux.utils.Point = pos.point.add(directionVector.multiply(dim.radius.+(InputSystem.this.lostMassSpawnOffset).+(loseMassAmount)));
+  spawner.enqueueActions(it.unibo.osmos.redux.ecs.components.SpawnAction.apply(it.unibo.osmos.redux.ecs.components.PositionComponent.apply(it.unibo.osmos.redux.utils.Point.apply(spawnPoint.x, spawnPoint.y)), it.unibo.osmos.redux.ecs.components.DimensionComponent.apply(loseMassAmount), it.unibo.osmos.redux.ecs.components.SpeedComponent.apply(directionVector.multiply(InputSystem.this.lostMassInitialVelocity))));
+  dim.radius_(dim.radius.-(loseMassAmount./(2)))
+}))
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          679
+        </td>
+        <td>
+          1260
+          -
+          1279
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.==
+        </td>
+        <td style="background: #AEF1AE">
+          x$1.uuid.==(e.getUUID)
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          681
+        </td>
+        <td>
+          1412
+          -
+          1420
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper.point
+        </td>
+        <td style="background: #AEF1AE">
+          ev.point
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          680
+        </td>
+        <td>
+          1401
+          -
+          1410
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.point
+        </td>
+        <td style="background: #AEF1AE">
+          pos.point
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          682
+        </td>
+        <td>
+          1380
+          -
+          1421
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.MathUtils.unitVector
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.MathUtils.unitVector(pos.point, ev.point)
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          684
+        </td>
+        <td>
+          1491
+          -
+          1545
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.multiply
+        </td>
+        <td style="background: #AEF1AE">
+          directionAcceleration.multiply(InputSystem.this.accelerationCoefficient)
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          683
+        </td>
+        <td>
+          1522
+          -
+          1545
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.InputSystem.accelerationCoefficient
+        </td>
+        <td style="background: #AEF1AE">
+          InputSystem.this.accelerationCoefficient
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          686
+        </td>
+        <td>
+          1459
+          -
+          1547
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.VectorComponent.vector_
+        </td>
+        <td style="background: #AEF1AE">
+          accel.vector_(accel.vector.add(directionAcceleration.multiply(InputSystem.this.accelerationCoefficient)))
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          685
+        </td>
+        <td>
+          1473
+          -
+          1546
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.add
+        </td>
+        <td style="background: #AEF1AE">
+          accel.vector.add(directionAcceleration.multiply(InputSystem.this.accelerationCoefficient))
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          687
+        </td>
+        <td>
+          1627
+          -
+          1645
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.InputSystem.lostMassPercentage
+        </td>
+        <td style="background: #AEF1AE">
+          InputSystem.this.lostMassPercentage
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          688
+        </td>
+        <td>
+          1614
+          -
+          1645
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.*
+        </td>
+        <td style="background: #AEF1AE">
+          dim.radius.*(InputSystem.this.lostMassPercentage)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          690
+        </td>
+        <td>
+          1707
+          -
+          1716
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.point
+        </td>
+        <td style="background: #AEF1AE">
+          pos.point
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          689
+        </td>
+        <td>
+          1697
+          -
+          1705
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.events.MouseEventWrapper.point
+        </td>
+        <td style="background: #AEF1AE">
+          ev.point
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          691
+        </td>
+        <td>
+          1676
+          -
+          1717
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.MathUtils.unitVector
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.MathUtils.unitVector(ev.point, pos.point)
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          693
+        </td>
+        <td>
+          1758
+          -
+          1834
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.multiply
+        </td>
+        <td style="background: #AEF1AE">
+          directionVector.multiply(dim.radius.+(InputSystem.this.lostMassSpawnOffset).+(loseMassAmount))
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          692
+        </td>
+        <td>
+          1784
+          -
+          1833
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.+
+        </td>
+        <td style="background: #AEF1AE">
+          dim.radius.+(InputSystem.this.lostMassSpawnOffset).+(loseMassAmount)
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          694
+        </td>
+        <td>
+          1743
+          -
+          1835
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.add
+        </td>
+        <td style="background: #AEF1AE">
+          pos.point.add(directionVector.multiply(dim.radius.+(InputSystem.this.lostMassSpawnOffset).+(loseMassAmount)))
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          704
+        </td>
+        <td>
+          1878
+          -
+          2100
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpawnerComponent.enqueueActions
+        </td>
+        <td style="background: #AEF1AE">
+          spawner.enqueueActions(it.unibo.osmos.redux.ecs.components.SpawnAction.apply(it.unibo.osmos.redux.ecs.components.PositionComponent.apply(it.unibo.osmos.redux.utils.Point.apply(spawnPoint.x, spawnPoint.y)), it.unibo.osmos.redux.ecs.components.DimensionComponent.apply(loseMassAmount), it.unibo.osmos.redux.ecs.components.SpeedComponent.apply(directionVector.multiply(InputSystem.this.lostMassInitialVelocity))))
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          703
+        </td>
+        <td>
+          1901
+          -
+          2099
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpawnAction.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.components.SpawnAction.apply(it.unibo.osmos.redux.ecs.components.PositionComponent.apply(it.unibo.osmos.redux.utils.Point.apply(spawnPoint.x, spawnPoint.y)), it.unibo.osmos.redux.ecs.components.DimensionComponent.apply(loseMassAmount), it.unibo.osmos.redux.ecs.components.SpeedComponent.apply(directionVector.multiply(InputSystem.this.lostMassInitialVelocity)))
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          696
+        </td>
+        <td>
+          1962
+          -
+          1974
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.y
+        </td>
+        <td style="background: #AEF1AE">
+          spawnPoint.y
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          695
+        </td>
+        <td>
+          1948
+          -
+          1960
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.x
+        </td>
+        <td style="background: #AEF1AE">
+          spawnPoint.x
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          698
+        </td>
+        <td>
+          1924
+          -
+          1976
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.components.PositionComponent.apply(it.unibo.osmos.redux.utils.Point.apply(spawnPoint.x, spawnPoint.y))
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          697
+        </td>
+        <td>
+          1942
+          -
+          1975
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Point.apply(spawnPoint.x, spawnPoint.y)
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          699
+        </td>
+        <td>
+          1988
+          -
+          2022
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.apply(loseMassAmount)
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          702
+        </td>
+        <td>
+          2034
+          -
+          2098
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpeedComponent.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.components.SpeedComponent.apply(directionVector.multiply(InputSystem.this.lostMassInitialVelocity))
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          701
+        </td>
+        <td>
+          2049
+          -
+          2097
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.multiply
+        </td>
+        <td style="background: #AEF1AE">
+          directionVector.multiply(InputSystem.this.lostMassInitialVelocity)
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          700
+        </td>
+        <td>
+          2074
+          -
+          2097
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.InputSystem.lostMassInitialVelocity
+        </td>
+        <td style="background: #AEF1AE">
+          InputSystem.this.lostMassInitialVelocity
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          705
+        </td>
+        <td>
+          2167
+          -
+          2185
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double./
+        </td>
+        <td style="background: #AEF1AE">
+          loseMassAmount./(2)
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          707
+        </td>
+        <td>
+          2142
+          -
+          2186
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.radius_
+        </td>
+        <td style="background: #AEF1AE">
+          dim.radius_(dim.radius.-(loseMassAmount./(2)))
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          706
+        </td>
+        <td>
+          2154
+          -
+          2185
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #AEF1AE">
+          dim.radius.-(loseMassAmount./(2))
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

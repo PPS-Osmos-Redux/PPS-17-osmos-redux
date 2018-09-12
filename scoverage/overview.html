@@ -1,0 +1,9729 @@
+<html>
+      <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+      <title id="title">Scoverage Code Coverage</title>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+      <style>
+        .meter {
+        height: 14px;
+        position: relative;
+        background: #BB2020;
+}
+
+.meter span {
+	display: block;
+	height: 100%;
+	background-color: rgb(43,194,83);
+	background-image: -webkit-gradient(
+	  linear,
+	  left bottom,
+	  left top,
+	  color-stop(0, rgb(43,194,83)),
+	  color-stop(1, rgb(84,240,84))
+	 );
+	background-image: -webkit-linear-gradient(
+	  center bottom,
+	  rgb(43,194,83) 37%,
+	  rgb(84,240,84) 69%
+	 );
+	background-image: -moz-linear-gradient(
+	  center bottom,
+	  rgb(43,194,83) 37%,
+	  rgb(84,240,84) 69%
+	 );
+	background-image: -ms-linear-gradient(
+	  center bottom,
+	  rgb(43,194,83) 37%,
+	  rgb(84,240,84) 69%
+	 );
+	background-image: -o-linear-gradient(
+	  center bottom,
+	  rgb(43,194,83) 37%,
+	  rgb(84,240,84) 69%
+	 );
+	-webkit-box-shadow:
+	  inset 0 2px 9px  rgba(255,255,255,0.3),
+	  inset 0 -2px 6px rgba(0,0,0,0.4);
+	-moz-box-shadow:
+	  inset 0 2px 9px  rgba(255,255,255,0.3),
+	  inset 0 -2px 6px rgba(0,0,0,0.4);
+	position: relative;
+	overflow: hidden;
+}
+      </style>
+    </head><body style="font-family: monospace;">
+      <div class="alert alert-info">
+        <b>
+          SCoverage
+        </b>
+        generated at
+        Wed Sep 12 15:10:17 CEST 2018
+      </div>
+      <div class="overview">
+        <div class="stats">
+          <table class="table">
+      <tr>
+        <td>
+          Lines of code:
+        </td>
+        <td>
+          8965
+        </td>
+        <td>
+          Files:
+        </td>
+        <td>
+          140
+        </td>
+        <td>
+          Classes:
+        </td>
+        <td>
+          211
+        </td>
+        <td>
+          Methods:
+        </td>
+        <td>
+          704
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Lines per file:
+        </td>
+        <td>
+          64.04
+        </td>
+        <td>
+          Packages:
+        </td>
+        <td>
+          32
+        </td>
+        <td>
+          Classes per package:
+        </td>
+        <td>
+          6.59
+        </td>
+        <td>
+          Methods per class:
+        </td>
+        <td>
+          3.34
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Total statements:
+        </td>
+        <td>
+          5601
+        </td>
+        <td>
+          Invoked statements:
+        </td>
+        <td>
+          1996
+        </td>
+        <td>
+          Total branches:
+        </td>
+        <td>
+          317
+        </td>
+        <td>
+          Invoked branches:
+        </td>
+        <td>
+          59
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Ignored statements:
+        </td>
+        <td>
+          0
+        </td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>
+          Statement coverage:
+        </td>
+        <td>
+          35.64
+          %
+        </td>
+        <td colspan="2">
+          <div class="meter">
+            <span style="width: 36%"></span>
+          </div>
+        </td>
+        <td>
+          Branch coverage:
+        </td>
+        <td>
+          18.61
+          %
+        </td>
+        <td colspan="2">
+          <div class="meter">
+            <span style="width: 19%"></span>
+          </div>
+        </td>
+      </tr>
+    </table>
+        </div>
+        <div>
+          <table class="tablesorter table table-striped" style="font-size:13px">
+      <thead>
+        <tr>
+          <th>
+            Class
+          </th>
+          <th>
+            Source file
+          </th>
+          <th>
+            Lines
+          </th>
+          <th>
+            Methods
+          </th>
+          <th>
+            Statements
+          </th>
+          <th>
+            Invoked
+          </th>
+          <th>
+            Coverage
+          </th>
+          <th>
+          </th>
+          <th>
+            Branches
+          </th>
+          <th>
+            Invoked
+          </th>
+          <th>
+            Coverage
+          </th>
+          <th>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/components/AccelerationComponent.scala.html">
+          AccelerationComponent
+        </a>
+      </td>
+      <td>
+        AccelerationComponent.scala
+      </td>
+      <td>
+        21
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        6
+      </td>
+      <td>
+        6
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/components/AccelerationComponent.scala.html">
+          AccelerationComponent.AccelerationComponentImpl
+        </a>
+      </td>
+      <td>
+        AccelerationComponent.scala
+      </td>
+      <td>
+        29
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/components/CollidableComponent.scala.html">
+          CollidableComponent
+        </a>
+      </td>
+      <td>
+        CollidableComponent.scala
+      </td>
+      <td>
+        23
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 33%"></span>
+        </div>
+      </td>
+      <td>
+        33.33
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/components/CollidableComponent.scala.html">
+          CollidableComponent.CollidableComponentImpl
+        </a>
+      </td>
+      <td>
+        CollidableComponent.scala
+      </td>
+      <td>
+        29
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 50%"></span>
+        </div>
+      </td>
+      <td>
+        50.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/components/DimensionComponent.scala.html">
+          DimensionComponent
+        </a>
+      </td>
+      <td>
+        DimensionComponent.scala
+      </td>
+      <td>
+        26
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/components/DimensionComponent.scala.html">
+          DimensionComponent.DimensionComponentImpl
+        </a>
+      </td>
+      <td>
+        DimensionComponent.scala
+      </td>
+      <td>
+        31
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/components/MassComponent.scala.html">
+          MassComponent
+        </a>
+      </td>
+      <td>
+        MassComponent.scala
+      </td>
+      <td>
+        24
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/components/MassComponent.scala.html">
+          MassComponent.MassComponentImpl
+        </a>
+      </td>
+      <td>
+        MassComponent.scala
+      </td>
+      <td>
+        30
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        6
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 50%"></span>
+        </div>
+      </td>
+      <td>
+        50.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/components/PositionComponent.scala.html">
+          PositionComponent
+        </a>
+      </td>
+      <td>
+        PositionComponent.scala
+      </td>
+      <td>
+        30
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 60%"></span>
+        </div>
+      </td>
+      <td>
+        60.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/components/PositionComponent.scala.html">
+          PositionComponent.PositionComponentImpl
+        </a>
+      </td>
+      <td>
+        PositionComponent.scala
+      </td>
+      <td>
+        36
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/components/SpawnerComponent.scala.html">
+          SpawnerComponent
+        </a>
+      </td>
+      <td>
+        SpawnerComponent.scala
+      </td>
+      <td>
+        53
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/components/SpawnerComponent.scala.html">
+          SpawnerComponent.SpawnerComponentImpl
+        </a>
+      </td>
+      <td>
+        SpawnerComponent.scala
+      </td>
+      <td>
+        75
+      </td>
+      <td>
+        7
+      </td>
+      <td>
+        20
+      </td>
+      <td>
+        6
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 30%"></span>
+        </div>
+      </td>
+      <td>
+        30.00
+        %
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/components/SpecificWeightComponent.scala.html">
+          SpecificWeightComponent
+        </a>
+      </td>
+      <td>
+        SpecificWeightComponent.scala
+      </td>
+      <td>
+        9
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/components/SpeedComponent.scala.html">
+          SpeedComponent
+        </a>
+      </td>
+      <td>
+        SpeedComponent.scala
+      </td>
+      <td>
+        18
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        6
+      </td>
+      <td>
+        6
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/components/SpeedComponent.scala.html">
+          SpeedComponent.SpeedComponentImpl
+        </a>
+      </td>
+      <td>
+        SpeedComponent.scala
+      </td>
+      <td>
+        23
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/components/TypeComponent.scala.html">
+          TypeComponent
+        </a>
+      </td>
+      <td>
+        TypeComponent.scala
+      </td>
+      <td>
+        11
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/components/VisibleComponent.scala.html">
+          VisibleComponent
+        </a>
+      </td>
+      <td>
+        VisibleComponent.scala
+      </td>
+      <td>
+        23
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 33%"></span>
+        </div>
+      </td>
+      <td>
+        33.33
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/components/VisibleComponent.scala.html">
+          VisibleComponent.VisibleComponentImpl
+        </a>
+      </td>
+      <td>
+        VisibleComponent.scala
+      </td>
+      <td>
+        29
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 50%"></span>
+        </div>
+      </td>
+      <td>
+        50.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/engine/GameEngine.scala.html">
+          GameEngine
+        </a>
+      </td>
+      <td>
+        GameEngine.scala
+      </td>
+      <td>
+        71
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/engine/GameEngine.scala.html">
+          GameEngine.GameEngineImpl
+        </a>
+      </td>
+      <td>
+        GameEngine.scala
+      </td>
+      <td>
+        210
+      </td>
+      <td>
+        10
+      </td>
+      <td>
+        111
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        10
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/engine/GameLoop.scala.html">
+          GameLoop
+        </a>
+      </td>
+      <td>
+        GameLoop.scala
+      </td>
+      <td>
+        114
+      </td>
+      <td>
+        9
+      </td>
+      <td>
+        68
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        16
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/engine/GameStatus.scala.html">
+          GameStatus
+        </a>
+      </td>
+      <td>
+        GameStatus.scala
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/entities/CellBuilder.scala.html">
+          CellBuilder
+        </a>
+      </td>
+      <td>
+        CellBuilder.scala
+      </td>
+      <td>
+        255
+      </td>
+      <td>
+        16
+      </td>
+      <td>
+        86
+      </td>
+      <td>
+        78
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 91%"></span>
+        </div>
+      </td>
+      <td>
+        90.70
+        %
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 75%"></span>
+        </div>
+      </td>
+      <td>
+        75.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/entities/CellEntity.scala.html">
+          CellEntity
+        </a>
+      </td>
+      <td>
+        CellEntity.scala
+      </td>
+      <td>
+        20
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 50%"></span>
+        </div>
+      </td>
+      <td>
+        50.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/entities/CellEntity.scala.html">
+          CellEntity.CellEntityImpl
+        </a>
+      </td>
+      <td>
+        CellEntity.scala
+      </td>
+      <td>
+        48
+      </td>
+      <td>
+        9
+      </td>
+      <td>
+        11
+      </td>
+      <td>
+        11
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/entities/EntityManager.scala.html">
+          EMEvents
+        </a>
+      </td>
+      <td>
+        EntityManager.scala
+      </td>
+      <td>
+        24
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/entities/EntityManager.scala.html">
+          EntityManager
+        </a>
+      </td>
+      <td>
+        EntityManager.scala
+      </td>
+      <td>
+        122
+      </td>
+      <td>
+        9
+      </td>
+      <td>
+        27
+      </td>
+      <td>
+        27
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/entities/EntityType.scala.html">
+          EntityType
+        </a>
+      </td>
+      <td>
+        EntityType.scala
+      </td>
+      <td>
+        7
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        6
+      </td>
+      <td>
+        6
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/entities/GravityCellEntity.scala.html">
+          GravityCellEntity
+        </a>
+      </td>
+      <td>
+        GravityCellEntity.scala
+      </td>
+      <td>
+        27
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        6
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 75%"></span>
+        </div>
+      </td>
+      <td>
+        75.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/entities/GravityCellEntity.scala.html">
+          GravityCellEntity.GravityCellEntityImpl
+        </a>
+      </td>
+      <td>
+        GravityCellEntity.scala
+      </td>
+      <td>
+        52
+      </td>
+      <td>
+        11
+      </td>
+      <td>
+        17
+      </td>
+      <td>
+        16
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 94%"></span>
+        </div>
+      </td>
+      <td>
+        94.12
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/entities/PlayerCellEntity.scala.html">
+          PlayerCellEntity
+        </a>
+      </td>
+      <td>
+        PlayerCellEntity.scala
+      </td>
+      <td>
+        23
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 60%"></span>
+        </div>
+      </td>
+      <td>
+        60.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/entities/PlayerCellEntity.scala.html">
+          PlayerCellEntity.PlayerCellEntityImpl
+        </a>
+      </td>
+      <td>
+        PlayerCellEntity.scala
+      </td>
+      <td>
+        45
+      </td>
+      <td>
+        10
+      </td>
+      <td>
+        12
+      </td>
+      <td>
+        12
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/entities/SentientCellEntity.scala.html">
+          SentientCellEntity
+        </a>
+      </td>
+      <td>
+        SentientCellEntity.scala
+      </td>
+      <td>
+        22
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 60%"></span>
+        </div>
+      </td>
+      <td>
+        60.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/entities/SentientCellEntity.scala.html">
+          SentientCellEntity.SentientCellEntityImpl
+        </a>
+      </td>
+      <td>
+        SentientCellEntity.scala
+      </td>
+      <td>
+        42
+      </td>
+      <td>
+        9
+      </td>
+      <td>
+        9
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 89%"></span>
+        </div>
+      </td>
+      <td>
+        88.89
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/systems/AbstractSystem.scala.html">
+          AbstractSystem
+        </a>
+      </td>
+      <td>
+        AbstractSystem.scala
+      </td>
+      <td>
+        20
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        10
+      </td>
+      <td>
+        10
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/systems/AbstractSystem2.scala.html">
+          AbstractSystem2
+        </a>
+      </td>
+      <td>
+        AbstractSystem2.scala
+      </td>
+      <td>
+        33
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        17
+      </td>
+      <td>
+        17
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/systems/CellsEliminationSystem.scala.html">
+          CellsEliminationSystem
+        </a>
+      </td>
+      <td>
+        CellsEliminationSystem.scala
+      </td>
+      <td>
+        13
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/systems/CollisionSystem.scala.html">
+          CollisionSystem
+        </a>
+      </td>
+      <td>
+        CollisionSystem.scala
+      </td>
+      <td>
+        158
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        117
+      </td>
+      <td>
+        104
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 89%"></span>
+        </div>
+      </td>
+      <td>
+        88.89
+        %
+      </td>
+      <td>
+        6
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 50%"></span>
+        </div>
+      </td>
+      <td>
+        50.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/systems/DrawSystem.scala.html">
+          DrawSystem
+        </a>
+      </td>
+      <td>
+        DrawSystem.scala
+      </td>
+      <td>
+        26
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        21
+      </td>
+      <td>
+        21
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/systems/EndGameSystem.scala.html">
+          EndGameSystem
+        </a>
+      </td>
+      <td>
+        EndGameSystem.scala
+      </td>
+      <td>
+        31
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        26
+      </td>
+      <td>
+        21
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 81%"></span>
+        </div>
+      </td>
+      <td>
+        80.77
+        %
+      </td>
+      <td>
+        6
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 83%"></span>
+        </div>
+      </td>
+      <td>
+        83.33
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/systems/GravitySystem.scala.html">
+          GravitySystem
+        </a>
+      </td>
+      <td>
+        GravitySystem.scala
+      </td>
+      <td>
+        32
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        23
+      </td>
+      <td>
+        22
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 96%"></span>
+        </div>
+      </td>
+      <td>
+        95.65
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/systems/InputSystem.scala.html">
+          InputSystem
+        </a>
+      </td>
+      <td>
+        InputSystem.scala
+      </td>
+      <td>
+        51
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        41
+      </td>
+      <td>
+        41
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/systems/MovementSystem.scala.html">
+          MovementSystem
+        </a>
+      </td>
+      <td>
+        MovementSystem.scala
+      </td>
+      <td>
+        30
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        17
+      </td>
+      <td>
+        17
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/systems/MultiPlayerEndGameSystem.scala.html">
+          MultiPlayerEndGameSystem
+        </a>
+      </td>
+      <td>
+        MultiPlayerEndGameSystem.scala
+      </td>
+      <td>
+        59
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        46
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/systems/MultiPlayerUpdateSystem.scala.html">
+          MultiPlayerUpdateSystem
+        </a>
+      </td>
+      <td>
+        MultiPlayerUpdateSystem.scala
+      </td>
+      <td>
+        21
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        20
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/systems/SentientSystem.scala.html">
+          SentientSystem
+        </a>
+      </td>
+      <td>
+        SentientSystem.scala
+      </td>
+      <td>
+        58
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        54
+      </td>
+      <td>
+        34
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 63%"></span>
+        </div>
+      </td>
+      <td>
+        62.96
+        %
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 75%"></span>
+        </div>
+      </td>
+      <td>
+        75.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/systems/SpawnSystem.scala.html">
+          SpawnSystem
+        </a>
+      </td>
+      <td>
+        SpawnSystem.scala
+      </td>
+      <td>
+        19
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/systems/borderconditions/AbstractBorder.scala.html">
+          AbstractBorder
+        </a>
+      </td>
+      <td>
+        AbstractBorder.scala
+      </td>
+      <td>
+        15
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/systems/borderconditions/CircularBorder.scala.html">
+          CircularBorder
+        </a>
+      </td>
+      <td>
+        CircularBorder.scala
+      </td>
+      <td>
+        112
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        90
+      </td>
+      <td>
+        69
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 77%"></span>
+        </div>
+      </td>
+      <td>
+        76.67
+        %
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 38%"></span>
+        </div>
+      </td>
+      <td>
+        37.50
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/systems/borderconditions/RectangularBorder.scala.html">
+          RectangularBorder
+        </a>
+      </td>
+      <td>
+        RectangularBorder.scala
+      </td>
+      <td>
+        83
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        82
+      </td>
+      <td>
+        81
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 99%"></span>
+        </div>
+      </td>
+      <td>
+        98.78
+        %
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/systems/sentientRule/EscapeFromBoundaryRule.scala.html">
+          EscapeFromBoundaryRule
+        </a>
+      </td>
+      <td>
+        EscapeFromBoundaryRule.scala
+      </td>
+      <td>
+        43
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        29
+      </td>
+      <td>
+        22
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 76%"></span>
+        </div>
+      </td>
+      <td>
+        75.86
+        %
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/systems/sentientRule/EscapeFromEnemiesRule.scala.html">
+          EscapeFromEnemiesRule
+        </a>
+      </td>
+      <td>
+        EscapeFromEnemiesRule.scala
+      </td>
+      <td>
+        57
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        24
+      </td>
+      <td>
+        24
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/systems/sentientRule/FollowTargetRule.scala.html">
+          FollowTargetRule
+        </a>
+      </td>
+      <td>
+        FollowTargetRule.scala
+      </td>
+      <td>
+        81
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        45
+      </td>
+      <td>
+        45
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/systems/sentientRule/SentientUtils.scala.html">
+          SentientUtils
+        </a>
+      </td>
+      <td>
+        SentientUtils.scala
+      </td>
+      <td>
+        43
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/systems/sentientRule/SentientUtils.scala.html">
+          SentientUtils.PimpedList
+        </a>
+      </td>
+      <td>
+        SentientUtils.scala
+      </td>
+      <td>
+        59
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        13
+      </td>
+      <td>
+        12
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 92%"></span>
+        </div>
+      </td>
+      <td>
+        92.31
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/systems/victoryconditions/AbsorbAllOtherPlayersCondition.scala.html">
+          AbsorbAllOtherPlayersCondition
+        </a>
+      </td>
+      <td>
+        AbsorbAllOtherPlayersCondition.scala
+      </td>
+      <td>
+        15
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/systems/victoryconditions/AbsorbCellsWithTypeVictoryCondition.scala.html">
+          AbsorbCellsWithTypeVictoryCondition
+        </a>
+      </td>
+      <td>
+        AbsorbCellsWithTypeVictoryCondition.scala
+      </td>
+      <td>
+        15
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/systems/victoryconditions/BecomeHugeVictoryCondition.scala.html">
+          BecomeHugeVictoryCondition
+        </a>
+      </td>
+      <td>
+        BecomeHugeVictoryCondition.scala
+      </td>
+      <td>
+        22
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        11
+      </td>
+      <td>
+        11
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/ecs/systems/victoryconditions/BecomeTheBiggestVictoryCondition.scala.html">
+          BecomeTheBiggestVictoryCondition
+        </a>
+      </td>
+      <td>
+        BecomeTheBiggestVictoryCondition.scala
+      </td>
+      <td>
+        18
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        6
+      </td>
+      <td>
+        6
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/main/AppLauncher.scala.html">
+          AppLauncher
+        </a>
+      </td>
+      <td>
+        AppLauncher.scala
+      </td>
+      <td>
+        23
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        22
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/multiplayer/client/Client.scala.html">
+          Client
+        </a>
+      </td>
+      <td>
+        Client.scala
+      </td>
+      <td>
+        124
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/multiplayer/client/Client.scala.html">
+          Client.ClientImpl
+        </a>
+      </td>
+      <td>
+        Client.scala
+      </td>
+      <td>
+        322
+      </td>
+      <td>
+        19
+      </td>
+      <td>
+        223
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        32
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/multiplayer/client/ClientActor.scala.html">
+          ClientActor
+        </a>
+      </td>
+      <td>
+        ClientActor.scala
+      </td>
+      <td>
+        41
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        26
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/multiplayer/common/ActorSystemConfigFactory.scala.html">
+          ActorSystemConfigFactory
+        </a>
+      </td>
+      <td>
+        ActorSystemConfigFactory.scala
+      </td>
+      <td>
+        72
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        12
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/multiplayer/common/ActorSystemHolder.scala.html">
+          ActorSystemHolder
+        </a>
+      </td>
+      <td>
+        ActorSystemHolder.scala
+      </td>
+      <td>
+        54
+      </td>
+      <td>
+        6
+      </td>
+      <td>
+        21
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/multiplayer/common/AddressExtension.scala.html">
+          AddressExtension
+        </a>
+      </td>
+      <td>
+        AddressExtension.scala
+      </td>
+      <td>
+        14
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/multiplayer/common/ClientsManager.scala.html">
+          ClientsManager
+        </a>
+      </td>
+      <td>
+        ClientsManager.scala
+      </td>
+      <td>
+        44
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/multiplayer/common/ClientsManager.scala.html">
+          ClientsManager.ClientsManagerImpl
+        </a>
+      </td>
+      <td>
+        ClientsManager.scala
+      </td>
+      <td>
+        58
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        6
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/multiplayer/common/MultiPlayerMode.scala.html">
+          MultiPlayerMode
+        </a>
+      </td>
+      <td>
+        MultiPlayerMode.scala
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/multiplayer/common/NetworkUtils.scala.html">
+          NetworkUtils
+        </a>
+      </td>
+      <td>
+        NetworkUtils.scala
+      </td>
+      <td>
+        42
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        16
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/multiplayer/lobby/AbstractLobby.scala.html">
+          AbstractLobby
+        </a>
+      </td>
+      <td>
+        AbstractLobby.scala
+      </td>
+      <td>
+        39
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        22
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/multiplayer/lobby/GameLobby.scala.html">
+          GameLobby
+        </a>
+      </td>
+      <td>
+        GameLobby.scala
+      </td>
+      <td>
+        23
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        20
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/multiplayer/lobby/Lobby.scala.html">
+          Lobby
+        </a>
+      </td>
+      <td>
+        Lobby.scala
+      </td>
+      <td>
+        53
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/multiplayer/players/ReferablePlayer.scala.html">
+          Alive
+        </a>
+      </td>
+      <td>
+        ReferablePlayer.scala
+      </td>
+      <td>
+        43
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/multiplayer/players/BasePlayer.scala.html">
+          BasePlayer
+        </a>
+      </td>
+      <td>
+        BasePlayer.scala
+      </td>
+      <td>
+        15
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/multiplayer/players/ReferablePlayer.scala.html">
+          Referable
+        </a>
+      </td>
+      <td>
+        ReferablePlayer.scala
+      </td>
+      <td>
+        20
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/multiplayer/players/ReferablePlayer.scala.html">
+          ReferablePlayer
+        </a>
+      </td>
+      <td>
+        ReferablePlayer.scala
+      </td>
+      <td>
+        69
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        10
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/multiplayer/server/Server.scala.html">
+          Server
+        </a>
+      </td>
+      <td>
+        Server.scala
+      </td>
+      <td>
+        141
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/multiplayer/server/Server.scala.html">
+          Server.ServerImpl
+        </a>
+      </td>
+      <td>
+        Server.scala
+      </td>
+      <td>
+        392
+      </td>
+      <td>
+        22
+      </td>
+      <td>
+        292
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        40
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/multiplayer/server/ServerActor.scala.html">
+          ServerActor
+        </a>
+      </td>
+      <td>
+        ServerActor.scala
+      </td>
+      <td>
+        94
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        76
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/multiplayer/server/ServerState.scala.html">
+          ServerState
+        </a>
+      </td>
+      <td>
+        ServerState.scala
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/controller/Controller.scala.html">
+          Controller
+        </a>
+      </td>
+      <td>
+        Controller.scala
+      </td>
+      <td>
+        117
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/controller/Controller.scala.html">
+          ControllerImpl
+        </a>
+      </td>
+      <td>
+        Controller.scala
+      </td>
+      <td>
+        339
+      </td>
+      <td>
+        15
+      </td>
+      <td>
+        254
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        32
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/controller/Settings.scala.html">
+          SettingsHolder
+        </a>
+      </td>
+      <td>
+        Settings.scala
+      </td>
+      <td>
+        40
+      </td>
+      <td>
+        7
+      </td>
+      <td>
+        27
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/controller/Settings.scala.html">
+          SettingsTypes
+        </a>
+      </td>
+      <td>
+        Settings.scala
+      </td>
+      <td>
+        69
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/controller/Settings.scala.html">
+          Volume
+        </a>
+      </td>
+      <td>
+        Settings.scala
+      </td>
+      <td>
+        84
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/controller/levels/MultiPlayerLevels.scala.html">
+          MultiPlayerLevels
+        </a>
+      </td>
+      <td>
+        MultiPlayerLevels.scala
+      </td>
+      <td>
+        15
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/controller/levels/SinglePlayerLevels.scala.html">
+          SinglePlayerLevels
+        </a>
+      </td>
+      <td>
+        SinglePlayerLevels.scala
+      </td>
+      <td>
+        102
+      </td>
+      <td>
+        15
+      </td>
+      <td>
+        89
+      </td>
+      <td>
+        64
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 72%"></span>
+        </div>
+      </td>
+      <td>
+        71.91
+        %
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 50%"></span>
+        </div>
+      </td>
+      <td>
+        50.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/controller/levels/structure/Level.scala.html">
+          CellType
+        </a>
+      </td>
+      <td>
+        Level.scala
+      </td>
+      <td>
+        12
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/controller/levels/structure/CollisionRules.scala.html">
+          CollisionRules
+        </a>
+      </td>
+      <td>
+        CollisionRules.scala
+      </td>
+      <td>
+        6
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/controller/levels/structure/Level.scala.html">
+          Level
+        </a>
+      </td>
+      <td>
+        Level.scala
+      </td>
+      <td>
+        63
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        62
+      </td>
+      <td>
+        55
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 89%"></span>
+        </div>
+      </td>
+      <td>
+        88.71
+        %
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 50%"></span>
+        </div>
+      </td>
+      <td>
+        50.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/controller/levels/structure/LevelInfo.scala.html">
+          LevelInfo
+        </a>
+      </td>
+      <td>
+        LevelInfo.scala
+      </td>
+      <td>
+        16
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/controller/levels/structure/LevelMap.scala.html">
+          MapShape.Circle
+        </a>
+      </td>
+      <td>
+        LevelMap.scala
+      </td>
+      <td>
+        35
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/controller/levels/structure/LevelMap.scala.html">
+          MapShape.Rectangle
+        </a>
+      </td>
+      <td>
+        LevelMap.scala
+      </td>
+      <td>
+        26
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/controller/levels/structure/LevelMap.scala.html">
+          MapShapeType
+        </a>
+      </td>
+      <td>
+        LevelMap.scala
+      </td>
+      <td>
+        7
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/controller/levels/structure/VictoryRules.scala.html">
+          VictoryRules
+        </a>
+      </td>
+      <td>
+        VictoryRules.scala
+      </td>
+      <td>
+        10
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/controller/manager/files/FileManager.scala.html">
+          FileManager
+        </a>
+      </td>
+      <td>
+        FileManager.scala
+      </td>
+      <td>
+        88
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        52
+      </td>
+      <td>
+        32
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 62%"></span>
+        </div>
+      </td>
+      <td>
+        61.54
+        %
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/controller/manager/files/LevelFileManager.scala.html">
+          LevelFileManager
+        </a>
+      </td>
+      <td>
+        LevelFileManager.scala
+      </td>
+      <td>
+        126
+      </td>
+      <td>
+        13
+      </td>
+      <td>
+        110
+      </td>
+      <td>
+        63
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 57%"></span>
+        </div>
+      </td>
+      <td>
+        57.27
+        %
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        6
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 75%"></span>
+        </div>
+      </td>
+      <td>
+        75.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/controller/manager/files/SettingsFileManger.scala.html">
+          SettingsFileManger
+        </a>
+      </td>
+      <td>
+        SettingsFileManger.scala
+      </td>
+      <td>
+        40
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        25
+      </td>
+      <td>
+        23
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 92%"></span>
+        </div>
+      </td>
+      <td>
+        92.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/controller/manager/files/SoundFileManager.scala.html">
+          SoundFileManager
+        </a>
+      </td>
+      <td>
+        SoundFileManager.scala
+      </td>
+      <td>
+        26
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/controller/manager/files/StyleFileManager.scala.html">
+          StyleFileManager
+        </a>
+      </td>
+      <td>
+        StyleFileManager.scala
+      </td>
+      <td>
+        19
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        9
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/controller/manager/files/UserProgressFileManager.scala.html">
+          UserProgressFileManager
+        </a>
+      </td>
+      <td>
+        UserProgressFileManager.scala
+      </td>
+      <td>
+        51
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        28
+      </td>
+      <td>
+        17
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 61%"></span>
+        </div>
+      </td>
+      <td>
+        60.71
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/controller/manager/sounds/MusicPlayer.scala.html">
+          MusicPlayer
+        </a>
+      </td>
+      <td>
+        MusicPlayer.scala
+      </td>
+      <td>
+        124
+      </td>
+      <td>
+        15
+      </td>
+      <td>
+        119
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        14
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/controller/manager/sounds/MusicPlayer.scala.html">
+          SoundsType
+        </a>
+      </td>
+      <td>
+        MusicPlayer.scala
+      </td>
+      <td>
+        12
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/model/JsonProtocols.scala.html">
+          JsonProtocols
+        </a>
+      </td>
+      <td>
+        JsonProtocols.scala
+      </td>
+      <td>
+        415
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        20
+      </td>
+      <td>
+        20
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/model/JsonProtocols.scala.html">
+          JsonProtocols.AccelerationFormatter
+        </a>
+      </td>
+      <td>
+        JsonProtocols.scala
+      </td>
+      <td>
+        28
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        14
+      </td>
+      <td>
+        13
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 93%"></span>
+        </div>
+      </td>
+      <td>
+        92.86
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/model/JsonProtocols.scala.html">
+          JsonProtocols.CellEntityFormatter
+        </a>
+      </td>
+      <td>
+        JsonProtocols.scala
+      </td>
+      <td>
+        303
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        75
+      </td>
+      <td>
+        69
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 92%"></span>
+        </div>
+      </td>
+      <td>
+        92.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/model/JsonProtocols.scala.html">
+          JsonProtocols.CollidableFormatter
+        </a>
+      </td>
+      <td>
+        JsonProtocols.scala
+      </td>
+      <td>
+        41
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        7
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 88%"></span>
+        </div>
+      </td>
+      <td>
+        87.50
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/model/JsonProtocols.scala.html">
+          JsonProtocols.ComponentTypeFormatter
+        </a>
+      </td>
+      <td>
+        JsonProtocols.scala
+      </td>
+      <td>
+        129
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        9
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 89%"></span>
+        </div>
+      </td>
+      <td>
+        88.89
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/model/JsonProtocols.scala.html">
+          JsonProtocols.DimensionFormatter
+        </a>
+      </td>
+      <td>
+        JsonProtocols.scala
+      </td>
+      <td>
+        65
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        9
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 89%"></span>
+        </div>
+      </td>
+      <td>
+        88.89
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/model/JsonProtocols.scala.html">
+          JsonProtocols.EntityTypeFormatter
+        </a>
+      </td>
+      <td>
+        JsonProtocols.scala
+      </td>
+      <td>
+        116
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/model/JsonProtocols.scala.html">
+          JsonProtocols.GravityCellEntityFormatter
+        </a>
+      </td>
+      <td>
+        JsonProtocols.scala
+      </td>
+      <td>
+        189
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        64
+      </td>
+      <td>
+        63
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 98%"></span>
+        </div>
+      </td>
+      <td>
+        98.44
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/model/JsonProtocols.scala.html">
+          JsonProtocols.LevelInfoFormatter
+        </a>
+      </td>
+      <td>
+        JsonProtocols.scala
+      </td>
+      <td>
+        386
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        23
+      </td>
+      <td>
+        22
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 96%"></span>
+        </div>
+      </td>
+      <td>
+        95.65
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/model/JsonProtocols.scala.html">
+          JsonProtocols.LevelMapFormatter
+        </a>
+      </td>
+      <td>
+        JsonProtocols.scala
+      </td>
+      <td>
+        353
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        16
+      </td>
+      <td>
+        15
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 94%"></span>
+        </div>
+      </td>
+      <td>
+        93.75
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/model/JsonProtocols.scala.html">
+          JsonProtocols.MapShapeFormatter
+        </a>
+      </td>
+      <td>
+        JsonProtocols.scala
+      </td>
+      <td>
+        338
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        50
+      </td>
+      <td>
+        46
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 92%"></span>
+        </div>
+      </td>
+      <td>
+        92.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/model/JsonProtocols.scala.html">
+          JsonProtocols.PlayerCellEntityFormatter
+        </a>
+      </td>
+      <td>
+        JsonProtocols.scala
+      </td>
+      <td>
+        222
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        58
+      </td>
+      <td>
+        57
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 98%"></span>
+        </div>
+      </td>
+      <td>
+        98.28
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/model/JsonProtocols.scala.html">
+          JsonProtocols.PointFormatter
+        </a>
+      </td>
+      <td>
+        JsonProtocols.scala
+      </td>
+      <td>
+        77
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        14
+      </td>
+      <td>
+        13
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 93%"></span>
+        </div>
+      </td>
+      <td>
+        92.86
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/model/JsonProtocols.scala.html">
+          JsonProtocols.PositionFormatter
+        </a>
+      </td>
+      <td>
+        JsonProtocols.scala
+      </td>
+      <td>
+        89
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        11
+      </td>
+      <td>
+        10
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 91%"></span>
+        </div>
+      </td>
+      <td>
+        90.91
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/model/JsonProtocols.scala.html">
+          JsonProtocols.SentientCellEntityFormatter
+        </a>
+      </td>
+      <td>
+        JsonProtocols.scala
+      </td>
+      <td>
+        255
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        58
+      </td>
+      <td>
+        57
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 98%"></span>
+        </div>
+      </td>
+      <td>
+        98.28
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/model/JsonProtocols.scala.html">
+          JsonProtocols.SpawnerFormatter
+        </a>
+      </td>
+      <td>
+        JsonProtocols.scala
+      </td>
+      <td>
+        141
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        7
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 88%"></span>
+        </div>
+      </td>
+      <td>
+        87.50
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/model/JsonProtocols.scala.html">
+          JsonProtocols.SpecificWeightFormatter
+        </a>
+      </td>
+      <td>
+        JsonProtocols.scala
+      </td>
+      <td>
+        153
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        9
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 89%"></span>
+        </div>
+      </td>
+      <td>
+        88.89
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/model/JsonProtocols.scala.html">
+          JsonProtocols.SpeedFormatter
+        </a>
+      </td>
+      <td>
+        JsonProtocols.scala
+      </td>
+      <td>
+        103
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        14
+      </td>
+      <td>
+        13
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 93%"></span>
+        </div>
+      </td>
+      <td>
+        92.86
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/model/JsonProtocols.scala.html">
+          JsonProtocols.VictoryRuleFormatter
+        </a>
+      </td>
+      <td>
+        JsonProtocols.scala
+      </td>
+      <td>
+        365
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        7
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 88%"></span>
+        </div>
+      </td>
+      <td>
+        87.50
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/model/JsonProtocols.scala.html">
+          JsonProtocols.VisibleFormatter
+        </a>
+      </td>
+      <td>
+        JsonProtocols.scala
+      </td>
+      <td>
+        53
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        7
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 88%"></span>
+        </div>
+      </td>
+      <td>
+        87.50
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/model/JsonProtocols.scala.html">
+          JsonProtocols.levelFormatter
+        </a>
+      </td>
+      <td>
+        JsonProtocols.scala
+      </td>
+      <td>
+        403
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        33
+      </td>
+      <td>
+        32
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 97%"></span>
+        </div>
+      </td>
+      <td>
+        96.97
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/model/JsonProtocols.scala.html">
+          JsonProtocols.settingFormatter
+        </a>
+      </td>
+      <td>
+        JsonProtocols.scala
+      </td>
+      <td>
+        443
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        13
+      </td>
+      <td>
+        6
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 46%"></span>
+        </div>
+      </td>
+      <td>
+        46.15
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/model/JsonProtocols.scala.html">
+          JsonProtocols.volumeSettingFormatter
+        </a>
+      </td>
+      <td>
+        JsonProtocols.scala
+      </td>
+      <td>
+        425
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        13
+      </td>
+      <td>
+        12
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 92%"></span>
+        </div>
+      </td>
+      <td>
+        92.31
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/View.scala.html">
+          View
+        </a>
+      </td>
+      <td>
+        View.scala
+      </td>
+      <td>
+        30
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/View.scala.html">
+          View.ViewImpl
+        </a>
+      </td>
+      <td>
+        View.scala
+      </td>
+      <td>
+        126
+      </td>
+      <td>
+        18
+      </td>
+      <td>
+        57
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/ViewConstants.scala.html">
+          ViewConstants.Editor
+        </a>
+      </td>
+      <td>
+        ViewConstants.scala
+      </td>
+      <td>
+        27
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        17
+      </td>
+      <td>
+        15
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 88%"></span>
+        </div>
+      </td>
+      <td>
+        88.24
+        %
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 50%"></span>
+        </div>
+      </td>
+      <td>
+        50.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/ViewConstants.scala.html">
+          ViewConstants.Entities.Colors
+        </a>
+      </td>
+      <td>
+        ViewConstants.scala
+      </td>
+      <td>
+        46
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/ViewConstants.scala.html">
+          ViewConstants.Entities.Textures
+        </a>
+      </td>
+      <td>
+        ViewConstants.scala
+      </td>
+      <td>
+        59
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        9
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/ViewConstants.scala.html">
+          ViewConstants.Level
+        </a>
+      </td>
+      <td>
+        ViewConstants.scala
+      </td>
+      <td>
+        36
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/ViewConstants.scala.html">
+          ViewConstants.Window
+        </a>
+      </td>
+      <td>
+        ViewConstants.scala
+      </td>
+      <td>
+        15
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/custom/AlertBuilder.scala.html">
+          AlertBuilder
+        </a>
+      </td>
+      <td>
+        AlertBuilder.scala
+      </td>
+      <td>
+        82
+      </td>
+      <td>
+        7
+      </td>
+      <td>
+        26
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/custom/AlertFactory.scala.html">
+          AlertFactory
+        </a>
+      </td>
+      <td>
+        AlertFactory.scala
+      </td>
+      <td>
+        46
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/custom/EntityDescriptionBox.scala.html">
+          EntityDescriptionBox
+        </a>
+      </td>
+      <td>
+        EntityDescriptionBox.scala
+      </td>
+      <td>
+        36
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        24
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/custom/StyledButton.scala.html">
+          StyledButton
+        </a>
+      </td>
+      <td>
+        StyledButton.scala
+      </td>
+      <td>
+        12
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/custom/TitledComboBox.scala.html">
+          TitledComboBox
+        </a>
+      </td>
+      <td>
+        TitledComboBox.scala
+      </td>
+      <td>
+        18
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/custom/TitledDoubleField.scala.html">
+          TitledDoubleField
+        </a>
+      </td>
+      <td>
+        TitledDoubleField.scala
+      </td>
+      <td>
+        60
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        46
+      </td>
+      <td>
+        42
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 91%"></span>
+        </div>
+      </td>
+      <td>
+        91.30
+        %
+      </td>
+      <td>
+        6
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 67%"></span>
+        </div>
+      </td>
+      <td>
+        66.67
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/custom/TitledIntegerField.scala.html">
+          TitledIntegerField
+        </a>
+      </td>
+      <td>
+        TitledIntegerField.scala
+      </td>
+      <td>
+        45
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        39
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/custom/TitledNode.scala.html">
+          TitledNode
+        </a>
+      </td>
+      <td>
+        TitledNode.scala
+      </td>
+      <td>
+        34
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        21
+      </td>
+      <td>
+        16
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 76%"></span>
+        </div>
+      </td>
+      <td>
+        76.19
+        %
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 50%"></span>
+        </div>
+      </td>
+      <td>
+        50.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/custom/TitledTextField.scala.html">
+          TitledTextField
+        </a>
+      </td>
+      <td>
+        TitledTextField.scala
+      </td>
+      <td>
+        29
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        13
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/editor/AbstractSpawnerCellEntityCreator.scala.html">
+          AbstractSpawnerCellEntityCreator
+        </a>
+      </td>
+      <td>
+        AbstractSpawnerCellEntityCreator.scala
+      </td>
+      <td>
+        15
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        9
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/editor/BaseEditorCreator.scala.html">
+          BaseEditorCreator
+        </a>
+      </td>
+      <td>
+        BaseEditorCreator.scala
+      </td>
+      <td>
+        14
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/editor/CellEntityCreator.scala.html">
+          CellEntityCreator
+        </a>
+      </td>
+      <td>
+        CellEntityCreator.scala
+      </td>
+      <td>
+        68
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        73
+      </td>
+      <td>
+        71
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 97%"></span>
+        </div>
+      </td>
+      <td>
+        97.26
+        %
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 50%"></span>
+        </div>
+      </td>
+      <td>
+        50.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/editor/CircleLevelCreator.scala.html">
+          CircleLevelCreator
+        </a>
+      </td>
+      <td>
+        CircleLevelCreator.scala
+      </td>
+      <td>
+        30
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        34
+      </td>
+      <td>
+        34
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/editor/EditorEntityTypeContainer.scala.html">
+          EditorEntityTypeContainer
+        </a>
+      </td>
+      <td>
+        EditorEntityTypeContainer.scala
+      </td>
+      <td>
+        150
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        141
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/editor/EditorLevelNode.scala.html">
+          EditorLevelNode
+        </a>
+      </td>
+      <td>
+        EditorLevelNode.scala
+      </td>
+      <td>
+        59
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        15
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/editor/EditorLevelTypeContainer.scala.html">
+          EditorLevelTypeContainer
+        </a>
+      </td>
+      <td>
+        EditorLevelTypeContainer.scala
+      </td>
+      <td>
+        101
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        94
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/editor/GravityCellEntityCreator.scala.html">
+          GravityCellEntityCreator
+        </a>
+      </td>
+      <td>
+        GravityCellEntityCreator.scala
+      </td>
+      <td>
+        26
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        21
+      </td>
+      <td>
+        21
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/editor/PlayerCellEntityCreator.scala.html">
+          PlayerCellEntityCreator
+        </a>
+      </td>
+      <td>
+        PlayerCellEntityCreator.scala
+      </td>
+      <td>
+        16
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        9
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/editor/RectangleLevelCreator.scala.html">
+          RectangleLevelCreator
+        </a>
+      </td>
+      <td>
+        RectangleLevelCreator.scala
+      </td>
+      <td>
+        36
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        50
+      </td>
+      <td>
+        50
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/editor/SentientCellEntityCreator.scala.html">
+          SentientCellEntityCreator
+        </a>
+      </td>
+      <td>
+        SentientCellEntityCreator.scala
+      </td>
+      <td>
+        16
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        9
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/instructions/EditorInstructionScreen.scala.html">
+          EditorInstructionScreen
+        </a>
+      </td>
+      <td>
+        EditorInstructionScreen.scala
+      </td>
+      <td>
+        25
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/instructions/GameInstructionScreen.scala.html">
+          GameInstructionScreen
+        </a>
+      </td>
+      <td>
+        GameInstructionScreen.scala
+      </td>
+      <td>
+        26
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/instructions/GameLegendScreen.scala.html">
+          GameLegendScreen
+        </a>
+      </td>
+      <td>
+        GameLegendScreen.scala
+      </td>
+      <td>
+        56
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        45
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/instructions/GameLegendScreen.scala.html">
+          GameLegendScreen.BaseHBox
+        </a>
+      </td>
+      <td>
+        GameLegendScreen.scala
+      </td>
+      <td>
+        63
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        10
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/level/LevelNode.scala.html">
+          AbstractLevelNode
+        </a>
+      </td>
+      <td>
+        LevelNode.scala
+      </td>
+      <td>
+        45
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        28
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/level/LevelNode.scala.html">
+          AnimatedAbstractLevelNode
+        </a>
+      </td>
+      <td>
+        LevelNode.scala
+      </td>
+      <td>
+        84
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        24
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/level/LevelScreen.scala.html">
+          LevelScreen.Builder
+        </a>
+      </td>
+      <td>
+        LevelScreen.scala
+      </td>
+      <td>
+        67
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        13
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/level/LevelScreen.scala.html">
+          LevelScreen.LevelScreenImpl
+        </a>
+      </td>
+      <td>
+        LevelScreen.scala
+      </td>
+      <td>
+        82
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        12
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/level/LevelStateBox.scala.html">
+          LevelStateBox
+        </a>
+      </td>
+      <td>
+        LevelStateBox.scala
+      </td>
+      <td>
+        27
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        14
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/menu/MainMenuCenterBox.scala.html">
+          MainMenuCenterBox
+        </a>
+      </td>
+      <td>
+        MainMenuCenterBox.scala
+      </td>
+      <td>
+        36
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        28
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/multiplayer/MultiPlayerLevelNode.scala.html">
+          MultiPlayerLevelNode
+        </a>
+      </td>
+      <td>
+        MultiPlayerLevelNode.scala
+      </td>
+      <td>
+        40
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/multiplayer/User.scala.html">
+          User
+        </a>
+      </td>
+      <td>
+        User.scala
+      </td>
+      <td>
+        27
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        14
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/components/multiplayer/User.scala.html">
+          UserWithProperties
+        </a>
+      </td>
+      <td>
+        User.scala
+      </td>
+      <td>
+        43
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/context/LevelContext.scala.html">
+          LevelContext
+        </a>
+      </td>
+      <td>
+        LevelContext.scala
+      </td>
+      <td>
+        61
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        7
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 57%"></span>
+        </div>
+      </td>
+      <td>
+        57.14
+        %
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 50%"></span>
+        </div>
+      </td>
+      <td>
+        50.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/context/LevelContext.scala.html">
+          LevelContext.AbstractLevelContext
+        </a>
+      </td>
+      <td>
+        LevelContext.scala
+      </td>
+      <td>
+        92
+      </td>
+      <td>
+        7
+      </td>
+      <td>
+        17
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 12%"></span>
+        </div>
+      </td>
+      <td>
+        11.76
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/context/LevelContext.scala.html">
+          LevelContext.LevelContextImpl
+        </a>
+      </td>
+      <td>
+        LevelContext.scala
+      </td>
+      <td>
+        127
+      </td>
+      <td>
+        7
+      </td>
+      <td>
+        12
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 42%"></span>
+        </div>
+      </td>
+      <td>
+        41.67
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/context/LevelContext.scala.html">
+          LevelContext.MultiPlayerLevelContextImpl
+        </a>
+      </td>
+      <td>
+        LevelContext.scala
+      </td>
+      <td>
+        143
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        6
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/context/LevelContextType.scala.html">
+          LevelContextType
+        </a>
+      </td>
+      <td>
+        LevelContextType.scala
+      </td>
+      <td>
+        13
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/context/LobbyContext.scala.html">
+          LobbyContext
+        </a>
+      </td>
+      <td>
+        LobbyContext.scala
+      </td>
+      <td>
+        35
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/context/LobbyContext.scala.html">
+          LobbyContext.LobbyContextImpl
+        </a>
+      </td>
+      <td>
+        LobbyContext.scala
+      </td>
+      <td>
+        73
+      </td>
+      <td>
+        6
+      </td>
+      <td>
+        35
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/drawables/CellDrawable.scala.html">
+          CellDrawable
+        </a>
+      </td>
+      <td>
+        CellDrawable.scala
+      </td>
+      <td>
+        28
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        13
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/drawables/CellWithSpeedDrawable.scala.html">
+          CellWithSpeedDrawable
+        </a>
+      </td>
+      <td>
+        CellWithSpeedDrawable.scala
+      </td>
+      <td>
+        27
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        16
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/drawables/CircleDrawable.scala.html">
+          CircleDrawable
+        </a>
+      </td>
+      <td>
+        CircleDrawable.scala
+      </td>
+      <td>
+        19
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/drawables/DrawableEntity.scala.html">
+          DrawableEntity
+        </a>
+      </td>
+      <td>
+        DrawableEntity.scala
+      </td>
+      <td>
+        22
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/drawables/StaticImageDrawable.scala.html">
+          StaticImageDrawable
+        </a>
+      </td>
+      <td>
+        StaticImageDrawable.scala
+      </td>
+      <td>
+        18
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/loaders/ImageLoader.scala.html">
+          ImageLoader
+        </a>
+      </td>
+      <td>
+        ImageLoader.scala
+      </td>
+      <td>
+        13
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/loaders/Loader.scala.html">
+          Loader
+        </a>
+      </td>
+      <td>
+        Loader.scala
+      </td>
+      <td>
+        19
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/scenes/BaseScene.scala.html">
+          BaseScene
+        </a>
+      </td>
+      <td>
+        BaseScene.scala
+      </td>
+      <td>
+        14
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/scenes/ControlsScene.scala.html">
+          ControlsScene
+        </a>
+      </td>
+      <td>
+        ControlsScene.scala
+      </td>
+      <td>
+        43
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        32
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/scenes/DefaultBackScene.scala.html">
+          DefaultBackScene
+        </a>
+      </td>
+      <td>
+        DefaultBackScene.scala
+      </td>
+      <td>
+        38
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        6
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/scenes/EditorLevelSelectionScene.scala.html">
+          EditorLevelSelectionScene
+        </a>
+      </td>
+      <td>
+        EditorLevelSelectionScene.scala
+      </td>
+      <td>
+        42
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        33
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/scenes/EditorScene.scala.html">
+          EditorScene
+        </a>
+      </td>
+      <td>
+        EditorScene.scala
+      </td>
+      <td>
+        164
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        112
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        6
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/scenes/LevelScene.scala.html">
+          LevelScene
+        </a>
+      </td>
+      <td>
+        LevelScene.scala
+      </td>
+      <td>
+        484
+      </td>
+      <td>
+        18
+      </td>
+      <td>
+        288
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        14
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/scenes/LevelScene.scala.html">
+          LevelScene.LevelDrawables
+        </a>
+      </td>
+      <td>
+        LevelScene.scala
+      </td>
+      <td>
+        53
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        30
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/scenes/LevelScene.scala.html">
+          LevelScene.LevelPlayer
+        </a>
+      </td>
+      <td>
+        LevelScene.scala
+      </td>
+      <td>
+        69
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/scenes/LevelScene.scala.html">
+          LevelScene.LevelState
+        </a>
+      </td>
+      <td>
+        LevelScene.scala
+      </td>
+      <td>
+        61
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/scenes/LevelSelectionScene.scala.html">
+          LevelSelectionScene
+        </a>
+      </td>
+      <td>
+        LevelSelectionScene.scala
+      </td>
+      <td>
+        90
+      </td>
+      <td>
+        5
+      </td>
+      <td>
+        53
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/scenes/MainScene.scala.html">
+          MainScene
+        </a>
+      </td>
+      <td>
+        MainScene.scala
+      </td>
+      <td>
+        107
+      </td>
+      <td>
+        11
+      </td>
+      <td>
+        77
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/scenes/MultiPlayerLevelScene.scala.html">
+          MultiPlayerLevelScene
+        </a>
+      </td>
+      <td>
+        MultiPlayerLevelScene.scala
+      </td>
+      <td>
+        54
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        10
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/scenes/MultiPlayerLevelSelectionScene.scala.html">
+          MultiPlayerLevelSelectionScene
+        </a>
+      </td>
+      <td>
+        MultiPlayerLevelSelectionScene.scala
+      </td>
+      <td>
+        31
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/scenes/MultiPlayerLobbyScene.scala.html">
+          MultiPlayerLobbyScene
+        </a>
+      </td>
+      <td>
+        MultiPlayerLobbyScene.scala
+      </td>
+      <td>
+        148
+      </td>
+      <td>
+        7
+      </td>
+      <td>
+        117
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/scenes/MultiPlayerScene.scala.html">
+          MultiPlayerScene
+        </a>
+      </td>
+      <td>
+        MultiPlayerScene.scala
+      </td>
+      <td>
+        153
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        121
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        10
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/scenes/SettingsScene.scala.html">
+          SettingsScene
+        </a>
+      </td>
+      <td>
+        SettingsScene.scala
+      </td>
+      <td>
+        87
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        64
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/scenes/StatsScene.scala.html">
+          StatsScene
+        </a>
+      </td>
+      <td>
+        StatsScene.scala
+      </td>
+      <td>
+        62
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        62
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/stages/OsmosReduxPrimaryStage.scala.html">
+          OsmosReduxPrimaryStage
+        </a>
+      </td>
+      <td>
+        OsmosReduxPrimaryStage.scala
+      </td>
+      <td>
+        22
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/mvc/view/stages/OsmosReduxPrimaryStage.scala.html">
+          OsmosReduxPrimaryStage.OsmosReduxPrimaryStageImpl
+        </a>
+      </td>
+      <td>
+        OsmosReduxPrimaryStage.scala
+      </td>
+      <td>
+        56
+      </td>
+      <td>
+        6
+      </td>
+      <td>
+        33
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/utils/Constants.scala.html">
+          Constants.Engine
+        </a>
+      </td>
+      <td>
+        Constants.scala
+      </td>
+      <td>
+        16
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/utils/Constants.scala.html">
+          Constants.General
+        </a>
+      </td>
+      <td>
+        Constants.scala
+      </td>
+      <td>
+        9
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/utils/Constants.scala.html">
+          Constants.MultiPlayer
+        </a>
+      </td>
+      <td>
+        Constants.scala
+      </td>
+      <td>
+        26
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        7
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 0%"></span>
+        </div>
+      </td>
+      <td>
+        0.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/utils/Constants.scala.html">
+          Constants.ResourcesPaths
+        </a>
+      </td>
+      <td>
+        Constants.scala
+      </td>
+      <td>
+        48
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        16
+      </td>
+      <td>
+        16
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/utils/Constants.scala.html">
+          Constants.Sentient
+        </a>
+      </td>
+      <td>
+        Constants.scala
+      </td>
+      <td>
+        37
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        7
+      </td>
+      <td>
+        7
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/utils/Constants.scala.html">
+          Constants.UserHomePaths
+        </a>
+      </td>
+      <td>
+        Constants.scala
+      </td>
+      <td>
+        60
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        18
+      </td>
+      <td>
+        18
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/utils/InputEventQueue.scala.html">
+          InputEventQueue
+        </a>
+      </td>
+      <td>
+        InputEventQueue.scala
+      </td>
+      <td>
+        33
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        10
+      </td>
+      <td>
+        10
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/utils/Logger.scala.html">
+          Logger
+        </a>
+      </td>
+      <td>
+        Logger.scala
+      </td>
+      <td>
+        11
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        13
+      </td>
+      <td>
+        11
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 85%"></span>
+        </div>
+      </td>
+      <td>
+        84.62
+        %
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        1
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 50%"></span>
+        </div>
+      </td>
+      <td>
+        50.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/utils/MathUtils.scala.html">
+          MathUtils
+        </a>
+      </td>
+      <td>
+        MathUtils.scala
+      </td>
+      <td>
+        78
+      </td>
+      <td>
+        7
+      </td>
+      <td>
+        28
+      </td>
+      <td>
+        26
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 93%"></span>
+        </div>
+      </td>
+      <td>
+        92.86
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/utils/Point.scala.html">
+          Point
+        </a>
+      </td>
+      <td>
+        Point.scala
+      </td>
+      <td>
+        42
+      </td>
+      <td>
+        3
+      </td>
+      <td>
+        16
+      </td>
+      <td>
+        16
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        0
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr><tr>
+      <td>
+        <a href="src/main/scala/it/unibo/osmos/redux/utils/Vector.scala.html">
+          Vector
+        </a>
+      </td>
+      <td>
+        Vector.scala
+      </td>
+      <td>
+        110
+      </td>
+      <td>
+        11
+      </td>
+      <td>
+        54
+      </td>
+      <td>
+        49
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 91%"></span>
+        </div>
+      </td>
+      <td>
+        90.74
+        %
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        <div class="meter">
+          <span style="width: 100%"></span>
+        </div>
+      </td>
+      <td>
+        100.00
+        %
+      </td>
+    </tr>
+      </tbody>
+    </table>
+        </div>
+      </div>
+    </body>
+    </html>

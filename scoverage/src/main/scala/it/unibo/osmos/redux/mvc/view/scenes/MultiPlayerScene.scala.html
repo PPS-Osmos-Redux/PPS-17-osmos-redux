@@ -1,0 +1,2836 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/scenes/MultiPlayerScene.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.scenes
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.multiplayer.common.NetworkUtils
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo
+</span>5 <span style=''>import it.unibo.osmos.redux.mvc.view.components.custom._
+</span>6 <span style=''>import it.unibo.osmos.redux.mvc.view.components.multiplayer.User
+</span>7 <span style=''>import it.unibo.osmos.redux.mvc.view.context.LobbyContext
+</span>8 <span style=''>import it.unibo.osmos.redux.utils.GenericResponse
+</span>9 <span style=''>import scalafx.application.Platform
+</span>10 <span style=''>import scalafx.beans.property.{BooleanProperty, IntegerProperty, StringProperty}
+</span>11 <span style=''>import scalafx.geometry.{Insets, Pos}
+</span>12 <span style=''>import scalafx.scene.layout.{BorderPane, HBox, VBox}
+</span>13 <span style=''>import scalafx.stage.Stage
+</span>14 <span style=''>
+</span>15 <span style=''>/** Scene in which the user can create or join a lobby as a server or as a client
+</span>16 <span style=''>  *
+</span>17 <span style=''>  * @param parentStage        the parent stage
+</span>18 <span style=''>  * @param listener           the MultiPlayerSceneListener
+</span>19 <span style=''>  * @param upperSceneListener the BackClickListener
+</span>20 <span style=''>  */
+</span>21 <span style=''>class MultiPlayerScene(override val parentStage: Stage, val listener: MultiPlayerSceneListener, val upperSceneListener: BackClickListener)
+</span>22 <span style=''>  extends DefaultBackScene(parentStage, upperSceneListener) {
+</span>23 <span style=''>
+</span>24 <span style=''>  /** Username */
+</span>25 <span style=''>  private val username: StringProperty = </span><span style='background: #F0ADAD'>StringProperty(&quot;&quot;)</span><span style=''>
+</span>26 <span style=''>  private val usernameTextField = </span><span style='background: #F0ADAD'>new TitledTextField(&quot;Username: &quot;, username)</span><span style=''>
+</span>27 <span style=''>  //label.setMinWidth(Region.USE_PREF_SIZE)
+</span>28 <span style=''>
+</span>29 <span style=''>  /** Server address */
+</span>30 <span style=''>  private val addressTitle: StringProperty = </span><span style='background: #F0ADAD'>StringProperty(&quot;Server address: &quot;)</span><span style=''>
+</span>31 <span style=''>  private val addressValue: StringProperty = </span><span style='background: #F0ADAD'>StringProperty(&quot;&quot;)</span><span style=''>
+</span>32 <span style=''>  private val addressTextField = </span><span style='background: #F0ADAD'>new TitledTextField(addressTitle, addressValue)</span><span style=''>
+</span>33 <span style=''>
+</span>34 <span style=''>  /** Server port */
+</span>35 <span style=''>  private val portTitle: StringProperty = </span><span style='background: #F0ADAD'>StringProperty(&quot;Server port: &quot;)</span><span style=''>
+</span>36 <span style=''>  private val portValue: IntegerProperty = </span><span style='background: #F0ADAD'>IntegerProperty(0)</span><span style=''>
+</span>37 <span style=''>  private val portTextField = </span><span style='background: #F0ADAD'>new</span><span style=''> TitledIntegerField(portTitle, portValue) {
+</span>38 <span style=''>    </span><span style='background: #F0ADAD'>minValue = 0</span><span style=''>
+</span>39 <span style=''>    </span><span style='background: #F0ADAD'>maxValue = 65535</span><span style=''>
+</span>40 <span style=''>  }
+</span>41 <span style=''>
+</span>42 <span style=''>  private val startButtonText: StringProperty = </span><span style='background: #F0ADAD'>StringProperty(&quot;Go to lobby&quot;)</span><span style=''>
+</span>43 <span style=''>
+</span>44 <span style=''>  /** Mode selection, client by default */
+</span>45 <span style=''>  private val mode: BooleanProperty = </span><span style='background: #F0ADAD'>BooleanProperty(false)</span><span style=''>
+</span>46 <span style=''>  private val modeComboBox = </span><span style='background: #F0ADAD'>new TitledComboBox[String](&quot;Mode: &quot;, Seq(&quot;Client&quot;, &quot;Server&quot;), {
+</span>47 <span style=''></span><span style='background: #F0ADAD'>    case &quot;Client&quot; =&gt;
+</span>48 <span style=''></span><span style='background: #F0ADAD'>      mode.value = false
+</span>49 <span style=''></span><span style='background: #F0ADAD'>      addressTitle.setValue(&quot;Server address:&quot;)
+</span>50 <span style=''></span><span style='background: #F0ADAD'>      portTitle.setValue(&quot;Server port:&quot;)
+</span>51 <span style=''></span><span style='background: #F0ADAD'>      if (addressValue.getValue.equals(NetworkUtils.getLocalIPAddress)) addressValue.setValue(&quot;&quot;)
+</span>52 <span style=''></span><span style='background: #F0ADAD'>      portTextField.innerNode.setText(&quot;0&quot;)
+</span>53 <span style=''></span><span style='background: #F0ADAD'>      portTextField.root.visible = true
+</span>54 <span style=''></span><span style='background: #F0ADAD'>      startButtonText.setValue(&quot;Go to lobby&quot;)
+</span>55 <span style=''></span><span style='background: #F0ADAD'>    case &quot;Server&quot; =&gt;
+</span>56 <span style=''></span><span style='background: #F0ADAD'>      mode.value = true
+</span>57 <span style=''></span><span style='background: #F0ADAD'>      addressTitle.setValue(&quot;Address:&quot;)
+</span>58 <span style=''></span><span style='background: #F0ADAD'>      startButtonText.setValue(&quot;Select level&quot;)
+</span>59 <span style=''></span><span style='background: #F0ADAD'>      if (addressValue.isEmpty.get()) addressValue.setValue(NetworkUtils.getLocalIPAddress)
+</span>60 <span style=''></span><span style='background: #F0ADAD'>      portTextField.root.visible = false
+</span>61 <span style=''></span><span style='background: #F0ADAD'>  }, vertical = false)</span><span style=''>
+</span>62 <span style=''>  private val proceedToNextScene = </span><span style='background: #F0ADAD'>new</span><span style=''> StyledButton(&quot;Go To Lobby&quot;) {
+</span>63 <span style=''>    </span><span style='background: #F0ADAD'>text &lt;== startButtonText</span><span style=''>
+</span>64 <span style=''>    </span><span style='background: #F0ADAD'>onAction = _ =&gt; if (username.value.isEmpty) {
+</span>65 <span style=''></span><span style='background: #F0ADAD'>      /** Checking if the user name is empty */
+</span>66 <span style=''></span><span style='background: #F0ADAD'>      AlertFactory.createErrorAlert(&quot;Error&quot;, &quot;Your username cannot be empty&quot;).showAndWait()
+</span>67 <span style=''></span><span style='background: #F0ADAD'>    } else if (!NetworkUtils.validateIPV4Address(addressValue.value)) {
+</span>68 <span style=''></span><span style='background: #F0ADAD'>      /** Checking if the specified address is invalid */
+</span>69 <span style=''></span><span style='background: #F0ADAD'>      AlertFactory.createErrorAlert(&quot;Error&quot;, &quot;The declared address is invalid.&quot;).showAndWait()
+</span>70 <span style=''></span><span style='background: #F0ADAD'>    } else {
+</span>71 <span style=''></span><span style='background: #F0ADAD'>      /** We create the User */
+</span>72 <span style=''></span><span style='background: #F0ADAD'>      val user = User(username.value, addressValue.value, portValue.value, isServer = mode.value)
+</span>73 <span style=''></span><span style='background: #F0ADAD'>
+</span>74 <span style=''></span><span style='background: #F0ADAD'>      if (mode.value) {
+</span>75 <span style=''></span><span style='background: #F0ADAD'>        /** If we are the server, we must choose the level first. We ask for the lobby when the level is chosen */
+</span>76 <span style=''></span><span style='background: #F0ADAD'>        parentStage.scene = new MultiPlayerLevelSelectionScene(parentStage, listener, levelInfo =&gt; goToLobby(user, Option(levelInfo)), user, () =&gt; parentStage.scene = MultiPlayerScene.this)
+</span>77 <span style=''></span><span style='background: #F0ADAD'>      } else {
+</span>78 <span style=''></span><span style='background: #F0ADAD'>        /** If we are the client */
+</span>79 <span style=''></span><span style='background: #F0ADAD'>        goToLobby(user, Option.empty)
+</span>80 <span style=''></span><span style='background: #F0ADAD'>      }
+</span>81 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
+</span>82 <span style=''>  }
+</span>83 <span style=''>  private val container: VBox = </span><span style='background: #F0ADAD'>new</span><span style=''> VBox(5.0) {
+</span>84 <span style=''>
+</span>85 <span style=''>    </span><span style='background: #F0ADAD'>maxWidth &lt;== parentStage.width / 4</span><span style=''>
+</span>86 <span style=''>    </span><span style='background: #F0ADAD'>maxHeight &lt;== parentStage.height / 4</span><span style=''>
+</span>87 <span style=''>
+</span>88 <span style=''>    </span><span style='background: #F0ADAD'>alignment = Pos.Center</span><span style=''>
+</span>89 <span style=''>
+</span>90 <span style=''>    val childrenRoots = </span><span style='background: #F0ADAD'>Seq(usernameTextField.root, modeComboBox.root, addressTextField.root, portTextField.root)</span><span style=''>
+</span>91 <span style=''>    /* add to all labels the style, so that they have the same indentation */
+</span>92 <span style=''>    </span><span style='background: #F0ADAD'>childrenRoots.foreach(e =&gt; e.children.get(0).getStyleClass.add(&quot;multi-player-scene-label-style&quot;))</span><span style=''>
+</span>93 <span style=''>    </span><span style='background: #F0ADAD'>children = childrenRoots</span><span style=''>
+</span>94 <span style=''>
+</span>95 <span style=''>    </span><span style='background: #F0ADAD'>styleClass.add(&quot;default-font-size&quot;)</span><span style=''>
+</span>96 <span style=''>  }
+</span>97 <span style=''>  /** Requesting a structured layout */
+</span>98 <span style=''>  private val rootLayout: BorderPane = </span><span style='background: #F0ADAD'>new</span><span style=''> BorderPane {
+</span>99 <span style=''>    </span><span style='background: #F0ADAD'>padding = Insets(130)</span><span style=''>
+</span>100 <span style=''>    </span><span style='background: #F0ADAD'>alignmentInParent = Pos.Center</span><span style=''>
+</span>101 <span style=''>    /** Setting the upper MenuBar */
+</span>102 <span style=''>    </span><span style='background: #F0ADAD'>center = container</span><span style=''>
+</span>103 <span style=''>    </span><span style='background: #F0ADAD'>bottom = new HBox(30.0, goBack, proceedToNextScene) {
+</span>104 <span style=''></span><span style='background: #F0ADAD'>      alignment = Pos.Center
+</span>105 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
+</span>106 <span style=''>  }
+</span>107 <span style=''>
+</span>108 <span style=''>  /** This method sends a request to enter the lobby
+</span>109 <span style=''>    *
+</span>110 <span style=''>    * @param user      the user
+</span>111 <span style=''>    * @param levelInfo the level info, which may be not present if the user is a client
+</span>112 <span style=''>    */
+</span>113 <span style=''>  private def goToLobby(user: User, levelInfo: Option[LevelInfo]): Unit = {
+</span>114 <span style=''>    /** We create the lobby context */
+</span>115 <span style=''>    val lobbyContext = </span><span style='background: #F0ADAD'>LobbyContext()</span><span style=''>
+</span>116 <span style=''>
+</span>117 <span style=''>    /** We ask to enter in the lobby */
+</span>118 <span style=''>    </span><span style='background: #F0ADAD'>listener.onLobbyRequest(user, levelInfo, lobbyContext, onLobbyEnterResult)</span><span style=''>
+</span>119 <span style=''>  }
+</span>120 <span style=''>
+</span>121 <span style=''>  /** Result parsing function.
+</span>122 <span style=''>    *
+</span>123 <span style=''>    * @return a function which will send the user to the MultiPlayerLobbyScene if the result is true, showing an error otherwise
+</span>124 <span style=''>    */
+</span>125 <span style=''>  private def onLobbyEnterResult: (User, Option[LevelInfo], LobbyContext, GenericResponse[Boolean]) =&gt; Unit = (user, levelInfo, lobbyContext, result) =&gt; {
+</span>126 <span style=''>    </span><span style='background: #F0ADAD'>Platform.runLater({
+</span>127 <span style=''></span><span style='background: #F0ADAD'>      result match {
+</span>128 <span style=''></span><span style='background: #F0ADAD'>        case GenericResponse(true, _) =&gt;
+</span>129 <span style=''></span><span style='background: #F0ADAD'>
+</span>130 <span style=''></span><span style='background: #F0ADAD'>          /** If the lobby was successfully created, we link the resulting lobby context and go to the next scene */
+</span>131 <span style=''></span><span style='background: #F0ADAD'>          val multiPlayerLobbyScene = new MultiPlayerLobbyScene(parentStage, listener, () =&gt; parentStage.scene = MultiPlayerScene.this, user)
+</span>132 <span style=''></span><span style='background: #F0ADAD'>
+</span>133 <span style=''></span><span style='background: #F0ADAD'>          /** We link the lobby context */
+</span>134 <span style=''></span><span style='background: #F0ADAD'>          multiPlayerLobbyScene.lobbyContext_=(lobbyContext)
+</span>135 <span style=''></span><span style='background: #F0ADAD'>
+</span>136 <span style=''></span><span style='background: #F0ADAD'>          /** We link the level info */
+</span>137 <span style=''></span><span style='background: #F0ADAD'>          multiPlayerLobbyScene.levelInfo_=(levelInfo)
+</span>138 <span style=''></span><span style='background: #F0ADAD'>
+</span>139 <span style=''></span><span style='background: #F0ADAD'>          /** We go to the next scene */
+</span>140 <span style=''></span><span style='background: #F0ADAD'>          parentStage.scene = multiPlayerLobbyScene
+</span>141 <span style=''></span><span style='background: #F0ADAD'>        case GenericResponse(false, _) =&gt;
+</span>142 <span style=''></span><span style='background: #F0ADAD'>          val message = &quot;Can't connect to the server: &quot; +
+</span>143 <span style=''></span><span style='background: #F0ADAD'>            &quot;\n- check that the inserted address is correct&quot; +
+</span>144 <span style=''></span><span style='background: #F0ADAD'>            &quot;\n- check your connection&quot;
+</span>145 <span style=''></span><span style='background: #F0ADAD'>
+</span>146 <span style=''></span><span style='background: #F0ADAD'>          /** If an error occurred */
+</span>147 <span style=''></span><span style='background: #F0ADAD'>          AlertFactory.createErrorAlert(&quot;Error&quot;, message).showAndWait()
+</span>148 <span style=''></span><span style='background: #F0ADAD'>      }
+</span>149 <span style=''></span><span style='background: #F0ADAD'>    })</span><span style=''>
+</span>150 <span style=''>  }
+</span>151 <span style=''>
+</span>152 <span style=''>  /** Enabling the layout */
+</span>153 <span style=''>  </span><span style='background: #F0ADAD'>root = rootLayout</span><span style=''>
+</span>154 <span style=''>
+</span>155 <span style=''>}
+</span>156 <span style=''>
+</span>157 <span style=''>/** Trait used by MultiPlayerScene to notify events which need to be managed by the View */
+</span>158 <span style=''>trait MultiPlayerSceneListener extends MultiPlayerLobbySceneListener with MultiPlayerLevelSelectionSceneListener {
+</span>159 <span style=''>
+</span>160 <span style=''>  /** Called when the user wants to go to the lobby
+</span>161 <span style=''>    *
+</span>162 <span style=''>    * @param user         the user requesting to enter the lobby
+</span>163 <span style=''>    * @param levelInfo    the chosen level
+</span>164 <span style=''>    * @param lobbyContext the lobby context, which may be used by the server to configure existing lobby users
+</span>165 <span style=''>    * @param callback     the callback
+</span>166 <span style=''>    */
+</span>167 <span style=''>  def onLobbyRequest(user: User, levelInfo: Option[LevelInfo], lobbyContext: LobbyContext, callback: (User, Option[LevelInfo], LobbyContext, GenericResponse[Boolean]) =&gt; Unit)
+</span>168 <span style=''>
+</span>169 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          5147
+        </td>
+        <td>
+          1152
+          -
+          1170
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.StringProperty.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.beans.property.StringProperty.apply(&quot;&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          5149
+        </td>
+        <td>
+          1239
+          -
+          1247
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerScene.username
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.username
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          5148
+        </td>
+        <td>
+          1225
+          -
+          1237
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;Username: &quot;
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          5150
+        </td>
+        <td>
+          1205
+          -
+          1248
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledTextField.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.components.custom.TitledTextField(&quot;Username: &quot;, MultiPlayerScene.this.username)
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          5151
+        </td>
+        <td>
+          1363
+          -
+          1397
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.StringProperty.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.beans.property.StringProperty.apply(&quot;Server address: &quot;)
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          5152
+        </td>
+        <td>
+          1443
+          -
+          1461
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.StringProperty.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.beans.property.StringProperty.apply(&quot;&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          5155
+        </td>
+        <td>
+          1495
+          -
+          1542
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledTextField.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.components.custom.TitledTextField(MultiPlayerScene.this.addressTitle, MultiPlayerScene.this.addressValue)
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          5154
+        </td>
+        <td>
+          1529
+          -
+          1541
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerScene.addressValue
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.addressValue
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          5153
+        </td>
+        <td>
+          1515
+          -
+          1527
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerScene.addressTitle
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.addressTitle
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          5156
+        </td>
+        <td>
+          1607
+          -
+          1638
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.StringProperty.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.beans.property.StringProperty.apply(&quot;Server port: &quot;)
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          5157
+        </td>
+        <td>
+          1682
+          -
+          1700
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.IntegerProperty.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.beans.property.IntegerProperty.apply(0)
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          5160
+        </td>
+        <td>
+          1731
+          -
+          1734
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerScene.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          5158
+        </td>
+        <td>
+          1782
+          -
+          1794
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledIntegerField.minValue_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.minValue_=(0)
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          5159
+        </td>
+        <td>
+          1799
+          -
+          1815
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledIntegerField.maxValue_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.maxValue_=(65535)
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          5161
+        </td>
+        <td>
+          1869
+          -
+          1898
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.StringProperty.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.beans.property.StringProperty.apply(&quot;Go to lobby&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          5162
+        </td>
+        <td>
+          1981
+          -
+          2003
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.BooleanProperty.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.beans.property.BooleanProperty.apply(false)
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          5164
+        </td>
+        <td>
+          2070
+          -
+          2093
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.Seq.apply[String](&quot;Client&quot;, &quot;Server&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          5190
+        </td>
+        <td>
+          2033
+          -
+          2745
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledComboBox.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.components.custom.TitledComboBox[String](&quot;Mode: &quot;, scala.collection.Seq.apply[String](&quot;Client&quot;, &quot;Server&quot;), ((x0$1: String) =&gt; x0$1 match {
+  case &quot;Client&quot; =&gt; {
+    MultiPlayerScene.this.mode.value_=(false);
+    property.this.StringProperty.sfxStringProperty2jfx(MultiPlayerScene.this.addressTitle).setValue(&quot;Server address:&quot;);
+    property.this.StringProperty.sfxStringProperty2jfx(MultiPlayerScene.this.portTitle).setValue(&quot;Server port:&quot;);
+    if (property.this.StringProperty.sfxStringProperty2jfx(MultiPlayerScene.this.addressValue).getValue().equals(it.unibo.osmos.redux.multiplayer.common.NetworkUtils.getLocalIPAddress))
+      property.this.StringProperty.sfxStringProperty2jfx(MultiPlayerScene.this.addressValue).setValue(&quot;&quot;)
+    else
+      ();
+    control.this.TextField.sfxTextField2jfx(MultiPlayerScene.this.portTextField.innerNode).setText(&quot;0&quot;);
+    MultiPlayerScene.this.portTextField.root.visible_=(true);
+    property.this.StringProperty.sfxStringProperty2jfx(MultiPlayerScene.this.startButtonText).setValue(&quot;Go to lobby&quot;)
+  }
+  case &quot;Server&quot; =&gt; {
+    MultiPlayerScene.this.mode.value_=(true);
+    property.this.StringProperty.sfxStringProperty2jfx(MultiPlayerScene.this.addressTitle).setValue(&quot;Address:&quot;);
+    property.this.StringProperty.sfxStringProperty2jfx(MultiPlayerScene.this.startButtonText).setValue(&quot;Select level&quot;);
+    if (property.this.StringProperty.sfxStringProperty2jfx(MultiPlayerScene.this.addressValue).isEmpty().get())
+      property.this.StringProperty.sfxStringProperty2jfx(MultiPlayerScene.this.addressValue).setValue(it.unibo.osmos.redux.multiplayer.common.NetworkUtils.getLocalIPAddress)
+    else
+      ();
+    MultiPlayerScene.this.portTextField.root.visible_=(false)
+  }
+}), false)
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          5163
+        </td>
+        <td>
+          2060
+          -
+          2068
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;Mode: &quot;
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          5165
+        </td>
+        <td>
+          2124
+          -
+          2142
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.BooleanProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.mode.value_=(false)
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          5166
+        </td>
+        <td>
+          2149
+          -
+          2189
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.beans.property.StringProperty.setValue
+        </td>
+        <td style="background: #F0ADAD">
+          property.this.StringProperty.sfxStringProperty2jfx(MultiPlayerScene.this.addressTitle).setValue(&quot;Server address:&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          5167
+        </td>
+        <td>
+          2196
+          -
+          2230
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.beans.property.StringProperty.setValue
+        </td>
+        <td style="background: #F0ADAD">
+          property.this.StringProperty.sfxStringProperty2jfx(MultiPlayerScene.this.portTitle).setValue(&quot;Server port:&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          5173
+        </td>
+        <td>
+          2237
+          -
+          2237
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          5170
+        </td>
+        <td>
+          2241
+          -
+          2301
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.equals
+        </td>
+        <td style="background: #F0ADAD">
+          property.this.StringProperty.sfxStringProperty2jfx(MultiPlayerScene.this.addressValue).getValue().equals(it.unibo.osmos.redux.multiplayer.common.NetworkUtils.getLocalIPAddress)
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          5169
+        </td>
+        <td>
+          2270
+          -
+          2300
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.common.NetworkUtils.getLocalIPAddress
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.multiplayer.common.NetworkUtils.getLocalIPAddress
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          5172
+        </td>
+        <td>
+          2303
+          -
+          2328
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          javafx.beans.property.StringProperty.setValue
+        </td>
+        <td style="background: #F0ADAD">
+          property.this.StringProperty.sfxStringProperty2jfx(MultiPlayerScene.this.addressValue).setValue(&quot;&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          5174
+        </td>
+        <td>
+          2237
+          -
+          2237
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          5168
+        </td>
+        <td>
+          2241
+          -
+          2253
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerScene.addressValue
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.addressValue
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          5171
+        </td>
+        <td>
+          2303
+          -
+          2328
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.beans.property.StringProperty.setValue
+        </td>
+        <td style="background: #F0ADAD">
+          property.this.StringProperty.sfxStringProperty2jfx(MultiPlayerScene.this.addressValue).setValue(&quot;&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          5175
+        </td>
+        <td>
+          2335
+          -
+          2371
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.control.TextInputControl.setText
+        </td>
+        <td style="background: #F0ADAD">
+          control.this.TextField.sfxTextField2jfx(MultiPlayerScene.this.portTextField.innerNode).setText(&quot;0&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          5176
+        </td>
+        <td>
+          2378
+          -
+          2411
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.visible_=
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.portTextField.root.visible_=(true)
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          5177
+        </td>
+        <td>
+          2418
+          -
+          2457
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.beans.property.StringProperty.setValue
+        </td>
+        <td style="background: #F0ADAD">
+          property.this.StringProperty.sfxStringProperty2jfx(MultiPlayerScene.this.startButtonText).setValue(&quot;Go to lobby&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          5178
+        </td>
+        <td>
+          2485
+          -
+          2502
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.BooleanProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.mode.value_=(true)
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          5179
+        </td>
+        <td>
+          2509
+          -
+          2542
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.beans.property.StringProperty.setValue
+        </td>
+        <td style="background: #F0ADAD">
+          property.this.StringProperty.sfxStringProperty2jfx(MultiPlayerScene.this.addressTitle).setValue(&quot;Address:&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          5180
+        </td>
+        <td>
+          2549
+          -
+          2589
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.beans.property.StringProperty.setValue
+        </td>
+        <td style="background: #F0ADAD">
+          property.this.StringProperty.sfxStringProperty2jfx(MultiPlayerScene.this.startButtonText).setValue(&quot;Select level&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          5182
+        </td>
+        <td>
+          2628
+          -
+          2640
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerScene.addressValue
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.addressValue
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          5185
+        </td>
+        <td>
+          2628
+          -
+          2681
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          javafx.beans.property.StringProperty.setValue
+        </td>
+        <td style="background: #F0ADAD">
+          property.this.StringProperty.sfxStringProperty2jfx(MultiPlayerScene.this.addressValue).setValue(it.unibo.osmos.redux.multiplayer.common.NetworkUtils.getLocalIPAddress)
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          5187
+        </td>
+        <td>
+          2596
+          -
+          2596
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          5181
+        </td>
+        <td>
+          2600
+          -
+          2626
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.beans.binding.BooleanBinding.get
+        </td>
+        <td style="background: #F0ADAD">
+          property.this.StringProperty.sfxStringProperty2jfx(MultiPlayerScene.this.addressValue).isEmpty().get()
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          5184
+        </td>
+        <td>
+          2628
+          -
+          2681
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.beans.property.StringProperty.setValue
+        </td>
+        <td style="background: #F0ADAD">
+          property.this.StringProperty.sfxStringProperty2jfx(MultiPlayerScene.this.addressValue).setValue(it.unibo.osmos.redux.multiplayer.common.NetworkUtils.getLocalIPAddress)
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          5183
+        </td>
+        <td>
+          2650
+          -
+          2680
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.common.NetworkUtils.getLocalIPAddress
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.multiplayer.common.NetworkUtils.getLocalIPAddress
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          5186
+        </td>
+        <td>
+          2596
+          -
+          2596
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          5188
+        </td>
+        <td>
+          2688
+          -
+          2722
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.visible_=
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.portTextField.root.visible_=(false)
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          5189
+        </td>
+        <td>
+          2739
+          -
+          2744
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          false
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          5222
+        </td>
+        <td>
+          2781
+          -
+          2784
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerScene.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          5191
+        </td>
+        <td>
+          2828
+          -
+          2843
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerScene.startButtonText
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.startButtonText
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          5192
+        </td>
+        <td>
+          2819
+          -
+          2843
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.text.&lt;==(MultiPlayerScene.this.startButtonText)
+        </td>
+      </tr><tr>
+        <td>
+          64
+        </td>
+        <td>
+          5221
+        </td>
+        <td>
+          2848
+          -
+          3834
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.ButtonBase.onAction_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.onAction_=(((x$1: javafx.event.ActionEvent) =&gt; if (MultiPlayerScene.this.username.value.isEmpty())
+  {
+    it.unibo.osmos.redux.mvc.view.components.custom.AlertFactory.createErrorAlert(&quot;Error&quot;, &quot;Your username cannot be empty&quot;).showAndWait();
+    ()
+  }
+else
+  if (it.unibo.osmos.redux.multiplayer.common.NetworkUtils.validateIPV4Address(MultiPlayerScene.this.addressValue.value).unary_!)
+    {
+      it.unibo.osmos.redux.mvc.view.components.custom.AlertFactory.createErrorAlert(&quot;Error&quot;, &quot;The declared address is invalid.&quot;).showAndWait();
+      ()
+    }
+  else
+    {
+      val user: it.unibo.osmos.redux.mvc.view.components.multiplayer.User = it.unibo.osmos.redux.mvc.view.components.multiplayer.User.apply(MultiPlayerScene.this.username.value, MultiPlayerScene.this.addressValue.value, MultiPlayerScene.this.portValue.value, MultiPlayerScene.this.mode.value);
+      if (MultiPlayerScene.this.mode.value)
+        MultiPlayerScene.this.parentStage.scene_=(new MultiPlayerLevelSelectionScene(MultiPlayerScene.this.parentStage, MultiPlayerScene.this.listener, ((levelInfo: it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo) =&gt; MultiPlayerScene.this.goToLobby(user, scala.Option.apply[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo](levelInfo))), user, (() =&gt; MultiPlayerScene.this.parentStage.scene_=(MultiPlayerScene.this))))
+      else
+        MultiPlayerScene.this.goToLobby(user, scala.Option.empty[Nothing])
+    }))
+        </td>
+      </tr><tr>
+        <td>
+          64
+        </td>
+        <td>
+          5193
+        </td>
+        <td>
+          2868
+          -
+          2890
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.isEmpty
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.username.value.isEmpty()
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          5194
+        </td>
+        <td>
+          2948
+          -
+          3033
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.Alert.showAndWait
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.components.custom.AlertFactory.createErrorAlert(&quot;Error&quot;, &quot;Your username cannot be empty&quot;).showAndWait()
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          5196
+        </td>
+        <td>
+          2948
+          -
+          3033
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          {
+  it.unibo.osmos.redux.mvc.view.components.custom.AlertFactory.createErrorAlert(&quot;Error&quot;, &quot;Your username cannot be empty&quot;).showAndWait();
+  ()
+}
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          5195
+        </td>
+        <td>
+          3031
+          -
+          3031
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          67
+        </td>
+        <td>
+          5197
+        </td>
+        <td>
+          3083
+          -
+          3101
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyStringProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.addressValue.value
+        </td>
+      </tr><tr>
+        <td>
+          67
+        </td>
+        <td>
+          5220
+        </td>
+        <td>
+          3045
+          -
+          3834
+        </td>
+        <td>
+          If
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          if (it.unibo.osmos.redux.multiplayer.common.NetworkUtils.validateIPV4Address(MultiPlayerScene.this.addressValue.value).unary_!)
+  {
+    it.unibo.osmos.redux.mvc.view.components.custom.AlertFactory.createErrorAlert(&quot;Error&quot;, &quot;The declared address is invalid.&quot;).showAndWait();
+    ()
+  }
+else
+  {
+    val user: it.unibo.osmos.redux.mvc.view.components.multiplayer.User = it.unibo.osmos.redux.mvc.view.components.multiplayer.User.apply(MultiPlayerScene.this.username.value, MultiPlayerScene.this.addressValue.value, MultiPlayerScene.this.portValue.value, MultiPlayerScene.this.mode.value);
+    if (MultiPlayerScene.this.mode.value)
+      MultiPlayerScene.this.parentStage.scene_=(new MultiPlayerLevelSelectionScene(MultiPlayerScene.this.parentStage, MultiPlayerScene.this.listener, ((levelInfo: it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo) =&gt; MultiPlayerScene.this.goToLobby(user, scala.Option.apply[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo](levelInfo))), user, (() =&gt; MultiPlayerScene.this.parentStage.scene_=(MultiPlayerScene.this))))
+    else
+      MultiPlayerScene.this.goToLobby(user, scala.Option.empty[Nothing])
+  }
+        </td>
+      </tr><tr>
+        <td>
+          67
+        </td>
+        <td>
+          5198
+        </td>
+        <td>
+          3049
+          -
+          3102
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.multiplayer.common.NetworkUtils.validateIPV4Address(MultiPlayerScene.this.addressValue.value).unary_!
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          5200
+        </td>
+        <td>
+          3256
+          -
+          3256
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          5199
+        </td>
+        <td>
+          3170
+          -
+          3258
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.Alert.showAndWait
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.components.custom.AlertFactory.createErrorAlert(&quot;Error&quot;, &quot;The declared address is invalid.&quot;).showAndWait()
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          5201
+        </td>
+        <td>
+          3170
+          -
+          3258
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          {
+  it.unibo.osmos.redux.mvc.view.components.custom.AlertFactory.createErrorAlert(&quot;Error&quot;, &quot;The declared address is invalid.&quot;).showAndWait();
+  ()
+}
+        </td>
+      </tr><tr>
+        <td>
+          70
+        </td>
+        <td>
+          5219
+        </td>
+        <td>
+          3270
+          -
+          3834
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          {
+  val user: it.unibo.osmos.redux.mvc.view.components.multiplayer.User = it.unibo.osmos.redux.mvc.view.components.multiplayer.User.apply(MultiPlayerScene.this.username.value, MultiPlayerScene.this.addressValue.value, MultiPlayerScene.this.portValue.value, MultiPlayerScene.this.mode.value);
+  if (MultiPlayerScene.this.mode.value)
+    MultiPlayerScene.this.parentStage.scene_=(new MultiPlayerLevelSelectionScene(MultiPlayerScene.this.parentStage, MultiPlayerScene.this.listener, ((levelInfo: it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo) =&gt; MultiPlayerScene.this.goToLobby(user, scala.Option.apply[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo](levelInfo))), user, (() =&gt; MultiPlayerScene.this.parentStage.scene_=(MultiPlayerScene.this))))
+  else
+    MultiPlayerScene.this.goToLobby(user, scala.Option.empty[Nothing])
+}
+        </td>
+      </tr><tr>
+        <td>
+          72
+        </td>
+        <td>
+          5206
+        </td>
+        <td>
+          3321
+          -
+          3401
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.multiplayer.User.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.components.multiplayer.User.apply(MultiPlayerScene.this.username.value, MultiPlayerScene.this.addressValue.value, MultiPlayerScene.this.portValue.value, MultiPlayerScene.this.mode.value)
+        </td>
+      </tr><tr>
+        <td>
+          72
+        </td>
+        <td>
+          5203
+        </td>
+        <td>
+          3342
+          -
+          3360
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyStringProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.addressValue.value
+        </td>
+      </tr><tr>
+        <td>
+          72
+        </td>
+        <td>
+          5202
+        </td>
+        <td>
+          3326
+          -
+          3340
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyStringProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.username.value
+        </td>
+      </tr><tr>
+        <td>
+          72
+        </td>
+        <td>
+          5205
+        </td>
+        <td>
+          3390
+          -
+          3400
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyBooleanProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.mode.value
+        </td>
+      </tr><tr>
+        <td>
+          72
+        </td>
+        <td>
+          5204
+        </td>
+        <td>
+          3362
+          -
+          3377
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyIntegerProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.portValue.value
+        </td>
+      </tr><tr>
+        <td>
+          74
+        </td>
+        <td>
+          5207
+        </td>
+        <td>
+          3413
+          -
+          3423
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyBooleanProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.mode.value
+        </td>
+      </tr><tr>
+        <td>
+          76
+        </td>
+        <td>
+          5215
+        </td>
+        <td>
+          3550
+          -
+          3731
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          scalafx.stage.Stage.scene_=
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.parentStage.scene_=(new MultiPlayerLevelSelectionScene(MultiPlayerScene.this.parentStage, MultiPlayerScene.this.listener, ((levelInfo: it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo) =&gt; MultiPlayerScene.this.goToLobby(user, scala.Option.apply[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo](levelInfo))), user, (() =&gt; MultiPlayerScene.this.parentStage.scene_=(MultiPlayerScene.this))))
+        </td>
+      </tr><tr>
+        <td>
+          76
+        </td>
+        <td>
+          5209
+        </td>
+        <td>
+          3618
+          -
+          3626
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerScene.listener
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.listener
+        </td>
+      </tr><tr>
+        <td>
+          76
+        </td>
+        <td>
+          5212
+        </td>
+        <td>
+          3689
+          -
+          3730
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.stage.Stage.scene_=
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.parentStage.scene_=(MultiPlayerScene.this)
+        </td>
+      </tr><tr>
+        <td>
+          76
+        </td>
+        <td>
+          5211
+        </td>
+        <td>
+          3641
+          -
+          3675
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerScene.goToLobby
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.goToLobby(user, scala.Option.apply[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo](levelInfo))
+        </td>
+      </tr><tr>
+        <td>
+          76
+        </td>
+        <td>
+          5214
+        </td>
+        <td>
+          3550
+          -
+          3731
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.stage.Stage.scene_=
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.parentStage.scene_=(new MultiPlayerLevelSelectionScene(MultiPlayerScene.this.parentStage, MultiPlayerScene.this.listener, ((levelInfo: it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo) =&gt; MultiPlayerScene.this.goToLobby(user, scala.Option.apply[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo](levelInfo))), user, (() =&gt; MultiPlayerScene.this.parentStage.scene_=(MultiPlayerScene.this))))
+        </td>
+      </tr><tr>
+        <td>
+          76
+        </td>
+        <td>
+          5208
+        </td>
+        <td>
+          3605
+          -
+          3616
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerScene.parentStage
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.parentStage
+        </td>
+      </tr><tr>
+        <td>
+          76
+        </td>
+        <td>
+          5210
+        </td>
+        <td>
+          3657
+          -
+          3674
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Option.apply[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo](levelInfo)
+        </td>
+      </tr><tr>
+        <td>
+          76
+        </td>
+        <td>
+          5213
+        </td>
+        <td>
+          3570
+          -
+          3731
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerLevelSelectionScene.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new MultiPlayerLevelSelectionScene(MultiPlayerScene.this.parentStage, MultiPlayerScene.this.listener, ((levelInfo: it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo) =&gt; MultiPlayerScene.this.goToLobby(user, scala.Option.apply[it.unibo.osmos.redux.mvc.controller.levels.structure.LevelInfo](levelInfo))), user, (() =&gt; MultiPlayerScene.this.parentStage.scene_=(MultiPlayerScene.this)))
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          5218
+        </td>
+        <td>
+          3791
+          -
+          3820
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerScene.goToLobby
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.goToLobby(user, scala.Option.empty[Nothing])
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          5217
+        </td>
+        <td>
+          3791
+          -
+          3820
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerScene.goToLobby
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.goToLobby(user, scala.Option.empty[Nothing])
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          5216
+        </td>
+        <td>
+          3807
+          -
+          3819
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.Option.empty
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Option.empty[Nothing]
+        </td>
+      </tr><tr>
+        <td>
+          83
+        </td>
+        <td>
+          5241
+        </td>
+        <td>
+          3871
+          -
+          3874
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerScene.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          85
+        </td>
+        <td>
+          5224
+        </td>
+        <td>
+          3905
+          -
+          3926
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.beans.binding.NumberBinding.sfxNumberBinding2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          binding.this.NumberBinding.sfxNumberBinding2jfx(MultiPlayerScene.this.parentStage.width./(4))
+        </td>
+      </tr><tr>
+        <td>
+          85
+        </td>
+        <td>
+          5223
+        </td>
+        <td>
+          3905
+          -
+          3926
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.binding.NumberExpression./
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.parentStage.width./(4)
+        </td>
+      </tr><tr>
+        <td>
+          85
+        </td>
+        <td>
+          5225
+        </td>
+        <td>
+          3892
+          -
+          3926
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.maxWidth.&lt;==(binding.this.NumberBinding.sfxNumberBinding2jfx(MultiPlayerScene.this.parentStage.width./(4)))
+        </td>
+      </tr><tr>
+        <td>
+          86
+        </td>
+        <td>
+          5227
+        </td>
+        <td>
+          3945
+          -
+          3967
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scalafx.beans.binding.NumberBinding.sfxNumberBinding2jfx
+        </td>
+        <td style="background: #F0ADAD">
+          binding.this.NumberBinding.sfxNumberBinding2jfx(MultiPlayerScene.this.parentStage.height./(4))
+        </td>
+      </tr><tr>
+        <td>
+          86
+        </td>
+        <td>
+          5226
+        </td>
+        <td>
+          3945
+          -
+          3967
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.binding.NumberExpression./
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.parentStage.height./(4)
+        </td>
+      </tr><tr>
+        <td>
+          86
+        </td>
+        <td>
+          5228
+        </td>
+        <td>
+          3931
+          -
+          3967
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.maxHeight.&lt;==(binding.this.NumberBinding.sfxNumberBinding2jfx(MultiPlayerScene.this.parentStage.height./(4)))
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          5230
+        </td>
+        <td>
+          3973
+          -
+          3995
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.delegate.AlignmentDelegate.alignment_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.alignment_=(scalafx.geometry.Pos.Center)
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          5229
+        </td>
+        <td>
+          3985
+          -
+          3995
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.geometry.Pos.Center
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.geometry.Pos.Center
+        </td>
+      </tr><tr>
+        <td>
+          90
+        </td>
+        <td>
+          5233
+        </td>
+        <td>
+          4068
+          -
+          4089
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledNode.root
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.addressTextField.root
+        </td>
+      </tr><tr>
+        <td>
+          90
+        </td>
+        <td>
+          5232
+        </td>
+        <td>
+          4049
+          -
+          4066
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledNode.root
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.modeComboBox.root
+        </td>
+      </tr><tr>
+        <td>
+          90
+        </td>
+        <td>
+          5235
+        </td>
+        <td>
+          4021
+          -
+          4110
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.Seq.apply[scalafx.scene.layout.Pane](MultiPlayerScene.this.usernameTextField.root, MultiPlayerScene.this.modeComboBox.root, MultiPlayerScene.this.addressTextField.root, MultiPlayerScene.this.portTextField.root)
+        </td>
+      </tr><tr>
+        <td>
+          90
+        </td>
+        <td>
+          5234
+        </td>
+        <td>
+          4091
+          -
+          4109
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledNode.root
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.portTextField.root
+        </td>
+      </tr><tr>
+        <td>
+          90
+        </td>
+        <td>
+          5231
+        </td>
+        <td>
+          4025
+          -
+          4047
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.custom.TitledNode.root
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.usernameTextField.root
+        </td>
+      </tr><tr>
+        <td>
+          92
+        </td>
+        <td>
+          5236
+        </td>
+        <td>
+          4220
+          -
+          4289
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.util.List.add
+        </td>
+        <td style="background: #F0ADAD">
+          e.children.get(0).getStyleClass().add(&quot;multi-player-scene-label-style&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          92
+        </td>
+        <td>
+          5237
+        </td>
+        <td>
+          4193
+          -
+          4290
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.IterableLike.foreach
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.childrenRoots.foreach[Boolean](((e: scalafx.scene.layout.Pane) =&gt; e.children.get(0).getStyleClass().add(&quot;multi-player-scene-label-style&quot;)))
+        </td>
+      </tr><tr>
+        <td>
+          93
+        </td>
+        <td>
+          5238
+        </td>
+        <td>
+          4306
+          -
+          4319
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerScene.$anon.childrenRoots
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.childrenRoots
+        </td>
+      </tr><tr>
+        <td>
+          93
+        </td>
+        <td>
+          5239
+        </td>
+        <td>
+          4295
+          -
+          4319
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Pane.children_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.children_=($anon.this.childrenRoots)
+        </td>
+      </tr><tr>
+        <td>
+          95
+        </td>
+        <td>
+          5240
+        </td>
+        <td>
+          4325
+          -
+          4360
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.util.List.add
+        </td>
+        <td style="background: #F0ADAD">
+          collections.this.ObservableBuffer.observableBuffer2ObservableList[String]($anon.this.styleClass).add(&quot;default-font-size&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          98
+        </td>
+        <td>
+          5252
+        </td>
+        <td>
+          4444
+          -
+          4447
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerScene.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          99
+        </td>
+        <td>
+          5242
+        </td>
+        <td>
+          4475
+          -
+          4486
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.geometry.Insets.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.geometry.Insets.apply(130.0)
+        </td>
+      </tr><tr>
+        <td>
+          99
+        </td>
+        <td>
+          5243
+        </td>
+        <td>
+          4465
+          -
+          4486
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.Region.padding_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.padding_=(scalafx.geometry.Insets.apply(130.0))
+        </td>
+      </tr><tr>
+        <td>
+          100
+        </td>
+        <td>
+          5245
+        </td>
+        <td>
+          4491
+          -
+          4521
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Node.alignmentInParent_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.alignmentInParent_=(scalafx.geometry.Pos.Center)
+        </td>
+      </tr><tr>
+        <td>
+          100
+        </td>
+        <td>
+          5244
+        </td>
+        <td>
+          4511
+          -
+          4521
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.geometry.Pos.Center
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.geometry.Pos.Center
+        </td>
+      </tr><tr>
+        <td>
+          102
+        </td>
+        <td>
+          5247
+        </td>
+        <td>
+          4563
+          -
+          4581
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.BorderPane.center_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.center_=(MultiPlayerScene.this.container)
+        </td>
+      </tr><tr>
+        <td>
+          102
+        </td>
+        <td>
+          5246
+        </td>
+        <td>
+          4572
+          -
+          4581
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerScene.container
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.container
+        </td>
+      </tr><tr>
+        <td>
+          103
+        </td>
+        <td>
+          5251
+        </td>
+        <td>
+          4586
+          -
+          4674
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.layout.BorderPane.bottom_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.bottom_=({
+  final class $anon extends scalafx.scene.layout.HBox {
+    def &lt;init&gt;(): &lt;$anon: scalafx.scene.layout.HBox&gt; = {
+      $anon.super.&lt;init&gt;(30.0, MultiPlayerScene.this.goBack, MultiPlayerScene.this.proceedToNextScene);
+      ()
+    };
+    $anon.this.alignment_=(scalafx.geometry.Pos.Center)
+  };
+  new $anon()
+})
+        </td>
+      </tr><tr>
+        <td>
+          103
+        </td>
+        <td>
+          5250
+        </td>
+        <td>
+          4595
+          -
+          4598
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerScene.$anon.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          104
+        </td>
+        <td>
+          5249
+        </td>
+        <td>
+          4646
+          -
+          4668
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.delegate.AlignmentDelegate.alignment_=
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.alignment_=(scalafx.geometry.Pos.Center)
+        </td>
+      </tr><tr>
+        <td>
+          104
+        </td>
+        <td>
+          5248
+        </td>
+        <td>
+          4658
+          -
+          4668
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.geometry.Pos.Center
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.geometry.Pos.Center
+        </td>
+      </tr><tr>
+        <td>
+          115
+        </td>
+        <td>
+          5253
+        </td>
+        <td>
+          5004
+          -
+          5018
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.context.LobbyContext.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.context.LobbyContext.apply()
+        </td>
+      </tr><tr>
+        <td>
+          118
+        </td>
+        <td>
+          5254
+        </td>
+        <td>
+          5119
+          -
+          5137
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerScene.onLobbyEnterResult
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.onLobbyEnterResult
+        </td>
+      </tr><tr>
+        <td>
+          118
+        </td>
+        <td>
+          5255
+        </td>
+        <td>
+          5064
+          -
+          5138
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerSceneListener.onLobbyRequest
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.listener.onLobbyRequest(user, levelInfo, lobbyContext, MultiPlayerScene.this.onLobbyEnterResult)
+        </td>
+      </tr><tr>
+        <td>
+          126
+        </td>
+        <td>
+          5265
+        </td>
+        <td>
+          5476
+          -
+          6441
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.application.Platform.runLater
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.application.Platform.runLater[Any](result match {
+  case (result: Boolean, message: String)it.unibo.osmos.redux.utils.GenericResponse[Boolean](true, _) =&gt; {
+    val multiPlayerLobbyScene: it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerLobbyScene = new MultiPlayerLobbyScene(MultiPlayerScene.this.parentStage, MultiPlayerScene.this.listener, (() =&gt; MultiPlayerScene.this.parentStage.scene_=(MultiPlayerScene.this)), user);
+    multiPlayerLobbyScene.lobbyContext_=(lobbyContext);
+    multiPlayerLobbyScene.levelInfo_=(levelInfo);
+    MultiPlayerScene.this.parentStage.scene_=(multiPlayerLobbyScene)
+  }
+  case (result: Boolean, message: String)it.unibo.osmos.redux.utils.GenericResponse[Boolean](false, _) =&gt; {
+    val message: String = &quot;Can\'t connect to the server: \n- check that the inserted address is correct\n- check your connection&quot;;
+    it.unibo.osmos.redux.mvc.view.components.custom.AlertFactory.createErrorAlert(&quot;Error&quot;, message).showAndWait()
+  }
+})
+        </td>
+      </tr><tr>
+        <td>
+          131
+        </td>
+        <td>
+          5256
+        </td>
+        <td>
+          5740
+          -
+          5751
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerScene.parentStage
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.parentStage
+        </td>
+      </tr><tr>
+        <td>
+          131
+        </td>
+        <td>
+          5259
+        </td>
+        <td>
+          5714
+          -
+          5817
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerLobbyScene.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new MultiPlayerLobbyScene(MultiPlayerScene.this.parentStage, MultiPlayerScene.this.listener, (() =&gt; MultiPlayerScene.this.parentStage.scene_=(MultiPlayerScene.this)), user)
+        </td>
+      </tr><tr>
+        <td>
+          131
+        </td>
+        <td>
+          5258
+        </td>
+        <td>
+          5769
+          -
+          5810
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.stage.Stage.scene_=
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.parentStage.scene_=(MultiPlayerScene.this)
+        </td>
+      </tr><tr>
+        <td>
+          131
+        </td>
+        <td>
+          5257
+        </td>
+        <td>
+          5753
+          -
+          5761
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerScene.listener
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.listener
+        </td>
+      </tr><tr>
+        <td>
+          134
+        </td>
+        <td>
+          5260
+        </td>
+        <td>
+          5872
+          -
+          5922
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerLobbyScene.lobbyContext_=
+        </td>
+        <td style="background: #F0ADAD">
+          multiPlayerLobbyScene.lobbyContext_=(lobbyContext)
+        </td>
+      </tr><tr>
+        <td>
+          137
+        </td>
+        <td>
+          5261
+        </td>
+        <td>
+          5974
+          -
+          6018
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerLobbyScene.levelInfo_=
+        </td>
+        <td style="background: #F0ADAD">
+          multiPlayerLobbyScene.levelInfo_=(levelInfo)
+        </td>
+      </tr><tr>
+        <td>
+          140
+        </td>
+        <td>
+          5262
+        </td>
+        <td>
+          6071
+          -
+          6112
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.stage.Stage.scene_=
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.parentStage.scene_=(multiPlayerLobbyScene)
+        </td>
+      </tr><tr>
+        <td>
+          143
+        </td>
+        <td>
+          5263
+        </td>
+        <td>
+          6179
+          -
+          6315
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;Can\'t connect to the server: \n- check that the inserted address is correct\n- check your connection&quot;
+        </td>
+      </tr><tr>
+        <td>
+          147
+        </td>
+        <td>
+          5264
+        </td>
+        <td>
+          6365
+          -
+          6426
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.control.Alert.showAndWait
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.components.custom.AlertFactory.createErrorAlert(&quot;Error&quot;, message).showAndWait()
+        </td>
+      </tr><tr>
+        <td>
+          153
+        </td>
+        <td>
+          5267
+        </td>
+        <td>
+          6478
+          -
+          6495
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.Scene.root_=
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.root_=(MultiPlayerScene.this.rootLayout)
+        </td>
+      </tr><tr>
+        <td>
+          153
+        </td>
+        <td>
+          5266
+        </td>
+        <td>
+          6485
+          -
+          6495
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MultiPlayerScene.rootLayout
+        </td>
+        <td style="background: #F0ADAD">
+          MultiPlayerScene.this.rootLayout
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

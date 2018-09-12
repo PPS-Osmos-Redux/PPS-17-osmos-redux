@@ -1,0 +1,540 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/multiplayer/common/ActorSystemHolder.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.multiplayer.common
+</span>2 <span style=''>
+</span>3 <span style=''>import akka.actor.{ActorRef, ActorSystem, Address, PoisonPill}
+</span>4 <span style=''>import it.unibo.osmos.redux.multiplayer.client.{Client, ClientActor}
+</span>5 <span style=''>import it.unibo.osmos.redux.multiplayer.server.{Server, ServerActor}
+</span>6 <span style=''>import it.unibo.osmos.redux.utils.Constants
+</span>7 <span style=''>
+</span>8 <span style=''>object ActorSystemHolder {
+</span>9 <span style=''>
+</span>10 <span style=''>  /** Actor System variable, lazily initialized */
+</span>11 <span style=''>  private lazy val system: ActorSystem = {
+</span>12 <span style=''>    initialized = true
+</span>13 <span style=''>    ActorSystem(Constants.MultiPlayer.ActorSystemName, ActorSystemConfigFactory.load())
+</span>14 <span style=''>  }
+</span>15 <span style=''>  /** Determines whether the lazy system variable have been initialized or not */
+</span>16 <span style=''>  private var initialized: Boolean = </span><span style='background: #F0ADAD'>false</span><span style=''>
+</span>17 <span style=''>
+</span>18 <span style=''>  /** Gets the actor system.
+</span>19 <span style=''>    *
+</span>20 <span style=''>    * @return The actor system.
+</span>21 <span style=''>    */
+</span>22 <span style=''>  def getSystem: ActorSystem = system
+</span>23 <span style=''>
+</span>24 <span style=''>  /** Gets the actor system network information.
+</span>25 <span style=''>    *
+</span>26 <span style=''>    * @return The network information of the system as Address object.
+</span>27 <span style=''>    */
+</span>28 <span style=''>  def systemAddress: Address = </span><span style='background: #F0ADAD'>AddressExtension(system).address</span><span style=''>
+</span>29 <span style=''>
+</span>30 <span style=''>  /** Creates a new ClientActor that refers to the input client object
+</span>31 <span style=''>    *
+</span>32 <span style=''>    * @param client The input client object that the new actor will refer to.
+</span>33 <span style=''>    * @return The ActorRef
+</span>34 <span style=''>    */
+</span>35 <span style=''>  def createActor(client: Client): ActorRef = </span><span style='background: #F0ADAD'>system.actorOf(ClientActor.props(client), Constants.MultiPlayer.ClientActorName)</span><span style=''>
+</span>36 <span style=''>
+</span>37 <span style=''>  /** Creates a new ServerActor that refers to the input server object
+</span>38 <span style=''>    *
+</span>39 <span style=''>    * @param server The input server object that the new actor will refer to.
+</span>40 <span style=''>    * @return The ActorRef
+</span>41 <span style=''>    */
+</span>42 <span style=''>  def createActor(server: Server): ActorRef = </span><span style='background: #F0ADAD'>system.actorOf(ServerActor.props(server), Constants.MultiPlayer.ServerActorName)</span><span style=''>
+</span>43 <span style=''>
+</span>44 <span style=''>  /** Stops an actor.
+</span>45 <span style=''>    *
+</span>46 <span style=''>    * @param actorRef The actor ref.
+</span>47 <span style=''>    */
+</span>48 <span style=''>  def stopActor(actorRef: ActorRef): Unit = </span><span style='background: #F0ADAD'>system stop actorRef</span><span style=''>
+</span>49 <span style=''>
+</span>50 <span style=''>  /** Clears all the actors of the actor system. */
+</span>51 <span style=''>  def clearActors(): Unit = </span><span style='background: #F0ADAD'>system.actorSelection(&quot;/user/*&quot;) ! PoisonPill</span><span style=''>
+</span>52 <span style=''>
+</span>53 <span style=''>  /** Kills this instance. */
+</span>54 <span style=''>  def kill(): Unit = if (</span><span style='background: #F0ADAD'>initialized</span><span style=''>) </span><span style='background: #F0ADAD'>system.terminate()</span><span style=''>; </span><span style='background: #F0ADAD'>initialized = false</span><span style=''>
+</span>55 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          1459
+        </td>
+        <td>
+          651
+          -
+          656
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          false
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          1460
+        </td>
+        <td>
+          935
+          -
+          967
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.common.AddressExtension.address
+        </td>
+        <td style="background: #F0ADAD">
+          AddressExtension.apply(ActorSystemHolder.this.system).address
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          1461
+        </td>
+        <td>
+          1219
+          -
+          1244
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.client.ClientActor.props
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.multiplayer.client.ClientActor.props(client)
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          1463
+        </td>
+        <td>
+          1204
+          -
+          1284
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          akka.actor.ActorRefFactory.actorOf
+        </td>
+        <td style="background: #F0ADAD">
+          ActorSystemHolder.this.system.actorOf(it.unibo.osmos.redux.multiplayer.client.ClientActor.props(client), it.unibo.osmos.redux.utils.Constants.MultiPlayer.ClientActorName)
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          1462
+        </td>
+        <td>
+          1246
+          -
+          1283
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.MultiPlayer.ClientActorName
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Constants.MultiPlayer.ClientActorName
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          1465
+        </td>
+        <td>
+          1563
+          -
+          1600
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.MultiPlayer.ServerActorName
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Constants.MultiPlayer.ServerActorName
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          1464
+        </td>
+        <td>
+          1536
+          -
+          1561
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.props
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.props(server)
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          1466
+        </td>
+        <td>
+          1521
+          -
+          1601
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          akka.actor.ActorRefFactory.actorOf
+        </td>
+        <td style="background: #F0ADAD">
+          ActorSystemHolder.this.system.actorOf(it.unibo.osmos.redux.multiplayer.server.ServerActor.props(server), it.unibo.osmos.redux.utils.Constants.MultiPlayer.ServerActorName)
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          1467
+        </td>
+        <td>
+          1719
+          -
+          1739
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          akka.actor.ActorRefFactory.stop
+        </td>
+        <td style="background: #F0ADAD">
+          ActorSystemHolder.this.system.stop(actorRef)
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          1468
+        </td>
+        <td>
+          1821
+          -
+          1853
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          akka.actor.ActorRefFactory.actorSelection
+        </td>
+        <td style="background: #F0ADAD">
+          ActorSystemHolder.this.system.actorSelection(&quot;/user/*&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          1470
+        </td>
+        <td>
+          1856
+          -
+          1866
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          akka.actor.PoisonPill
+        </td>
+        <td style="background: #F0ADAD">
+          akka.actor.PoisonPill
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          1472
+        </td>
+        <td>
+          1821
+          -
+          1866
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          akka.actor.ScalaActorSelection.!
+        </td>
+        <td style="background: #F0ADAD">
+          qual$1.!(x$1)(x$2)
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          1469
+        </td>
+        <td>
+          1821
+          -
+          1853
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          akka.actor.ActorSelection.toScala
+        </td>
+        <td style="background: #F0ADAD">
+          actor.this.ActorSelection.toScala(ActorSystemHolder.this.system.actorSelection(&quot;/user/*&quot;))
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          1471
+        </td>
+        <td>
+          1854
+          -
+          1854
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          akka.actor.ScalaActorSelection.!$default$2
+        </td>
+        <td style="background: #F0ADAD">
+          qual$1.!$default$2(x$1)
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          1474
+        </td>
+        <td>
+          1936
+          -
+          1954
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          akka.actor.ActorSystem.terminate
+        </td>
+        <td style="background: #F0ADAD">
+          ActorSystemHolder.this.system.terminate()
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          1476
+        </td>
+        <td>
+          1936
+          -
+          1954
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          {
+  ActorSystemHolder.this.system.terminate();
+  ()
+}
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          1479
+        </td>
+        <td>
+          1956
+          -
+          1975
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder.initialized_=
+        </td>
+        <td style="background: #F0ADAD">
+          ActorSystemHolder.this.initialized_=(false)
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          1473
+        </td>
+        <td>
+          1923
+          -
+          1934
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder.initialized
+        </td>
+        <td style="background: #F0ADAD">
+          ActorSystemHolder.this.initialized
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          1475
+        </td>
+        <td>
+          1952
+          -
+          1952
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          1478
+        </td>
+        <td>
+          1919
+          -
+          1919
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          1477
+        </td>
+        <td>
+          1919
+          -
+          1919
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

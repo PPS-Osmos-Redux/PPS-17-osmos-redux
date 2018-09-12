@@ -1,0 +1,1217 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/utils/Constants.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.utils
+</span>2 <span style=''>
+</span>3 <span style=''>import java.nio.file.{FileSystem, FileSystems}
+</span>4 <span style=''>
+</span>5 <span style=''>/** Application Constants */
+</span>6 <span style=''>object Constants {
+</span>7 <span style=''>
+</span>8 <span style=''>  object General {
+</span>9 <span style=''>    final val CellMaxSpeed: Double = </span><span style='background: #F0ADAD'>4</span><span style=''>
+</span>10 <span style=''>  }
+</span>11 <span style=''>
+</span>12 <span style=''>  object Engine {
+</span>13 <span style=''>    final val DefaultFps: Int = </span><span style='background: #F0ADAD'>60</span><span style=''>
+</span>14 <span style=''>    final val MinimumFps: Int = </span><span style='background: #F0ADAD'>30</span><span style=''>
+</span>15 <span style=''>    final val MaximumFps: Int = </span><span style='background: #F0ADAD'>240</span><span style=''>
+</span>16 <span style=''>    final val FpsChangeStep: Int = </span><span style='background: #F0ADAD'>10</span><span style=''>
+</span>17 <span style=''>  }
+</span>18 <span style=''>
+</span>19 <span style=''>  object MultiPlayer {
+</span>20 <span style=''>    final val ActorSystemConfigFilePath: String = </span><span style='background: #F0ADAD'>&quot;akka-config/kryo.conf&quot;</span><span style=''>
+</span>21 <span style=''>    final val ActorSystemName: String = </span><span style='background: #F0ADAD'>&quot;Osmos-Redux-MultiPlayer-System&quot;</span><span style=''>
+</span>22 <span style=''>    final val ServerActorName: String = </span><span style='background: #F0ADAD'>&quot;ServerActor&quot;</span><span style=''>
+</span>23 <span style=''>    final val ClientActorName: String = </span><span style='background: #F0ADAD'>&quot;ClientActor&quot;</span><span style=''>
+</span>24 <span style=''>    final val DefaultClientUUID: String = </span><span style='background: #F0ADAD'>&quot;&lt;unavailable&gt;&quot;</span><span style=''>
+</span>25 <span style=''>    final val MaximumLobbyPlayersCount: Int = </span><span style='background: #F0ADAD'>8</span><span style=''>
+</span>26 <span style=''>    final val DefaultMultiPlayerFps: Int = </span><span style='background: #F0ADAD'>30</span><span style=''>
+</span>27 <span style=''>  }
+</span>28 <span style=''>
+</span>29 <span style=''>  object Sentient {
+</span>30 <span style=''>    final val MaxSpeed: Double = </span><span style='background: #AEF1AE'>2</span><span style=''>
+</span>31 <span style=''>    final val MaxAcceleration: Double = </span><span style='background: #AEF1AE'>0.1</span><span style=''>
+</span>32 <span style=''>    //extra radius for safety area
+</span>33 <span style=''>    final val CoefficientDesiredSeparation: Double = </span><span style='background: #AEF1AE'>50</span><span style=''>
+</span>34 <span style=''>    final val PercentageOfLostRadiusForMagnitudeAcceleration: Double = </span><span style='background: #AEF1AE'>0.02</span><span style=''>
+</span>35 <span style=''>    final val MinRadiusForLostRadiusBehaviour: Double = </span><span style='background: #AEF1AE'>15</span><span style=''>
+</span>36 <span style=''>    final val WeightOfEscapeAccelerationFromEnemies: Double = </span><span style='background: #AEF1AE'>2</span><span style=''>
+</span>37 <span style=''>    final val WeightOfEscapeAccelerationFromBoundary: Double = </span><span style='background: #AEF1AE'>WeightOfEscapeAccelerationFromEnemies * 1.5</span><span style=''>
+</span>38 <span style=''>  }
+</span>39 <span style=''>
+</span>40 <span style=''>  object ResourcesPaths {
+</span>41 <span style=''>    final val Separator: String = </span><span style='background: #AEF1AE'>&quot;/&quot;</span><span style=''>
+</span>42 <span style=''>    final val LevelStartPath: String = </span><span style='background: #AEF1AE'>Separator + &quot;levels&quot;</span><span style=''>
+</span>43 <span style=''>    final val SinglePlayerLevelsPath: String = </span><span style='background: #AEF1AE'>LevelStartPath + Separator + &quot;singlePlayer&quot; + Separator</span><span style=''>
+</span>44 <span style=''>    final val MultiPlayerLevelsPath: String = </span><span style='background: #AEF1AE'>LevelStartPath + Separator + &quot;multiPlayer&quot; + Separator</span><span style=''>
+</span>45 <span style=''>    final val ConfigSinglePlayer: String = </span><span style='background: #AEF1AE'>LevelStartPath + Separator + &quot;config&quot; + Separator + &quot;SinglePlayerLevels&quot;</span><span style=''>
+</span>46 <span style=''>    final val ConfigMultiPlayer: String = </span><span style='background: #AEF1AE'>LevelStartPath + Separator + &quot;config&quot; + Separator + &quot;MultiPlayerLevels&quot;</span><span style=''>
+</span>47 <span style=''>    final val SoundsPath: String = </span><span style='background: #AEF1AE'>Separator + &quot;sounds&quot; + Separator</span><span style=''>
+</span>48 <span style=''>    final val StylePath: String = </span><span style='background: #AEF1AE'>Separator + &quot;style&quot; + Separator + &quot;style.css&quot;</span><span style=''>
+</span>49 <span style=''>  }
+</span>50 <span style=''>
+</span>51 <span style=''>  object UserHomePaths {
+</span>52 <span style=''>    final val DefaultFS: FileSystem = </span><span style='background: #AEF1AE'>FileSystems.getDefault</span><span style=''>
+</span>53 <span style=''>    final val SystemSeparator: String = </span><span style='background: #AEF1AE'>DefaultFS.getSeparator</span><span style=''>
+</span>54 <span style=''>    final val UserHome: String = </span><span style='background: #AEF1AE'>System.getProperty(&quot;user.home&quot;)</span><span style=''>
+</span>55 <span style=''>    final val GameDirectory: String = </span><span style='background: #AEF1AE'>&quot;.Osmos-Redux&quot; + SystemSeparator</span><span style=''>
+</span>56 <span style=''>    final val LevelsDirectory: String = </span><span style='background: #AEF1AE'>UserHome + SystemSeparator + GameDirectory + &quot;CustomLevels&quot; + SystemSeparator</span><span style=''>
+</span>57 <span style=''>    final val UserProgressDirectory: String = </span><span style='background: #AEF1AE'>UserHome + SystemSeparator + GameDirectory +
+</span>58 <span style=''></span><span style='background: #AEF1AE'>      &quot;UserProgress&quot; + SystemSeparator</span><span style=''>
+</span>59 <span style=''>    final val UserProgressFileName: String = </span><span style='background: #AEF1AE'>UserProgressDirectory + &quot;UserProgress&quot;</span><span style=''>
+</span>60 <span style=''>    final val SettingFilePath: String = </span><span style='background: #AEF1AE'>UserHome + SystemSeparator + GameDirectory + &quot;Settings&quot; + SystemSeparator + &quot;GeneralSettings&quot;</span><span style=''>
+</span>61 <span style=''>  }
+</span>62 <span style=''>
+</span>63 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          5428
+        </td>
+        <td>
+          189
+          -
+          190
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          4.0
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          5429
+        </td>
+        <td>
+          246
+          -
+          248
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          60
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          5430
+        </td>
+        <td>
+          281
+          -
+          283
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          30
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          5431
+        </td>
+        <td>
+          316
+          -
+          319
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          240
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          5432
+        </td>
+        <td>
+          355
+          -
+          357
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          10
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          5433
+        </td>
+        <td>
+          436
+          -
+          459
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;akka-config/kryo.conf&quot;
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          5434
+        </td>
+        <td>
+          500
+          -
+          532
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;Osmos-Redux-MultiPlayer-System&quot;
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          5435
+        </td>
+        <td>
+          573
+          -
+          586
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;ServerActor&quot;
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          5436
+        </td>
+        <td>
+          627
+          -
+          640
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;ClientActor&quot;
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          5437
+        </td>
+        <td>
+          683
+          -
+          698
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;&lt;unavailable&gt;&quot;
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          5438
+        </td>
+        <td>
+          745
+          -
+          746
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          8
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          5439
+        </td>
+        <td>
+          790
+          -
+          792
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          30
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          5440
+        </td>
+        <td>
+          851
+          -
+          852
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          2.0
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          5441
+        </td>
+        <td>
+          893
+          -
+          896
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          0.1
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          5442
+        </td>
+        <td>
+          985
+          -
+          987
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          50.0
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          5443
+        </td>
+        <td>
+          1059
+          -
+          1063
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          0.02
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          5444
+        </td>
+        <td>
+          1120
+          -
+          1122
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          15.0
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          5445
+        </td>
+        <td>
+          1185
+          -
+          1186
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          2.0
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          5446
+        </td>
+        <td>
+          1250
+          -
+          1293
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.*
+        </td>
+        <td style="background: #AEF1AE">
+          Sentient.this.WeightOfEscapeAccelerationFromEnemies.*(1.5)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          5447
+        </td>
+        <td>
+          1359
+          -
+          1362
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;/&quot;
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          5448
+        </td>
+        <td>
+          1402
+          -
+          1422
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #AEF1AE">
+          ResourcesPaths.this.Separator.+(&quot;levels&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          5451
+        </td>
+        <td>
+          1516
+          -
+          1525
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.ResourcesPaths.Separator
+        </td>
+        <td style="background: #AEF1AE">
+          ResourcesPaths.this.Separator
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          5450
+        </td>
+        <td>
+          1499
+          -
+          1513
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;singlePlayer&quot;
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          5449
+        </td>
+        <td>
+          1487
+          -
+          1496
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.ResourcesPaths.Separator
+        </td>
+        <td style="background: #AEF1AE">
+          ResourcesPaths.this.Separator
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          5452
+        </td>
+        <td>
+          1470
+          -
+          1525
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #AEF1AE">
+          ResourcesPaths.this.LevelStartPath.+(ResourcesPaths.this.Separator).+(&quot;singlePlayer&quot;).+(ResourcesPaths.this.Separator)
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          5454
+        </td>
+        <td>
+          1601
+          -
+          1614
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;multiPlayer&quot;
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          5456
+        </td>
+        <td>
+          1572
+          -
+          1626
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #AEF1AE">
+          ResourcesPaths.this.LevelStartPath.+(ResourcesPaths.this.Separator).+(&quot;multiPlayer&quot;).+(ResourcesPaths.this.Separator)
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          5453
+        </td>
+        <td>
+          1589
+          -
+          1598
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.ResourcesPaths.Separator
+        </td>
+        <td style="background: #AEF1AE">
+          ResourcesPaths.this.Separator
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          5455
+        </td>
+        <td>
+          1617
+          -
+          1626
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.ResourcesPaths.Separator
+        </td>
+        <td style="background: #AEF1AE">
+          ResourcesPaths.this.Separator
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          5457
+        </td>
+        <td>
+          1670
+          -
+          1742
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #AEF1AE">
+          ResourcesPaths.this.LevelStartPath.+(ResourcesPaths.this.Separator).+(&quot;config&quot;).+(ResourcesPaths.this.Separator).+(&quot;SinglePlayerLevels&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          5458
+        </td>
+        <td>
+          1785
+          -
+          1856
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #AEF1AE">
+          ResourcesPaths.this.LevelStartPath.+(ResourcesPaths.this.Separator).+(&quot;config&quot;).+(ResourcesPaths.this.Separator).+(&quot;MultiPlayerLevels&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          5460
+        </td>
+        <td>
+          1915
+          -
+          1924
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.ResourcesPaths.Separator
+        </td>
+        <td style="background: #AEF1AE">
+          ResourcesPaths.this.Separator
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          5459
+        </td>
+        <td>
+          1904
+          -
+          1912
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;sounds&quot;
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          5461
+        </td>
+        <td>
+          1892
+          -
+          1924
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #AEF1AE">
+          ResourcesPaths.this.Separator.+(&quot;sounds&quot;).+(ResourcesPaths.this.Separator)
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          5462
+        </td>
+        <td>
+          1959
+          -
+          2004
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #AEF1AE">
+          ResourcesPaths.this.Separator.+(&quot;style&quot;).+(ResourcesPaths.this.Separator).+(&quot;style.css&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          5463
+        </td>
+        <td>
+          2073
+          -
+          2095
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.nio.file.FileSystems.getDefault
+        </td>
+        <td style="background: #AEF1AE">
+          java.nio.file.FileSystems.getDefault()
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          5464
+        </td>
+        <td>
+          2136
+          -
+          2158
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.nio.file.FileSystem.getSeparator
+        </td>
+        <td style="background: #AEF1AE">
+          UserHomePaths.this.DefaultFS.getSeparator()
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          5465
+        </td>
+        <td>
+          2192
+          -
+          2223
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.System.getProperty
+        </td>
+        <td style="background: #AEF1AE">
+          java.lang.System.getProperty(&quot;user.home&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          5466
+        </td>
+        <td>
+          2262
+          -
+          2276
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;.Osmos-Redux&quot;
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          5468
+        </td>
+        <td>
+          2262
+          -
+          2294
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;.Osmos-Redux&quot;.+(UserHomePaths.this.SystemSeparator)
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          5467
+        </td>
+        <td>
+          2279
+          -
+          2294
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.UserHomePaths.SystemSeparator
+        </td>
+        <td style="background: #AEF1AE">
+          UserHomePaths.this.SystemSeparator
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          5469
+        </td>
+        <td>
+          2346
+          -
+          2361
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.UserHomePaths.SystemSeparator
+        </td>
+        <td style="background: #AEF1AE">
+          UserHomePaths.this.SystemSeparator
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          5472
+        </td>
+        <td>
+          2397
+          -
+          2412
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.UserHomePaths.SystemSeparator
+        </td>
+        <td style="background: #AEF1AE">
+          UserHomePaths.this.SystemSeparator
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          5471
+        </td>
+        <td>
+          2380
+          -
+          2394
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;CustomLevels&quot;
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          5473
+        </td>
+        <td>
+          2335
+          -
+          2412
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #AEF1AE">
+          UserHomePaths.this.UserHome.+(UserHomePaths.this.SystemSeparator).+(UserHomePaths.this.GameDirectory).+(&quot;CustomLevels&quot;).+(UserHomePaths.this.SystemSeparator)
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          5470
+        </td>
+        <td>
+          2364
+          -
+          2377
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.UserHomePaths.GameDirectory
+        </td>
+        <td style="background: #AEF1AE">
+          UserHomePaths.this.GameDirectory
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          5475
+        </td>
+        <td>
+          2488
+          -
+          2501
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.UserHomePaths.GameDirectory
+        </td>
+        <td style="background: #AEF1AE">
+          UserHomePaths.this.GameDirectory
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          5474
+        </td>
+        <td>
+          2470
+          -
+          2485
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.UserHomePaths.SystemSeparator
+        </td>
+        <td style="background: #AEF1AE">
+          UserHomePaths.this.SystemSeparator
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          5478
+        </td>
+        <td>
+          2459
+          -
+          2542
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #AEF1AE">
+          UserHomePaths.this.UserHome.+(UserHomePaths.this.SystemSeparator).+(UserHomePaths.this.GameDirectory).+(&quot;UserProgress&quot;).+(UserHomePaths.this.SystemSeparator)
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          5477
+        </td>
+        <td>
+          2527
+          -
+          2542
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Constants.UserHomePaths.SystemSeparator
+        </td>
+        <td style="background: #AEF1AE">
+          UserHomePaths.this.SystemSeparator
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          5476
+        </td>
+        <td>
+          2510
+          -
+          2524
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;UserProgress&quot;
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          5479
+        </td>
+        <td>
+          2588
+          -
+          2626
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #AEF1AE">
+          UserHomePaths.this.UserProgressDirectory.+(&quot;UserProgress&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          5480
+        </td>
+        <td>
+          2667
+          -
+          2760
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #AEF1AE">
+          UserHomePaths.this.UserHome.+(UserHomePaths.this.SystemSeparator).+(UserHomePaths.this.GameDirectory).+(&quot;Settings&quot;).+(UserHomePaths.this.SystemSeparator).+(&quot;GeneralSettings&quot;)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>
