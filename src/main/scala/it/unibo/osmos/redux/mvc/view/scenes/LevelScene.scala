@@ -303,7 +303,6 @@ class LevelScene(override val parentStage: Stage, val levelInfo: LevelInfo, val 
       }
 
       /** Configuring the mapBorder */
-      // TODO: make it colored white if bouncing, red if instant death
       mapBorder.fill = Color.Transparent
       mapBorder.stroke = Color.White
       mapBorder.strokeWidth = 5.0
