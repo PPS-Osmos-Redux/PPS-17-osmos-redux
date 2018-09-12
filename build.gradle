@@ -1,8 +1,23 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
+    }
+}
+plugins {
+    id "org.scoverage" version "2.1.0"
+    id "com.github.maiflai.scalatest" version "0.21"
+}
+
 apply plugin: 'java'
 apply plugin: 'scala'
 apply plugin: 'idea'
 apply plugin: 'application'
 apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'org.scoverage'
+apply plugin: 'com.github.maiflai.scalatest'
 
 version '1.2.0'
 
@@ -39,15 +54,6 @@ repositories {
     mavenCentral()
 }
 
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
-    }
-}
-
 dependencies {
     compile group: 'org.scala-lang', name: 'scala-library', version: '2.12.2'
     compile group: 'org.scala-lang', name: 'scala-compiler', version: '2.12.6'
@@ -67,10 +73,14 @@ dependencies {
     testCompile group: 'org.scalatest', name: 'scalatest_2.12', version: '3.0.5'
     testCompile group: 'org.scalamock', name: 'scalamock-scalatest-support_2.12', version: '3.6.0'
     testCompile group: 'com.typesafe.akka', name: 'akka-testkit_2.12', version: '2.5.14'
+
+    testRuntime 'org.pegdown:pegdown:1.4.2'
+    scoverage 'org.scoverage:scalac-scoverage-plugin_2.12:1.3.1'
+    scoverage 'org.scoverage:scalac-scoverage-runtime_2.12:1.3.1'
 }
 
 // running <<gradle test>> runs also scalaTests
-test.dependsOn('scalaTests')
+//test.dependsOn('scalaTests')
 
 // necessary for running scala tests without adding
 // @RunWith(classOf[JUnitRunner]) to each test class
@@ -78,6 +88,16 @@ task scalaTests(dependsOn: ['testClasses'], type: JavaExec) {
     main = 'org.scalatest.tools.Runner'
     args = ['-R', 'build/classes/scala/test', '-o']
     classpath = sourceSets.test.runtimeClasspath
+}
+
+// tests can't run parallely or build will fail
+test {
+    maxParallelForks = 1
+}
+
+// tests can't run parallely or build will fail
+testScoverage {
+    maxParallelForks = 1
 }
 
 shadowJar {
