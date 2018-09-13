@@ -1,6 +1,6 @@
 # Osmos Redux
 
-[![Build Status](https://api.travis-ci.org/PPS-Osmos-Redux/Osmos-Redux.png?branch=develop)](https://travis-ci.org/PPS-Osmos-Redux/Osmos-Redux)
+[![Build Status](https://api.travis-ci.org/PPS-Osmos-Redux/Osmos-Redux.png?branch=master)](https://travis-ci.org/PPS-Osmos-Redux/Osmos-Redux)
 
 Revisiting of Osmos game using Scala
 
@@ -11,3 +11,7 @@ Basically the same rules as the original game.
 ### Prerequisites
 
 Scala 2.12.6: https://www.scala-lang.org/
+
+### Project Site
+
+https://pps-osmos-redux.github.io/PPS-17-osmos-redux/
