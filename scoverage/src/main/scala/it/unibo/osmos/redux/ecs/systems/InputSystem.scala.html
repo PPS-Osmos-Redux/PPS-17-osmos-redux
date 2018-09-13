@@ -93,7 +93,7 @@
           11
         </td>
         <td>
-          669
+          671
         </td>
         <td>
           535
@@ -114,7 +114,7 @@
           15
         </td>
         <td>
-          670
+          672
         </td>
         <td>
           716
@@ -135,7 +135,7 @@
           17
         </td>
         <td>
-          671
+          673
         </td>
         <td>
           814
@@ -156,7 +156,7 @@
           19
         </td>
         <td>
-          672
+          674
         </td>
         <td>
           914
@@ -177,7 +177,7 @@
           24
         </td>
         <td>
-          673
+          675
         </td>
         <td>
           1008
@@ -198,7 +198,7 @@
           26
         </td>
         <td>
-          709
+          711
         </td>
         <td>
           1042
@@ -233,7 +233,7 @@
           27
         </td>
         <td>
-          674
+          676
         </td>
         <td>
           1085
@@ -254,7 +254,7 @@
           28
         </td>
         <td>
-          675
+          677
         </td>
         <td>
           1128
@@ -275,7 +275,7 @@
           29
         </td>
         <td>
-          676
+          678
         </td>
         <td>
           1171
@@ -296,7 +296,7 @@
           30
         </td>
         <td>
-          677
+          679
         </td>
         <td>
           1209
@@ -317,28 +317,28 @@
           32
         </td>
         <td>
-          678
+          681
         </td>
         <td>
-          1270
+          1260
           -
           1279
         </td>
         <td>
-          Select
+          Apply
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.entities.properties.basic.Property.getUUID
+          java.lang.Object.==
         </td>
         <td style="background: #AEF1AE">
-          e.getUUID
+          x$1.uuid.==(e.getUUID)
         </td>
       </tr><tr>
         <td>
           32
         </td>
         <td>
-          708
+          710
         </td>
         <td>
           1240
@@ -367,28 +367,49 @@
           32
         </td>
         <td>
-          679
+          680
         </td>
         <td>
-          1260
+          1270
           -
           1279
         </td>
         <td>
-          Apply
+          Select
         </td>
         <td>
-          java.lang.Object.==
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Property.getUUID
         </td>
         <td style="background: #AEF1AE">
-          x$1.uuid.==(e.getUUID)
+          e.getUUID
         </td>
       </tr><tr>
         <td>
           35
         </td>
         <td>
-          681
+          684
+        </td>
+        <td>
+          1380
+          -
+          1421
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.MathUtils.unitVector
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.MathUtils.unitVector(pos.point, ev.point)
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          683
         </td>
         <td>
           1412
@@ -409,7 +430,7 @@
           35
         </td>
         <td>
-          680
+          682
         </td>
         <td>
           1401
@@ -427,31 +448,31 @@
         </td>
       </tr><tr>
         <td>
-          35
+          37
         </td>
         <td>
-          682
+          687
         </td>
         <td>
-          1380
+          1473
           -
-          1421
+          1546
         </td>
         <td>
           Apply
         </td>
         <td>
-          it.unibo.osmos.redux.utils.MathUtils.unitVector
+          it.unibo.osmos.redux.utils.Vector.add
         </td>
         <td style="background: #AEF1AE">
-          it.unibo.osmos.redux.utils.MathUtils.unitVector(pos.point, ev.point)
+          accel.vector.add(directionAcceleration.multiply(InputSystem.this.accelerationCoefficient))
         </td>
       </tr><tr>
         <td>
           37
         </td>
         <td>
-          684
+          686
         </td>
         <td>
           1491
@@ -472,7 +493,7 @@
           37
         </td>
         <td>
-          683
+          685
         </td>
         <td>
           1522
@@ -493,7 +514,7 @@
           37
         </td>
         <td>
-          686
+          688
         </td>
         <td>
           1459
@@ -511,52 +532,10 @@
         </td>
       </tr><tr>
         <td>
-          37
-        </td>
-        <td>
-          685
-        </td>
-        <td>
-          1473
-          -
-          1546
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.utils.Vector.add
-        </td>
-        <td style="background: #AEF1AE">
-          accel.vector.add(directionAcceleration.multiply(InputSystem.this.accelerationCoefficient))
-        </td>
-      </tr><tr>
-        <td>
           40
         </td>
         <td>
-          687
-        </td>
-        <td>
-          1627
-          -
-          1645
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.systems.InputSystem.lostMassPercentage
-        </td>
-        <td style="background: #AEF1AE">
-          InputSystem.this.lostMassPercentage
-        </td>
-      </tr><tr>
-        <td>
-          40
-        </td>
-        <td>
-          688
+          690
         </td>
         <td>
           1614
@@ -574,10 +553,52 @@
         </td>
       </tr><tr>
         <td>
+          40
+        </td>
+        <td>
+          689
+        </td>
+        <td>
+          1627
+          -
+          1645
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.InputSystem.lostMassPercentage
+        </td>
+        <td style="background: #AEF1AE">
+          InputSystem.this.lostMassPercentage
+        </td>
+      </tr><tr>
+        <td>
           41
         </td>
         <td>
-          690
+          693
+        </td>
+        <td>
+          1676
+          -
+          1717
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.MathUtils.unitVector
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.MathUtils.unitVector(ev.point, pos.point)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          692
         </td>
         <td>
           1707
@@ -598,7 +619,7 @@
           41
         </td>
         <td>
-          689
+          691
         </td>
         <td>
           1697
@@ -616,31 +637,31 @@
         </td>
       </tr><tr>
         <td>
-          41
+          42
         </td>
         <td>
-          691
+          696
         </td>
         <td>
-          1676
+          1743
           -
-          1717
+          1835
         </td>
         <td>
           Apply
         </td>
         <td>
-          it.unibo.osmos.redux.utils.MathUtils.unitVector
+          it.unibo.osmos.redux.utils.Point.add
         </td>
         <td style="background: #AEF1AE">
-          it.unibo.osmos.redux.utils.MathUtils.unitVector(ev.point, pos.point)
+          pos.point.add(directionVector.multiply(dim.radius.+(InputSystem.this.lostMassSpawnOffset).+(loseMassAmount)))
         </td>
       </tr><tr>
         <td>
           42
         </td>
         <td>
-          693
+          695
         </td>
         <td>
           1758
@@ -661,7 +682,7 @@
           42
         </td>
         <td>
-          692
+          694
         </td>
         <td>
           1784
@@ -679,52 +700,10 @@
         </td>
       </tr><tr>
         <td>
-          42
-        </td>
-        <td>
-          694
-        </td>
-        <td>
-          1743
-          -
-          1835
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.utils.Point.add
-        </td>
-        <td style="background: #AEF1AE">
-          pos.point.add(directionVector.multiply(dim.radius.+(InputSystem.this.lostMassSpawnOffset).+(loseMassAmount)))
-        </td>
-      </tr><tr>
-        <td>
           45
         </td>
         <td>
-          704
-        </td>
-        <td>
-          1878
-          -
-          2100
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.components.SpawnerComponent.enqueueActions
-        </td>
-        <td style="background: #AEF1AE">
-          spawner.enqueueActions(it.unibo.osmos.redux.ecs.components.SpawnAction.apply(it.unibo.osmos.redux.ecs.components.PositionComponent.apply(it.unibo.osmos.redux.utils.Point.apply(spawnPoint.x, spawnPoint.y)), it.unibo.osmos.redux.ecs.components.DimensionComponent.apply(loseMassAmount), it.unibo.osmos.redux.ecs.components.SpeedComponent.apply(directionVector.multiply(InputSystem.this.lostMassInitialVelocity))))
-        </td>
-      </tr><tr>
-        <td>
-          45
-        </td>
-        <td>
-          703
+          705
         </td>
         <td>
           1901
@@ -742,10 +721,52 @@
         </td>
       </tr><tr>
         <td>
+          45
+        </td>
+        <td>
+          706
+        </td>
+        <td>
+          1878
+          -
+          2100
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.SpawnerComponent.enqueueActions
+        </td>
+        <td style="background: #AEF1AE">
+          spawner.enqueueActions(it.unibo.osmos.redux.ecs.components.SpawnAction.apply(it.unibo.osmos.redux.ecs.components.PositionComponent.apply(it.unibo.osmos.redux.utils.Point.apply(spawnPoint.x, spawnPoint.y)), it.unibo.osmos.redux.ecs.components.DimensionComponent.apply(loseMassAmount), it.unibo.osmos.redux.ecs.components.SpeedComponent.apply(directionVector.multiply(InputSystem.this.lostMassInitialVelocity))))
+        </td>
+      </tr><tr>
+        <td>
           46
         </td>
         <td>
-          696
+          699
+        </td>
+        <td>
+          1942
+          -
+          1975
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Point.apply(spawnPoint.x, spawnPoint.y)
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          698
         </td>
         <td>
           1962
@@ -766,7 +787,7 @@
           46
         </td>
         <td>
-          695
+          697
         </td>
         <td>
           1948
@@ -787,7 +808,7 @@
           46
         </td>
         <td>
-          698
+          700
         </td>
         <td>
           1924
@@ -805,31 +826,10 @@
         </td>
       </tr><tr>
         <td>
-          46
-        </td>
-        <td>
-          697
-        </td>
-        <td>
-          1942
-          -
-          1975
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.utils.Point.apply
-        </td>
-        <td style="background: #AEF1AE">
-          it.unibo.osmos.redux.utils.Point.apply(spawnPoint.x, spawnPoint.y)
-        </td>
-      </tr><tr>
-        <td>
           47
         </td>
         <td>
-          699
+          701
         </td>
         <td>
           1988
@@ -853,6 +853,27 @@
           702
         </td>
         <td>
+          2074
+          -
+          2097
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.InputSystem.lostMassInitialVelocity
+        </td>
+        <td style="background: #AEF1AE">
+          InputSystem.this.lostMassInitialVelocity
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          704
+        </td>
+        <td>
           2034
           -
           2098
@@ -871,7 +892,7 @@
           48
         </td>
         <td>
-          701
+          703
         </td>
         <td>
           2049
@@ -889,31 +910,31 @@
         </td>
       </tr><tr>
         <td>
-          48
+          51
         </td>
         <td>
-          700
+          708
         </td>
         <td>
-          2074
+          2154
           -
-          2097
+          2185
         </td>
         <td>
-          Select
+          Apply
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.systems.InputSystem.lostMassInitialVelocity
+          scala.Double.-
         </td>
         <td style="background: #AEF1AE">
-          InputSystem.this.lostMassInitialVelocity
+          dim.radius.-(loseMassAmount./(2))
         </td>
       </tr><tr>
         <td>
           51
         </td>
         <td>
-          705
+          707
         </td>
         <td>
           2167
@@ -934,7 +955,7 @@
           51
         </td>
         <td>
-          707
+          709
         </td>
         <td>
           2142
@@ -949,27 +970,6 @@
         </td>
         <td style="background: #AEF1AE">
           dim.radius_(dim.radius.-(loseMassAmount./(2)))
-        </td>
-      </tr><tr>
-        <td>
-          51
-        </td>
-        <td>
-          706
-        </td>
-        <td>
-          2154
-          -
-          2185
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.Double.-
-        </td>
-        <td style="background: #AEF1AE">
-          dim.radius.-(loseMassAmount./(2))
         </td>
       </tr>
     </table>

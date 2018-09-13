@@ -1,0 +1,2344 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          src/main/scala/it/unibo/osmos/redux/mvc/view/components/level/LevelEntitiesDrawer.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.components.level
+</span>2 <span style=''>
+</span>3 <span style=''>import it.unibo.osmos.redux.ecs.entities.EntityType
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.view.ViewConstants
+</span>5 <span style=''>import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures._
+</span>6 <span style=''>import it.unibo.osmos.redux.mvc.view.drawables.{CellDrawable, CellWithSpeedDrawable, DrawableWrapper}
+</span>7 <span style=''>import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
+</span>8 <span style=''>import it.unibo.osmos.redux.utils.MathUtils.normalize
+</span>9 <span style=''>import it.unibo.osmos.redux.utils.Point
+</span>10 <span style=''>import scalafx.application.Platform
+</span>11 <span style=''>import scalafx.scene.canvas.Canvas
+</span>12 <span style=''>import scalafx.scene.image.Image
+</span>13 <span style=''>import scalafx.scene.paint.Color
+</span>14 <span style=''>
+</span>15 <span style=''>/** Class which encapsulates all the required methods and procedures to draw the level entities
+</span>16 <span style=''>  *
+</span>17 <span style=''>  * @param canvas the canvas on which the level entities will be drawn
+</span>18 <span style=''>  */
+</span>19 <span style=''>class LevelEntitiesDrawer(val canvas: Canvas) {
+</span>20 <span style=''>
+</span>21 <span style=''>  /** Level images */
+</span>22 <span style=''>  private object LevelDrawables {
+</span>23 <span style=''>    val cellDrawable: CellDrawable = </span><span style='background: #F0ADAD'>new CellDrawable(ImageLoader.getImage(CellTexture), canvas.graphicsContext2D)</span><span style=''>
+</span>24 <span style=''>    val playerCellDrawable: CellDrawable = </span><span style='background: #F0ADAD'>new CellWithSpeedDrawable(ImageLoader.getImage(PlayerCellTexture), canvas.graphicsContext2D)</span><span style=''>
+</span>25 <span style=''>    val attractiveDrawable: CellDrawable = </span><span style='background: #F0ADAD'>new CellDrawable(ImageLoader.getImage(AttractiveTexture), canvas.graphicsContext2D)</span><span style=''>
+</span>26 <span style=''>    val repulsiveDrawable: CellDrawable = </span><span style='background: #F0ADAD'>new CellDrawable(ImageLoader.getImage(RepulsiveTexture), canvas.graphicsContext2D)</span><span style=''>
+</span>27 <span style=''>    val antiMatterDrawable: CellDrawable = </span><span style='background: #F0ADAD'>new CellDrawable(ImageLoader.getImage(AntiMatterTexture), canvas.graphicsContext2D)</span><span style=''>
+</span>28 <span style=''>    val sentientDrawable: CellDrawable = </span><span style='background: #F0ADAD'>new CellDrawable(ImageLoader.getImage(SentientTexture), canvas.graphicsContext2D)</span><span style=''>
+</span>29 <span style=''>    val controlledDrawable: CellDrawable = </span><span style='background: #F0ADAD'>new CellDrawable(ImageLoader.getImage(ControllerTexture), canvas.graphicsContext2D)</span><span style=''>
+</span>30 <span style=''>    val backgroundImage: Image = </span><span style='background: #F0ADAD'>ImageLoader.getImage(BackgroundTexture)</span><span style=''>
+</span>31 <span style=''>  }
+</span>32 <span style=''>
+</span>33 <span style=''>  /** This method let the drawer calculate the new entities colour and then draws them
+</span>34 <span style=''>    *
+</span>35 <span style=''>    * @param playerEntity the player entity, which may be empty
+</span>36 <span style=''>    * @param entities the entities
+</span>37 <span style=''>    * @param playerCallback the callback called when the player entity gets drawn
+</span>38 <span style=''>    */
+</span>39 <span style=''>  def drawEntities(playerEntity: Option[DrawableWrapper], entities: Seq[DrawableWrapper], playerCallback: Point =&gt; Unit): Unit = {
+</span>40 <span style=''>
+</span>41 <span style=''>    var entitiesWrappers: Seq[(DrawableWrapper, Color)] = </span><span style='background: #F0ADAD'>Seq()</span><span style=''>
+</span>42 <span style=''>
+</span>43 <span style=''>    playerEntity match {
+</span>44 <span style=''>      /** The player is present */
+</span>45 <span style=''>      case Some(pe) =&gt; entitiesWrappers = </span><span style='background: #F0ADAD'>calculateColors(entities, pe)</span><span style=''>
+</span>46 <span style=''>
+</span>47 <span style=''>      /** The player is not present */
+</span>48 <span style=''>      case _ =&gt; entitiesWrappers = </span><span style='background: #F0ADAD'>calculateColorsWithoutPlayer(entities)</span><span style=''>
+</span>49 <span style=''>    }
+</span>50 <span style=''>
+</span>51 <span style=''>    /** We must draw to the screen the entire collection */
+</span>52 <span style=''>    </span><span style='background: #F0ADAD'>Platform.runLater({
+</span>53 <span style=''></span><span style='background: #F0ADAD'>      /** Clear the screen */
+</span>54 <span style=''></span><span style='background: #F0ADAD'>      canvas.graphicsContext2D.clearRect(0, 0, canvas.width.value, canvas.height.value)
+</span>55 <span style=''></span><span style='background: #F0ADAD'>      canvas.graphicsContext2D.drawImage(LevelDrawables.backgroundImage, 0, 0, canvas.width.value, canvas.height.value)
+</span>56 <span style=''></span><span style='background: #F0ADAD'>
+</span>57 <span style=''></span><span style='background: #F0ADAD'>      /** Draw the entities */
+</span>58 <span style=''></span><span style='background: #F0ADAD'>      playerEntity match {
+</span>59 <span style=''></span><span style='background: #F0ADAD'>        case Some(pe) =&gt; entitiesWrappers foreach (e =&gt; e._1 match {
+</span>60 <span style=''></span><span style='background: #F0ADAD'>          case `pe` =&gt;
+</span>61 <span style=''></span><span style='background: #F0ADAD'>            playerCallback(e._1.center)
+</span>62 <span style=''></span><span style='background: #F0ADAD'>            LevelDrawables.playerCellDrawable.draw(e._1, e._2)
+</span>63 <span style=''></span><span style='background: #F0ADAD'>          case _ =&gt; drawEntity(e._1, e._2)
+</span>64 <span style=''></span><span style='background: #F0ADAD'>        })
+</span>65 <span style=''></span><span style='background: #F0ADAD'>        case _ =&gt; entitiesWrappers foreach (e =&gt; drawEntity(e._1, e._2))
+</span>66 <span style=''></span><span style='background: #F0ADAD'>      }
+</span>67 <span style=''></span><span style='background: #F0ADAD'>    })</span><span style=''>
+</span>68 <span style=''>  }
+</span>69 <span style=''>
+</span>70 <span style=''>  /** This method calculates the color of the input entities, interpolating and normalizing it according to the entities size
+</span>71 <span style=''>    *
+</span>72 <span style=''>    * @param minColor the base lower Color
+</span>73 <span style=''>    * @param maxColor the base upper Color
+</span>74 <span style=''>    * @param entities the input entities
+</span>75 <span style=''>    * @return the sequence of pair where the first field is the entity and the second is the color
+</span>76 <span style=''>    */
+</span>77 <span style=''>  private def calculateColorsWithoutPlayer(entities: Seq[DrawableWrapper], minColor: Color = Color.LightBlue, maxColor: Color = Color.DarkRed): Seq[(DrawableWrapper, Color)] = {
+</span>78 <span style=''>    entities match {
+</span>79 <span style=''>      case Nil =&gt; </span><span style='background: #F0ADAD'>Seq()</span><span style=''>
+</span>80 <span style=''>      case _ =&gt;
+</span>81 <span style=''>
+</span>82 <span style=''>        /** Calculate the min and max radius among the entities */
+</span>83 <span style=''>        val endRadius = </span><span style='background: #F0ADAD'>getEntitiesExtremeRadiusValues(entities)</span><span style=''>
+</span>84 <span style=''>
+</span>85 <span style=''>        </span><span style='background: #F0ADAD'>entities map (e =&gt; {
+</span>86 <span style=''></span><span style='background: #F0ADAD'>          /** Normalize the entity radius */
+</span>87 <span style=''></span><span style='background: #F0ADAD'>          val normalizedRadius = normalize(e.radius, endRadius._1, endRadius._2)
+</span>88 <span style=''></span><span style='background: #F0ADAD'>
+</span>89 <span style=''></span><span style='background: #F0ADAD'>          /** Create a pair where the second value is the interpolated color between the two base colors */
+</span>90 <span style=''></span><span style='background: #F0ADAD'>          (e, minColor.interpolate(maxColor, normalizedRadius))
+</span>91 <span style=''></span><span style='background: #F0ADAD'>        }) seq</span><span style=''>
+</span>92 <span style=''>    }
+</span>93 <span style=''>  }
+</span>94 <span style=''>
+</span>95 <span style=''>  /** This method calculates the color of the input entities when the player is present
+</span>96 <span style=''>    *
+</span>97 <span style=''>    * @param entities     the input entities
+</span>98 <span style=''>    * @param playerEntity the player entity
+</span>99 <span style=''>    * @param minColor     the base lower Color
+</span>100 <span style=''>    * @param maxColor     the base upper Color
+</span>101 <span style=''>    * @param playerColor  the player Color
+</span>102 <span style=''>    * @return the sequence of pair where the first field is the entity and the second is the color
+</span>103 <span style=''>    */
+</span>104 <span style=''>  private def calculateColors(entities: Seq[DrawableWrapper], playerEntity: DrawableWrapper,
+</span>105 <span style=''>                              minColor: Color = ViewConstants.Entities.Colors.DefaultEntityMinColor, maxColor: Color = ViewConstants.Entities.Colors.DefaultEntityMaxColor,
+</span>106 <span style=''>                              playerColor: Color = Color.Green): Seq[(DrawableWrapper, Color)] = {
+</span>107 <span style=''>    entities match {
+</span>108 <span style=''>      case Nil =&gt; </span><span style='background: #F0ADAD'>Seq()</span><span style=''>
+</span>109 <span style=''>      case _ =&gt;
+</span>110 <span style=''>
+</span>111 <span style=''>        /** Calculate the min and max radius among the entities, considering the player */
+</span>112 <span style=''>        </span><span style='background: #F0ADAD'>entities map {
+</span>113 <span style=''></span><span style='background: #F0ADAD'>          case e if e.radius == playerEntity.radius =&gt; (e, playerColor)
+</span>114 <span style=''></span><span style='background: #F0ADAD'>
+</span>115 <span style=''></span><span style='background: #F0ADAD'>          /** The entity is smaller than the player so it's color hue will approach the min one */
+</span>116 <span style=''></span><span style='background: #F0ADAD'>          case e if e.radius &lt; playerEntity.radius =&gt; (e, minColor)
+</span>117 <span style=''></span><span style='background: #F0ADAD'>
+</span>118 <span style=''></span><span style='background: #F0ADAD'>          /** The entity is larger than the player so it's color hue will approach the max one */
+</span>119 <span style=''></span><span style='background: #F0ADAD'>          case e =&gt; (e, maxColor)
+</span>120 <span style=''></span><span style='background: #F0ADAD'>        } seq</span><span style=''>
+</span>121 <span style=''>    }
+</span>122 <span style=''>  }
+</span>123 <span style=''>
+</span>124 <span style=''>  /** Used to draw the correct entity according to its type
+</span>125 <span style=''>    *
+</span>126 <span style=''>    * @param drawableWrapper the drawableWrapper
+</span>127 <span style=''>    * @param color           the border color
+</span>128 <span style=''>    */
+</span>129 <span style=''>  private def drawEntity(drawableWrapper: DrawableWrapper, color: Color): Unit = {
+</span>130 <span style=''>    </span><span style='background: #F0ADAD'>drawableWrapper.entityType</span><span style=''> match {
+</span>131 <span style=''>      case EntityType.Attractive =&gt; </span><span style='background: #F0ADAD'>LevelDrawables.attractiveDrawable.draw(drawableWrapper, color)</span><span style=''>
+</span>132 <span style=''>      case EntityType.Repulsive =&gt; </span><span style='background: #F0ADAD'>LevelDrawables.repulsiveDrawable.draw(drawableWrapper, color)</span><span style=''>
+</span>133 <span style=''>      case EntityType.AntiMatter =&gt; </span><span style='background: #F0ADAD'>LevelDrawables.antiMatterDrawable.draw(drawableWrapper, color)</span><span style=''>
+</span>134 <span style=''>      case EntityType.Sentient =&gt; </span><span style='background: #F0ADAD'>LevelDrawables.sentientDrawable.draw(drawableWrapper, color)</span><span style=''>
+</span>135 <span style=''>      case EntityType.Controlled =&gt; </span><span style='background: #F0ADAD'>LevelDrawables.controlledDrawable.draw(drawableWrapper, color)</span><span style=''>
+</span>136 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>LevelDrawables.cellDrawable.draw(drawableWrapper, color)</span><span style=''>
+</span>137 <span style=''>    }
+</span>138 <span style=''>  }
+</span>139 <span style=''>
+</span>140 <span style=''>  /** This method returns a pair consisting of the min and the max radius found in the entities sequence
+</span>141 <span style=''>    *
+</span>142 <span style=''>    * @param entities a DrawableWrapper sequence
+</span>143 <span style=''>    * @return a pair consisting of the min and the max radius found; an IllegalArgumentException on empty sequence
+</span>144 <span style=''>    */
+</span>145 <span style=''>  private def getEntitiesExtremeRadiusValues(entities: Seq[DrawableWrapper]): (Double, Double) = {
+</span>146 <span style=''>    /** Sorting the entities */
+</span>147 <span style=''>    val sorted = </span><span style='background: #F0ADAD'>entities.sortWith(_.radius &lt; _.radius)</span><span style=''>
+</span>148 <span style=''>
+</span>149 <span style=''>    /** Retrieving the min and the max radius values */
+</span>150 <span style=''>    sorted match {
+</span>151 <span style=''>      case head +: _ :+ tail =&gt; </span><span style='background: #F0ADAD'>(head.radius, tail.radius)</span><span style=''>
+</span>152 <span style=''>      case head +: _ =&gt; </span><span style='background: #F0ADAD'>(head.radius, head.radius)</span><span style=''>
+</span>153 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>throw new IllegalArgumentException(&quot;Could not determine the min and max radius from an empty sequence of entities&quot;)</span><span style=''>
+</span>154 <span style=''>    }
+</span>155 <span style=''>  }
+</span>156 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          4102
+        </td>
+        <td>
+          991
+          -
+          1015
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.scene.canvas.Canvas.graphicsContext2D
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.canvas.graphicsContext2D
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          4101
+        </td>
+        <td>
+          956
+          -
+          989
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          4103
+        </td>
+        <td>
+          939
+          -
+          1016
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.CellDrawable.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.drawables.CellDrawable(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture), LevelEntitiesDrawer.this.canvas.graphicsContext2D)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          4100
+        </td>
+        <td>
+          977
+          -
+          988
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.CellTexture
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          4105
+        </td>
+        <td>
+          1086
+          -
+          1125
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.PlayerCellTexture)
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          4107
+        </td>
+        <td>
+          1060
+          -
+          1152
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.CellWithSpeedDrawable.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.drawables.CellWithSpeedDrawable(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.PlayerCellTexture), LevelEntitiesDrawer.this.canvas.graphicsContext2D)
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          4104
+        </td>
+        <td>
+          1107
+          -
+          1124
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.PlayerCellTexture
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.PlayerCellTexture
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          4106
+        </td>
+        <td>
+          1127
+          -
+          1151
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.scene.canvas.Canvas.graphicsContext2D
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.canvas.graphicsContext2D
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          4108
+        </td>
+        <td>
+          1234
+          -
+          1251
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AttractiveTexture
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AttractiveTexture
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          4111
+        </td>
+        <td>
+          1196
+          -
+          1279
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.CellDrawable.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.drawables.CellDrawable(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AttractiveTexture), LevelEntitiesDrawer.this.canvas.graphicsContext2D)
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          4110
+        </td>
+        <td>
+          1254
+          -
+          1278
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.scene.canvas.Canvas.graphicsContext2D
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.canvas.graphicsContext2D
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          4109
+        </td>
+        <td>
+          1213
+          -
+          1252
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AttractiveTexture)
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          4114
+        </td>
+        <td>
+          1379
+          -
+          1403
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.scene.canvas.Canvas.graphicsContext2D
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.canvas.graphicsContext2D
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          4113
+        </td>
+        <td>
+          1339
+          -
+          1377
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.RepulsiveTexture)
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          4112
+        </td>
+        <td>
+          1360
+          -
+          1376
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.RepulsiveTexture
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.RepulsiveTexture
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          4115
+        </td>
+        <td>
+          1322
+          -
+          1404
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.CellDrawable.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.drawables.CellDrawable(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.RepulsiveTexture), LevelEntitiesDrawer.this.canvas.graphicsContext2D)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          4117
+        </td>
+        <td>
+          1465
+          -
+          1504
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AntiMatterTexture)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          4116
+        </td>
+        <td>
+          1486
+          -
+          1503
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AntiMatterTexture
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AntiMatterTexture
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          4119
+        </td>
+        <td>
+          1448
+          -
+          1531
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.CellDrawable.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.drawables.CellDrawable(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.AntiMatterTexture), LevelEntitiesDrawer.this.canvas.graphicsContext2D)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          4118
+        </td>
+        <td>
+          1506
+          -
+          1530
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.scene.canvas.Canvas.graphicsContext2D
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.canvas.graphicsContext2D
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          4120
+        </td>
+        <td>
+          1611
+          -
+          1626
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.SentientTexture
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.SentientTexture
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          4123
+        </td>
+        <td>
+          1573
+          -
+          1654
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.CellDrawable.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.drawables.CellDrawable(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.SentientTexture), LevelEntitiesDrawer.this.canvas.graphicsContext2D)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          4122
+        </td>
+        <td>
+          1629
+          -
+          1653
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.scene.canvas.Canvas.graphicsContext2D
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.canvas.graphicsContext2D
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          4121
+        </td>
+        <td>
+          1590
+          -
+          1627
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.SentientTexture)
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          4126
+        </td>
+        <td>
+          1756
+          -
+          1780
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.scene.canvas.Canvas.graphicsContext2D
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.canvas.graphicsContext2D
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          4125
+        </td>
+        <td>
+          1715
+          -
+          1754
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.ControllerTexture)
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          4124
+        </td>
+        <td>
+          1736
+          -
+          1753
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.ControllerTexture
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.ControllerTexture
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          4127
+        </td>
+        <td>
+          1698
+          -
+          1781
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.CellDrawable.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.mvc.view.drawables.CellDrawable(it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.ControllerTexture), LevelEntitiesDrawer.this.canvas.graphicsContext2D)
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          4129
+        </td>
+        <td>
+          1815
+          -
+          1854
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.loaders.ImageLoader.getImage(it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.BackgroundTexture)
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          4128
+        </td>
+        <td>
+          1836
+          -
+          1853
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.BackgroundTexture
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.BackgroundTexture
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          4130
+        </td>
+        <td>
+          2331
+          -
+          2336
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.Seq.apply[Nothing]()
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          4132
+        </td>
+        <td>
+          2440
+          -
+          2440
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.level.LevelEntitiesDrawer.calculateColors$default$4
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.calculateColors$default$4
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          4131
+        </td>
+        <td>
+          2440
+          -
+          2440
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.level.LevelEntitiesDrawer.calculateColors$default$3
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.calculateColors$default$3
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          4134
+        </td>
+        <td>
+          2440
+          -
+          2469
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.level.LevelEntitiesDrawer.calculateColors
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.calculateColors(entities, pe, LevelEntitiesDrawer.this.calculateColors$default$3, LevelEntitiesDrawer.this.calculateColors$default$4, LevelEntitiesDrawer.this.calculateColors$default$5)
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          4133
+        </td>
+        <td>
+          2440
+          -
+          2440
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.level.LevelEntitiesDrawer.calculateColors$default$5
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.calculateColors$default$5
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          4135
+        </td>
+        <td>
+          2545
+          -
+          2545
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.level.LevelEntitiesDrawer.calculateColorsWithoutPlayer$default$2
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.calculateColorsWithoutPlayer$default$2
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          4137
+        </td>
+        <td>
+          2545
+          -
+          2583
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.level.LevelEntitiesDrawer.calculateColorsWithoutPlayer
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.calculateColorsWithoutPlayer(entities, LevelEntitiesDrawer.this.calculateColorsWithoutPlayer$default$2, LevelEntitiesDrawer.this.calculateColorsWithoutPlayer$default$3)
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          4136
+        </td>
+        <td>
+          2545
+          -
+          2545
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.level.LevelEntitiesDrawer.calculateColorsWithoutPlayer$default$3
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.calculateColorsWithoutPlayer$default$3
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          4163
+        </td>
+        <td>
+          2655
+          -
+          3308
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.application.Platform.runLater
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.application.Platform.runLater[Unit]({
+  LevelEntitiesDrawer.this.canvas.graphicsContext2D.clearRect(0.0, 0.0, LevelEntitiesDrawer.this.canvas.width.value, LevelEntitiesDrawer.this.canvas.height.value);
+  LevelEntitiesDrawer.this.canvas.graphicsContext2D.drawImage(LevelEntitiesDrawer.this.LevelDrawables.backgroundImage, 0.0, 0.0, LevelEntitiesDrawer.this.canvas.width.value, LevelEntitiesDrawer.this.canvas.height.value);
+  playerEntity match {
+    case (value: it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper)Some[it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper]((pe @ _)) =&gt; entitiesWrappers.foreach[Unit](((e: (it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper, scalafx.scene.paint.Color)) =&gt; e._1 match {
+      case `pe` =&gt; {
+        playerCallback.apply(e._1.center);
+        LevelEntitiesDrawer.this.LevelDrawables.playerCellDrawable.draw(e._1, e._2)
+      }
+      case _ =&gt; LevelEntitiesDrawer.this.drawEntity(e._1, e._2)
+    }))
+    case _ =&gt; entitiesWrappers.foreach[Unit](((e: (it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper, scalafx.scene.paint.Color)) =&gt; LevelEntitiesDrawer.this.drawEntity(e._1, e._2)))
+  }
+})
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          4138
+        </td>
+        <td>
+          2746
+          -
+          2747
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          0.0
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          4141
+        </td>
+        <td>
+          2772
+          -
+          2791
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyDoubleProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.canvas.height.value
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          4140
+        </td>
+        <td>
+          2752
+          -
+          2770
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyDoubleProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.canvas.width.value
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          4139
+        </td>
+        <td>
+          2749
+          -
+          2750
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          0.0
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          4142
+        </td>
+        <td>
+          2711
+          -
+          2792
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.canvas.GraphicsContext.clearRect
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.canvas.graphicsContext2D.clearRect(0.0, 0.0, LevelEntitiesDrawer.this.canvas.width.value, LevelEntitiesDrawer.this.canvas.height.value)
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          4144
+        </td>
+        <td>
+          2866
+          -
+          2867
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          0.0
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          4147
+        </td>
+        <td>
+          2892
+          -
+          2911
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyDoubleProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.canvas.height.value
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          4143
+        </td>
+        <td>
+          2834
+          -
+          2864
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.level.LevelEntitiesDrawer.LevelDrawables.backgroundImage
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.LevelDrawables.backgroundImage
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          4146
+        </td>
+        <td>
+          2872
+          -
+          2890
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyDoubleProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.canvas.width.value
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          4145
+        </td>
+        <td>
+          2869
+          -
+          2870
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          0.0
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          4148
+        </td>
+        <td>
+          2799
+          -
+          2912
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.canvas.GraphicsContext.drawImage
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.canvas.graphicsContext2D.drawImage(LevelEntitiesDrawer.this.LevelDrawables.backgroundImage, 0.0, 0.0, LevelEntitiesDrawer.this.canvas.width.value, LevelEntitiesDrawer.this.canvas.height.value)
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          4158
+        </td>
+        <td>
+          2997
+          -
+          3220
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.IterableLike.foreach
+        </td>
+        <td style="background: #F0ADAD">
+          entitiesWrappers.foreach[Unit](((e: (it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper, scalafx.scene.paint.Color)) =&gt; e._1 match {
+  case `pe` =&gt; {
+    playerCallback.apply(e._1.center);
+    LevelEntitiesDrawer.this.LevelDrawables.playerCellDrawable.draw(e._1, e._2)
+  }
+  case _ =&gt; LevelEntitiesDrawer.this.drawEntity(e._1, e._2)
+}))
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          4149
+        </td>
+        <td>
+          3028
+          -
+          3032
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._1
+        </td>
+        <td style="background: #F0ADAD">
+          e._1
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          4150
+        </td>
+        <td>
+          3091
+          -
+          3102
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper.center
+        </td>
+        <td style="background: #F0ADAD">
+          e._1.center
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          4151
+        </td>
+        <td>
+          3076
+          -
+          3103
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Function1.apply
+        </td>
+        <td style="background: #F0ADAD">
+          playerCallback.apply(e._1.center)
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          4153
+        </td>
+        <td>
+          3161
+          -
+          3165
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._2
+        </td>
+        <td style="background: #F0ADAD">
+          e._2
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          4152
+        </td>
+        <td>
+          3155
+          -
+          3159
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._1
+        </td>
+        <td style="background: #F0ADAD">
+          e._1
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          4154
+        </td>
+        <td>
+          3116
+          -
+          3166
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.CellDrawable.draw
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.LevelDrawables.playerCellDrawable.draw(e._1, e._2)
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          4156
+        </td>
+        <td>
+          3204
+          -
+          3208
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._2
+        </td>
+        <td style="background: #F0ADAD">
+          e._2
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          4155
+        </td>
+        <td>
+          3198
+          -
+          3202
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._1
+        </td>
+        <td style="background: #F0ADAD">
+          e._1
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          4157
+        </td>
+        <td>
+          3187
+          -
+          3209
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.level.LevelEntitiesDrawer.drawEntity
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.drawEntity(e._1, e._2)
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          4162
+        </td>
+        <td>
+          3239
+          -
+          3293
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.IterableLike.foreach
+        </td>
+        <td style="background: #F0ADAD">
+          entitiesWrappers.foreach[Unit](((e: (it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper, scalafx.scene.paint.Color)) =&gt; LevelEntitiesDrawer.this.drawEntity(e._1, e._2)))
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          4159
+        </td>
+        <td>
+          3281
+          -
+          3285
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._1
+        </td>
+        <td style="background: #F0ADAD">
+          e._1
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          4161
+        </td>
+        <td>
+          3270
+          -
+          3292
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.level.LevelEntitiesDrawer.drawEntity
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.drawEntity(e._1, e._2)
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          4160
+        </td>
+        <td>
+          3287
+          -
+          3291
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._2
+        </td>
+        <td style="background: #F0ADAD">
+          e._2
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          4164
+        </td>
+        <td>
+          3896
+          -
+          3901
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.Seq.apply[Nothing]()
+        </td>
+      </tr><tr>
+        <td>
+          83
+        </td>
+        <td>
+          4165
+        </td>
+        <td>
+          4010
+          -
+          4050
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.components.level.LevelEntitiesDrawer.getEntitiesExtremeRadiusValues
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.getEntitiesExtremeRadiusValues(entities)
+        </td>
+      </tr><tr>
+        <td>
+          85
+        </td>
+        <td>
+          4172
+        </td>
+        <td>
+          4069
+          -
+          4069
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.Seq.canBuildFrom
+        </td>
+        <td style="background: #F0ADAD">
+          collection.this.Seq.canBuildFrom[(it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper, scalafx.scene.paint.Color)]
+        </td>
+      </tr><tr>
+        <td>
+          87
+        </td>
+        <td>
+          4168
+        </td>
+        <td>
+          4193
+          -
+          4205
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._2
+        </td>
+        <td style="background: #F0ADAD">
+          endRadius._2
+        </td>
+      </tr><tr>
+        <td>
+          87
+        </td>
+        <td>
+          4167
+        </td>
+        <td>
+          4179
+          -
+          4191
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._1
+        </td>
+        <td style="background: #F0ADAD">
+          endRadius._1
+        </td>
+      </tr><tr>
+        <td>
+          87
+        </td>
+        <td>
+          4166
+        </td>
+        <td>
+          4169
+          -
+          4177
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper.radius
+        </td>
+        <td style="background: #F0ADAD">
+          e.radius
+        </td>
+      </tr><tr>
+        <td>
+          87
+        </td>
+        <td>
+          4169
+        </td>
+        <td>
+          4159
+          -
+          4206
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.MathUtils.normalize
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.MathUtils.normalize(e.radius, endRadius._1, endRadius._2)
+        </td>
+      </tr><tr>
+        <td>
+          90
+        </td>
+        <td>
+          4171
+        </td>
+        <td>
+          4326
+          -
+          4379
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Tuple2.apply[it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper, scalafx.scene.paint.Color](e, minColor.interpolate(maxColor, normalizedRadius))
+        </td>
+      </tr><tr>
+        <td>
+          90
+        </td>
+        <td>
+          4170
+        </td>
+        <td>
+          4330
+          -
+          4378
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.scene.paint.Color.interpolate
+        </td>
+        <td style="background: #F0ADAD">
+          minColor.interpolate(maxColor, normalizedRadius)
+        </td>
+      </tr><tr>
+        <td>
+          91
+        </td>
+        <td>
+          4173
+        </td>
+        <td>
+          4060
+          -
+          4394
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.Seq.seq
+        </td>
+        <td style="background: #F0ADAD">
+          entities.map[(it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper, scalafx.scene.paint.Color), Seq[(it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper, scalafx.scene.paint.Color)]](((e: it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper) =&gt; {
+  val normalizedRadius: Double = it.unibo.osmos.redux.utils.MathUtils.normalize(e.radius, endRadius._1, endRadius._2);
+  scala.Tuple2.apply[it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper, scalafx.scene.paint.Color](e, minColor.interpolate(maxColor, normalizedRadius))
+}))(collection.this.Seq.canBuildFrom[(it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper, scalafx.scene.paint.Color)]).seq
+        </td>
+      </tr><tr>
+        <td>
+          108
+        </td>
+        <td>
+          4174
+        </td>
+        <td>
+          5235
+          -
+          5240
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.Seq.apply[Nothing]()
+        </td>
+      </tr><tr>
+        <td>
+          112
+        </td>
+        <td>
+          4182
+        </td>
+        <td>
+          5366
+          -
+          5366
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.Seq.canBuildFrom
+        </td>
+        <td style="background: #F0ADAD">
+          collection.this.Seq.canBuildFrom[(it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper, scalafx.scene.paint.Color)]
+        </td>
+      </tr><tr>
+        <td>
+          113
+        </td>
+        <td>
+          4177
+        </td>
+        <td>
+          5427
+          -
+          5443
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Tuple2.apply[it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper, scalafx.scene.paint.Color](e, playerColor)
+        </td>
+      </tr><tr>
+        <td>
+          113
+        </td>
+        <td>
+          4176
+        </td>
+        <td>
+          5392
+          -
+          5423
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.==
+        </td>
+        <td style="background: #F0ADAD">
+          e.radius.==(playerEntity.radius)
+        </td>
+      </tr><tr>
+        <td>
+          113
+        </td>
+        <td>
+          4175
+        </td>
+        <td>
+          5404
+          -
+          5423
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper.radius
+        </td>
+        <td style="background: #F0ADAD">
+          playerEntity.radius
+        </td>
+      </tr><tr>
+        <td>
+          116
+        </td>
+        <td>
+          4180
+        </td>
+        <td>
+          5598
+          -
+          5611
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Tuple2.apply[it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper, scalafx.scene.paint.Color](e, minColor)
+        </td>
+      </tr><tr>
+        <td>
+          116
+        </td>
+        <td>
+          4179
+        </td>
+        <td>
+          5564
+          -
+          5594
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.&lt;
+        </td>
+        <td style="background: #F0ADAD">
+          e.radius.&lt;(playerEntity.radius)
+        </td>
+      </tr><tr>
+        <td>
+          116
+        </td>
+        <td>
+          4178
+        </td>
+        <td>
+          5575
+          -
+          5594
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper.radius
+        </td>
+        <td style="background: #F0ADAD">
+          playerEntity.radius
+        </td>
+      </tr><tr>
+        <td>
+          119
+        </td>
+        <td>
+          4181
+        </td>
+        <td>
+          5731
+          -
+          5744
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Tuple2.apply[it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper, scalafx.scene.paint.Color](e, maxColor)
+        </td>
+      </tr><tr>
+        <td>
+          120
+        </td>
+        <td>
+          4183
+        </td>
+        <td>
+          5357
+          -
+          5758
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.Seq.seq
+        </td>
+        <td style="background: #F0ADAD">
+          entities.map[(it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper, scalafx.scene.paint.Color), Seq[(it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper, scalafx.scene.paint.Color)]](((x0$1: it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper) =&gt; x0$1 match {
+  case (e @ _) if e.radius.==(playerEntity.radius) =&gt; scala.Tuple2.apply[it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper, scalafx.scene.paint.Color](e, playerColor)
+  case (e @ _) if e.radius.&lt;(playerEntity.radius) =&gt; scala.Tuple2.apply[it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper, scalafx.scene.paint.Color](e, minColor)
+  case (e @ _) =&gt; scala.Tuple2.apply[it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper, scalafx.scene.paint.Color](e, maxColor)
+}))(collection.this.Seq.canBuildFrom[(it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper, scalafx.scene.paint.Color)]).seq
+        </td>
+      </tr><tr>
+        <td>
+          130
+        </td>
+        <td>
+          4184
+        </td>
+        <td>
+          6025
+          -
+          6051
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper.entityType
+        </td>
+        <td style="background: #F0ADAD">
+          drawableWrapper.entityType
+        </td>
+      </tr><tr>
+        <td>
+          131
+        </td>
+        <td>
+          4185
+        </td>
+        <td>
+          6096
+          -
+          6158
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.CellDrawable.draw
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.LevelDrawables.attractiveDrawable.draw(drawableWrapper, color)
+        </td>
+      </tr><tr>
+        <td>
+          132
+        </td>
+        <td>
+          4186
+        </td>
+        <td>
+          6194
+          -
+          6255
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.CellDrawable.draw
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.LevelDrawables.repulsiveDrawable.draw(drawableWrapper, color)
+        </td>
+      </tr><tr>
+        <td>
+          133
+        </td>
+        <td>
+          4187
+        </td>
+        <td>
+          6292
+          -
+          6354
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.CellDrawable.draw
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.LevelDrawables.antiMatterDrawable.draw(drawableWrapper, color)
+        </td>
+      </tr><tr>
+        <td>
+          134
+        </td>
+        <td>
+          4188
+        </td>
+        <td>
+          6389
+          -
+          6449
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.CellDrawable.draw
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.LevelDrawables.sentientDrawable.draw(drawableWrapper, color)
+        </td>
+      </tr><tr>
+        <td>
+          135
+        </td>
+        <td>
+          4189
+        </td>
+        <td>
+          6486
+          -
+          6548
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.CellDrawable.draw
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.LevelDrawables.controlledDrawable.draw(drawableWrapper, color)
+        </td>
+      </tr><tr>
+        <td>
+          136
+        </td>
+        <td>
+          4190
+        </td>
+        <td>
+          6565
+          -
+          6621
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.CellDrawable.draw
+        </td>
+        <td style="background: #F0ADAD">
+          LevelEntitiesDrawer.this.LevelDrawables.cellDrawable.draw(drawableWrapper, color)
+        </td>
+      </tr><tr>
+        <td>
+          147
+        </td>
+        <td>
+          4192
+        </td>
+        <td>
+          7081
+          -
+          7100
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.&lt;
+        </td>
+        <td style="background: #F0ADAD">
+          x$1.radius.&lt;(x$2.radius)
+        </td>
+      </tr><tr>
+        <td>
+          147
+        </td>
+        <td>
+          4191
+        </td>
+        <td>
+          7092
+          -
+          7100
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper.radius
+        </td>
+        <td style="background: #F0ADAD">
+          x$2.radius
+        </td>
+      </tr><tr>
+        <td>
+          147
+        </td>
+        <td>
+          4193
+        </td>
+        <td>
+          7063
+          -
+          7101
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.SeqLike.sortWith
+        </td>
+        <td style="background: #F0ADAD">
+          entities.sortWith(((x$1: it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper, x$2: it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper) =&gt; x$1.radius.&lt;(x$2.radius)))
+        </td>
+      </tr><tr>
+        <td>
+          151
+        </td>
+        <td>
+          4195
+        </td>
+        <td>
+          7224
+          -
+          7235
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper.radius
+        </td>
+        <td style="background: #F0ADAD">
+          tail.radius
+        </td>
+      </tr><tr>
+        <td>
+          151
+        </td>
+        <td>
+          4194
+        </td>
+        <td>
+          7211
+          -
+          7222
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper.radius
+        </td>
+        <td style="background: #F0ADAD">
+          head.radius
+        </td>
+      </tr><tr>
+        <td>
+          151
+        </td>
+        <td>
+          4196
+        </td>
+        <td>
+          7210
+          -
+          7236
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Tuple2.apply[Double, Double](head.radius, tail.radius)
+        </td>
+      </tr><tr>
+        <td>
+          152
+        </td>
+        <td>
+          4198
+        </td>
+        <td>
+          7275
+          -
+          7286
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper.radius
+        </td>
+        <td style="background: #F0ADAD">
+          head.radius
+        </td>
+      </tr><tr>
+        <td>
+          152
+        </td>
+        <td>
+          4197
+        </td>
+        <td>
+          7262
+          -
+          7273
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper.radius
+        </td>
+        <td style="background: #F0ADAD">
+          head.radius
+        </td>
+      </tr><tr>
+        <td>
+          152
+        </td>
+        <td>
+          4199
+        </td>
+        <td>
+          7261
+          -
+          7287
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.Tuple2.apply[Double, Double](head.radius, head.radius)
+        </td>
+      </tr><tr>
+        <td>
+          153
+        </td>
+        <td>
+          4200
+        </td>
+        <td>
+          7304
+          -
+          7419
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.IllegalArgumentException(&quot;Could not determine the min and max radius from an empty sequence of entities&quot;)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

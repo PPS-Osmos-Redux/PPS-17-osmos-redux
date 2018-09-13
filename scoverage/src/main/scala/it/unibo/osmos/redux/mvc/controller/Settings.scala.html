@@ -123,7 +123,7 @@
           9
         </td>
         <td>
-          2211
+          2213
         </td>
         <td>
           340
@@ -144,7 +144,7 @@
           11
         </td>
         <td>
-          2212
+          2214
         </td>
         <td>
           384
@@ -165,28 +165,7 @@
           17
         </td>
         <td>
-          2214
-        </td>
-        <td>
-          528
-          -
-          596
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.collection.immutable.List.foreach
-        </td>
-        <td style="background: #F0ADAD">
-          loadedSettings.foreach[Unit](((setting: it.unibo.osmos.redux.mvc.controller.Setting) =&gt; SettingsHolder.this.sendSettingToDestination(setting)))
-        </td>
-      </tr><tr>
-        <td>
-          17
-        </td>
-        <td>
-          2213
+          2215
         </td>
         <td>
           562
@@ -204,31 +183,31 @@
         </td>
       </tr><tr>
         <td>
-          20
+          17
         </td>
         <td>
-          2215
+          2216
         </td>
         <td>
-          728
+          528
           -
-          737
+          596
         </td>
         <td>
-          Select
+          Apply
         </td>
         <td>
-          it.unibo.osmos.redux.mvc.controller.Volume.value
+          scala.collection.immutable.List.foreach
         </td>
         <td style="background: #F0ADAD">
-          vol.value
+          loadedSettings.foreach[Unit](((setting: it.unibo.osmos.redux.mvc.controller.Setting) =&gt; SettingsHolder.this.sendSettingToDestination(setting)))
         </td>
       </tr><tr>
         <td>
           20
         </td>
         <td>
-          2216
+          2218
         </td>
         <td>
           703
@@ -246,10 +225,52 @@
         </td>
       </tr><tr>
         <td>
+          20
+        </td>
+        <td>
+          2217
+        </td>
+        <td>
+          728
+          -
+          737
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.Volume.value
+        </td>
+        <td style="background: #F0ADAD">
+          vol.value
+        </td>
+      </tr><tr>
+        <td>
           21
         </td>
         <td>
-          2218
+          2221
+        </td>
+        <td>
+          753
+          -
+          803
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Logger.log
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.utils.Logger.log(&quot;Error setting not managed &quot;.+(setting))(SettingsHolder.this.who)
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          2220
         </td>
         <td>
           763
@@ -270,7 +291,7 @@
           21
         </td>
         <td>
-          2217
+          2219
         </td>
         <td>
           764
@@ -288,31 +309,31 @@
         </td>
       </tr><tr>
         <td>
-          21
+          26
         </td>
         <td>
-          2219
+          2224
         </td>
         <td>
-          753
+          935
           -
-          803
+          1000
         </td>
         <td>
-          ApplyToImplicitArgs
+          Apply
         </td>
         <td>
-          it.unibo.osmos.redux.utils.Logger.log
+          it.unibo.osmos.redux.mvc.controller.SettingsHolder.createOrUpdateSetting
         </td>
         <td style="background: #F0ADAD">
-          it.unibo.osmos.redux.utils.Logger.log(&quot;Error setting not managed &quot;.+(setting))(SettingsHolder.this.who)
+          SettingsHolder.this.createOrUpdateSetting(mpEvent.volume, mpEvent.volume.settingType)
         </td>
       </tr><tr>
         <td>
           26
         </td>
         <td>
-          2221
+          2223
         </td>
         <td>
           973
@@ -333,7 +354,7 @@
           26
         </td>
         <td>
-          2220
+          2222
         </td>
         <td>
           957
@@ -351,31 +372,31 @@
         </td>
       </tr><tr>
         <td>
-          26
+          27
         </td>
         <td>
-          2222
+          2227
         </td>
         <td>
-          935
+          1015
           -
-          1000
+          1078
         </td>
         <td>
-          Apply
+          ApplyToImplicitArgs
         </td>
         <td>
-          it.unibo.osmos.redux.mvc.controller.SettingsHolder.createOrUpdateSetting
+          it.unibo.osmos.redux.utils.Logger.log
         </td>
         <td style="background: #F0ADAD">
-          SettingsHolder.this.createOrUpdateSetting(mpEvent.volume, mpEvent.volume.settingType)
+          it.unibo.osmos.redux.utils.Logger.log(&quot;Error settings event not managed &quot;.+(settingsEvent))(SettingsHolder.this.who)
         </td>
       </tr><tr>
         <td>
           27
         </td>
         <td>
-          2224
+          2226
         </td>
         <td>
           1025
@@ -396,7 +417,7 @@
           27
         </td>
         <td>
-          2223
+          2225
         </td>
         <td>
           1026
@@ -414,31 +435,10 @@
         </td>
       </tr><tr>
         <td>
-          27
-        </td>
-        <td>
-          2225
-        </td>
-        <td>
-          1015
-          -
-          1078
-        </td>
-        <td>
-          ApplyToImplicitArgs
-        </td>
-        <td>
-          it.unibo.osmos.redux.utils.Logger.log
-        </td>
-        <td style="background: #F0ADAD">
-          it.unibo.osmos.redux.utils.Logger.log(&quot;Error settings event not managed &quot;.+(settingsEvent))(SettingsHolder.this.who)
-        </td>
-      </tr><tr>
-        <td>
           31
         </td>
         <td>
-          2226
+          2228
         </td>
         <td>
           1188
@@ -459,28 +459,7 @@
           32
         </td>
         <td>
-          2227
-        </td>
-        <td>
-          1275
-          -
-          1295
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.mvc.controller.SettingsHolder.indexOf
-        </td>
-        <td style="background: #F0ADAD">
-          SettingsHolder.this.indexOf(settingType)
-        </td>
-      </tr><tr>
-        <td>
-          32
-        </td>
-        <td>
-          2230
+          2233
         </td>
         <td>
           1247
@@ -488,7 +467,7 @@
           1305
         </td>
         <td>
-          Apply
+          Block
         </td>
         <td>
           it.unibo.osmos.redux.mvc.controller.SettingsHolder.settings_=
@@ -501,28 +480,7 @@
           32
         </td>
         <td>
-          2229
-        </td>
-        <td>
-          1258
-          -
-          1305
-        </td>
-        <td>
-          ApplyToImplicitArgs
-        </td>
-        <td>
-          scala.collection.SeqLike.updated
-        </td>
-        <td style="background: #F0ADAD">
-          SettingsHolder.this.settings.updated[it.unibo.osmos.redux.mvc.controller.Setting, List[it.unibo.osmos.redux.mvc.controller.Setting]](SettingsHolder.this.indexOf(settingType), setting)(immutable.this.List.canBuildFrom[it.unibo.osmos.redux.mvc.controller.Setting])
-        </td>
-      </tr><tr>
-        <td>
-          32
-        </td>
-        <td>
-          2228
+          2230
         </td>
         <td>
           1274
@@ -543,7 +501,28 @@
           32
         </td>
         <td>
-          2231
+          2229
+        </td>
+        <td>
+          1275
+          -
+          1295
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.SettingsHolder.indexOf
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsHolder.this.indexOf(settingType)
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          2232
         </td>
         <td>
           1247
@@ -551,7 +530,7 @@
           1305
         </td>
         <td>
-          Block
+          Apply
         </td>
         <td>
           it.unibo.osmos.redux.mvc.controller.SettingsHolder.settings_=
@@ -561,10 +540,55 @@
         </td>
       </tr><tr>
         <td>
+          32
+        </td>
+        <td>
+          2231
+        </td>
+        <td>
+          1258
+          -
+          1305
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.SeqLike.updated
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsHolder.this.settings.updated[it.unibo.osmos.redux.mvc.controller.Setting, List[it.unibo.osmos.redux.mvc.controller.Setting]](SettingsHolder.this.indexOf(settingType), setting)(immutable.this.List.canBuildFrom[it.unibo.osmos.redux.mvc.controller.Setting])
+        </td>
+      </tr><tr>
+        <td>
           34
         </td>
         <td>
-          2233
+          2236
+        </td>
+        <td>
+          1325
+          -
+          1355
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.SettingsHolder.settings_=
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsHolder.this.settings_=({
+  &lt;synthetic&gt; &lt;artifact&gt; val x$2: it.unibo.osmos.redux.mvc.controller.Setting = setting;
+  SettingsHolder.this.settings.::[it.unibo.osmos.redux.mvc.controller.Setting](x$2)
+})
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          2235
         </td>
         <td>
           1325
@@ -588,7 +612,7 @@
           34
         </td>
         <td>
-          2232
+          2234
         </td>
         <td>
           1344
@@ -606,34 +630,10 @@
         </td>
       </tr><tr>
         <td>
-          34
-        </td>
-        <td>
-          2234
-        </td>
-        <td>
-          1325
-          -
-          1355
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          it.unibo.osmos.redux.mvc.controller.SettingsHolder.settings_=
-        </td>
-        <td style="background: #F0ADAD">
-          SettingsHolder.this.settings_=({
-  &lt;synthetic&gt; &lt;artifact&gt; val x$2: it.unibo.osmos.redux.mvc.controller.Setting = setting;
-  SettingsHolder.this.settings.::[it.unibo.osmos.redux.mvc.controller.Setting](x$2)
-})
-        </td>
-      </tr><tr>
-        <td>
           37
         </td>
         <td>
-          2235
+          2237
         </td>
         <td>
           1426
@@ -654,28 +654,7 @@
           40
         </td>
         <td>
-          2236
-        </td>
-        <td>
-          1568
-          -
-          1576
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.mvc.controller.SettingsHolder.settings
-        </td>
-        <td style="background: #F0ADAD">
-          SettingsHolder.this.settings
-        </td>
-      </tr><tr>
-        <td>
-          40
-        </td>
-        <td>
-          2237
+          2239
         </td>
         <td>
           1536
@@ -693,10 +672,31 @@
         </td>
       </tr><tr>
         <td>
-          69
+          40
         </td>
         <td>
           2238
+        </td>
+        <td>
+          1568
+          -
+          1576
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.SettingsHolder.settings
+        </td>
+        <td style="background: #F0ADAD">
+          SettingsHolder.this.settings
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          2240
         </td>
         <td>
           2204
@@ -717,7 +717,7 @@
           84
         </td>
         <td>
-          2239
+          2241
         </td>
         <td>
           2504
