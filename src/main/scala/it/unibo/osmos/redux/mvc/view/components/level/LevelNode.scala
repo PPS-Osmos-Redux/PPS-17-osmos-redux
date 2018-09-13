@@ -109,7 +109,7 @@ class LevelNode(override val listener: LevelNodeListener, override val levelInfo
   /** The upper text */
   override lazy val text: Text = new Text() {
     margin = Insets(0, 0, 20, 0)
-    style = "-fx-fx-font-size: 20pt"
+    style = "-fx-font-size: 20pt"
 
     if (levelInfo.isAvailable) {
       text = "Level " + levelInfo.name

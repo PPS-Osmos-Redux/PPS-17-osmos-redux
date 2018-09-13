@@ -17,6 +17,7 @@ case class EndGameSystem(levelContext: GameStateHolder, victoryRules: VictoryRul
   private val victoryCondition = victoryRules match {
     case VictoryRules.becomeTheBiggest => BecomeTheBiggestVictoryCondition()
     case VictoryRules.becomeHuge => BecomeHugeVictoryCondition()
+    case VictoryRules.absorbTheAttractors => AbsorbCellsWithTypeVictoryCondition(EntityType.Attractive)
     case VictoryRules.absorbTheRepulsors => AbsorbCellsWithTypeVictoryCondition(EntityType.Repulsive)
     case VictoryRules.absorbTheHostileCells => AbsorbCellsWithTypeVictoryCondition(EntityType.Sentient)
     case _ => throw new NotImplementedError()
