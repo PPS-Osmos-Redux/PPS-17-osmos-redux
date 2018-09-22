@@ -160,4 +160,19 @@ class TestSentientSystem extends FunSuite with BeforeAndAfter {
     assert(sentientCellEntity.getAccelerationComponent.vector.y == Constants.Sentient.MaxAcceleration)
     assert(sentientCellEntity.getDimensionComponent.radius < originalRadius)
   }
+
+  test("If a SentientSystem apply a acceleration to SentientCellEntity, this can spawn an entity") {
+    setupLevelInfo(Rectangle(Point(100, 150), 300, 200), CollisionRules.bouncing)
+    val cellEntity1 = CellBuilder().withDimension(dimension2).withPosition(11, 11).buildCellEntity()
+    val sentientCellEntity = CellBuilder().withPosition(149, 249)
+      .withDimension(50)
+      .buildSentientEntity()
+    val system = SentientSystem(levelInfo)
+    EntityManager.add(cellEntity1)
+    EntityManager.add(sentientCellEntity)
+    Range(0,10).foreach(_=>system.update())
+    assert(sentientCellEntity.getSpawnerComponent.dequeueAction().isEmpty)
+    system.update()
+    assert(sentientCellEntity.getSpawnerComponent.dequeueAction().isDefined)
+  }
 }
