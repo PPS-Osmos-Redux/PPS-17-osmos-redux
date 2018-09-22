@@ -11,8 +11,7 @@ import scala.reflect.ClassTag
   * Abstract system with two type of generic entity.
   * The lists of entity are not exclusive
   */
-abstract class AbstractSystem2[T <: Property : ClassTag, R <: Property : ClassTag]
-  extends AbstractSystem[T] with Observer with System {
+abstract class AbstractSystem2[T <: Property : ClassTag, R <: Property : ClassTag] extends AbstractSystem[T] {
 
   /** The entity list with property of type R.
     * An entity with property of type T could be also in this list
