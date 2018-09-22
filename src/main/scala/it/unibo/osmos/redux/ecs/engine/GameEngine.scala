@@ -84,16 +84,13 @@ object GameEngine {
       clear()
 
       //register InputEventStack to the mouse event listener to collect input events
-      levelContext.subscribe(e => {
-        InputEventQueue.enqueue(e)
-      })
+      levelContext.subscribe(InputEventQueue enqueue _)
 
       //create systems, add to list, the order in this collection is the final system order in the game loop
       val systems = ListBuffer[System]()
       if (!(levelContext.levelContextType == LevelContextType.simulation)) systems += InputSystem()
       systems ++= initMainSystems(level, levelContext)
       if (!(levelContext.levelContextType == LevelContextType.simulation)) systems += EndGameSystem(levelContext, level.levelInfo.victoryRule)
-
 
       //add all entities in the entity manager (systems are subscribed to EntityManager event when created)
       level.entities foreach (EntityManager add _)
@@ -126,9 +123,8 @@ object GameEngine {
       * @param levelContext The level context
       * @return The list of all main systems
       */
-    private def initMainSystems(level: Level, levelContext: LevelContext): List[System] = {
+    private def initMainSystems(level: Level, levelContext: LevelContext): List[System] =
       List(SpawnSystem(), GravitySystem(), MovementSystem(), CollisionSystem(level), CellsEliminationSystem(), SentientSystem(level), DrawSystem(levelContext))
-    }
 
     override def init(level: Level, server: Server): MultiPlayerLevelContext = {
 
@@ -207,7 +203,6 @@ object GameEngine {
       } else if (!increment && frameRate > Constants.Engine.MinimumFps) {
         frameRate -= Constants.Engine.FpsChangeStep
       }
-      Logger.log(s"changedSpeed: $frameRate")("GameEngine")
     }
   }
 

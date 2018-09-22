@@ -1,6 +1,6 @@
 package it.unibo.osmos.redux.ecs.systems
 
-import it.unibo.osmos.redux.ecs.entities.PlayerCellEntity
+import it.unibo.osmos.redux.ecs.entities.EntityType
 import it.unibo.osmos.redux.ecs.entities.properties.composed.DeathProperty
 import it.unibo.osmos.redux.ecs.systems.victoryconditions.AbsorbAllOtherPlayersCondition
 import it.unibo.osmos.redux.multiplayer.server.Server
@@ -13,17 +13,18 @@ import it.unibo.osmos.redux.mvc.view.events.{GameLost, GameLostAsServer, GamePen
   * @param levelContext object to notify the view of the end game result
   * @param victoryRules enumeration representing the level's victory rules
   */
-case class MultiPlayerEndGameSystem(server: Server, levelContext: GameStateHolder, victoryRules: VictoryRules.Value) extends AbstractSystem2[PlayerCellEntity, DeathProperty] {
+case class MultiPlayerEndGameSystem(server: Server, levelContext: GameStateHolder, victoryRules: VictoryRules.Value) extends AbstractSystem[DeathProperty] {
 
   private val victoryCondition = victoryRules match {
     case VictoryRules.absorbAllOtherPlayers => AbsorbAllOtherPlayersCondition()
-    case _ => throw new NotImplementedError()
+    case _ => throw new UnsupportedOperationException("Specified victory condition cannot be used in multi-player mode.")
   }
 
   override def update(): Unit = {
     if (isGameRunning) {
-      val (alivePlayers, deadPlayers) = server.getLobbyPlayers.filter(_.isAlive) partition (p => entities.map(_.getUUID) contains p.getUUID)
-      val aliveCells = entitiesSecondType.filterNot(c => deadPlayers.map(_.getUUID) contains c.getUUID)
+      val playerEntities = entities.filter(_.getTypeComponent.typeEntity == EntityType.Controlled).map(_.getUUID)
+      val (alivePlayers, deadPlayers) = server.getLobbyPlayers.filter(_.isAlive) partition (p => playerEntities contains p.getUUID)
+      val aliveCells = entities.filterNot(c => deadPlayers.map(_.getUUID) contains c.getUUID)
 
       //check
       for (
