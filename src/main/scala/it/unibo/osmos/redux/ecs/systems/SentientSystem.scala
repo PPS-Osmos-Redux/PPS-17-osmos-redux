@@ -5,6 +5,7 @@ import it.unibo.osmos.redux.ecs.entities.properties.composed.{SentientEnemyPrope
 import it.unibo.osmos.redux.ecs.systems.sentientRule._
 import it.unibo.osmos.redux.mvc.controller.levels.structure.Level
 import it.unibo.osmos.redux.utils.Constants.Sentient._
+import it.unibo.osmos.redux.utils.Constants.General._
 import it.unibo.osmos.redux.utils.{Point, Vector}
 
 /** System that apply sentient rule to each sentient cell */
@@ -38,7 +39,7 @@ case class SentientSystem(levelInfo: Level) extends AbstractSystem2[SentientProp
 
       radiusSentient.radius_(radiusSentient.radius - lostRadiusAmount)
       radiusAmount = radiusAmount + lostRadiusAmount
-      if (radiusAmount > 1) {
+      if (radiusAmount > radiusThreshold) {
         // spawn
         val sentientPosition = sentient.getPositionComponent.point
         val directionVector = totalAcceleration multiply -1 normalized()
