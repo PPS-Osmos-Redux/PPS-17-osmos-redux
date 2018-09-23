@@ -5,7 +5,7 @@ import it.unibo.osmos.redux.ecs.entities.properties.composed.DeathProperty
 import scala.collection.mutable.ListBuffer
 
 /** Abstract class for victory condition strategy */
-abstract class AbstractVictoryCondition {
+trait AbstractVictoryCondition {
 
   /** Checks if the victory condition is fulfilled
     *

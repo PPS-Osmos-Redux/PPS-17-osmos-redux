@@ -7,6 +7,8 @@ object Constants {
 
   object General {
     final val CellMaxSpeed: Double = 4
+    /** minimum radius to consider cell alive */
+    final val radiusThreshold: Double = 1
   }
 
   object Engine {
