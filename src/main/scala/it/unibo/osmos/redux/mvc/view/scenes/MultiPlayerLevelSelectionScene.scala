@@ -31,6 +31,10 @@ class MultiPlayerLevelSelectionScene(override val parentStage: Stage, override v
   override def onLevelPlayClick(levelInfo: LevelInfo, simulation: Boolean, custom: Boolean): Unit = upperListener.onLevelSelected(levelInfo)
 }
 
+/** Trait which is used for back navigation from the MultiPlayerLevelSelectionScene.
+  *
+  * It provides a method to retrieve the selected level
+  */
 trait UpperMultiPlayerLevelSelectionSceneListener {
 
   /** Called once when the user has selected a level

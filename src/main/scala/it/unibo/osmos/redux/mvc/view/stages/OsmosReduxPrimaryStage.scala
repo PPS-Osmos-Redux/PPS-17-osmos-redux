@@ -27,7 +27,7 @@ object OsmosReduxPrimaryStage {
     * @param windowWidth  the window width
     * @param windowHeight the window height
     */
-  class OsmosReduxPrimaryStageImpl(val listener: PrimaryStageListener, val windowWidth: Double, val windowHeight: Double) extends OsmosReduxPrimaryStage
+  class OsmosReduxPrimaryStageImpl(private val listener: PrimaryStageListener, private val windowWidth: Double, private val windowHeight: Double) extends OsmosReduxPrimaryStage
     with MainSceneListener {
 
     title = DefaultWindowTitle
@@ -61,5 +61,4 @@ object OsmosReduxPrimaryStage {
 
 /** Listener that manages all the events managed by the primary scene */
 trait PrimaryStageListener extends LevelSelectionSceneListener with EditorLevelSelectionSceneListener
-  with MultiPlayerSceneListener with MultiPlayerLobbySceneListener with MultiPlayerLevelSelectionSceneListener
-  with SettingsSceneListener with StatsSceneListener
+  with MultiPlayerSceneListener with SettingsSceneListener with StatsSceneListener
