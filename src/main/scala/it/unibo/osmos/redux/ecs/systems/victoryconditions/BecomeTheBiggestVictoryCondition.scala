@@ -10,7 +10,7 @@ import scala.collection.mutable.ListBuffer
   * victory is fulfilled when the player's radius is
   * greater than the other matter cells radius
   */
-case class BecomeTheBiggestVictoryCondition() extends AbstractVictoryCondition {
+case class BecomeTheBiggestVictoryCondition() extends VictoryCondition {
 
   override def check(playerCellEntity: DeathProperty, entityList: ListBuffer[DeathProperty]): Boolean = {
     val playerRadius = playerCellEntity.getDimensionComponent.radius
