@@ -10,7 +10,7 @@ import scala.collection.mutable.ListBuffer
   * victory is fulfilled when the player's radius is greater
   * than the other matter cells radius by a certain percentage
   */
-case class BecomeHugeVictoryCondition() extends AbstractVictoryCondition {
+case class BecomeHugeVictoryCondition() extends VictoryCondition {
 
   private val radiusPercentageToBeHuge = 70
 

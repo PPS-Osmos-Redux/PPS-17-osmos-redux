@@ -9,7 +9,7 @@ import scala.collection.mutable.ListBuffer
   *
   * victory is fulfilled when there are no more cells with the specified type
   */
-case class AbsorbCellsWithTypeVictoryCondition(entityType: EntityType.Value) extends AbstractVictoryCondition {
+case class AbsorbCellsWithTypeVictoryCondition(entityType: EntityType.Value) extends VictoryCondition {
 
   override def check(playerCellEntity: DeathProperty, entityList: ListBuffer[DeathProperty]): Boolean = {
     !entityList.exists(entity => entity.getTypeComponent.typeEntity == entityType)

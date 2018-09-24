@@ -9,7 +9,7 @@ import scala.collection.mutable.ListBuffer
   *
   * victory is fulfilled when there are no more players to absorb left
   */
-case class AbsorbAllOtherPlayersCondition() extends AbstractVictoryCondition {
+case class AbsorbAllOtherPlayersCondition() extends VictoryCondition {
 
   override def check(playerCellEntity: DeathProperty, entityList: ListBuffer[DeathProperty]): Boolean = {
     !entityList.exists(entity => entity.getTypeComponent.typeEntity == EntityType.Controlled && entity.getUUID != playerCellEntity.getUUID)
