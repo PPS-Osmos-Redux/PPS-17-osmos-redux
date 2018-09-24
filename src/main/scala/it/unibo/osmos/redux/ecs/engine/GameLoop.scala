@@ -57,12 +57,6 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
     status = GameStatus.Stopped
   }
 
-  /** Gets the current tick time.
-    *
-    * @return The current tick time in milliseconds.
-    */
-  private def getTickTime: Int = 1000 / engine.getFps
-
   /** Pauses the execution. */
   def pause(): Unit = {
 
@@ -87,6 +81,18 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
     stopFlag = true
   }
 
+  /** Gets the current status.
+    *
+    * @return The current game status
+    */
+  def getStatus: GameStatus = status
+
+  /** Gets the current tick time.
+    *
+    * @return The current tick time in milliseconds.
+    */
+  private def getTickTime: Int = 1000 / engine.getFps
+
   /** Tries to unlock the lock, if it fails it does not halt the game. */
   private def tryUnlock(): Unit = {
     try {
@@ -95,12 +101,6 @@ class GameLoop(val engine: GameEngine, var systems: List[System]) extends Thread
       case _: Throwable => //do nothing
     }
   }
-
-  /** Gets the current status.
-    *
-    * @return The current game status
-    */
-  def getStatus: GameStatus = status
 
   /** Logs the runtime of a function.
     *
