@@ -24,6 +24,7 @@ trait PositionComponent extends Component {
   override def copy(): PositionComponent = PositionComponent(point)
 }
 
+/** Companion object */
 object PositionComponent {
   def apply(x: Double, y: Double): PositionComponent = PositionComponentImpl(Point(x, y))
 

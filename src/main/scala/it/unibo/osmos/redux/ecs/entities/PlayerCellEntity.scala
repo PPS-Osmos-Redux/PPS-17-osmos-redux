@@ -6,6 +6,7 @@ import it.unibo.osmos.redux.ecs.entities.properties.composed.InputProperty
 /** Trait representing a CellEntity controllable by the player */
 trait PlayerCellEntity extends CellEntity with InputProperty {}
 
+/** Companion object */
 object PlayerCellEntity {
   def apply(acceleration: AccelerationComponent,
             collidable: CollidableComponent,

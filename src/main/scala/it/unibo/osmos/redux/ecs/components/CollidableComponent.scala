@@ -19,6 +19,7 @@ trait CollidableComponent extends Component {
   override def copy(): CollidableComponent = CollidableComponent(isCollidable)
 }
 
+/** Companion object */
 object CollidableComponent {
   def apply(collidable: Boolean): CollidableComponent = CollidableComponentImpl(collidable)
 

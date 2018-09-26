@@ -104,6 +104,7 @@ trait Vector {
   def divide(v: Double): Vector = Vector(x / v, y / v)
 }
 
+/** Companion object */
 object Vector {
   def apply(x: Double, y: Double): Vector = VectorImpl(x, y)
 

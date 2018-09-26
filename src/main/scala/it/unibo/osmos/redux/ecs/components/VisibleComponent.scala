@@ -19,6 +19,7 @@ trait VisibleComponent extends Component {
   override def copy(): VisibleComponent = VisibleComponent(isVisible)
 }
 
+/** Companion object */
 object VisibleComponent {
   def apply(visible: Boolean): VisibleComponent = VisibleComponentImpl(visible)
 

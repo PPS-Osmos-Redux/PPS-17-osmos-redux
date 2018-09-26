@@ -63,7 +63,7 @@ trait GameEngine {
   def changeSpeed(increment: Boolean = false): Unit
 }
 
-/** Game engine object companion. */
+/** Game engine companion object. */
 object GameEngine {
 
   def apply(): GameEngine = GameEngineImpl()

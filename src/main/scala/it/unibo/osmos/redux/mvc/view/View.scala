@@ -25,6 +25,7 @@ trait View {
 
 }
 
+/** Companion object */
 object View {
 
   def apply(app: JFXApp): View = new ViewImpl(app)

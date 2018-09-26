@@ -120,6 +120,7 @@ trait Client {
   def notifyRedraw(entities: Seq[DrawableEntity]): Unit
 }
 
+/** Companion object */
 object Client {
   def apply(): Client = ClientImpl()
 

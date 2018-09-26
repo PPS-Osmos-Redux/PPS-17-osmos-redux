@@ -9,6 +9,7 @@ import it.unibo.osmos.redux.ecs.entities.properties.composed._
 trait CellEntity extends MovableProperty with CollidableProperty with DrawableProperty
   with DeathProperty with GravityInfluencedProperty with SentientEnemyProperty {}
 
+/** Companion object */
 object CellEntity {
   def apply(acceleration: AccelerationComponent,
             collidable: CollidableComponent,

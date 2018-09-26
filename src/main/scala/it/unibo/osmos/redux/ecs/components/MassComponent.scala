@@ -18,6 +18,7 @@ trait MassComponent extends Component {
   override def copy(): MassComponent
 }
 
+/** Companion object */
 object MassComponent {
 
   def apply(dimension: DimensionComponent, specificWeight: SpecificWeightComponent): MassComponent =

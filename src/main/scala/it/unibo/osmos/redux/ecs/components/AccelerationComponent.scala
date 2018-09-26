@@ -15,6 +15,7 @@ trait AccelerationComponent extends VectorComponent {
   override def copy(): AccelerationComponent = AccelerationComponent(vector.x, vector.y)
 }
 
+/** Companion object */
 object AccelerationComponent {
   def apply(accelerationX: Double, accelerationY: Double): AccelerationComponent = AccelerationComponentImpl(Vector(accelerationX, accelerationY))
 

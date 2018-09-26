@@ -15,6 +15,7 @@ object ViewConstants {
     val HalfWindowHeight: Double = DefaultWindowHeight / 2
   }
 
+  /** Editor constants */
   object Editor {
 
     import Window._
@@ -27,6 +28,7 @@ object ViewConstants {
     val StartingLevelHeight: Double = DefaultWindowHeight / 2
   }
 
+  /** Level constants */
   object Level {
     /** Scrolling delta */
     val ScrollingDelta = 1.1
