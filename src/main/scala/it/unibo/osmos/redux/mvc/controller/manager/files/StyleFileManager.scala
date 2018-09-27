@@ -7,7 +7,7 @@ import it.unibo.osmos.redux.utils.Logger
 object StyleFileManager extends FileManager {
 
   override implicit val who: String = "StyleFileManager"
-// TODO:
+
   def getStyle: String = {
     try {
       val url = getClass.getResource(StylePath)
