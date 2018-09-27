@@ -42,9 +42,9 @@ sourceSets {
         scala {
             if (project.hasProperty("travis")) {
                 // excluding test that travis can't run
-                srcDirs = ["src/test/scala/travis"]
+                srcDirs = ["$testFolderPath" + "/travis"]
             } else {
-                srcDirs = ["src/test/scala"]
+                srcDirs = ["$testFolderPath" + "/local", "$testFolderPath" + "/travis"]
             }
         }
     }

@@ -5,7 +5,7 @@ import it.unibo.osmos.redux.ecs.entities.{CellBuilder, EntityManager, EntityType
 import it.unibo.osmos.redux.ecs.systems.CollisionSystem
 import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.mvc.controller.levels.structure._
-import it.unibo.osmos.redux.utils.Point
+import it.unibo.osmos.redux.utils.{Point, Vector}
 import org.scalactic.Tolerance._
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
@@ -236,7 +236,7 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
     system.update()
 
     assert(cellEntity.getPositionComponent.point == Point(120.04654311426577, 304.09308622853155))
-    assert(cellEntity.getSpeedComponent.vector == utils.Vector(9.080318896799085, -20.43398660889337))
+    assert(cellEntity.getSpeedComponent.vector == Vector(9.080318896799085, -20.43398660889337))
   }
 
   test("Collision with circular shape border, using instant death collision rule, reduces entities' radius") {
@@ -256,7 +256,7 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
     system.update()
 
     assert(cellEntity.getPositionComponent.point == Point(108.0, 280.0))
-    assert(cellEntity.getSpeedComponent.vector == utils.Vector(-10.0, -20.0))
+    assert(cellEntity.getSpeedComponent.vector == Vector(-10.0, -20.0))
     assert(cellEntity.getDimensionComponent.radius == 6.961143807781525)
   }
 
