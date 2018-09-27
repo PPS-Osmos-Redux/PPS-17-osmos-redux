@@ -2,10 +2,10 @@ package it.unibo.osmos.redux.ecs.systems
 
 import it.unibo.osmos.redux.ecs.components.{DimensionComponent, PositionComponent, SpawnAction, SpeedComponent}
 import it.unibo.osmos.redux.ecs.entities.properties.composed.{SentientEnemyProperty, SentientProperty}
-import it.unibo.osmos.redux.ecs.systems.sentientRule._
+import it.unibo.osmos.redux.ecs.systems.sentientrules._
 import it.unibo.osmos.redux.mvc.controller.levels.structure.Level
-import it.unibo.osmos.redux.utils.Constants.Sentient._
 import it.unibo.osmos.redux.utils.Constants.General._
+import it.unibo.osmos.redux.utils.Constants.Sentient._
 import it.unibo.osmos.redux.utils.{Point, Vector}
 
 /** System that apply sentient rule to each sentient cell */

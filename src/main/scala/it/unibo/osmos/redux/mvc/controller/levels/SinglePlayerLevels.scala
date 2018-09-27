@@ -69,13 +69,13 @@ object SinglePlayerLevels {
       lv.levelStat = CampaignLevelStat()
     })
     UserProgressFileManager.saveUserProgress(levels)
-    Logger.log("reset done")
+    // Logger.log("reset done")
   }
 
   /** Unlock the next level. */
   private def unlockNextLevel(): Unit = levels.map(cLv => cLv.levelInfo).find(lv => !lv.isAvailable) match {
     case Some(nextLevel) => nextLevel.isAvailable = true
-    case _ => Logger.log("All levels are unlocked")
+    case _ => // Logger.log("All levels are unlocked")
   }
 
   private def isMostRecent(loadedToDoLevelName: String) =

@@ -1,8 +1,8 @@
-package it.unibo.osmos.redux.ecs.systems.sentientRule
+package it.unibo.osmos.redux.ecs.systems.sentientrules
 
 import it.unibo.osmos.redux.ecs.entities.EntityType
 import it.unibo.osmos.redux.ecs.entities.properties.composed.{SentientEnemyProperty, SentientProperty}
-import it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils._
+import it.unibo.osmos.redux.ecs.systems.sentientrules.SentientUtils._
 import it.unibo.osmos.redux.utils.Constants.Sentient._
 import it.unibo.osmos.redux.utils.{MathUtils, Vector}
 
