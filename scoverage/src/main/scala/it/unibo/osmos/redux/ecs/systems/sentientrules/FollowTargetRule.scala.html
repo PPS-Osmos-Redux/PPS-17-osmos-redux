@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          src/main/scala/it/unibo/osmos/redux/ecs/systems/sentientRule/FollowTargetRule.scala.html
+          src/main/scala/it/unibo/osmos/redux/ecs/systems/sentientrules/FollowTargetRule.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,11 +22,11 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.systems.sentientRule
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.systems.sentientrules
 </span>2 <span style=''>
 </span>3 <span style=''>import it.unibo.osmos.redux.ecs.entities.EntityType
 </span>4 <span style=''>import it.unibo.osmos.redux.ecs.entities.properties.composed.{SentientEnemyProperty, SentientProperty}
-</span>5 <span style=''>import it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils._
+</span>5 <span style=''>import it.unibo.osmos.redux.ecs.systems.sentientrules.SentientUtils._
 </span>6 <span style=''>import it.unibo.osmos.redux.utils.Constants.Sentient._
 </span>7 <span style=''>import it.unibo.osmos.redux.utils.{MathUtils, Vector}
 </span>8 <span style=''>
@@ -121,12 +121,12 @@
           18
         </td>
         <td>
-          1082
+          1085
         </td>
         <td>
-          794
+          796
           -
-          852
+          854
         </td>
         <td>
           Apply
@@ -142,18 +142,18 @@
           19
         </td>
         <td>
-          1084
+          1087
         </td>
         <td>
-          857
+          859
           -
-          902
+          904
         </td>
         <td>
           Apply
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule.findTarget
+          it.unibo.osmos.redux.ecs.systems.sentientrules.FollowTargetRule.findTarget
         </td>
         <td style="background: #AEF1AE">
           FollowTargetRule.this.findTarget(sentient, FollowTargetRule.this.enemies, escapeVelocity)
@@ -163,18 +163,18 @@
           19
         </td>
         <td>
-          1083
+          1086
         </td>
         <td>
-          878
+          880
           -
-          885
+          887
         </td>
         <td>
           Select
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule.enemies
+          it.unibo.osmos.redux.ecs.systems.sentientrules.FollowTargetRule.enemies
         </td>
         <td style="background: #AEF1AE">
           FollowTargetRule.this.enemies
@@ -184,18 +184,18 @@
           20
         </td>
         <td>
-          1085
+          1088
         </td>
         <td>
-          938
+          940
           -
-          984
+          986
         </td>
         <td>
           Apply
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule.followTarget
+          it.unibo.osmos.redux.ecs.systems.sentientrules.FollowTargetRule.followTarget
         </td>
         <td style="background: #AEF1AE">
           FollowTargetRule.this.followTarget(sentient, target, escapeVelocity)
@@ -205,12 +205,12 @@
           21
         </td>
         <td>
-          1086
+          1089
         </td>
         <td>
-          1001
+          1003
           -
-          1014
+          1016
         </td>
         <td>
           Apply
@@ -226,12 +226,12 @@
           31
         </td>
         <td>
-          1088
+          1091
         </td>
         <td>
-          1328
+          1330
           -
-          1398
+          1400
         </td>
         <td>
           Apply
@@ -247,12 +247,12 @@
           31
         </td>
         <td>
-          1087
+          1090
         </td>
         <td>
-          1366
+          1368
           -
-          1397
+          1399
         </td>
         <td>
           Select
@@ -268,12 +268,12 @@
           32
         </td>
         <td>
-          1090
+          1093
         </td>
         <td>
-          1435
+          1437
           -
-          1512
+          1514
         </td>
         <td>
           Apply
@@ -289,12 +289,12 @@
           32
         </td>
         <td>
-          1089
+          1092
         </td>
         <td>
-          1476
+          1478
           -
-          1511
+          1513
         </td>
         <td>
           Select
@@ -310,33 +310,33 @@
           33
         </td>
         <td>
-          1091
+          1094
         </td>
         <td>
-          1517
+          1519
           -
-          1572
+          1574
         </td>
         <td>
           Apply
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.computeSteer
+          it.unibo.osmos.redux.ecs.systems.sentientrules.SentientUtils.computeSteer
         </td>
         <td style="background: #AEF1AE">
-          it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.computeSteer(actualVelocity, unitVectorDesiredVelocity)
+          it.unibo.osmos.redux.ecs.systems.sentientrules.SentientUtils.computeSteer(actualVelocity, unitVectorDesiredVelocity)
         </td>
       </tr><tr>
         <td>
           44
         </td>
         <td>
-          1093
+          1096
         </td>
         <td>
-          2010
+          2012
           -
-          2067
+          2069
         </td>
         <td>
           Select
@@ -352,12 +352,12 @@
           44
         </td>
         <td>
-          1096
+          1099
         </td>
         <td>
-          1963
+          1965
           -
-          2147
+          2149
         </td>
         <td>
           Apply
@@ -373,12 +373,12 @@
           44
         </td>
         <td>
-          1092
+          1095
         </td>
         <td>
-          2045
+          2047
           -
-          2066
+          2068
         </td>
         <td>
           Select
@@ -394,12 +394,12 @@
           45
         </td>
         <td>
-          1094
+          1097
         </td>
         <td>
-          2117
+          2119
           -
-          2147
+          2149
         </td>
         <td>
           Select
@@ -415,12 +415,12 @@
           45
         </td>
         <td>
-          1095
+          1098
         </td>
         <td>
-          2077
+          2079
           -
-          2147
+          2149
         </td>
         <td>
           Apply
@@ -436,12 +436,12 @@
           46
         </td>
         <td>
-          1104
+          1107
         </td>
         <td>
-          2159
+          2161
           -
-          2159
+          2161
         </td>
         <td>
           TypeApply
@@ -457,54 +457,33 @@
           47
         </td>
         <td>
-          1097
-        </td>
-        <td>
-          2179
-          -
-          2211
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.hasLostRadiusBehaviour
-        </td>
-        <td style="background: #AEF1AE">
-          it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.hasLostRadiusBehaviour(sentient)
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
           1100
         </td>
         <td>
-          2225
+          2181
           -
-          2290
+          2213
         </td>
         <td>
-          Block
+          Apply
         </td>
         <td>
-          scala.Tuple2.apply
+          it.unibo.osmos.redux.ecs.systems.sentientrules.SentientUtils.hasLostRadiusBehaviour
         </td>
         <td style="background: #AEF1AE">
-          scala.Tuple2.apply[it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double](e, FollowTargetRule.this.targetCoefficientWithLostRadius(sentient, e, escapeVelocity))
+          it.unibo.osmos.redux.ecs.systems.sentientrules.SentientUtils.hasLostRadiusBehaviour(sentient)
         </td>
       </tr><tr>
         <td>
           48
         </td>
         <td>
-          1099
+          1102
         </td>
         <td>
-          2225
+          2227
           -
-          2290
+          2292
         </td>
         <td>
           Apply
@@ -520,75 +499,54 @@
           48
         </td>
         <td>
-          1098
+          1101
         </td>
         <td>
-          2229
+          2231
           -
-          2289
+          2291
         </td>
         <td>
           Apply
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule.targetCoefficientWithLostRadius
+          it.unibo.osmos.redux.ecs.systems.sentientrules.FollowTargetRule.targetCoefficientWithLostRadius
         </td>
         <td style="background: #AEF1AE">
           FollowTargetRule.this.targetCoefficientWithLostRadius(sentient, e, escapeVelocity)
         </td>
       </tr><tr>
         <td>
-          50
-        </td>
-        <td>
-          1102
-        </td>
-        <td>
-          2318
-          -
-          2370
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.Tuple2.apply
-        </td>
-        <td style="background: #AEF1AE">
-          scala.Tuple2.apply[it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double](e, FollowTargetRule.this.targetCoefficientWithoutLostRadius(sentient, e))
-        </td>
-      </tr><tr>
-        <td>
-          50
-        </td>
-        <td>
-          1101
-        </td>
-        <td>
-          2322
-          -
-          2369
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.systems.sentientRule.FollowTargetRule.targetCoefficientWithoutLostRadius
-        </td>
-        <td style="background: #AEF1AE">
-          FollowTargetRule.this.targetCoefficientWithoutLostRadius(sentient, e)
-        </td>
-      </tr><tr>
-        <td>
-          50
+          48
         </td>
         <td>
           1103
         </td>
         <td>
-          2318
+          2227
           -
-          2370
+          2292
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Tuple2.apply[it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double](e, FollowTargetRule.this.targetCoefficientWithLostRadius(sentient, e, escapeVelocity))
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          1106
+        </td>
+        <td>
+          2320
+          -
+          2372
         </td>
         <td>
           Block
@@ -601,15 +559,57 @@
         </td>
       </tr><tr>
         <td>
+          50
+        </td>
+        <td>
+          1105
+        </td>
+        <td>
+          2320
+          -
+          2372
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Tuple2.apply[it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double](e, FollowTargetRule.this.targetCoefficientWithoutLostRadius(sentient, e))
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          1104
+        </td>
+        <td>
+          2324
+          -
+          2371
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.sentientrules.FollowTargetRule.targetCoefficientWithoutLostRadius
+        </td>
+        <td style="background: #AEF1AE">
+          FollowTargetRule.this.targetCoefficientWithoutLostRadius(sentient, e)
+        </td>
+      </tr><tr>
+        <td>
           53
         </td>
         <td>
-          1106
+          1109
         </td>
         <td>
-          1943
+          1945
           -
-          2418
+          2420
         </td>
         <td>
           Apply
@@ -618,7 +618,7 @@
           scala.collection.TraversableLike.filter
         </td>
         <td style="background: #AEF1AE">
-          enemies.filter(((e: it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty) =&gt; e.getCollidableComponent.isCollidable.&amp;&amp;(e.getTypeComponent.typeEntity.==(it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter).unary_!).&amp;&amp;(sentient.getDimensionComponent.radius.&gt;(e.getDimensionComponent.radius)))).map[(it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double), scala.collection.mutable.ListBuffer[(it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)]](((e: it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty) =&gt; if (it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.hasLostRadiusBehaviour(sentient))
+          enemies.filter(((e: it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty) =&gt; e.getCollidableComponent.isCollidable.&amp;&amp;(e.getTypeComponent.typeEntity.==(it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter).unary_!).&amp;&amp;(sentient.getDimensionComponent.radius.&gt;(e.getDimensionComponent.radius)))).map[(it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double), scala.collection.mutable.ListBuffer[(it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)]](((e: it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty) =&gt; if (it.unibo.osmos.redux.ecs.systems.sentientrules.SentientUtils.hasLostRadiusBehaviour(sentient))
   scala.Tuple2.apply[it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double](e, FollowTargetRule.this.targetCoefficientWithLostRadius(sentient, e, escapeVelocity))
 else
   scala.Tuple2.apply[it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double](e, FollowTargetRule.this.targetCoefficientWithoutLostRadius(sentient, e))))(mutable.this.ListBuffer.canBuildFrom[(it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)]).filter(((e: (it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)) =&gt; e._2.&gt;(0)))
@@ -628,12 +628,12 @@ else
           53
         </td>
         <td>
-          1105
+          1108
         </td>
         <td>
-          2409
+          2411
           -
-          2417
+          2419
         </td>
         <td>
           Apply
@@ -649,12 +649,12 @@ else
           54
         </td>
         <td>
-          1108
+          1111
         </td>
         <td>
-          2462
+          2464
           -
-          2466
+          2468
         </td>
         <td>
           Select
@@ -670,12 +670,12 @@ else
           54
         </td>
         <td>
-          1107
+          1110
         </td>
         <td>
-          2446
+          2448
           -
-          2458
+          2460
         </td>
         <td>
           Select
@@ -691,33 +691,33 @@ else
           55
         </td>
         <td>
-          1109
+          1115
         </td>
         <td>
-          2552
+          2493
           -
-          2556
+          2563
         </td>
         <td>
           Select
         </td>
         <td>
-          scala.Tuple2._2
+          scala.Tuple2._1
         </td>
         <td style="background: #AEF1AE">
-          d._2
+          list.max[(it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)](scala.`package`.Ordering.by[(it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double), Double](((d: (it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)) =&gt; d._2))(math.this.Ordering.Double))._1
         </td>
       </tr><tr>
         <td>
           55
         </td>
         <td>
-          1111
+          1114
         </td>
         <td>
-          2500
+          2502
           -
-          2557
+          2559
         </td>
         <td>
           ApplyToImplicitArgs
@@ -733,33 +733,12 @@ else
           55
         </td>
         <td>
-          1110
+          1116
         </td>
         <td>
-          2511
+          2488
           -
-          2511
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          scala.math.Ordering.Double
-        </td>
-        <td style="background: #AEF1AE">
-          math.this.Ordering.Double
-        </td>
-      </tr><tr>
-        <td>
-          55
-        </td>
-        <td>
-          1113
-        </td>
-        <td>
-          2486
-          -
-          2562
+          2564
         </td>
         <td>
           Apply
@@ -775,33 +754,54 @@ else
           55
         </td>
         <td>
-          1112
+          1113
         </td>
         <td>
-          2491
+          2513
           -
-          2561
+          2513
         </td>
         <td>
           Select
         </td>
         <td>
-          scala.Tuple2._1
+          scala.math.Ordering.Double
         </td>
         <td style="background: #AEF1AE">
-          list.max[(it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)](scala.`package`.Ordering.by[(it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double), Double](((d: (it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)) =&gt; d._2))(math.this.Ordering.Double))._1
+          math.this.Ordering.Double
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          1112
+        </td>
+        <td>
+          2554
+          -
+          2558
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._2
+        </td>
+        <td style="background: #AEF1AE">
+          d._2
         </td>
       </tr><tr>
         <td>
           66
         </td>
         <td>
-          1115
+          1118
         </td>
         <td>
-          2972
+          2974
           -
-          3040
+          3042
         </td>
         <td>
           Apply
@@ -817,12 +817,12 @@ else
           66
         </td>
         <td>
-          1114
+          1117
         </td>
         <td>
-          3009
+          3011
           -
-          3039
+          3041
         </td>
         <td>
           Select
@@ -838,12 +838,12 @@ else
           67
         </td>
         <td>
-          1117
+          1120
         </td>
         <td>
-          3077
+          3079
           -
-          3154
+          3156
         </td>
         <td>
           Apply
@@ -859,12 +859,12 @@ else
           67
         </td>
         <td>
-          1116
+          1119
         </td>
         <td>
-          3118
+          3120
           -
-          3153
+          3155
         </td>
         <td>
           Select
@@ -880,12 +880,12 @@ else
           68
         </td>
         <td>
-          1118
+          1121
         </td>
         <td>
-          3185
+          3187
           -
-          3262
+          3264
         </td>
         <td>
           Select
@@ -894,19 +894,19 @@ else
           it.unibo.osmos.redux.utils.Vector.getMagnitude
         </td>
         <td style="background: #AEF1AE">
-          it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.computeUnlimitedSteer(escapeVelocity, unitVectorDesiredVelocity).getMagnitude
+          it.unibo.osmos.redux.ecs.systems.sentientrules.SentientUtils.computeUnlimitedSteer(escapeVelocity, unitVectorDesiredVelocity).getMagnitude
         </td>
       </tr><tr>
         <td>
           69
         </td>
         <td>
-          1120
+          1123
         </td>
         <td>
-          3294
+          3296
           -
-          3362
+          3364
         </td>
         <td>
           Apply
@@ -922,12 +922,12 @@ else
           69
         </td>
         <td>
-          1119
+          1122
         </td>
         <td>
-          3316
+          3318
           -
-          3362
+          3364
         </td>
         <td>
           Select
@@ -943,33 +943,12 @@ else
           70
         </td>
         <td>
-          1122
+          1124
         </td>
         <td>
-          3367
+          3407
           -
-          3466
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.Double.-
-        </td>
-        <td style="background: #AEF1AE">
-          enemy.getDimensionComponent.radius.-(sentient.getDimensionComponent.radius.*(lostRadiusPercentage))
-        </td>
-      </tr><tr>
-        <td>
-          70
-        </td>
-        <td>
-          1121
-        </td>
-        <td>
-          3405
-          -
-          3465
+          3467
         </td>
         <td>
           Apply
@@ -982,15 +961,36 @@ else
         </td>
       </tr><tr>
         <td>
+          70
+        </td>
+        <td>
+          1125
+        </td>
+        <td>
+          3369
+          -
+          3468
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #AEF1AE">
+          enemy.getDimensionComponent.radius.-(sentient.getDimensionComponent.radius.*(lostRadiusPercentage))
+        </td>
+      </tr><tr>
+        <td>
           81
         </td>
         <td>
-          1124
+          1127
         </td>
         <td>
-          3986
+          3988
           -
-          4012
+          4014
         </td>
         <td>
           Select
@@ -1009,30 +1009,9 @@ else
           1126
         </td>
         <td>
-          3890
+          3957
           -
-          4013
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.Double./
-        </td>
-        <td style="background: #AEF1AE">
-          enemy.getDimensionComponent.radius./(it.unibo.osmos.redux.utils.MathUtils.euclideanDistance(sentient.getPositionComponent, enemy.getPositionComponent))
-        </td>
-      </tr><tr>
-        <td>
-          81
-        </td>
-        <td>
-          1123
-        </td>
-        <td>
-          3955
-          -
-          3984
+          3986
         </td>
         <td>
           Select
@@ -1048,12 +1027,33 @@ else
           81
         </td>
         <td>
-          1125
+          1129
         </td>
         <td>
-          3927
+          3892
           -
-          4013
+          4015
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double./
+        </td>
+        <td style="background: #AEF1AE">
+          enemy.getDimensionComponent.radius./(it.unibo.osmos.redux.utils.MathUtils.euclideanDistance(sentient.getPositionComponent, enemy.getPositionComponent))
+        </td>
+      </tr><tr>
+        <td>
+          81
+        </td>
+        <td>
+          1128
+        </td>
+        <td>
+          3929
+          -
+          4015
         </td>
         <td>
           Apply

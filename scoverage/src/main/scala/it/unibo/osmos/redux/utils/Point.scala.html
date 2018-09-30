@@ -62,14 +62,15 @@
 </span>38 <span style=''>
 </span>39 <span style=''>}
 </span>40 <span style=''>
-</span>41 <span style=''>object Point {
-</span>42 <span style=''>  def apply(x: Double, y: Double): Point = </span><span style='background: #AEF1AE'>PointImpl(x, y)</span><span style=''>
-</span>43 <span style=''>
-</span>44 <span style=''>  private case class PointImpl(override val x: Double, override val y: Double) extends Point {
-</span>45 <span style=''>
-</span>46 <span style=''>  }
-</span>47 <span style=''>
-</span>48 <span style=''>}
+</span>41 <span style=''>/** Companion object */
+</span>42 <span style=''>object Point {
+</span>43 <span style=''>  def apply(x: Double, y: Double): Point = </span><span style='background: #AEF1AE'>PointImpl(x, y)</span><span style=''>
+</span>44 <span style=''>
+</span>45 <span style=''>  private case class PointImpl(override val x: Double, override val y: Double) extends Point {
+</span>46 <span style=''>
+</span>47 <span style=''>  }
+</span>48 <span style=''>
+</span>49 <span style=''>}
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -398,15 +399,15 @@
         </td>
       </tr><tr>
         <td>
-          42
+          43
         </td>
         <td>
           5555
         </td>
         <td>
-          937
+          961
           -
-          952
+          976
         </td>
         <td>
           Apply

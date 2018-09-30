@@ -58,31 +58,32 @@
 </span>34 <span style=''>  def clearClients(): Unit
 </span>35 <span style=''>}
 </span>36 <span style=''>
-</span>37 <span style=''>object ClientsManager {
-</span>38 <span style=''>
-</span>39 <span style=''>  /** Creates a new clients manager instance.
-</span>40 <span style=''>    *
-</span>41 <span style=''>    * @param seed The random seed used to generate temp ids.
-</span>42 <span style=''>    * @return A new ClientsManager instance.
-</span>43 <span style=''>    */
-</span>44 <span style=''>  def apply(seed: Long = Long.MinValue): ClientsManager = </span><span style='background: #F0ADAD'>ClientsManagerImpl(new Random(seed))</span><span style=''>
-</span>45 <span style=''>
-</span>46 <span style=''>  private case class ClientsManagerImpl(private val random: Random) extends ClientsManager {
-</span>47 <span style=''>
-</span>48 <span style=''>    override def nextTempID: String = </span><span style='background: #F0ADAD'>random.alphanumeric.take(10).mkString</span><span style=''>
-</span>49 <span style=''>
-</span>50 <span style=''>    override def addClient(tempID: String, actorRef: ActorRef): Boolean = </span><span style='background: #F0ADAD'>clients.putIfAbsent(tempID, actorRef).isEmpty</span><span style=''>
-</span>51 <span style=''>
-</span>52 <span style=''>    override def getClient(tempID: String): Option[ActorRef] = {
-</span>53 <span style=''>      val result = </span><span style='background: #F0ADAD'>clients get tempID</span><span style=''>
-</span>54 <span style=''>      </span><span style='background: #F0ADAD'>clients -= tempID</span><span style=''>
-</span>55 <span style=''>      result
-</span>56 <span style=''>    }
-</span>57 <span style=''>
-</span>58 <span style=''>    override def clearClients(): Unit = </span><span style='background: #F0ADAD'>clients.clear()</span><span style=''>
-</span>59 <span style=''>  }
-</span>60 <span style=''>
-</span>61 <span style=''>}
+</span>37 <span style=''>/** Companion object */
+</span>38 <span style=''>object ClientsManager {
+</span>39 <span style=''>
+</span>40 <span style=''>  /** Creates a new clients manager instance.
+</span>41 <span style=''>    *
+</span>42 <span style=''>    * @param seed The random seed used to generate temp ids.
+</span>43 <span style=''>    * @return A new ClientsManager instance.
+</span>44 <span style=''>    */
+</span>45 <span style=''>  def apply(seed: Long = Long.MinValue): ClientsManager = </span><span style='background: #F0ADAD'>ClientsManagerImpl(new Random(seed))</span><span style=''>
+</span>46 <span style=''>
+</span>47 <span style=''>  private case class ClientsManagerImpl(private val random: Random) extends ClientsManager {
+</span>48 <span style=''>
+</span>49 <span style=''>    override def nextTempID: String = </span><span style='background: #F0ADAD'>random.alphanumeric.take(10).mkString</span><span style=''>
+</span>50 <span style=''>
+</span>51 <span style=''>    override def addClient(tempID: String, actorRef: ActorRef): Boolean = </span><span style='background: #F0ADAD'>clients.putIfAbsent(tempID, actorRef).isEmpty</span><span style=''>
+</span>52 <span style=''>
+</span>53 <span style=''>    override def getClient(tempID: String): Option[ActorRef] = {
+</span>54 <span style=''>      val result = </span><span style='background: #F0ADAD'>clients get tempID</span><span style=''>
+</span>55 <span style=''>      </span><span style='background: #F0ADAD'>clients -= tempID</span><span style=''>
+</span>56 <span style=''>      result
+</span>57 <span style=''>    }
+</span>58 <span style=''>
+</span>59 <span style=''>    override def clearClients(): Unit = </span><span style='background: #F0ADAD'>clients.clear()</span><span style=''>
+</span>60 <span style=''>  }
+</span>61 <span style=''>
+</span>62 <span style=''>}
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -99,7 +100,7 @@
           10
         </td>
         <td>
-          1486
+          1489
         </td>
         <td>
           223
@@ -117,15 +118,15 @@
         </td>
       </tr><tr>
         <td>
-          44
+          45
         </td>
         <td>
-          1488
+          1491
         </td>
         <td>
-          1120
+          1144
           -
-          1156
+          1180
         </td>
         <td>
           Apply
@@ -138,15 +139,15 @@
         </td>
       </tr><tr>
         <td>
-          44
+          45
         </td>
         <td>
-          1487
+          1490
         </td>
         <td>
-          1139
+          1163
           -
-          1155
+          1179
         </td>
         <td>
           Apply
@@ -159,36 +160,15 @@
         </td>
       </tr><tr>
         <td>
-          48
+          49
         </td>
         <td>
-          1490
+          1492
         </td>
         <td>
-          1290
+          1339
           -
-          1327
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          scala.collection.immutable.Stream.mkString
-        </td>
-        <td style="background: #F0ADAD">
-          ClientsManagerImpl.this.random.alphanumeric.take(10).mkString
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          1489
-        </td>
-        <td>
-          1315
-          -
-          1317
+          1341
         </td>
         <td>
           Literal
@@ -201,15 +181,36 @@
         </td>
       </tr><tr>
         <td>
-          50
+          49
         </td>
         <td>
-          1491
+          1493
         </td>
         <td>
-          1403
+          1314
           -
-          1448
+          1351
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.Stream.mkString
+        </td>
+        <td style="background: #F0ADAD">
+          ClientsManagerImpl.this.random.alphanumeric.take(10).mkString
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          1494
+        </td>
+        <td>
+          1427
+          -
+          1472
         </td>
         <td>
           Select
@@ -222,15 +223,15 @@
         </td>
       </tr><tr>
         <td>
-          53
+          54
         </td>
         <td>
-          1492
+          1495
         </td>
         <td>
-          1534
+          1558
           -
-          1552
+          1576
         </td>
         <td>
           Apply
@@ -243,15 +244,15 @@
         </td>
       </tr><tr>
         <td>
-          54
+          55
         </td>
         <td>
-          1493
+          1496
         </td>
         <td>
-          1559
+          1583
           -
-          1576
+          1600
         </td>
         <td>
           Apply
@@ -264,15 +265,15 @@
         </td>
       </tr><tr>
         <td>
-          58
+          59
         </td>
         <td>
-          1494
+          1497
         </td>
         <td>
-          1637
+          1661
           -
-          1652
+          1676
         </td>
         <td>
           Apply

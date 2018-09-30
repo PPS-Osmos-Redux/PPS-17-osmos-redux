@@ -128,14 +128,15 @@
 </span>104 <span style=''>  def divide(v: Double): Vector = </span><span style='background: #AEF1AE'>Vector(x / v, y / v)</span><span style=''>
 </span>105 <span style=''>}
 </span>106 <span style=''>
-</span>107 <span style=''>object Vector {
-</span>108 <span style=''>  def apply(x: Double, y: Double): Vector = </span><span style='background: #AEF1AE'>VectorImpl(x, y)</span><span style=''>
-</span>109 <span style=''>
-</span>110 <span style=''>  def zero(): Vector = </span><span style='background: #AEF1AE'>VectorImpl(0, 0)</span><span style=''>
-</span>111 <span style=''>
-</span>112 <span style=''>  private case class VectorImpl(override val x: Double, override val y: Double) extends Vector {}
-</span>113 <span style=''>
-</span>114 <span style=''>}
+</span>107 <span style=''>/** Companion object */
+</span>108 <span style=''>object Vector {
+</span>109 <span style=''>  def apply(x: Double, y: Double): Vector = </span><span style='background: #AEF1AE'>VectorImpl(x, y)</span><span style=''>
+</span>110 <span style=''>
+</span>111 <span style=''>  def zero(): Vector = </span><span style='background: #AEF1AE'>VectorImpl(0, 0)</span><span style=''>
+</span>112 <span style=''>
+</span>113 <span style=''>  private case class VectorImpl(override val x: Double, override val y: Double) extends Vector {}
+</span>114 <span style=''>
+</span>115 <span style=''>}
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -1241,15 +1242,15 @@
         </td>
       </tr><tr>
         <td>
-          108
+          109
         </td>
         <td>
           5608
         </td>
         <td>
-          2797
+          2821
           -
-          2813
+          2837
         </td>
         <td>
           Apply
@@ -1262,15 +1263,15 @@
         </td>
       </tr><tr>
         <td>
-          110
+          111
         </td>
         <td>
           5609
         </td>
         <td>
-          2838
+          2862
           -
-          2854
+          2878
         </td>
         <td>
           Apply

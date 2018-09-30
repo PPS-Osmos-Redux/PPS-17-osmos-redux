@@ -33,7 +33,7 @@
 </span>9 <span style=''>  *
 </span>10 <span style=''>  * victory is fulfilled when there are no more cells with the specified type
 </span>11 <span style=''>  */
-</span>12 <span style=''>case class AbsorbCellsWithTypeVictoryCondition(entityType: EntityType.Value) extends AbstractVictoryCondition {
+</span>12 <span style=''>case class AbsorbCellsWithTypeVictoryCondition(entityType: EntityType.Value) extends VictoryCondition {
 </span>13 <span style=''>
 </span>14 <span style=''>  override def check(playerCellEntity: DeathProperty, entityList: ListBuffer[DeathProperty]): Boolean = {
 </span>15 <span style=''>    </span><span style='background: #AEF1AE'>!entityList.exists(entity =&gt; entity.getTypeComponent.typeEntity == entityType)</span><span style=''>
@@ -55,33 +55,12 @@
           15
         </td>
         <td>
-          1154
+          1156
         </td>
         <td>
-          650
+          680
           -
-          698
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          java.lang.Object.==
-        </td>
-        <td style="background: #AEF1AE">
-          entity.getTypeComponent.typeEntity.==(AbsorbCellsWithTypeVictoryCondition.this.entityType)
-        </td>
-      </tr><tr>
-        <td>
-          15
-        </td>
-        <td>
-          1153
-        </td>
-        <td>
-          688
-          -
-          698
+          690
         </td>
         <td>
           Select
@@ -97,12 +76,12 @@
           15
         </td>
         <td>
-          1155
+          1158
         </td>
         <td>
-          621
+          613
           -
-          699
+          691
         </td>
         <td>
           Select
@@ -112,6 +91,27 @@
         </td>
         <td style="background: #AEF1AE">
           entityList.exists(((entity: it.unibo.osmos.redux.ecs.entities.properties.composed.DeathProperty) =&gt; entity.getTypeComponent.typeEntity.==(AbsorbCellsWithTypeVictoryCondition.this.entityType))).unary_!
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          1157
+        </td>
+        <td>
+          642
+          -
+          690
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.==
+        </td>
+        <td style="background: #AEF1AE">
+          entity.getTypeComponent.typeEntity.==(AbsorbCellsWithTypeVictoryCondition.this.entityType)
         </td>
       </tr>
     </table>

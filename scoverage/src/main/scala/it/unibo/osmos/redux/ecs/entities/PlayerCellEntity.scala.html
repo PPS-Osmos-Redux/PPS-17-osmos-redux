@@ -25,12 +25,12 @@
             <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.entities
 </span>2 <span style=''>
 </span>3 <span style=''>import it.unibo.osmos.redux.ecs.components._
-</span>4 <span style=''>import it.unibo.osmos.redux.ecs.entities.properties.basic.Spawner
-</span>5 <span style=''>import it.unibo.osmos.redux.ecs.entities.properties.composed.InputProperty
-</span>6 <span style=''>
-</span>7 <span style=''>/** Trait representing a CellEntity controllable by the player */
-</span>8 <span style=''>trait PlayerCellEntity extends CellEntity with InputProperty with Spawner {}
-</span>9 <span style=''>
+</span>4 <span style=''>import it.unibo.osmos.redux.ecs.entities.properties.composed.InputProperty
+</span>5 <span style=''>
+</span>6 <span style=''>/** Trait representing a CellEntity controllable by the player */
+</span>7 <span style=''>trait PlayerCellEntity extends CellEntity with InputProperty {}
+</span>8 <span style=''>
+</span>9 <span style=''>/** Companion object */
 </span>10 <span style=''>object PlayerCellEntity {
 </span>11 <span style=''>  def apply(acceleration: AccelerationComponent,
 </span>12 <span style=''>            collidable: CollidableComponent,
@@ -86,33 +86,12 @@
           19
         </td>
         <td>
-          420
+          418
         </td>
         <td>
-          793
+          759
           -
-          909
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.entities.PlayerCellEntity.PlayerCellEntityImpl.apply
-        </td>
-        <td style="background: #AEF1AE">
-          PlayerCellEntity.this.PlayerCellEntityImpl.apply(CellEntity.apply(acceleration, collidable, dimension, position, speed, visible, typeEntity), spawner)
-        </td>
-      </tr><tr>
-        <td>
-          19
-        </td>
-        <td>
-          419
-        </td>
-        <td>
-          814
-          -
-          899
+          844
         </td>
         <td>
           Apply
@@ -125,36 +104,36 @@
         </td>
       </tr><tr>
         <td>
-          21
+          19
         </td>
         <td>
-          421
+          419
         </td>
         <td>
-          998
+          738
           -
-          1023
+          854
         </td>
         <td>
           Apply
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.entities.CellBuilder.buildCellEntity
+          it.unibo.osmos.redux.ecs.entities.PlayerCellEntity.PlayerCellEntityImpl.apply
         </td>
-        <td style="background: #F0ADAD">
-          builder.buildCellEntity()
+        <td style="background: #AEF1AE">
+          PlayerCellEntity.this.PlayerCellEntityImpl.apply(CellEntity.apply(acceleration, collidable, dimension, position, speed, visible, typeEntity), spawner)
         </td>
       </tr><tr>
         <td>
           21
         </td>
         <td>
-          422
+          421
         </td>
         <td>
-          992
+          937
           -
-          1033
+          978
         </td>
         <td>
           Apply
@@ -167,15 +146,36 @@
         </td>
       </tr><tr>
         <td>
+          21
+        </td>
+        <td>
+          420
+        </td>
+        <td>
+          943
+          -
+          968
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.buildCellEntity
+        </td>
+        <td style="background: #F0ADAD">
+          builder.buildCellEntity()
+        </td>
+      </tr><tr>
+        <td>
           23
         </td>
         <td>
-          423
+          422
         </td>
         <td>
-          1112
+          1057
           -
-          1147
+          1092
         </td>
         <td>
           Apply
@@ -194,9 +194,30 @@
           424
         </td>
         <td>
-          1336
+          1239
           -
-          1357
+          1302
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.==
+        </td>
+        <td style="background: #AEF1AE">
+          PlayerCellEntityImpl.this.cellEntity.getTypeComponent.typeEntity.==(EntityType.Controlled)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          423
+        </td>
+        <td>
+          1281
+          -
+          1302
         </td>
         <td>
           Select
@@ -212,12 +233,12 @@
           27
         </td>
         <td>
-          426
+          425
         </td>
         <td>
-          1286
+          1231
           -
-          1358
+          1303
         </td>
         <td>
           Apply
@@ -230,36 +251,15 @@
         </td>
       </tr><tr>
         <td>
-          27
-        </td>
-        <td>
-          425
-        </td>
-        <td>
-          1294
-          -
-          1357
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          java.lang.Object.==
-        </td>
-        <td style="background: #AEF1AE">
-          PlayerCellEntityImpl.this.cellEntity.getTypeComponent.typeEntity.==(EntityType.Controlled)
-        </td>
-      </tr><tr>
-        <td>
           29
         </td>
         <td>
-          427
+          426
         </td>
         <td>
-          1395
+          1340
           -
-          1413
+          1358
         </td>
         <td>
           Select
@@ -275,12 +275,12 @@
           31
         </td>
         <td>
-          428
+          427
         </td>
         <td>
-          1482
+          1427
           -
-          1517
+          1462
         </td>
         <td>
           Select
@@ -296,12 +296,12 @@
           33
         </td>
         <td>
-          429
+          428
         </td>
         <td>
-          1582
+          1527
           -
-          1615
+          1560
         </td>
         <td>
           Select
@@ -317,12 +317,12 @@
           35
         </td>
         <td>
-          430
+          429
         </td>
         <td>
-          1678
+          1623
           -
-          1710
+          1655
         </td>
         <td>
           Select
@@ -338,12 +338,12 @@
           37
         </td>
         <td>
-          431
+          430
         </td>
         <td>
-          1771
+          1716
           -
-          1802
+          1747
         </td>
         <td>
           Select
@@ -359,12 +359,12 @@
           39
         </td>
         <td>
-          432
+          431
         </td>
         <td>
-          1857
+          1802
           -
-          1885
+          1830
         </td>
         <td>
           Select
@@ -380,12 +380,12 @@
           41
         </td>
         <td>
-          433
+          432
         </td>
         <td>
-          1944
+          1889
           -
-          1974
+          1919
         </td>
         <td>
           Select
@@ -401,12 +401,12 @@
           43
         </td>
         <td>
-          434
+          433
         </td>
         <td>
-          2027
+          1972
           -
-          2054
+          1999
         </td>
         <td>
           Select
@@ -422,12 +422,12 @@
           45
         </td>
         <td>
-          435
+          434
         </td>
         <td>
-          2113
+          2058
           -
-          2120
+          2065
         </td>
         <td>
           Select

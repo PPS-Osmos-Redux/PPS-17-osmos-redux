@@ -30,43 +30,44 @@
 </span>6 <span style=''>/** Trait representing a sentient cell */
 </span>7 <span style=''>trait SentientCellEntity extends CellEntity with SentientProperty {}
 </span>8 <span style=''>
-</span>9 <span style=''>object SentientCellEntity {
-</span>10 <span style=''>  def apply(acceleration: AccelerationComponent,
-</span>11 <span style=''>            collidable: CollidableComponent,
-</span>12 <span style=''>            dimension: DimensionComponent,
-</span>13 <span style=''>            position: PositionComponent,
-</span>14 <span style=''>            speed: SpeedComponent,
-</span>15 <span style=''>            visible: VisibleComponent,
-</span>16 <span style=''>            spawner: SpawnerComponent,
-</span>17 <span style=''>            typeEntity: TypeComponent = TypeComponent(EntityType.Sentient)): SentientCellEntity =
-</span>18 <span style=''>    </span><span style='background: #AEF1AE'>SentientCellEntityImpl(CellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity), spawner)</span><span style=''>
-</span>19 <span style=''>
-</span>20 <span style=''>  def apply(builder: CellBuilder, spawner: SpawnerComponent): SentientCellEntity = </span><span style='background: #F0ADAD'>apply(builder.buildCellEntity(), spawner)</span><span style=''>
-</span>21 <span style=''>
-</span>22 <span style=''>  def apply(cell: CellEntity, spawner: SpawnerComponent): SentientCellEntity = </span><span style='background: #AEF1AE'>SentientCellEntityImpl(cell, spawner)</span><span style=''>
-</span>23 <span style=''>
-</span>24 <span style=''>  private case class SentientCellEntityImpl(cellEntity: CellEntity, spawner: SpawnerComponent) extends SentientCellEntity {
-</span>25 <span style=''>
-</span>26 <span style=''>    override def getUUID: String = </span><span style='background: #F0ADAD'>cellEntity.getUUID</span><span style=''>
-</span>27 <span style=''>
-</span>28 <span style=''>    override def getAccelerationComponent: AccelerationComponent = </span><span style='background: #AEF1AE'>cellEntity.getAccelerationComponent</span><span style=''>
-</span>29 <span style=''>
-</span>30 <span style=''>    override def getSpeedComponent: SpeedComponent = </span><span style='background: #AEF1AE'>cellEntity.getSpeedComponent</span><span style=''>
-</span>31 <span style=''>
-</span>32 <span style=''>    override def getCollidableComponent: CollidableComponent = </span><span style='background: #AEF1AE'>cellEntity.getCollidableComponent</span><span style=''>
-</span>33 <span style=''>
-</span>34 <span style=''>    override def getTypeComponent: TypeComponent = </span><span style='background: #AEF1AE'>cellEntity.getTypeComponent</span><span style=''>
-</span>35 <span style=''>
-</span>36 <span style=''>    override def getPositionComponent: PositionComponent = </span><span style='background: #AEF1AE'>cellEntity.getPositionComponent</span><span style=''>
-</span>37 <span style=''>
-</span>38 <span style=''>    override def getVisibleComponent: VisibleComponent = </span><span style='background: #AEF1AE'>cellEntity.getVisibleComponent</span><span style=''>
-</span>39 <span style=''>
-</span>40 <span style=''>    override def getDimensionComponent: DimensionComponent = </span><span style='background: #AEF1AE'>cellEntity.getDimensionComponent</span><span style=''>
-</span>41 <span style=''>
-</span>42 <span style=''>    override def getSpawnerComponent: SpawnerComponent = </span><span style='background: #AEF1AE'>spawner</span><span style=''>
-</span>43 <span style=''>  }
-</span>44 <span style=''>
-</span>45 <span style=''>}
+</span>9 <span style=''>/** Companion object */
+</span>10 <span style=''>object SentientCellEntity {
+</span>11 <span style=''>  def apply(acceleration: AccelerationComponent,
+</span>12 <span style=''>            collidable: CollidableComponent,
+</span>13 <span style=''>            dimension: DimensionComponent,
+</span>14 <span style=''>            position: PositionComponent,
+</span>15 <span style=''>            speed: SpeedComponent,
+</span>16 <span style=''>            visible: VisibleComponent,
+</span>17 <span style=''>            spawner: SpawnerComponent,
+</span>18 <span style=''>            typeEntity: TypeComponent = TypeComponent(EntityType.Sentient)): SentientCellEntity =
+</span>19 <span style=''>    </span><span style='background: #AEF1AE'>SentientCellEntityImpl(CellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity), spawner)</span><span style=''>
+</span>20 <span style=''>
+</span>21 <span style=''>  def apply(builder: CellBuilder, spawner: SpawnerComponent): SentientCellEntity = </span><span style='background: #F0ADAD'>apply(builder.buildCellEntity(), spawner)</span><span style=''>
+</span>22 <span style=''>
+</span>23 <span style=''>  def apply(cell: CellEntity, spawner: SpawnerComponent): SentientCellEntity = </span><span style='background: #AEF1AE'>SentientCellEntityImpl(cell, spawner)</span><span style=''>
+</span>24 <span style=''>
+</span>25 <span style=''>  private case class SentientCellEntityImpl(cellEntity: CellEntity, spawner: SpawnerComponent) extends SentientCellEntity {
+</span>26 <span style=''>
+</span>27 <span style=''>    override def getUUID: String = </span><span style='background: #F0ADAD'>cellEntity.getUUID</span><span style=''>
+</span>28 <span style=''>
+</span>29 <span style=''>    override def getAccelerationComponent: AccelerationComponent = </span><span style='background: #AEF1AE'>cellEntity.getAccelerationComponent</span><span style=''>
+</span>30 <span style=''>
+</span>31 <span style=''>    override def getSpeedComponent: SpeedComponent = </span><span style='background: #AEF1AE'>cellEntity.getSpeedComponent</span><span style=''>
+</span>32 <span style=''>
+</span>33 <span style=''>    override def getCollidableComponent: CollidableComponent = </span><span style='background: #AEF1AE'>cellEntity.getCollidableComponent</span><span style=''>
+</span>34 <span style=''>
+</span>35 <span style=''>    override def getTypeComponent: TypeComponent = </span><span style='background: #AEF1AE'>cellEntity.getTypeComponent</span><span style=''>
+</span>36 <span style=''>
+</span>37 <span style=''>    override def getPositionComponent: PositionComponent = </span><span style='background: #AEF1AE'>cellEntity.getPositionComponent</span><span style=''>
+</span>38 <span style=''>
+</span>39 <span style=''>    override def getVisibleComponent: VisibleComponent = </span><span style='background: #AEF1AE'>cellEntity.getVisibleComponent</span><span style=''>
+</span>40 <span style=''>
+</span>41 <span style=''>    override def getDimensionComponent: DimensionComponent = </span><span style='background: #AEF1AE'>cellEntity.getDimensionComponent</span><span style=''>
+</span>42 <span style=''>
+</span>43 <span style=''>    override def getSpawnerComponent: SpawnerComponent = </span><span style='background: #AEF1AE'>spawner</span><span style=''>
+</span>44 <span style=''>  }
+</span>45 <span style=''>
+</span>46 <span style=''>}
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -80,36 +81,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          18
+          19
         </td>
         <td>
           436
         </td>
         <td>
-          723
+          724
           -
-          808
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.entities.CellEntity.apply
-        </td>
-        <td style="background: #AEF1AE">
-          CellEntity.apply(acceleration, collidable, dimension, position, speed, visible, typeEntity)
-        </td>
-      </tr><tr>
-        <td>
-          18
-        </td>
-        <td>
-          437
-        </td>
-        <td>
-          700
-          -
-          818
+          842
         </td>
         <td>
           Apply
@@ -122,15 +102,36 @@
         </td>
       </tr><tr>
         <td>
-          20
+          19
         </td>
         <td>
-          439
+          435
         </td>
         <td>
-          903
+          747
           -
-          944
+          832
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.CellEntity.apply
+        </td>
+        <td style="background: #AEF1AE">
+          CellEntity.apply(acceleration, collidable, dimension, position, speed, visible, typeEntity)
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          438
+        </td>
+        <td>
+          927
+          -
+          968
         </td>
         <td>
           Apply
@@ -143,15 +144,15 @@
         </td>
       </tr><tr>
         <td>
-          20
+          21
         </td>
         <td>
-          438
+          437
         </td>
         <td>
-          909
+          933
           -
-          934
+          958
         </td>
         <td>
           Apply
@@ -164,15 +165,15 @@
         </td>
       </tr><tr>
         <td>
-          22
+          23
         </td>
         <td>
-          440
+          439
         </td>
         <td>
-          1025
+          1049
           -
-          1062
+          1086
         </td>
         <td>
           Apply
@@ -185,15 +186,15 @@
         </td>
       </tr><tr>
         <td>
-          26
+          27
         </td>
         <td>
-          441
+          440
         </td>
         <td>
-          1224
+          1248
           -
-          1242
+          1266
         </td>
         <td>
           Select
@@ -206,15 +207,15 @@
         </td>
       </tr><tr>
         <td>
-          28
+          29
         </td>
         <td>
-          442
+          441
         </td>
         <td>
-          1311
+          1335
           -
-          1346
+          1370
         </td>
         <td>
           Select
@@ -227,15 +228,15 @@
         </td>
       </tr><tr>
         <td>
-          30
+          31
         </td>
         <td>
-          443
+          442
         </td>
         <td>
-          1401
+          1425
           -
-          1429
+          1453
         </td>
         <td>
           Select
@@ -248,15 +249,15 @@
         </td>
       </tr><tr>
         <td>
-          32
+          33
         </td>
         <td>
-          444
+          443
         </td>
         <td>
-          1494
+          1518
           -
-          1527
+          1551
         </td>
         <td>
           Select
@@ -269,15 +270,15 @@
         </td>
       </tr><tr>
         <td>
-          34
+          35
         </td>
         <td>
-          445
+          444
         </td>
         <td>
-          1580
+          1604
           -
-          1607
+          1631
         </td>
         <td>
           Select
@@ -290,15 +291,15 @@
         </td>
       </tr><tr>
         <td>
-          36
+          37
         </td>
         <td>
-          446
+          445
         </td>
         <td>
-          1668
+          1692
           -
-          1699
+          1723
         </td>
         <td>
           Select
@@ -311,15 +312,15 @@
         </td>
       </tr><tr>
         <td>
-          38
+          39
         </td>
         <td>
-          447
+          446
         </td>
         <td>
-          1758
+          1782
           -
-          1788
+          1812
         </td>
         <td>
           Select
@@ -332,15 +333,15 @@
         </td>
       </tr><tr>
         <td>
-          40
+          41
         </td>
         <td>
-          448
+          447
         </td>
         <td>
-          1851
+          1875
           -
-          1883
+          1907
         </td>
         <td>
           Select
@@ -353,15 +354,15 @@
         </td>
       </tr><tr>
         <td>
-          42
+          43
         </td>
         <td>
-          449
+          448
         </td>
         <td>
-          1942
+          1966
           -
-          1949
+          1973
         </td>
         <td>
           Select

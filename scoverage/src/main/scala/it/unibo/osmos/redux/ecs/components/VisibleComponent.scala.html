@@ -43,17 +43,18 @@
 </span>19 <span style=''>  override def copy(): VisibleComponent = </span><span style='background: #F0ADAD'>VisibleComponent(isVisible)</span><span style=''>
 </span>20 <span style=''>}
 </span>21 <span style=''>
-</span>22 <span style=''>object VisibleComponent {
-</span>23 <span style=''>  def apply(visible: Boolean): VisibleComponent = </span><span style='background: #AEF1AE'>VisibleComponentImpl(visible)</span><span style=''>
-</span>24 <span style=''>
-</span>25 <span style=''>  private case class VisibleComponentImpl(var _visible: Boolean) extends VisibleComponent {
-</span>26 <span style=''>
-</span>27 <span style=''>    override def isVisible: Boolean = </span><span style='background: #AEF1AE'>_visible</span><span style=''>
-</span>28 <span style=''>
-</span>29 <span style=''>    override def setVisible(visible: Boolean): Unit = </span><span style='background: #F0ADAD'>_visible = visible</span><span style=''>
-</span>30 <span style=''>  }
-</span>31 <span style=''>
-</span>32 <span style=''>}
+</span>22 <span style=''>/** Companion object */
+</span>23 <span style=''>object VisibleComponent {
+</span>24 <span style=''>  def apply(visible: Boolean): VisibleComponent = </span><span style='background: #AEF1AE'>VisibleComponentImpl(visible)</span><span style=''>
+</span>25 <span style=''>
+</span>26 <span style=''>  private case class VisibleComponentImpl(var _visible: Boolean) extends VisibleComponent {
+</span>27 <span style=''>
+</span>28 <span style=''>    override def isVisible: Boolean = </span><span style='background: #AEF1AE'>_visible</span><span style=''>
+</span>29 <span style=''>
+</span>30 <span style=''>    override def setVisible(visible: Boolean): Unit = </span><span style='background: #F0ADAD'>_visible = visible</span><span style=''>
+</span>31 <span style=''>  }
+</span>32 <span style=''>
+</span>33 <span style=''>}
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -109,15 +110,15 @@
         </td>
       </tr><tr>
         <td>
-          23
+          24
         </td>
         <td>
           71
         </td>
         <td>
-          597
+          621
           -
-          626
+          650
         </td>
         <td>
           Apply
@@ -130,15 +131,15 @@
         </td>
       </tr><tr>
         <td>
-          27
+          28
         </td>
         <td>
           72
         </td>
         <td>
-          759
+          783
           -
-          767
+          791
         </td>
         <td>
           Select
@@ -151,15 +152,15 @@
         </td>
       </tr><tr>
         <td>
-          29
+          30
         </td>
         <td>
           73
         </td>
         <td>
-          823
+          847
           -
-          841
+          865
         </td>
         <td>
           Apply

@@ -65,28 +65,7 @@
           13
         </td>
         <td>
-          600
-        </td>
-        <td>
-          545
-          -
-          556
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.systems.DrawSystem.getEntities
-        </td>
-        <td style="background: #AEF1AE">
-          DrawSystem.this.getEntities
-        </td>
-      </tr><tr>
-        <td>
-          13
-        </td>
-        <td>
-          599
+          597
         </td>
         <td>
           528
@@ -107,7 +86,7 @@
           13
         </td>
         <td>
-          601
+          599
         </td>
         <td>
           500
@@ -125,31 +104,52 @@
         </td>
       </tr><tr>
         <td>
-          16
+          13
         </td>
         <td>
-          603
+          598
         </td>
         <td>
-          698
+          545
           -
-          729
+          556
         </td>
         <td>
           Select
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.components.VisibleComponent.isVisible
+          it.unibo.osmos.redux.ecs.systems.DrawSystem.getEntities
         </td>
         <td style="background: #AEF1AE">
-          e.getVisibleComponent.isVisible
+          DrawSystem.this.getEntities
         </td>
       </tr><tr>
         <td>
           16
         </td>
         <td>
-          606
+          600
+        </td>
+        <td>
+          673
+          -
+          694
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityType.Controlled
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.entities.EntityType.Controlled
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          604
         </td>
         <td>
           640
@@ -170,49 +170,28 @@
           16
         </td>
         <td>
-          602
+          601
         </td>
         <td>
-          673
+          698
           -
-          694
+          729
         </td>
         <td>
           Select
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.entities.EntityType.Controlled
+          it.unibo.osmos.redux.ecs.components.VisibleComponent.isVisible
         </td>
         <td style="background: #AEF1AE">
-          it.unibo.osmos.redux.ecs.entities.EntityType.Controlled
+          e.getVisibleComponent.isVisible
         </td>
       </tr><tr>
         <td>
           17
         </td>
         <td>
-          608
-        </td>
-        <td>
-          620
-          -
-          829
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.Option.map
-        </td>
-        <td style="background: #AEF1AE">
-          DrawSystem.this.entities.find(((e: it.unibo.osmos.redux.ecs.entities.properties.composed.DrawableProperty) =&gt; e.getTypeComponent.typeEntity.==(it.unibo.osmos.redux.ecs.entities.EntityType.Controlled).&amp;&amp;(e.getVisibleComponent.isVisible).&amp;&amp;(e.getUUID.==(DrawSystem.this.entitiesDrawer.getPlayerUUID)))).map[it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper](((p: it.unibo.osmos.redux.ecs.entities.properties.composed.DrawableProperty) =&gt; DrawSystem.this.drawablePropertyToDrawableWrapper(p)))
-        </td>
-      </tr><tr>
-        <td>
-          17
-        </td>
-        <td>
-          605
+          603
         </td>
         <td>
           739
@@ -233,7 +212,28 @@
           17
         </td>
         <td>
-          604
+          606
+        </td>
+        <td>
+          620
+          -
+          829
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.map
+        </td>
+        <td style="background: #AEF1AE">
+          DrawSystem.this.entities.find(((e: it.unibo.osmos.redux.ecs.entities.properties.composed.DrawableProperty) =&gt; e.getTypeComponent.typeEntity.==(it.unibo.osmos.redux.ecs.entities.EntityType.Controlled).&amp;&amp;(e.getVisibleComponent.isVisible).&amp;&amp;(e.getUUID.==(DrawSystem.this.entitiesDrawer.getPlayerUUID)))).map[it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper](((p: it.unibo.osmos.redux.ecs.entities.properties.composed.DrawableProperty) =&gt; DrawSystem.this.drawablePropertyToDrawableWrapper(p)))
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          602
         </td>
         <td>
           752
@@ -254,7 +254,7 @@
           17
         </td>
         <td>
-          607
+          605
         </td>
         <td>
           792
@@ -278,48 +278,6 @@
           609
         </td>
         <td>
-          908
-          -
-          939
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.components.VisibleComponent.isVisible
-        </td>
-        <td style="background: #AEF1AE">
-          e.getVisibleComponent.isVisible
-        </td>
-      </tr><tr>
-        <td>
-          20
-        </td>
-        <td>
-          612
-        </td>
-        <td>
-          886
-          -
-          995
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          scala.collection.mutable.ListBuffer.toList
-        </td>
-        <td style="background: #AEF1AE">
-          DrawSystem.this.entities.filter(((e: it.unibo.osmos.redux.ecs.entities.properties.composed.DrawableProperty) =&gt; e.getVisibleComponent.isVisible)).map[it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper, scala.collection.mutable.ListBuffer[it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper]](((e: it.unibo.osmos.redux.ecs.entities.properties.composed.DrawableProperty) =&gt; DrawSystem.this.drawablePropertyToDrawableWrapper(e)))(mutable.this.ListBuffer.canBuildFrom[it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper]).toList
-        </td>
-      </tr><tr>
-        <td>
-          20
-        </td>
-        <td>
-          611
-        </td>
-        <td>
           941
           -
           941
@@ -338,7 +296,7 @@
           20
         </td>
         <td>
-          610
+          608
         </td>
         <td>
           951
@@ -356,31 +314,52 @@
         </td>
       </tr><tr>
         <td>
-          23
+          20
         </td>
         <td>
-          613
+          607
         </td>
         <td>
-          1110
+          908
           -
-          1143
+          939
         </td>
         <td>
           Select
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.components.PositionComponent.point
+          it.unibo.osmos.redux.ecs.components.VisibleComponent.isVisible
         </td>
         <td style="background: #AEF1AE">
-          entity.getPositionComponent.point
+          e.getVisibleComponent.isVisible
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          610
+        </td>
+        <td>
+          886
+          -
+          995
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.mutable.ListBuffer.toList
+        </td>
+        <td style="background: #AEF1AE">
+          DrawSystem.this.entities.filter(((e: it.unibo.osmos.redux.ecs.entities.properties.composed.DrawableProperty) =&gt; e.getVisibleComponent.isVisible)).map[it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper, scala.collection.mutable.ListBuffer[it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper]](((e: it.unibo.osmos.redux.ecs.entities.properties.composed.DrawableProperty) =&gt; DrawSystem.this.drawablePropertyToDrawableWrapper(e)))(mutable.this.ListBuffer.canBuildFrom[it.unibo.osmos.redux.mvc.view.drawables.DrawableWrapper]).toList
         </td>
       </tr><tr>
         <td>
           23
         </td>
         <td>
-          619
+          617
         </td>
         <td>
           1094
@@ -398,10 +377,31 @@
         </td>
       </tr><tr>
         <td>
+          23
+        </td>
+        <td>
+          611
+        </td>
+        <td>
+          1110
+          -
+          1143
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.point
+        </td>
+        <td style="background: #AEF1AE">
+          entity.getPositionComponent.point
+        </td>
+      </tr><tr>
+        <td>
           24
         </td>
         <td>
-          614
+          612
         </td>
         <td>
           1151
@@ -425,27 +425,6 @@
           615
         </td>
         <td>
-          1195
-          -
-          1228
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.utils.Vector.x
-        </td>
-        <td style="background: #AEF1AE">
-          entity.getSpeedComponent.vector.x
-        </td>
-      </tr><tr>
-        <td>
-          25
-        </td>
-        <td>
-          617
-        </td>
-        <td>
           1194
           -
           1264
@@ -464,7 +443,7 @@
           25
         </td>
         <td>
-          616
+          614
         </td>
         <td>
           1230
@@ -482,10 +461,31 @@
         </td>
       </tr><tr>
         <td>
+          25
+        </td>
+        <td>
+          613
+        </td>
+        <td>
+          1195
+          -
+          1228
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.x
+        </td>
+        <td style="background: #AEF1AE">
+          entity.getSpeedComponent.vector.x
+        </td>
+      </tr><tr>
+        <td>
           26
         </td>
         <td>
-          618
+          616
         </td>
         <td>
           1272

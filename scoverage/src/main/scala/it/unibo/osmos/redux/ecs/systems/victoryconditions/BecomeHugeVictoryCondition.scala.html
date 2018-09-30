@@ -34,7 +34,7 @@
 </span>10 <span style=''>  * victory is fulfilled when the player's radius is greater
 </span>11 <span style=''>  * than the other matter cells radius by a certain percentage
 </span>12 <span style=''>  */
-</span>13 <span style=''>case class BecomeHugeVictoryCondition() extends AbstractVictoryCondition {
+</span>13 <span style=''>case class BecomeHugeVictoryCondition() extends VictoryCondition {
 </span>14 <span style=''>
 </span>15 <span style=''>  private val radiusPercentageToBeHuge = </span><span style='background: #AEF1AE'>70</span><span style=''>
 </span>16 <span style=''>
@@ -62,12 +62,12 @@
           15
         </td>
         <td>
-          1156
+          1159
         </td>
         <td>
-          535
+          527
           -
-          537
+          529
         </td>
         <td>
           Literal
@@ -83,12 +83,12 @@
           18
         </td>
         <td>
-          1157
+          1160
         </td>
         <td>
-          668
+          660
           -
-          713
+          705
         </td>
         <td>
           Select
@@ -104,12 +104,12 @@
           19
         </td>
         <td>
-          1158
+          1161
         </td>
         <td>
-          744
+          736
           -
-          745
+          737
         </td>
         <td>
           Literal
@@ -125,12 +125,33 @@
           20
         </td>
         <td>
-          1160
+          1162
         </td>
         <td>
-          773
+          803
           -
-          833
+          824
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          1163
+        </td>
+        <td>
+          765
+          -
+          825
         </td>
         <td>
           Select
@@ -143,36 +164,15 @@
         </td>
       </tr><tr>
         <td>
-          20
-        </td>
-        <td>
-          1159
-        </td>
-        <td>
-          811
-          -
-          832
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter
-        </td>
-        <td style="background: #AEF1AE">
-          it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter
-        </td>
-      </tr><tr>
-        <td>
           21
         </td>
         <td>
-          1162
+          1165
         </td>
         <td>
-          860
+          852
           -
-          910
+          902
         </td>
         <td>
           Apply
@@ -188,12 +188,12 @@
           21
         </td>
         <td>
-          1161
+          1164
         </td>
         <td>
-          875
+          867
           -
-          910
+          902
         </td>
         <td>
           Select
@@ -209,12 +209,12 @@
           21
         </td>
         <td>
-          1163
+          1166
         </td>
         <td>
-          750
+          742
           -
-          911
+          903
         </td>
         <td>
           Apply
@@ -230,12 +230,33 @@
           22
         </td>
         <td>
-          1165
+          1169
         </td>
         <td>
-          951
+          908
           -
-          975
+          967
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          playerRadius./(totalRadius).*(100).&gt;(BecomeHugeVictoryCondition.this.radiusPercentageToBeHuge)
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          1168
+        </td>
+        <td>
+          943
+          -
+          967
         </td>
         <td>
           Select
@@ -251,12 +272,12 @@
           22
         </td>
         <td>
-          1164
+          1167
         </td>
         <td>
-          945
+          937
           -
-          948
+          940
         </td>
         <td>
           Literal
@@ -266,27 +287,6 @@
         </td>
         <td style="background: #AEF1AE">
           100
-        </td>
-      </tr><tr>
-        <td>
-          22
-        </td>
-        <td>
-          1166
-        </td>
-        <td>
-          916
-          -
-          975
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.Double.&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          playerRadius./(totalRadius).*(100).&gt;(BecomeHugeVictoryCondition.this.radiusPercentageToBeHuge)
         </td>
       </tr>
     </table>

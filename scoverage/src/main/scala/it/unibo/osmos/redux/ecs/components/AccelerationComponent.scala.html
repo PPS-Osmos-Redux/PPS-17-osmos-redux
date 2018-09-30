@@ -39,21 +39,22 @@
 </span>15 <span style=''>  override def copy(): AccelerationComponent = </span><span style='background: #AEF1AE'>AccelerationComponent(vector.x, vector.y)</span><span style=''>
 </span>16 <span style=''>}
 </span>17 <span style=''>
-</span>18 <span style=''>object AccelerationComponent {
-</span>19 <span style=''>  def apply(accelerationX: Double, accelerationY: Double): AccelerationComponent = </span><span style='background: #AEF1AE'>AccelerationComponentImpl(Vector(accelerationX, accelerationY))</span><span style=''>
-</span>20 <span style=''>
-</span>21 <span style=''>  def apply(acceleration: Vector): AccelerationComponent = </span><span style='background: #AEF1AE'>AccelerationComponentImpl(acceleration)</span><span style=''>
-</span>22 <span style=''>
-</span>23 <span style=''>  private case class AccelerationComponentImpl(var _speedVector: Vector) extends AccelerationComponent {
-</span>24 <span style=''>
-</span>25 <span style=''>    override def vector: Vector = </span><span style='background: #AEF1AE'>_speedVector</span><span style=''>
-</span>26 <span style=''>
-</span>27 <span style=''>    override def reset(): Unit = </span><span style='background: #AEF1AE'>vector_(Vector.zero())</span><span style=''>
-</span>28 <span style=''>
-</span>29 <span style=''>    override def vector_(vector: Vector): Unit = </span><span style='background: #AEF1AE'>_speedVector = vector</span><span style=''>
-</span>30 <span style=''>  }
-</span>31 <span style=''>
-</span>32 <span style=''>}
+</span>18 <span style=''>/** Companion object */
+</span>19 <span style=''>object AccelerationComponent {
+</span>20 <span style=''>  def apply(accelerationX: Double, accelerationY: Double): AccelerationComponent = </span><span style='background: #AEF1AE'>AccelerationComponentImpl(Vector(accelerationX, accelerationY))</span><span style=''>
+</span>21 <span style=''>
+</span>22 <span style=''>  def apply(acceleration: Vector): AccelerationComponent = </span><span style='background: #AEF1AE'>AccelerationComponentImpl(acceleration)</span><span style=''>
+</span>23 <span style=''>
+</span>24 <span style=''>  private case class AccelerationComponentImpl(var _speedVector: Vector) extends AccelerationComponent {
+</span>25 <span style=''>
+</span>26 <span style=''>    override def vector: Vector = </span><span style='background: #AEF1AE'>_speedVector</span><span style=''>
+</span>27 <span style=''>
+</span>28 <span style=''>    override def reset(): Unit = </span><span style='background: #AEF1AE'>vector_(Vector.zero())</span><span style=''>
+</span>29 <span style=''>
+</span>30 <span style=''>    override def vector_(vector: Vector): Unit = </span><span style='background: #AEF1AE'>_speedVector = vector</span><span style=''>
+</span>31 <span style=''>  }
+</span>32 <span style=''>
+</span>33 <span style=''>}
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -130,15 +131,15 @@
         </td>
       </tr><tr>
         <td>
-          19
+          20
         </td>
         <td>
           5
         </td>
         <td>
-          561
+          585
           -
-          624
+          648
         </td>
         <td>
           Apply
@@ -151,15 +152,15 @@
         </td>
       </tr><tr>
         <td>
-          19
+          20
         </td>
         <td>
           4
         </td>
         <td>
-          587
+          611
           -
-          623
+          647
         </td>
         <td>
           Apply
@@ -172,15 +173,15 @@
         </td>
       </tr><tr>
         <td>
-          21
+          22
         </td>
         <td>
           6
         </td>
         <td>
-          685
+          709
           -
-          724
+          748
         </td>
         <td>
           Apply
@@ -193,15 +194,15 @@
         </td>
       </tr><tr>
         <td>
-          25
+          26
         </td>
         <td>
           7
         </td>
         <td>
-          866
+          890
           -
-          878
+          902
         </td>
         <td>
           Select
@@ -214,15 +215,15 @@
         </td>
       </tr><tr>
         <td>
-          27
+          28
         </td>
         <td>
           8
         </td>
         <td>
-          921
+          945
           -
-          934
+          958
         </td>
         <td>
           Apply
@@ -235,15 +236,15 @@
         </td>
       </tr><tr>
         <td>
-          27
+          28
         </td>
         <td>
           9
         </td>
         <td>
-          913
+          937
           -
-          935
+          959
         </td>
         <td>
           Apply
@@ -256,15 +257,15 @@
         </td>
       </tr><tr>
         <td>
-          29
+          30
         </td>
         <td>
           10
         </td>
         <td>
-          986
+          1010
           -
-          1007
+          1031
         </td>
         <td>
           Apply

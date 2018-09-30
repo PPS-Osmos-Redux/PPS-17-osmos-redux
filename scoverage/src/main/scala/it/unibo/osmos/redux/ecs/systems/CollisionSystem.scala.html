@@ -163,8 +163,8 @@
 </span>139 <span style=''>    val unitVector = </span><span style='background: #AEF1AE'>MathUtils.unitVector(position1.point, position2.point)</span><span style=''>
 </span>140 <span style=''>    </span><span style='background: #AEF1AE'>position1.point_(position1.point add (unitVector multiply quantityToMove))</span><span style=''>
 </span>141 <span style=''>    </span><span style='background: #AEF1AE'>position2.point_(position2.point add (unitVector multiply (-quantityToMove)))</span><span style=''>
-</span>142 <span style=''>    </span><span style='background: #AEF1AE'>bounceRule.repositionIfOutsideMap(entity1)</span><span style=''>
-</span>143 <span style=''>    </span><span style='background: #AEF1AE'>bounceRule.repositionIfOutsideMap(entity2)</span><span style=''>
+</span>142 <span style=''>    </span><span style='background: #AEF1AE'>bounceRule.checkIfOutsideMap(entity1)</span><span style=''>
+</span>143 <span style=''>    </span><span style='background: #AEF1AE'>bounceRule.checkIfOutsideMap(entity2)</span><span style=''>
 </span>144 <span style=''>  }
 </span>145 <span style=''>
 </span>146 <span style=''>  /** Applies acceleration to the input entity.
@@ -199,7 +199,7 @@
           14
         </td>
         <td>
-          482
+          480
         </td>
         <td>
           777
@@ -220,7 +220,7 @@
           16
         </td>
         <td>
-          483
+          481
         </td>
         <td>
           923
@@ -241,7 +241,7 @@
           18
         </td>
         <td>
-          484
+          482
         </td>
         <td>
           1054
@@ -262,7 +262,7 @@
           20
         </td>
         <td>
-          485
+          483
         </td>
         <td>
           1110
@@ -286,48 +286,6 @@
           487
         </td>
         <td>
-          1221
-          -
-          1235
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.utils.Point.y
-        </td>
-        <td style="background: #AEF1AE">
-          shape.center.y
-        </td>
-      </tr><tr>
-        <td>
-          22
-        </td>
-        <td>
-          490
-        </td>
-        <td>
-          1272
-          -
-          1282
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.Rectangle.base
-        </td>
-        <td style="background: #AEF1AE">
-          shape.base
-        </td>
-      </tr><tr>
-        <td>
-          22
-        </td>
-        <td>
-          489
-        </td>
-        <td>
           1238
           -
           1270
@@ -346,7 +304,7 @@
           22
         </td>
         <td>
-          492
+          490
         </td>
         <td>
           1181
@@ -367,28 +325,28 @@
           22
         </td>
         <td>
-          486
+          489
         </td>
         <td>
-          1205
+          1284
           -
-          1219
+          1296
         </td>
         <td>
           Select
         </td>
         <td>
-          it.unibo.osmos.redux.utils.Point.x
+          it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.Rectangle.height
         </td>
         <td style="background: #AEF1AE">
-          shape.center.x
+          shape.height
         </td>
       </tr><tr>
         <td>
           22
         </td>
         <td>
-          488
+          486
         </td>
         <td>
           1199
@@ -409,21 +367,63 @@
           22
         </td>
         <td>
-          491
+          488
         </td>
         <td>
-          1284
+          1272
           -
-          1296
+          1282
         </td>
         <td>
           Select
         </td>
         <td>
-          it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.Rectangle.height
+          it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.Rectangle.base
         </td>
         <td style="background: #AEF1AE">
-          shape.height
+          shape.base
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          485
+        </td>
+        <td>
+          1221
+          -
+          1235
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.y
+        </td>
+        <td style="background: #AEF1AE">
+          shape.center.y
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          484
+        </td>
+        <td>
+          1205
+          -
+          1219
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.x
+        </td>
+        <td style="background: #AEF1AE">
+          shape.center.x
         </td>
       </tr><tr>
         <td>
@@ -431,27 +431,6 @@
         </td>
         <td>
           496
-        </td>
-        <td>
-          1384
-          -
-          1416
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.mvc.controller.levels.structure.LevelMap.collisionRule
-        </td>
-        <td style="background: #AEF1AE">
-          CollisionSystem.this.levelInfo.levelMap.collisionRule
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          498
         </td>
         <td>
           1330
@@ -472,49 +451,7 @@
           24
         </td>
         <td>
-          495
-        </td>
-        <td>
-          1345
-          -
-          1382
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.utils.Point.apply
-        </td>
-        <td style="background: #AEF1AE">
-          it.unibo.osmos.redux.utils.Point.apply(shape.center.x, shape.center.y)
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          497
-        </td>
-        <td>
-          1418
-          -
-          1430
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.Circle.radius
-        </td>
-        <td style="background: #AEF1AE">
-          shape.radius
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          494
+          492
         </td>
         <td>
           1367
@@ -535,7 +472,28 @@
           24
         </td>
         <td>
-          493
+          495
+        </td>
+        <td>
+          1418
+          -
+          1430
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.Circle.radius
+        </td>
+        <td style="background: #AEF1AE">
+          shape.radius
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          491
         </td>
         <td>
           1351
@@ -553,10 +511,52 @@
         </td>
       </tr><tr>
         <td>
+          24
+        </td>
+        <td>
+          494
+        </td>
+        <td>
+          1384
+          -
+          1416
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.LevelMap.collisionRule
+        </td>
+        <td style="background: #AEF1AE">
+          CollisionSystem.this.levelInfo.levelMap.collisionRule
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          493
+        </td>
+        <td>
+          1345
+          -
+          1382
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Point.apply(shape.center.x, shape.center.y)
+        </td>
+      </tr><tr>
+        <td>
           25
         </td>
         <td>
-          499
+          497
         </td>
         <td>
           1446
@@ -577,7 +577,7 @@
           30
         </td>
         <td>
-          501
+          499
         </td>
         <td>
           1616
@@ -598,7 +598,7 @@
           30
         </td>
         <td>
-          500
+          498
         </td>
         <td>
           1639
@@ -627,27 +627,6 @@
           1743
         </td>
         <td>
-          TypeApply
-        </td>
-        <td>
-          scala.collection.mutable.ListBuffer.canBuildFrom
-        </td>
-        <td style="background: #AEF1AE">
-          mutable.this.ListBuffer.canBuildFrom[Unit]
-        </td>
-      </tr><tr>
-        <td>
-          33
-        </td>
-        <td>
-          516
-        </td>
-        <td>
-          1743
-          -
-          1743
-        </td>
-        <td>
           Literal
         </td>
         <td>
@@ -661,7 +640,7 @@
           33
         </td>
         <td>
-          515
+          513
         </td>
         <td>
           1718
@@ -700,10 +679,94 @@
         </td>
       </tr><tr>
         <td>
+          33
+        </td>
+        <td>
+          512
+        </td>
+        <td>
+          1743
+          -
+          1743
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.mutable.ListBuffer.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          mutable.this.ListBuffer.canBuildFrom[Unit]
+        </td>
+      </tr><tr>
+        <td>
           34
         </td>
         <td>
-          508
+          507
+        </td>
+        <td>
+          1787
+          -
+          1787
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.mutable.ListBuffer.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          mutable.this.ListBuffer.canBuildFrom[((it.unibo.osmos.redux.ecs.entities.properties.composed.CollidableProperty, Int), Double)]
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          501
+        </td>
+        <td>
+          1799
+          -
+          1799
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          510
+        </td>
+        <td>
+          1787
+          -
+          1787
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.mutable.ListBuffer.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          mutable.this.ListBuffer.canBuildFrom[Unit]
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          506
         </td>
         <td>
           1774
@@ -724,7 +787,28 @@
           34
         </td>
         <td>
-          513
+          500
+        </td>
+        <td>
+          1799
+          -
+          1799
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.mutable.ListBuffer.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          mutable.this.ListBuffer.canBuildFrom[(it.unibo.osmos.redux.ecs.entities.properties.composed.CollidableProperty, Int)]
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          511
         </td>
         <td>
           1774
@@ -758,94 +842,10 @@
         </td>
       </tr><tr>
         <td>
-          34
-        </td>
-        <td>
-          512
-        </td>
-        <td>
-          1787
-          -
-          1787
-        </td>
-        <td>
-          TypeApply
-        </td>
-        <td>
-          scala.collection.mutable.ListBuffer.canBuildFrom
-        </td>
-        <td style="background: #AEF1AE">
-          mutable.this.ListBuffer.canBuildFrom[Unit]
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          503
-        </td>
-        <td>
-          1799
-          -
-          1799
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          true
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          509
-        </td>
-        <td>
-          1787
-          -
-          1787
-        </td>
-        <td>
-          TypeApply
-        </td>
-        <td>
-          scala.collection.mutable.ListBuffer.canBuildFrom
-        </td>
-        <td style="background: #AEF1AE">
-          mutable.this.ListBuffer.canBuildFrom[((it.unibo.osmos.redux.ecs.entities.properties.composed.CollidableProperty, Int), Double)]
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          502
-        </td>
-        <td>
-          1799
-          -
-          1799
-        </td>
-        <td>
-          TypeApply
-        </td>
-        <td>
-          scala.collection.mutable.ListBuffer.canBuildFrom
-        </td>
-        <td style="background: #AEF1AE">
-          mutable.this.ListBuffer.canBuildFrom[(it.unibo.osmos.redux.ecs.entities.properties.composed.CollidableProperty, Int)]
-        </td>
-      </tr><tr>
-        <td>
           35
         </td>
         <td>
-          504
+          502
         </td>
         <td>
           1821
@@ -866,28 +866,7 @@
           36
         </td>
         <td>
-          505
-        </td>
-        <td>
-          1917
-          -
-          1955
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.components.CollidableComponent.isCollidable
-        </td>
-        <td style="background: #AEF1AE">
-          e2.getCollidableComponent.isCollidable
-        </td>
-      </tr><tr>
-        <td>
-          36
-        </td>
-        <td>
-          506
+          504
         </td>
         <td>
           1875
@@ -905,10 +884,31 @@
         </td>
       </tr><tr>
         <td>
+          36
+        </td>
+        <td>
+          503
+        </td>
+        <td>
+          1917
+          -
+          1955
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.CollidableComponent.isCollidable
+        </td>
+        <td style="background: #AEF1AE">
+          e2.getCollidableComponent.isCollidable
+        </td>
+      </tr><tr>
+        <td>
           37
         </td>
         <td>
-          507
+          505
         </td>
         <td>
           1972
@@ -929,7 +929,7 @@
           38
         </td>
         <td>
-          510
+          508
         </td>
         <td>
           2004
@@ -950,7 +950,7 @@
           39
         </td>
         <td>
-          511
+          509
         </td>
         <td>
           2062
@@ -971,7 +971,7 @@
           50
         </td>
         <td>
-          517
+          515
         </td>
         <td>
           2477
@@ -992,7 +992,7 @@
           53
         </td>
         <td>
-          519
+          517
         </td>
         <td>
           2599
@@ -1013,7 +1013,7 @@
           53
         </td>
         <td>
-          518
+          516
         </td>
         <td>
           2568
@@ -1034,7 +1034,7 @@
           53
         </td>
         <td>
-          520
+          518
         </td>
         <td>
           2540
@@ -1055,28 +1055,7 @@
           54
         </td>
         <td>
-          522
-        </td>
-        <td>
-          2649
-          -
-          2714
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.Double.+
-        </td>
-        <td style="background: #AEF1AE">
-          e1.getDimensionComponent.radius.+(e2.getDimensionComponent.radius)
-        </td>
-      </tr><tr>
-        <td>
-          54
-        </td>
-        <td>
-          521
+          519
         </td>
         <td>
           2683
@@ -1094,10 +1073,31 @@
         </td>
       </tr><tr>
         <td>
+          54
+        </td>
+        <td>
+          520
+        </td>
+        <td>
+          2649
+          -
+          2714
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.+
+        </td>
+        <td style="background: #AEF1AE">
+          e1.getDimensionComponent.radius.+(e2.getDimensionComponent.radius)
+        </td>
+      </tr><tr>
+        <td>
           55
         </td>
         <td>
-          523
+          521
         </td>
         <td>
           2719
@@ -1118,7 +1118,7 @@
           56
         </td>
         <td>
-          525
+          523
         </td>
         <td>
           2784
@@ -1139,7 +1139,7 @@
           56
         </td>
         <td>
-          524
+          522
         </td>
         <td>
           2768
@@ -1160,7 +1160,7 @@
           57
         </td>
         <td>
-          526
+          524
         </td>
         <td>
           2808
@@ -1181,28 +1181,7 @@
           69
         </td>
         <td>
-          528
-        </td>
-        <td>
-          3223
-          -
-          3223
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          scala.Tuple2._2
-        </td>
-        <td style="background: #AEF1AE">
-          x$8._2
-        </td>
-      </tr><tr>
-        <td>
-          69
-        </td>
-        <td>
-          527
+          525
         </td>
         <td>
           3212
@@ -1220,10 +1199,31 @@
         </td>
       </tr><tr>
         <td>
+          69
+        </td>
+        <td>
+          526
+        </td>
+        <td>
+          3223
+          -
+          3223
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._2
+        </td>
+        <td style="background: #AEF1AE">
+          x$8._2
+        </td>
+      </tr><tr>
+        <td>
           72
         </td>
         <td>
-          529
+          527
         </td>
         <td>
           3382
@@ -1244,7 +1244,28 @@
           75
         </td>
         <td>
-          532
+          528
+        </td>
+        <td>
+          3495
+          -
+          3531
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.point
+        </td>
+        <td style="background: #AEF1AE">
+          bigEntity.getPositionComponent.point
+        </td>
+      </tr><tr>
+        <td>
+          75
+        </td>
+        <td>
+          530
         </td>
         <td>
           3474
@@ -1265,7 +1286,7 @@
           75
         </td>
         <td>
-          531
+          529
         </td>
         <td>
           3533
@@ -1283,31 +1304,10 @@
         </td>
       </tr><tr>
         <td>
-          75
-        </td>
-        <td>
-          530
-        </td>
-        <td>
-          3495
-          -
-          3531
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.components.PositionComponent.point
-        </td>
-        <td style="background: #AEF1AE">
-          bigEntity.getPositionComponent.point
-        </td>
-      </tr><tr>
-        <td>
           78
         </td>
         <td>
-          534
+          532
         </td>
         <td>
           3650
@@ -1328,7 +1328,7 @@
           78
         </td>
         <td>
-          533
+          531
         </td>
         <td>
           3680
@@ -1349,7 +1349,7 @@
           79
         </td>
         <td>
-          535
+          533
         </td>
         <td>
           3701
@@ -1370,7 +1370,7 @@
           89
         </td>
         <td>
-          536
+          534
         </td>
         <td>
           4098
@@ -1391,7 +1391,7 @@
           90
         </td>
         <td>
-          537
+          535
         </td>
         <td>
           4158
@@ -1412,49 +1412,7 @@
           92
         </td>
         <td>
-          541
-        </td>
-        <td>
-          4243
-          -
-          4325
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.components.DimensionComponent.radius_
-        </td>
-        <td style="background: #AEF1AE">
-          smallEntity.getDimensionComponent.radius_(tinyRadius.-(overlap.*(CollisionSystem.this.massExchangeRate)))
-        </td>
-      </tr><tr>
-        <td>
-          92
-        </td>
-        <td>
-          540
-        </td>
-        <td>
-          4285
-          -
-          4324
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.Double.-
-        </td>
-        <td style="background: #AEF1AE">
-          tinyRadius.-(overlap.*(CollisionSystem.this.massExchangeRate))
-        </td>
-      </tr><tr>
-        <td>
-          92
-        </td>
-        <td>
-          539
+          537
         </td>
         <td>
           4298
@@ -1475,7 +1433,28 @@
           92
         </td>
         <td>
-          538
+          539
+        </td>
+        <td>
+          4243
+          -
+          4325
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.radius_
+        </td>
+        <td style="background: #AEF1AE">
+          smallEntity.getDimensionComponent.radius_(tinyRadius.-(overlap.*(CollisionSystem.this.massExchangeRate)))
+        </td>
+      </tr><tr>
+        <td>
+          92
+        </td>
+        <td>
+          536
         </td>
         <td>
           4308
@@ -1493,10 +1472,31 @@
         </td>
       </tr><tr>
         <td>
+          92
+        </td>
+        <td>
+          538
+        </td>
+        <td>
+          4285
+          -
+          4324
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #AEF1AE">
+          tinyRadius.-(overlap.*(CollisionSystem.this.massExchangeRate))
+        </td>
+      </tr><tr>
+        <td>
           97
         </td>
         <td>
-          543
+          541
         </td>
         <td>
           4657
@@ -1517,7 +1517,7 @@
           97
         </td>
         <td>
-          542
+          540
         </td>
         <td>
           4667
@@ -1538,7 +1538,7 @@
           97
         </td>
         <td>
-          545
+          543
         </td>
         <td>
           4605
@@ -1559,7 +1559,7 @@
           97
         </td>
         <td>
-          544
+          542
         </td>
         <td>
           4645
@@ -1580,7 +1580,7 @@
           98
         </td>
         <td>
-          546
+          544
         </td>
         <td>
           4693
@@ -1601,7 +1601,7 @@
           100
         </td>
         <td>
-          547
+          545
         </td>
         <td>
           4779
@@ -1622,28 +1622,7 @@
           101
         </td>
         <td>
-          549
-        </td>
-        <td>
-          4839
-          -
-          4901
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.utils.MathUtils.circleArea
-        </td>
-        <td style="background: #AEF1AE">
-          it.unibo.osmos.redux.utils.MathUtils.circleArea(smallEntity.getDimensionComponent.radius)
-        </td>
-      </tr><tr>
-        <td>
-          101
-        </td>
-        <td>
-          548
+          546
         </td>
         <td>
           4860
@@ -1661,10 +1640,31 @@
         </td>
       </tr><tr>
         <td>
+          101
+        </td>
+        <td>
+          547
+        </td>
+        <td>
+          4839
+          -
+          4901
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.MathUtils.circleArea
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.MathUtils.circleArea(smallEntity.getDimensionComponent.radius)
+        </td>
+      </tr><tr>
+        <td>
           102
         </td>
         <td>
-          550
+          548
         </td>
         <td>
           4927
@@ -1685,7 +1685,7 @@
           103
         </td>
         <td>
-          552
+          550
         </td>
         <td>
           5026
@@ -1706,7 +1706,7 @@
           103
         </td>
         <td>
-          551
+          549
         </td>
         <td>
           5066
@@ -1727,7 +1727,7 @@
           104
         </td>
         <td>
-          553
+          551
         </td>
         <td>
           5110
@@ -1748,7 +1748,7 @@
           105
         </td>
         <td>
-          554
+          552
         </td>
         <td>
           5144
@@ -1769,7 +1769,7 @@
           108
         </td>
         <td>
-          555
+          553
         </td>
         <td>
           5253
@@ -1790,7 +1790,7 @@
           116
         </td>
         <td>
-          556
+          554
         </td>
         <td>
           5521
@@ -1811,7 +1811,7 @@
           117
         </td>
         <td>
-          557
+          555
         </td>
         <td>
           5569
@@ -1832,7 +1832,28 @@
           120
         </td>
         <td>
-          559
+          561
+        </td>
+        <td>
+          5653
+          -
+          5653
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          120
+        </td>
+        <td>
+          557
         </td>
         <td>
           5657
@@ -1853,28 +1874,7 @@
           120
         </td>
         <td>
-          558
-        </td>
-        <td>
-          5676
-          -
-          5688
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.Double./
-        </td>
-        <td style="background: #AEF1AE">
-          map.base./(2)
-        </td>
-      </tr><tr>
-        <td>
-          120
-        </td>
-        <td>
-          564
+          562
         </td>
         <td>
           5653
@@ -1895,28 +1895,28 @@
           120
         </td>
         <td>
-          563
+          556
         </td>
         <td>
-          5653
+          5676
           -
-          5653
+          5688
         </td>
         <td>
-          Literal
+          Apply
         </td>
         <td>
-          &lt;nosymbol&gt;
+          scala.Double./
         </td>
         <td style="background: #AEF1AE">
-          ()
+          map.base./(2)
         </td>
       </tr><tr>
         <td>
           121
         </td>
         <td>
-          561
+          559
         </td>
         <td>
           5702
@@ -1937,7 +1937,7 @@
           121
         </td>
         <td>
-          560
+          558
         </td>
         <td>
           5720
@@ -1958,7 +1958,7 @@
           121
         </td>
         <td>
-          562
+          560
         </td>
         <td>
           5702
@@ -1979,7 +1979,7 @@
           123
         </td>
         <td>
-          570
+          568
         </td>
         <td>
           5752
@@ -2000,7 +2000,7 @@
           123
         </td>
         <td>
-          566
+          564
         </td>
         <td>
           5756
@@ -2021,28 +2021,7 @@
           123
         </td>
         <td>
-          571
-        </td>
-        <td>
-          5752
-          -
-          5752
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          123
-        </td>
-        <td>
-          565
+          563
         </td>
         <td>
           5775
@@ -2060,24 +2039,24 @@
         </td>
       </tr><tr>
         <td>
-          124
+          123
         </td>
         <td>
-          568
+          569
         </td>
         <td>
-          5803
+          5752
           -
-          5836
+          5752
         </td>
         <td>
-          Apply
+          Block
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.components.DimensionComponent.radius_
+          &lt;nosymbol&gt;
         </td>
-        <td style="background: #F0ADAD">
-          dimension.radius_(map.height./(2))
+        <td style="background: #AEF1AE">
+          ()
         </td>
       </tr><tr>
         <td>
@@ -2085,27 +2064,6 @@
         </td>
         <td>
           567
-        </td>
-        <td>
-          5821
-          -
-          5835
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.Double./
-        </td>
-        <td style="background: #F0ADAD">
-          map.height./(2)
-        </td>
-      </tr><tr>
-        <td>
-          124
-        </td>
-        <td>
-          569
         </td>
         <td>
           5803
@@ -2123,10 +2081,52 @@
         </td>
       </tr><tr>
         <td>
+          124
+        </td>
+        <td>
+          566
+        </td>
+        <td>
+          5803
+          -
+          5836
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.radius_
+        </td>
+        <td style="background: #F0ADAD">
+          dimension.radius_(map.height./(2))
+        </td>
+      </tr><tr>
+        <td>
+          124
+        </td>
+        <td>
+          565
+        </td>
+        <td>
+          5821
+          -
+          5835
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double./
+        </td>
+        <td style="background: #F0ADAD">
+          map.height./(2)
+        </td>
+      </tr><tr>
+        <td>
           126
         </td>
         <td>
-          572
+          570
         </td>
         <td>
           5860
@@ -2147,7 +2147,7 @@
           137
         </td>
         <td>
-          573
+          571
         </td>
         <td>
           6289
@@ -2168,7 +2168,7 @@
           138
         </td>
         <td>
-          574
+          572
         </td>
         <td>
           6338
@@ -2189,7 +2189,28 @@
           139
         </td>
         <td>
-          577
+          573
+        </td>
+        <td>
+          6409
+          -
+          6424
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.point
+        </td>
+        <td style="background: #AEF1AE">
+          position1.point
+        </td>
+      </tr><tr>
+        <td>
+          139
+        </td>
+        <td>
+          575
         </td>
         <td>
           6388
@@ -2210,7 +2231,7 @@
           139
         </td>
         <td>
-          576
+          574
         </td>
         <td>
           6426
@@ -2228,31 +2249,10 @@
         </td>
       </tr><tr>
         <td>
-          139
-        </td>
-        <td>
-          575
-        </td>
-        <td>
-          6409
-          -
-          6424
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.components.PositionComponent.point
-        </td>
-        <td style="background: #AEF1AE">
-          position1.point
-        </td>
-      </tr><tr>
-        <td>
           140
         </td>
         <td>
-          579
+          577
         </td>
         <td>
           6464
@@ -2273,7 +2273,7 @@
           140
         </td>
         <td>
-          578
+          576
         </td>
         <td>
           6485
@@ -2294,7 +2294,7 @@
           140
         </td>
         <td>
-          580
+          578
         </td>
         <td>
           6447
@@ -2315,28 +2315,7 @@
           141
         </td>
         <td>
-          582
-        </td>
-        <td>
-          6564
-          -
-          6601
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.utils.Vector.multiply
-        </td>
-        <td style="background: #AEF1AE">
-          unitVector.multiply(quantityToMove.unary_-)
-        </td>
-      </tr><tr>
-        <td>
-          141
-        </td>
-        <td>
-          581
+          579
         </td>
         <td>
           6585
@@ -2357,7 +2336,7 @@
           141
         </td>
         <td>
-          584
+          582
         </td>
         <td>
           6526
@@ -2378,7 +2357,7 @@
           141
         </td>
         <td>
-          583
+          581
         </td>
         <td>
           6543
@@ -2396,57 +2375,78 @@
         </td>
       </tr><tr>
         <td>
-          142
+          141
         </td>
         <td>
-          585
+          580
         </td>
         <td>
-          6608
+          6564
           -
-          6650
+          6601
         </td>
         <td>
           Apply
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.repositionIfOutsideMap
+          it.unibo.osmos.redux.utils.Vector.multiply
         </td>
         <td style="background: #AEF1AE">
-          CollisionSystem.this.bounceRule.repositionIfOutsideMap(entity1)
+          unitVector.multiply(quantityToMove.unary_-)
+        </td>
+      </tr><tr>
+        <td>
+          142
+        </td>
+        <td>
+          583
+        </td>
+        <td>
+          6608
+          -
+          6645
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.checkIfOutsideMap
+        </td>
+        <td style="background: #AEF1AE">
+          CollisionSystem.this.bounceRule.checkIfOutsideMap(entity1)
         </td>
       </tr><tr>
         <td>
           143
         </td>
         <td>
-          586
+          584
         </td>
         <td>
-          6655
+          6650
           -
-          6697
+          6687
         </td>
         <td>
           Apply
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.repositionIfOutsideMap
+          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.checkIfOutsideMap
         </td>
         <td style="background: #AEF1AE">
-          CollisionSystem.this.bounceRule.repositionIfOutsideMap(entity2)
+          CollisionSystem.this.bounceRule.checkIfOutsideMap(entity2)
         </td>
       </tr><tr>
         <td>
           152
         </td>
         <td>
-          587
+          585
         </td>
         <td>
-          6967
+          6957
           -
-          6998
+          6988
         </td>
         <td>
           Select
@@ -2462,33 +2462,12 @@
           155
         </td>
         <td>
-          588
+          587
         </td>
         <td>
-          7076
+          7050
           -
-          7088
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.utils.Vector.apply
-        </td>
-        <td style="background: #AEF1AE">
-          it.unibo.osmos.redux.utils.Vector.apply(0.0, 0.0)
-        </td>
-      </tr><tr>
-        <td>
-          155
-        </td>
-        <td>
-          589
-        </td>
-        <td>
-          7060
-          -
-          7088
+          7078
         </td>
         <td>
           Apply
@@ -2501,36 +2480,36 @@
         </td>
       </tr><tr>
         <td>
-          156
+          155
         </td>
         <td>
-          591
+          586
         </td>
         <td>
-          7138
+          7066
           -
-          7187
+          7078
         </td>
         <td>
           Apply
         </td>
         <td>
-          it.unibo.osmos.redux.utils.Vector.multiply
+          it.unibo.osmos.redux.utils.Vector.apply
         </td>
         <td style="background: #AEF1AE">
-          direction.multiply(CollisionSystem.this.stillEntityInitialAcceleration)
+          it.unibo.osmos.redux.utils.Vector.apply(0.0, 0.0)
         </td>
       </tr><tr>
         <td>
           156
         </td>
         <td>
-          590
+          588
         </td>
         <td>
-          7157
+          7147
           -
-          7187
+          7177
         </td>
         <td>
           Select
@@ -2546,12 +2525,12 @@
           156
         </td>
         <td>
-          593
+          591
         </td>
         <td>
-          7098
+          7088
           -
-          7188
+          7178
         </td>
         <td>
           Block
@@ -2567,12 +2546,12 @@
           156
         </td>
         <td>
-          592
+          590
         </td>
         <td>
-          7098
+          7088
           -
-          7188
+          7178
         </td>
         <td>
           Apply
@@ -2585,57 +2564,36 @@
         </td>
       </tr><tr>
         <td>
+          156
+        </td>
+        <td>
+          589
+        </td>
+        <td>
+          7128
+          -
+          7177
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Vector.multiply
+        </td>
+        <td style="background: #AEF1AE">
+          direction.multiply(CollisionSystem.this.stillEntityInitialAcceleration)
+        </td>
+      </tr><tr>
+        <td>
           158
         </td>
         <td>
           594
         </td>
         <td>
-          7259
+          7212
           -
-          7277
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.systems.CollisionSystem.decelerationAmount
-        </td>
-        <td style="background: #F0ADAD">
-          CollisionSystem.this.decelerationAmount
-        </td>
-      </tr><tr>
-        <td>
-          158
-        </td>
-        <td>
-          597
-        </td>
-        <td>
-          7208
-          -
-          7279
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.components.VectorComponent.vector_
-        </td>
-        <td style="background: #F0ADAD">
-          accel.vector_(accel.vector.add(direction.multiply(CollisionSystem.this.decelerationAmount)))
-        </td>
-      </tr><tr>
-        <td>
-          158
-        </td>
-        <td>
-          596
-        </td>
-        <td>
-          7222
-          -
-          7278
+          7268
         </td>
         <td>
           Apply
@@ -2651,12 +2609,12 @@
           158
         </td>
         <td>
-          595
+          593
         </td>
         <td>
-          7240
+          7230
           -
-          7277
+          7267
         </td>
         <td>
           Apply
@@ -2672,12 +2630,12 @@
           158
         </td>
         <td>
-          598
+          596
         </td>
         <td>
-          7208
+          7198
           -
-          7279
+          7269
         </td>
         <td>
           Block
@@ -2687,6 +2645,48 @@
         </td>
         <td style="background: #F0ADAD">
           accel.vector_(accel.vector.add(direction.multiply(CollisionSystem.this.decelerationAmount)))
+        </td>
+      </tr><tr>
+        <td>
+          158
+        </td>
+        <td>
+          595
+        </td>
+        <td>
+          7198
+          -
+          7269
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.VectorComponent.vector_
+        </td>
+        <td style="background: #F0ADAD">
+          accel.vector_(accel.vector.add(direction.multiply(CollisionSystem.this.decelerationAmount)))
+        </td>
+      </tr><tr>
+        <td>
+          158
+        </td>
+        <td>
+          592
+        </td>
+        <td>
+          7249
+          -
+          7267
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.CollisionSystem.decelerationAmount
+        </td>
+        <td style="background: #F0ADAD">
+          CollisionSystem.this.decelerationAmount
         </td>
       </tr>
     </table>

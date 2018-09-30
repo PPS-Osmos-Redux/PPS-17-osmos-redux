@@ -28,11 +28,11 @@
 </span>4 <span style=''>
 </span>5 <span style=''>/** Debugging utility */
 </span>6 <span style=''>object Logger {
-</span>7 <span style=''>  private val enable = </span><span style='background: #AEF1AE'>true</span><span style=''>
+</span>7 <span style=''>  private val enable = </span><span style='background: #F0ADAD'>true</span><span style=''>
 </span>8 <span style=''>
 </span>9 <span style=''>  def log(message: String)(implicit who: String): Unit = {
-</span>10 <span style=''>    if (</span><span style='background: #AEF1AE'>enable</span><span style=''>) {
-</span>11 <span style=''>      </span><span style='background: #AEF1AE'>println(s&quot;[$who] [${Instant.ofEpochMilli(System.currentTimeMillis())}]: $message&quot;)</span><span style=''>
+</span>10 <span style=''>    if (</span><span style='background: #F0ADAD'>enable</span><span style=''>) {
+</span>11 <span style=''>      </span><span style='background: #F0ADAD'>println(s&quot;[$who] [${Instant.ofEpochMilli(System.currentTimeMillis())}]: $message&quot;)</span><span style=''>
 </span>12 <span style=''>    }
 </span>13 <span style=''>  }
 </span>14 <span style=''>}
@@ -65,7 +65,7 @@
         <td>
           &lt;nosymbol&gt;
         </td>
-        <td style="background: #AEF1AE">
+        <td style="background: #F0ADAD">
           true
         </td>
       </tr><tr>
@@ -128,7 +128,7 @@
         <td>
           it.unibo.osmos.redux.utils.Logger.enable
         </td>
-        <td style="background: #AEF1AE">
+        <td style="background: #F0ADAD">
           Logger.this.enable
         </td>
       </tr><tr>
@@ -149,7 +149,7 @@
         <td>
           &lt;nosymbol&gt;
         </td>
-        <td style="background: #AEF1AE">
+        <td style="background: #F0ADAD">
           &quot;] [&quot;
         </td>
       </tr><tr>
@@ -170,7 +170,7 @@
         <td>
           java.lang.System.currentTimeMillis
         </td>
-        <td style="background: #AEF1AE">
+        <td style="background: #F0ADAD">
           java.lang.System.currentTimeMillis()
         </td>
       </tr><tr>
@@ -191,7 +191,7 @@
         <td>
           scala.Predef.println
         </td>
-        <td style="background: #AEF1AE">
+        <td style="background: #F0ADAD">
           scala.Predef.println(scala.StringContext.apply(&quot;[&quot;, &quot;] [&quot;, &quot;]: &quot;, &quot;&quot;).s(who, java.time.Instant.ofEpochMilli(java.lang.System.currentTimeMillis()), message))
         </td>
       </tr><tr>
@@ -212,7 +212,7 @@
         <td>
           &lt;nosymbol&gt;
         </td>
-        <td style="background: #AEF1AE">
+        <td style="background: #F0ADAD">
           &quot;[&quot;
         </td>
       </tr><tr>
@@ -233,7 +233,7 @@
         <td>
           &lt;nosymbol&gt;
         </td>
-        <td style="background: #AEF1AE">
+        <td style="background: #F0ADAD">
           &quot;&quot;
         </td>
       </tr><tr>
@@ -254,7 +254,7 @@
         <td>
           scala.StringContext.s
         </td>
-        <td style="background: #AEF1AE">
+        <td style="background: #F0ADAD">
           scala.StringContext.apply(&quot;[&quot;, &quot;] [&quot;, &quot;]: &quot;, &quot;&quot;).s(who, java.time.Instant.ofEpochMilli(java.lang.System.currentTimeMillis()), message)
         </td>
       </tr><tr>
@@ -275,7 +275,7 @@
         <td>
           java.time.Instant.ofEpochMilli
         </td>
-        <td style="background: #AEF1AE">
+        <td style="background: #F0ADAD">
           java.time.Instant.ofEpochMilli(java.lang.System.currentTimeMillis())
         </td>
       </tr><tr>
@@ -296,7 +296,7 @@
         <td>
           scala.Predef.println
         </td>
-        <td style="background: #AEF1AE">
+        <td style="background: #F0ADAD">
           scala.Predef.println(scala.StringContext.apply(&quot;[&quot;, &quot;] [&quot;, &quot;]: &quot;, &quot;&quot;).s(who, java.time.Instant.ofEpochMilli(java.lang.System.currentTimeMillis()), message))
         </td>
       </tr><tr>
@@ -317,7 +317,7 @@
         <td>
           &lt;nosymbol&gt;
         </td>
-        <td style="background: #AEF1AE">
+        <td style="background: #F0ADAD">
           &quot;]: &quot;
         </td>
       </tr>

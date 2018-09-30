@@ -36,18 +36,19 @@
 </span>12 <span style=''>  override def copy(): SpeedComponent = </span><span style='background: #AEF1AE'>SpeedComponent(vector.x, vector.y)</span><span style=''>
 </span>13 <span style=''>}
 </span>14 <span style=''>
-</span>15 <span style=''>object SpeedComponent {
-</span>16 <span style=''>  def apply(speedX: Double, speedY: Double): SpeedComponent = </span><span style='background: #AEF1AE'>SpeedComponentImpl(Vector(speedX, speedY))</span><span style=''>
-</span>17 <span style=''>
-</span>18 <span style=''>  def apply(speed: Vector): SpeedComponent = </span><span style='background: #AEF1AE'>SpeedComponentImpl(speed)</span><span style=''>
-</span>19 <span style=''>
-</span>20 <span style=''>  private case class SpeedComponentImpl(var _speedVector: Vector) extends SpeedComponent {
-</span>21 <span style=''>    override def vector: Vector = </span><span style='background: #AEF1AE'>_speedVector</span><span style=''>
-</span>22 <span style=''>
-</span>23 <span style=''>    override def vector_(vector: Vector): Unit = </span><span style='background: #AEF1AE'>_speedVector = vector</span><span style=''>
-</span>24 <span style=''>  }
-</span>25 <span style=''>
-</span>26 <span style=''>}
+</span>15 <span style=''>/** Companion object */
+</span>16 <span style=''>object SpeedComponent {
+</span>17 <span style=''>  def apply(speedX: Double, speedY: Double): SpeedComponent = </span><span style='background: #AEF1AE'>SpeedComponentImpl(Vector(speedX, speedY))</span><span style=''>
+</span>18 <span style=''>
+</span>19 <span style=''>  def apply(speed: Vector): SpeedComponent = </span><span style='background: #AEF1AE'>SpeedComponentImpl(speed)</span><span style=''>
+</span>20 <span style=''>
+</span>21 <span style=''>  private case class SpeedComponentImpl(var _speedVector: Vector) extends SpeedComponent {
+</span>22 <span style=''>    override def vector: Vector = </span><span style='background: #AEF1AE'>_speedVector</span><span style=''>
+</span>23 <span style=''>
+</span>24 <span style=''>    override def vector_(vector: Vector): Unit = </span><span style='background: #AEF1AE'>_speedVector = vector</span><span style=''>
+</span>25 <span style=''>  }
+</span>26 <span style=''>
+</span>27 <span style=''>}
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -124,15 +125,15 @@
         </td>
       </tr><tr>
         <td>
-          16
+          17
         </td>
         <td>
           62
         </td>
         <td>
-          447
+          471
           -
-          469
+          493
         </td>
         <td>
           Apply
@@ -145,15 +146,15 @@
         </td>
       </tr><tr>
         <td>
-          16
+          17
         </td>
         <td>
           63
         </td>
         <td>
-          428
+          452
           -
-          470
+          494
         </td>
         <td>
           Apply
@@ -166,15 +167,15 @@
         </td>
       </tr><tr>
         <td>
-          18
+          19
         </td>
         <td>
           64
         </td>
         <td>
-          517
+          541
           -
-          542
+          566
         </td>
         <td>
           Apply
@@ -187,15 +188,15 @@
         </td>
       </tr><tr>
         <td>
-          21
+          22
         </td>
         <td>
           65
         </td>
         <td>
-          669
+          693
           -
-          681
+          705
         </td>
         <td>
           Select
@@ -208,15 +209,15 @@
         </td>
       </tr><tr>
         <td>
-          23
+          24
         </td>
         <td>
           66
         </td>
         <td>
-          732
+          756
           -
-          753
+          777
         </td>
         <td>
           Apply

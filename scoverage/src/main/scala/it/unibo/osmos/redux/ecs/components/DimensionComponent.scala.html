@@ -46,16 +46,17 @@
 </span>22 <span style=''>  override def copy(): DimensionComponent = </span><span style='background: #AEF1AE'>DimensionComponent(radius)</span><span style=''>
 </span>23 <span style=''>}
 </span>24 <span style=''>
-</span>25 <span style=''>object DimensionComponent {
-</span>26 <span style=''>  def apply(radius: Double): DimensionComponent = </span><span style='background: #AEF1AE'>DimensionComponentImpl(radius)</span><span style=''>
-</span>27 <span style=''>
-</span>28 <span style=''>  private case class DimensionComponentImpl(var _radius: Double) extends DimensionComponent {
-</span>29 <span style=''>    override def radius: Double = </span><span style='background: #AEF1AE'>_radius</span><span style=''>
-</span>30 <span style=''>
-</span>31 <span style=''>    override def radius_(radius: Double): Unit = </span><span style='background: #AEF1AE'>_radius = radius</span><span style=''>
-</span>32 <span style=''>  }
-</span>33 <span style=''>
-</span>34 <span style=''>}
+</span>25 <span style=''>/** Companion object */
+</span>26 <span style=''>object DimensionComponent {
+</span>27 <span style=''>  def apply(radius: Double): DimensionComponent = </span><span style='background: #AEF1AE'>DimensionComponentImpl(radius)</span><span style=''>
+</span>28 <span style=''>
+</span>29 <span style=''>  private case class DimensionComponentImpl(var _radius: Double) extends DimensionComponent {
+</span>30 <span style=''>    override def radius: Double = </span><span style='background: #AEF1AE'>_radius</span><span style=''>
+</span>31 <span style=''>
+</span>32 <span style=''>    override def radius_(radius: Double): Unit = </span><span style='background: #AEF1AE'>_radius = radius</span><span style=''>
+</span>33 <span style=''>  }
+</span>34 <span style=''>
+</span>35 <span style=''>}
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -111,15 +112,15 @@
         </td>
       </tr><tr>
         <td>
-          26
+          27
         </td>
         <td>
           18
         </td>
         <td>
-          622
+          646
           -
-          652
+          676
         </td>
         <td>
           Apply
@@ -132,15 +133,15 @@
         </td>
       </tr><tr>
         <td>
-          29
+          30
         </td>
         <td>
           19
         </td>
         <td>
-          782
+          806
           -
-          789
+          813
         </td>
         <td>
           Select
@@ -153,15 +154,15 @@
         </td>
       </tr><tr>
         <td>
-          31
+          32
         </td>
         <td>
           20
         </td>
         <td>
-          840
+          864
           -
-          856
+          880
         </td>
         <td>
           Apply

@@ -38,11 +38,11 @@
 </span>14 <span style=''>    */
 </span>15 <span style=''>  def normalize(number: Double, min: Double, max: Double): Double = </span><span style='background: #F0ADAD'>(number - min) / (max - min)</span><span style=''>
 </span>16 <span style=''>
-</span>17 <span style=''>  /** unitVector from point2 to point1
+</span>17 <span style=''>  /** Returns the unit vector from point2 to point1
 </span>18 <span style=''>    *
-</span>19 <span style=''>    * @param point1
-</span>20 <span style=''>    * @param point2
-</span>21 <span style=''>    * @return unitVector
+</span>19 <span style=''>    * @param point1 the unit vector's ending point
+</span>20 <span style=''>    * @param point2 the unit vector's starting point
+</span>21 <span style=''>    * @return unitVector the unit vector from point2 to point1
 </span>22 <span style=''>    */
 </span>23 <span style=''>  def unitVector(point1: Point, point2: Point): Vector = {
 </span>24 <span style=''>    </span><span style='background: #AEF1AE'>point1 subtract point2 normalized()</span><span style=''>
@@ -165,9 +165,9 @@
           5514
         </td>
         <td>
-          698
+          813
           -
-          733
+          848
         </td>
         <td>
           Apply
@@ -186,9 +186,9 @@
           5520
         </td>
         <td>
-          1054
+          1169
           -
-          1055
+          1170
         </td>
         <td>
           Literal
@@ -207,9 +207,9 @@
           5517
         </td>
         <td>
-          1019
+          1134
           -
-          1020
+          1135
         </td>
         <td>
           Literal
@@ -228,9 +228,9 @@
           5516
         </td>
         <td>
-          998
+          1113
           -
-          1017
+          1132
         </td>
         <td>
           Apply
@@ -249,9 +249,9 @@
           5519
         </td>
         <td>
-          1033
+          1148
           -
-          1052
+          1167
         </td>
         <td>
           Apply
@@ -270,9 +270,9 @@
           5522
         </td>
         <td>
-          989
+          1104
           -
-          1056
+          1171
         </td>
         <td>
           Apply
@@ -291,9 +291,9 @@
           5515
         </td>
         <td>
-          1009
+          1124
           -
-          1017
+          1132
         </td>
         <td>
           Select
@@ -312,9 +312,9 @@
           5518
         </td>
         <td>
-          1044
+          1159
           -
-          1052
+          1167
         </td>
         <td>
           Select
@@ -333,9 +333,9 @@
           5521
         </td>
         <td>
-          1024
+          1139
           -
-          1056
+          1171
         </td>
         <td>
           Apply
@@ -354,9 +354,9 @@
           5523
         </td>
         <td>
-          1346
+          1461
           -
-          1361
+          1476
         </td>
         <td>
           Select
@@ -375,9 +375,9 @@
           5525
         </td>
         <td>
-          1328
+          1443
           -
-          1379
+          1494
         </td>
         <td>
           Apply
@@ -396,9 +396,9 @@
           5524
         </td>
         <td>
-          1363
+          1478
           -
-          1378
+          1493
         </td>
         <td>
           Select
@@ -417,9 +417,9 @@
           5529
         </td>
         <td>
-          1674
+          1789
           -
-          1682
+          1797
         </td>
         <td>
           Select
@@ -438,9 +438,9 @@
           5532
         </td>
         <td>
-          1654
+          1769
           -
-          1686
+          1801
         </td>
         <td>
           Apply
@@ -459,9 +459,9 @@
           5526
         </td>
         <td>
-          1639
+          1754
           -
-          1647
+          1762
         </td>
         <td>
           Select
@@ -480,9 +480,9 @@
           5534
         </td>
         <td>
-          1609
+          1724
           -
-          1687
+          1802
         </td>
         <td>
           Apply
@@ -501,9 +501,9 @@
           5528
         </td>
         <td>
-          1649
+          1764
           -
-          1650
+          1765
         </td>
         <td>
           Literal
@@ -522,9 +522,9 @@
           5531
         </td>
         <td>
-          1684
+          1799
           -
-          1685
+          1800
         </td>
         <td>
           Literal
@@ -543,9 +543,9 @@
           5533
         </td>
         <td>
-          1619
+          1734
           -
-          1686
+          1801
         </td>
         <td>
           Apply
@@ -564,9 +564,9 @@
           5527
         </td>
         <td>
-          1628
+          1743
           -
-          1647
+          1762
         </td>
         <td>
           Apply
@@ -585,9 +585,9 @@
           5530
         </td>
         <td>
-          1663
+          1778
           -
-          1682
+          1797
         </td>
         <td>
           Apply
@@ -606,9 +606,9 @@
           5535
         </td>
         <td>
-          1848
+          1963
           -
-          1877
+          1992
         </td>
         <td>
           Apply
@@ -627,9 +627,9 @@
           5537
         </td>
         <td>
-          2039
+          2154
           -
-          2064
+          2179
         </td>
         <td>
           Apply
@@ -648,9 +648,9 @@
           5536
         </td>
         <td>
-          2049
+          2164
           -
-          2063
+          2178
         </td>
         <td>
           Apply
@@ -669,9 +669,9 @@
           5538
         </td>
         <td>
-          2384
+          2499
           -
-          2391
+          2506
         </td>
         <td>
           Apply
@@ -690,9 +690,9 @@
           5539
         </td>
         <td>
-          2415
+          2530
           -
-          2422
+          2537
         </td>
         <td>
           Apply

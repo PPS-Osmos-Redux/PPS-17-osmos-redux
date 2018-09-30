@@ -35,29 +35,28 @@
 </span>11 <span style=''>  * Abstract system with two type of generic entity.
 </span>12 <span style=''>  * The lists of entity are not exclusive
 </span>13 <span style=''>  */
-</span>14 <span style=''>abstract class AbstractSystem2[T &lt;: Property : ClassTag, R &lt;: Property : ClassTag]
-</span>15 <span style=''>  extends AbstractSystem[T] with Observer with System {
-</span>16 <span style=''>
-</span>17 <span style=''>  /** The entity list with property of type R.
-</span>18 <span style=''>    * An entity with property of type T could be also in this list
-</span>19 <span style=''>    */
-</span>20 <span style=''>  protected val entitiesSecondType: ListBuffer[R] = </span><span style='background: #AEF1AE'>ListBuffer()</span><span style=''>
-</span>21 <span style=''>
-</span>22 <span style=''>  </span><span style='background: #AEF1AE'>EntityManager.subscribe(this, implicitly[ClassTag[R]].runtimeClass.asInstanceOf[Class[R]])</span><span style=''>
-</span>23 <span style=''>
-</span>24 <span style=''>  override def notify(event: EMEvents.EntityManagerEvent): Unit = {
-</span>25 <span style=''>    </span><span style='background: #AEF1AE'>event.entity</span><span style=''> match {
-</span>26 <span style=''>      case _: R =&gt;
-</span>27 <span style=''>        event match {
-</span>28 <span style=''>          case event: EntityCreated if </span><span style='background: #AEF1AE'>!entitiesSecondType.contains(event.entity)</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>entitiesSecondType += event.entity.asInstanceOf[R]</span><span style=''>
-</span>29 <span style=''>          case event: EntityDeleted if </span><span style='background: #AEF1AE'>entitiesSecondType.contains(event.entity)</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>entitiesSecondType -= event.entity.asInstanceOf[R]</span><span style=''>
-</span>30 <span style=''>          //the event is already managed so the event is duplicated, perhaps it is for the other type of entity
-</span>31 <span style=''>          case _ =&gt; </span><span style='background: #AEF1AE'>super.notify(event)</span><span style=''>
-</span>32 <span style=''>        }
-</span>33 <span style=''>      case _ =&gt; </span><span style='background: #AEF1AE'>super.notify(event)</span><span style=''>
-</span>34 <span style=''>    }
-</span>35 <span style=''>  }
-</span>36 <span style=''>}
+</span>14 <span style=''>abstract class AbstractSystem2[T &lt;: Property : ClassTag, R &lt;: Property : ClassTag] extends AbstractSystem[T] {
+</span>15 <span style=''>
+</span>16 <span style=''>  /** The entity list with property of type R.
+</span>17 <span style=''>    * An entity with property of type T could be also in this list
+</span>18 <span style=''>    */
+</span>19 <span style=''>  protected val entitiesSecondType: ListBuffer[R] = </span><span style='background: #AEF1AE'>ListBuffer()</span><span style=''>
+</span>20 <span style=''>
+</span>21 <span style=''>  </span><span style='background: #AEF1AE'>EntityManager.subscribe(this, implicitly[ClassTag[R]].runtimeClass.asInstanceOf[Class[R]])</span><span style=''>
+</span>22 <span style=''>
+</span>23 <span style=''>  override def notify(event: EMEvents.EntityManagerEvent): Unit = {
+</span>24 <span style=''>    </span><span style='background: #AEF1AE'>event.entity</span><span style=''> match {
+</span>25 <span style=''>      case _: R =&gt;
+</span>26 <span style=''>        event match {
+</span>27 <span style=''>          case event: EntityCreated if </span><span style='background: #AEF1AE'>!entitiesSecondType.contains(event.entity)</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>entitiesSecondType += event.entity.asInstanceOf[R]</span><span style=''>
+</span>28 <span style=''>          case event: EntityDeleted if </span><span style='background: #F0ADAD'>entitiesSecondType.contains(event.entity)</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>entitiesSecondType -= event.entity.asInstanceOf[R]</span><span style=''>
+</span>29 <span style=''>          //the event is already managed so the event is duplicated, perhaps it is for the other type of entity
+</span>30 <span style=''>          case _ =&gt; </span><span style='background: #AEF1AE'>super.notify(event)</span><span style=''>
+</span>31 <span style=''>        }
+</span>32 <span style=''>      case _ =&gt; </span><span style='background: #AEF1AE'>super.notify(event)</span><span style=''>
+</span>33 <span style=''>    }
+</span>34 <span style=''>  }
+</span>35 <span style=''>}
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -71,15 +70,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          20
+          19
         </td>
         <td>
-          460
+          459
         </td>
         <td>
-          725
+          697
           -
-          737
+          709
         </td>
         <td>
           Apply
@@ -92,57 +91,15 @@
         </td>
       </tr><tr>
         <td>
-          22
+          21
         </td>
         <td>
-          463
+          460
         </td>
         <td>
-          741
+          753
           -
-          831
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.entities.EntityManager.subscribe
-        </td>
-        <td style="background: #AEF1AE">
-          it.unibo.osmos.redux.ecs.entities.EntityManager.subscribe(this, scala.Predef.implicitly[scala.reflect.ClassTag[R]](AbstractSystem2.this.evidence$2).runtimeClass.asInstanceOf[Class[R]])
-        </td>
-      </tr><tr>
-        <td>
-          22
-        </td>
-        <td>
-          462
-        </td>
-        <td>
-          771
-          -
-          830
-        </td>
-        <td>
-          TypeApply
-        </td>
-        <td>
-          scala.Any.asInstanceOf
-        </td>
-        <td style="background: #AEF1AE">
-          scala.Predef.implicitly[scala.reflect.ClassTag[R]](AbstractSystem2.this.evidence$2).runtimeClass.asInstanceOf[Class[R]]
-        </td>
-      </tr><tr>
-        <td>
-          22
-        </td>
-        <td>
-          461
-        </td>
-        <td>
-          781
-          -
-          781
+          753
         </td>
         <td>
           Select
@@ -155,15 +112,57 @@
         </td>
       </tr><tr>
         <td>
-          25
+          21
         </td>
         <td>
-          464
+          462
         </td>
         <td>
-          905
+          713
           -
-          917
+          803
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityManager.subscribe
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.ecs.entities.EntityManager.subscribe(this, scala.Predef.implicitly[scala.reflect.ClassTag[R]](AbstractSystem2.this.evidence$2).runtimeClass.asInstanceOf[Class[R]])
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          461
+        </td>
+        <td>
+          743
+          -
+          802
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.Any.asInstanceOf
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Predef.implicitly[scala.reflect.ClassTag[R]](AbstractSystem2.this.evidence$2).runtimeClass.asInstanceOf[Class[R]]
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          463
+        </td>
+        <td>
+          877
+          -
+          889
         </td>
         <td>
           Select
@@ -176,99 +175,15 @@
         </td>
       </tr><tr>
         <td>
-          28
-        </td>
-        <td>
-          469
-        </td>
-        <td>
-          1071
-          -
-          1071
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          28
+          27
         </td>
         <td>
           465
         </td>
         <td>
-          1035
+          978
           -
-          1047
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.entities.EMEvents.EntityCreated.entity
-        </td>
-        <td style="background: #AEF1AE">
-          event.entity
-        </td>
-      </tr><tr>
-        <td>
-          28
-        </td>
-        <td>
-          468
-        </td>
-        <td>
-          1052
-          -
-          1102
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.collection.mutable.ListBuffer.+=
-        </td>
-        <td style="background: #AEF1AE">
-          AbstractSystem2.this.entitiesSecondType.+=(event.entity.asInstanceOf[R])
-        </td>
-      </tr><tr>
-        <td>
-          28
-        </td>
-        <td>
-          467
-        </td>
-        <td>
-          1074
-          -
-          1102
-        </td>
-        <td>
-          TypeApply
-        </td>
-        <td>
-          scala.Any.asInstanceOf
-        </td>
-        <td style="background: #AEF1AE">
-          event.entity.asInstanceOf[R]
-        </td>
-      </tr><tr>
-        <td>
-          28
-        </td>
-        <td>
-          466
-        </td>
-        <td>
-          1006
-          -
-          1048
+          1020
         </td>
         <td>
           Select
@@ -281,36 +196,15 @@
         </td>
       </tr><tr>
         <td>
-          29
+          27
         </td>
         <td>
-          472
+          468
         </td>
         <td>
-          1209
+          1043
           -
-          1237
-        </td>
-        <td>
-          TypeApply
-        </td>
-        <td>
-          scala.Any.asInstanceOf
-        </td>
-        <td style="background: #AEF1AE">
-          event.entity.asInstanceOf[R]
-        </td>
-      </tr><tr>
-        <td>
-          29
-        </td>
-        <td>
-          474
-        </td>
-        <td>
-          1206
-          -
-          1206
+          1043
         </td>
         <td>
           Literal
@@ -323,36 +217,78 @@
         </td>
       </tr><tr>
         <td>
-          29
+          27
         </td>
         <td>
-          471
+          464
         </td>
         <td>
-          1142
+          1007
           -
-          1183
+          1019
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EMEvents.EntityCreated.entity
+        </td>
+        <td style="background: #AEF1AE">
+          event.entity
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          467
+        </td>
+        <td>
+          1024
+          -
+          1074
         </td>
         <td>
           Apply
         </td>
         <td>
-          scala.collection.generic.SeqForwarder.contains
+          scala.collection.mutable.ListBuffer.+=
         </td>
         <td style="background: #AEF1AE">
-          AbstractSystem2.this.entitiesSecondType.contains[it.unibo.osmos.redux.ecs.entities.properties.basic.Property](event.entity)
+          AbstractSystem2.this.entitiesSecondType.+=(event.entity.asInstanceOf[R])
         </td>
       </tr><tr>
         <td>
-          29
+          27
         </td>
         <td>
-          470
+          466
         </td>
         <td>
-          1170
+          1046
           -
-          1182
+          1074
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.Any.asInstanceOf
+        </td>
+        <td style="background: #AEF1AE">
+          event.entity.asInstanceOf[R]
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          469
+        </td>
+        <td>
+          1142
+          -
+          1154
         </td>
         <td>
           Select
@@ -360,20 +296,20 @@
         <td>
           it.unibo.osmos.redux.ecs.entities.EMEvents.EntityDeleted.entity
         </td>
-        <td style="background: #AEF1AE">
+        <td style="background: #F0ADAD">
           event.entity
         </td>
       </tr><tr>
         <td>
-          29
+          28
         </td>
         <td>
-          473
+          472
         </td>
         <td>
-          1187
+          1159
           -
-          1237
+          1209
         </td>
         <td>
           Apply
@@ -381,20 +317,83 @@
         <td>
           scala.collection.mutable.ListBuffer.-=
         </td>
-        <td style="background: #AEF1AE">
+        <td style="background: #F0ADAD">
           AbstractSystem2.this.entitiesSecondType.-=(event.entity.asInstanceOf[R])
         </td>
       </tr><tr>
         <td>
-          31
+          28
         </td>
         <td>
-          475
+          471
         </td>
         <td>
-          1370
+          1181
           -
-          1389
+          1209
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.Any.asInstanceOf
+        </td>
+        <td style="background: #F0ADAD">
+          event.entity.asInstanceOf[R]
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          470
+        </td>
+        <td>
+          1114
+          -
+          1155
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.SeqForwarder.contains
+        </td>
+        <td style="background: #F0ADAD">
+          AbstractSystem2.this.entitiesSecondType.contains[it.unibo.osmos.redux.ecs.entities.properties.basic.Property](event.entity)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          473
+        </td>
+        <td>
+          1178
+          -
+          1178
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          474
+        </td>
+        <td>
+          1342
+          -
+          1361
         </td>
         <td>
           Apply
@@ -407,15 +406,15 @@
         </td>
       </tr><tr>
         <td>
-          33
+          32
         </td>
         <td>
-          476
+          475
         </td>
         <td>
-          1416
+          1388
           -
-          1435
+          1407
         </td>
         <td>
           Apply

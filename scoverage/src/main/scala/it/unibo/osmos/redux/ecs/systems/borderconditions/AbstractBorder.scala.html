@@ -24,34 +24,108 @@
           <div class="tab-pane active" id="codegrid">
             <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.systems.borderconditions
 </span>2 <span style=''>
-</span>3 <span style=''>import it.unibo.osmos.redux.ecs.entities.properties.composed.CollidableProperty
-</span>4 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.CollisionRules
-</span>5 <span style=''>import it.unibo.osmos.redux.utils.Point
-</span>6 <span style=''>
-</span>7 <span style=''>/** Abstract class implementing the border collision strategy
-</span>8 <span style=''>  *
-</span>9 <span style=''>  * @param levelCenter center of the level
-</span>10 <span style=''>  */
-</span>11 <span style=''>abstract class AbstractBorder(levelCenter: Point, collisionRule: CollisionRules.Value) {
-</span>12 <span style=''>
-</span>13 <span style=''>  private val cellElasticity: Double = </span><span style='background: #AEF1AE'>1.0</span><span style=''>
-</span>14 <span style=''>  private val borderElasticity: Double = </span><span style='background: #AEF1AE'>1.0</span><span style=''>
-</span>15 <span style=''>  protected val restitution: Double = </span><span style='background: #AEF1AE'>cellElasticity * borderElasticity</span><span style=''>
-</span>16 <span style=''>
-</span>17 <span style=''>  /** Checks if an entity has collided with the border.
-</span>18 <span style=''>    * If so, computes it's new position and speed.
-</span>19 <span style=''>    *
-</span>20 <span style=''>    * @param entity the entity to check
-</span>21 <span style=''>    */
-</span>22 <span style=''>  def checkAndSolveCollision(entity: CollidableProperty): Unit
-</span>23 <span style=''>
-</span>24 <span style=''>  /** Checks if an entity is outside of the playable field.
-</span>25 <span style=''>    * If so, repositions it inside the playable field.
-</span>26 <span style=''>    *
-</span>27 <span style=''>    * @param entity the entity to check
-</span>28 <span style=''>    */
-</span>29 <span style=''>  def repositionIfOutsideMap(entity: CollidableProperty): Unit
-</span>30 <span style=''>}
+</span>3 <span style=''>import it.unibo.osmos.redux.ecs.components.{DimensionComponent, PositionComponent, SpeedComponent}
+</span>4 <span style=''>import it.unibo.osmos.redux.ecs.entities.properties.composed.CollidableProperty
+</span>5 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.CollisionRules
+</span>6 <span style=''>import it.unibo.osmos.redux.utils.{Point, Vector}
+</span>7 <span style=''>
+</span>8 <span style=''>/** Abstract class implementing the border collision strategy
+</span>9 <span style=''>  *
+</span>10 <span style=''>  * @param levelCenter   center of the level
+</span>11 <span style=''>  * @param collisionRule the collision rule
+</span>12 <span style=''>  */
+</span>13 <span style=''>abstract class AbstractBorder(levelCenter: Point, collisionRule: CollisionRules.Value) {
+</span>14 <span style=''>
+</span>15 <span style=''>  private val cellElasticity: Double = </span><span style='background: #AEF1AE'>1.0</span><span style=''>
+</span>16 <span style=''>  private val borderElasticity: Double = </span><span style='background: #AEF1AE'>1.0</span><span style=''>
+</span>17 <span style=''>  protected val restitution: Double = </span><span style='background: #AEF1AE'>cellElasticity * borderElasticity</span><span style=''>
+</span>18 <span style=''>
+</span>19 <span style=''>  protected var positionComponent: PositionComponent = _
+</span>20 <span style=''>  protected var currentPosition: Point = _
+</span>21 <span style=''>  protected var speedComponent: SpeedComponent = _
+</span>22 <span style=''>  protected var entitySpeed: Vector = _
+</span>23 <span style=''>  protected var dimensionComponent: DimensionComponent = _
+</span>24 <span style=''>  protected var entityRadius: Double = _
+</span>25 <span style=''>
+</span>26 <span style=''>  /** Initializes the current entity's fundamental parameters
+</span>27 <span style=''>    * to perform border collision operations
+</span>28 <span style=''>    *
+</span>29 <span style=''>    * @param entity the current entity
+</span>30 <span style=''>    */
+</span>31 <span style=''>  protected def initCollisionParameters(entity: CollidableProperty): Unit = {
+</span>32 <span style=''>    </span><span style='background: #AEF1AE'>positionComponent = entity.getPositionComponent</span><span style=''>
+</span>33 <span style=''>    </span><span style='background: #AEF1AE'>currentPosition = positionComponent.point</span><span style=''>
+</span>34 <span style=''>    </span><span style='background: #AEF1AE'>speedComponent = entity.getSpeedComponent</span><span style=''>
+</span>35 <span style=''>    </span><span style='background: #AEF1AE'>entitySpeed = speedComponent.vector</span><span style=''>
+</span>36 <span style=''>    </span><span style='background: #AEF1AE'>dimensionComponent = entity.getDimensionComponent</span><span style=''>
+</span>37 <span style=''>    </span><span style='background: #AEF1AE'>entityRadius = dimensionComponent.radius</span><span style=''>
+</span>38 <span style=''>  }
+</span>39 <span style=''>
+</span>40 <span style=''>  /** Checks if an entity has collided with the border.
+</span>41 <span style=''>    * If so, computes it's new position and speed.
+</span>42 <span style=''>    *
+</span>43 <span style=''>    * @param entity the entity to check
+</span>44 <span style=''>    */
+</span>45 <span style=''>  def checkAndSolveCollision(entity: CollidableProperty): Unit = {
+</span>46 <span style=''>    </span><span style='background: #AEF1AE'>initCollisionParameters(entity)</span><span style=''>
+</span>47 <span style=''>    if (</span><span style='background: #AEF1AE'>hasCollidedWithBorder</span><span style=''>) {
+</span>48 <span style=''>      </span><span style='background: #AEF1AE'>collisionRule match {
+</span>49 <span style=''></span><span style='background: #AEF1AE'>        case CollisionRules.bouncing =&gt;
+</span>50 <span style=''></span><span style='background: #AEF1AE'>          val newPosition = computeNewPosition()
+</span>51 <span style=''></span><span style='background: #AEF1AE'>          positionComponent.point_(newPosition)
+</span>52 <span style=''></span><span style='background: #AEF1AE'>
+</span>53 <span style=''></span><span style='background: #AEF1AE'>          val newSpeed = computeNewSpeed(newPosition)
+</span>54 <span style=''></span><span style='background: #AEF1AE'>          speedComponent.vector_(newSpeed)
+</span>55 <span style=''></span><span style='background: #AEF1AE'>        case CollisionRules.instantDeath =&gt;
+</span>56 <span style=''></span><span style='background: #AEF1AE'>          dimensionComponent.radius_(computeNewRadius())
+</span>57 <span style=''></span><span style='background: #AEF1AE'>        case _ =&gt; </span><span style='background: #F0ADAD'>throw new IllegalArgumentException</span><span style='background: #AEF1AE'>
+</span>58 <span style=''></span><span style='background: #AEF1AE'>      }</span><span style=''>
+</span>59 <span style=''>    }
+</span>60 <span style=''>  }
+</span>61 <span style=''>
+</span>62 <span style=''>  /** Checks if an entity is outside of the playable field.
+</span>63 <span style=''>    * If so, repositions it inside the playable field.
+</span>64 <span style=''>    * Used after collision between entities check.
+</span>65 <span style=''>    *
+</span>66 <span style=''>    * @param entity the entity to check
+</span>67 <span style=''>    */
+</span>68 <span style=''>  def checkIfOutsideMap(entity: CollidableProperty): Unit = {
+</span>69 <span style=''>    </span><span style='background: #AEF1AE'>initCollisionParameters(entity)</span><span style=''>
+</span>70 <span style=''>    if (</span><span style='background: #AEF1AE'>hasCollidedWithBorder</span><span style=''>) {
+</span>71 <span style=''>      </span><span style='background: #AEF1AE'>reposition()</span><span style=''>
+</span>72 <span style=''>    }
+</span>73 <span style=''>  }
+</span>74 <span style=''>
+</span>75 <span style=''>  /** Returns true if collision with border has happened
+</span>76 <span style=''>    *
+</span>77 <span style=''>    * @return true if collision with border has happened
+</span>78 <span style=''>    */
+</span>79 <span style=''>  protected def hasCollidedWithBorder: Boolean
+</span>80 <span style=''>
+</span>81 <span style=''>  /** Takes inside the playable field an entity that was outside
+</span>82 <span style=''>    *
+</span>83 <span style=''>    * @return the entity position after bounce
+</span>84 <span style=''>    */
+</span>85 <span style=''>  protected def computeNewPosition(): Point
+</span>86 <span style=''>
+</span>87 <span style=''>  /** Computes the new speed direction after colliding with the border
+</span>88 <span style=''>    *
+</span>89 <span style=''>    * @param newPosition the entity position computed at computeNewPosition()
+</span>90 <span style=''>    * @return the entity speed after bounce
+</span>91 <span style=''>    */
+</span>92 <span style=''>  protected def computeNewSpeed(newPosition: Point): Vector
+</span>93 <span style=''>
+</span>94 <span style=''>  /** Returns the entity radius minus the radius portion outside the level borders
+</span>95 <span style=''>    *
+</span>96 <span style=''>    * @return the entity radius after the operations
+</span>97 <span style=''>    */
+</span>98 <span style=''>  protected def computeNewRadius(): Double
+</span>99 <span style=''>
+</span>100 <span style=''>  /** Repositions an entity (outside the map) to a legal position
+</span>101 <span style=''>    * as close as possible to the map's edge
+</span>102 <span style=''>    */
+</span>103 <span style=''>  protected def reposition(): Unit
+</span>104 <span style=''>}
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -65,57 +139,78 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          13
-        </td>
-        <td>
-          853
-        </td>
-        <td>
-          498
-          -
-          501
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          1.0
-        </td>
-      </tr><tr>
-        <td>
-          14
-        </td>
-        <td>
-          854
-        </td>
-        <td>
-          543
-          -
-          546
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          1.0
-        </td>
-      </tr><tr>
-        <td>
           15
         </td>
         <td>
-          855
+          860
         </td>
         <td>
-          602
+          653
           -
-          618
+          656
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          1.0
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          861
+        </td>
+        <td>
+          698
+          -
+          701
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          1.0
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          863
+        </td>
+        <td>
+          740
+          -
+          773
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.*
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractBorder.this.cellElasticity.*(AbstractBorder.this.borderElasticity)
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          862
+        </td>
+        <td>
+          757
+          -
+          773
         </td>
         <td>
           Select
@@ -128,24 +223,663 @@
         </td>
       </tr><tr>
         <td>
-          15
+          32
         </td>
         <td>
-          856
+          864
         </td>
         <td>
-          585
+          1328
           -
-          618
+          1355
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Position.getPositionComponent
+        </td>
+        <td style="background: #AEF1AE">
+          entity.getPositionComponent
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          865
+        </td>
+        <td>
+          1308
+          -
+          1355
         </td>
         <td>
           Apply
         </td>
         <td>
-          scala.Double.*
+          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.positionComponent_=
         </td>
         <td style="background: #AEF1AE">
-          AbstractBorder.this.cellElasticity.*(AbstractBorder.this.borderElasticity)
+          AbstractBorder.this.positionComponent_=(entity.getPositionComponent)
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          866
+        </td>
+        <td>
+          1378
+          -
+          1401
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.point
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractBorder.this.positionComponent.point
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          867
+        </td>
+        <td>
+          1360
+          -
+          1401
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.currentPosition_=
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractBorder.this.currentPosition_=(AbstractBorder.this.positionComponent.point)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          869
+        </td>
+        <td>
+          1406
+          -
+          1447
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.speedComponent_=
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractBorder.this.speedComponent_=(entity.getSpeedComponent)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          868
+        </td>
+        <td>
+          1423
+          -
+          1447
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Speed.getSpeedComponent
+        </td>
+        <td style="background: #AEF1AE">
+          entity.getSpeedComponent
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          871
+        </td>
+        <td>
+          1452
+          -
+          1487
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.entitySpeed_=
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractBorder.this.entitySpeed_=(AbstractBorder.this.speedComponent.vector)
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          870
+        </td>
+        <td>
+          1466
+          -
+          1487
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.VectorComponent.vector
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractBorder.this.speedComponent.vector
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          873
+        </td>
+        <td>
+          1492
+          -
+          1541
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.dimensionComponent_=
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractBorder.this.dimensionComponent_=(entity.getDimensionComponent)
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          872
+        </td>
+        <td>
+          1513
+          -
+          1541
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Dimension.getDimensionComponent
+        </td>
+        <td style="background: #AEF1AE">
+          entity.getDimensionComponent
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          875
+        </td>
+        <td>
+          1546
+          -
+          1586
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.entityRadius_=
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractBorder.this.entityRadius_=(AbstractBorder.this.dimensionComponent.radius)
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          874
+        </td>
+        <td>
+          1561
+          -
+          1586
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.radius
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractBorder.this.dimensionComponent.radius
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          876
+        </td>
+        <td>
+          1823
+          -
+          1854
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.initCollisionParameters
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractBorder.this.initCollisionParameters(entity)
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          887
+        </td>
+        <td>
+          1859
+          -
+          1859
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          877
+        </td>
+        <td>
+          1863
+          -
+          1884
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.hasCollidedWithBorder
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractBorder.this.hasCollidedWithBorder
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          888
+        </td>
+        <td>
+          1859
+          -
+          1859
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          878
+        </td>
+        <td>
+          1894
+          -
+          1907
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.collisionRule
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractBorder.this.collisionRule
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          886
+        </td>
+        <td>
+          1894
+          -
+          2312
+        </td>
+        <td>
+          Match
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractBorder.this.collisionRule match {
+  case it.unibo.osmos.redux.mvc.controller.levels.structure.CollisionRules.bouncing =&gt; {
+    val newPosition: it.unibo.osmos.redux.utils.Point = AbstractBorder.this.computeNewPosition();
+    AbstractBorder.this.positionComponent.point_(newPosition);
+    val newSpeed: it.unibo.osmos.redux.utils.Vector = AbstractBorder.this.computeNewSpeed(newPosition);
+    AbstractBorder.this.speedComponent.vector_(newSpeed)
+  }
+  case it.unibo.osmos.redux.mvc.controller.levels.structure.CollisionRules.instantDeath =&gt; AbstractBorder.this.dimensionComponent.radius_(AbstractBorder.this.computeNewRadius())
+  case _ =&gt; throw new scala.`package`.IllegalArgumentException()
+}
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          879
+        </td>
+        <td>
+          1984
+          -
+          2004
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.computeNewPosition
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractBorder.this.computeNewPosition()
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          880
+        </td>
+        <td>
+          2015
+          -
+          2052
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.PositionComponent.point_
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractBorder.this.positionComponent.point_(newPosition)
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          881
+        </td>
+        <td>
+          2079
+          -
+          2107
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.computeNewSpeed
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractBorder.this.computeNewSpeed(newPosition)
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          882
+        </td>
+        <td>
+          2118
+          -
+          2150
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.VectorComponent.vector_
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractBorder.this.speedComponent.vector_(newSpeed)
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          884
+        </td>
+        <td>
+          2205
+          -
+          2251
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.components.DimensionComponent.radius_
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractBorder.this.dimensionComponent.radius_(AbstractBorder.this.computeNewRadius())
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          883
+        </td>
+        <td>
+          2232
+          -
+          2250
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.computeNewRadius
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractBorder.this.computeNewRadius()
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          885
+        </td>
+        <td>
+          2270
+          -
+          2304
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.IllegalArgumentException()
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          889
+        </td>
+        <td>
+          2609
+          -
+          2640
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.initCollisionParameters
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractBorder.this.initCollisionParameters(entity)
+        </td>
+      </tr><tr>
+        <td>
+          70
+        </td>
+        <td>
+          890
+        </td>
+        <td>
+          2649
+          -
+          2670
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.hasCollidedWithBorder
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractBorder.this.hasCollidedWithBorder
+        </td>
+      </tr><tr>
+        <td>
+          70
+        </td>
+        <td>
+          893
+        </td>
+        <td>
+          2645
+          -
+          2645
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          70
+        </td>
+        <td>
+          894
+        </td>
+        <td>
+          2645
+          -
+          2645
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          71
+        </td>
+        <td>
+          891
+        </td>
+        <td>
+          2680
+          -
+          2692
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.reposition
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractBorder.this.reposition()
+        </td>
+      </tr><tr>
+        <td>
+          71
+        </td>
+        <td>
+          892
+        </td>
+        <td>
+          2680
+          -
+          2692
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.reposition
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractBorder.this.reposition()
         </td>
       </tr>
     </table>

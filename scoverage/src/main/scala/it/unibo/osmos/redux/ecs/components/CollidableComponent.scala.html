@@ -43,17 +43,18 @@
 </span>19 <span style=''>  override def copy(): CollidableComponent = </span><span style='background: #F0ADAD'>CollidableComponent(isCollidable)</span><span style=''>
 </span>20 <span style=''>}
 </span>21 <span style=''>
-</span>22 <span style=''>object CollidableComponent {
-</span>23 <span style=''>  def apply(collidable: Boolean): CollidableComponent = </span><span style='background: #AEF1AE'>CollidableComponentImpl(collidable)</span><span style=''>
-</span>24 <span style=''>
-</span>25 <span style=''>  private case class CollidableComponentImpl(var _collidable: Boolean) extends CollidableComponent {
-</span>26 <span style=''>
-</span>27 <span style=''>    override def isCollidable: Boolean = </span><span style='background: #AEF1AE'>_collidable</span><span style=''>
-</span>28 <span style=''>
-</span>29 <span style=''>    override def setCollidable(collidable: Boolean): Unit = </span><span style='background: #F0ADAD'>_collidable = collidable</span><span style=''>
-</span>30 <span style=''>  }
-</span>31 <span style=''>
-</span>32 <span style=''>}
+</span>22 <span style=''>/** Companion object */
+</span>23 <span style=''>object CollidableComponent {
+</span>24 <span style=''>  def apply(collidable: Boolean): CollidableComponent = </span><span style='background: #AEF1AE'>CollidableComponentImpl(collidable)</span><span style=''>
+</span>25 <span style=''>
+</span>26 <span style=''>  private case class CollidableComponentImpl(var _collidable: Boolean) extends CollidableComponent {
+</span>27 <span style=''>
+</span>28 <span style=''>    override def isCollidable: Boolean = </span><span style='background: #AEF1AE'>_collidable</span><span style=''>
+</span>29 <span style=''>
+</span>30 <span style=''>    override def setCollidable(collidable: Boolean): Unit = </span><span style='background: #F0ADAD'>_collidable = collidable</span><span style=''>
+</span>31 <span style=''>  }
+</span>32 <span style=''>
+</span>33 <span style=''>}
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -109,15 +110,15 @@
         </td>
       </tr><tr>
         <td>
-          23
+          24
         </td>
         <td>
           13
         </td>
         <td>
-          671
+          695
           -
-          706
+          730
         </td>
         <td>
           Apply
@@ -130,15 +131,15 @@
         </td>
       </tr><tr>
         <td>
-          27
+          28
         </td>
         <td>
           14
         </td>
         <td>
-          851
+          875
           -
-          862
+          886
         </td>
         <td>
           Select
@@ -151,15 +152,15 @@
         </td>
       </tr><tr>
         <td>
-          29
+          30
         </td>
         <td>
           15
         </td>
         <td>
-          924
-          -
           948
+          -
+          972
         </td>
         <td>
           Apply

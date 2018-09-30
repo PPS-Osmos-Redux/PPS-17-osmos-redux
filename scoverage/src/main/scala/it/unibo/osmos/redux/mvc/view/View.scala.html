@@ -49,112 +49,113 @@
 </span>25 <span style=''>
 </span>26 <span style=''>}
 </span>27 <span style=''>
-</span>28 <span style=''>object View {
-</span>29 <span style=''>
-</span>30 <span style=''>  def apply(app: JFXApp): View = </span><span style='background: #F0ADAD'>new ViewImpl(app)</span><span style=''>
-</span>31 <span style=''>
-</span>32 <span style=''>  /** View implementation, holding the main stage and the current scene
-</span>33 <span style=''>    *
-</span>34 <span style=''>    * @param app a reference to the JFXApp, necessary to the correct setup of the whole application
-</span>35 <span style=''>    */
-</span>36 <span style=''>  class ViewImpl(private val app: JFXApp) extends View with PrimaryStageListener {
-</span>37 <span style=''>
-</span>38 <span style=''>    /** Implicit executor */
-</span>39 <span style=''>    implicit val executionContextExecutor: ExecutionContextExecutor = </span><span style='background: #F0ADAD'>ExecutionContext.global</span><span style=''>
-</span>40 <span style=''>
-</span>41 <span style=''>    /** Setting the primary stage */
-</span>42 <span style=''>    </span><span style='background: #F0ADAD'>app.stage = OsmosReduxPrimaryStage(this)</span><span style=''>
-</span>43 <span style=''>    private var controller: Option[Controller] = </span><span style='background: #F0ADAD'>Option.empty</span><span style=''>
-</span>44 <span style=''>
-</span>45 <span style=''>    override def setController(controller: Controller): Unit = {
-</span>46 <span style=''>      </span><span style='background: #F0ADAD'>this.controller = Option(controller)</span><span style=''>
-</span>47 <span style=''>    }
-</span>48 <span style=''>
-</span>49 <span style=''>    override def onLevelContextCreated(levelContext: LevelContext, level: String, isCustom: Boolean = false): Boolean = {
-</span>50 <span style=''>      </span><span style='background: #F0ADAD'>controller</span><span style=''> match {
-</span>51 <span style=''>        case Some(c) =&gt;
-</span>52 <span style=''>          </span><span style='background: #F0ADAD'>c.initLevel(levelContext, level, isCustom)</span><span style=''> match {
-</span>53 <span style=''>            case Failure(t) =&gt;
-</span>54 <span style=''>              </span><span style='background: #F0ADAD'>AlertFactory.createErrorAlert(&quot;Unable to start level&quot;, t.getMessage).showAndWait()</span><span style=''>
-</span>55 <span style=''>              </span><span style='background: #F0ADAD'>false</span><span style=''>
-</span>56 <span style=''>            case _ =&gt; </span><span style='background: #F0ADAD'>true</span><span style=''>
-</span>57 <span style=''>          }
-</span>58 <span style=''>        case None =&gt; </span><span style='background: #F0ADAD'>false</span><span style=''>
-</span>59 <span style=''>      }
-</span>60 <span style=''>    }
-</span>61 <span style=''>
-</span>62 <span style=''>    override def getSingleLevels: List[LevelInfo] = </span><span style='background: #F0ADAD'>controller</span><span style=''> match {
-</span>63 <span style=''>      case Some(c) =&gt; </span><span style='background: #F0ADAD'>c.getSinglePlayerLevels</span><span style=''>
-</span>64 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>List()</span><span style=''>
-</span>65 <span style=''>    }
-</span>66 <span style=''>
-</span>67 <span style=''>    override def getCustomLevels: List[LevelInfo] = </span><span style='background: #F0ADAD'>controller</span><span style=''> match {
-</span>68 <span style=''>      case Some(c) =&gt; </span><span style='background: #F0ADAD'>c.getCustomLevels</span><span style=''>
-</span>69 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>List()</span><span style=''>
-</span>70 <span style=''>    }
-</span>71 <span style=''>
-</span>72 <span style=''>    override def getMultiPlayerLevels: List[LevelInfo] = </span><span style='background: #F0ADAD'>controller</span><span style=''> match {
-</span>73 <span style=''>      case Some(c) =&gt; </span><span style='background: #F0ADAD'>c.getMultiPlayerLevels</span><span style=''>
-</span>74 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>List()</span><span style=''>
-</span>75 <span style=''>    }
-</span>76 <span style=''>
-</span>77 <span style=''>    override def getCampaignLevels: List[CampaignLevel] = </span><span style='background: #F0ADAD'>controller</span><span style=''> match {
-</span>78 <span style=''>      case Some(c) =&gt; </span><span style='background: #F0ADAD'>c.getCampaignLevels</span><span style=''>
-</span>79 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>List()</span><span style=''>
-</span>80 <span style=''>    }
-</span>81 <span style=''>
-</span>82 <span style=''>    override def onSaveLevel(name: String,
-</span>83 <span style=''>                             map: MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value,
-</span>84 <span style=''>                             entities: Seq[CellEntity],
-</span>85 <span style=''>                             callback: Boolean =&gt; Unit): Unit = </span><span style='background: #F0ADAD'>checkController(() =&gt; callback(controller.get.saveLevel(name, map, victoryRules, collisionRules, entities)))</span><span style=''>
-</span>86 <span style=''>
-</span>87 <span style=''>    override def onDeleteLevel(level: String, callback: Boolean =&gt; Unit): Unit = </span><span style='background: #F0ADAD'>checkController(() =&gt; callback(controller.get.removeLevel(level)))</span><span style=''>
-</span>88 <span style=''>
-</span>89 <span style=''>    override def onStartLevel(): Unit = </span><span style='background: #F0ADAD'>checkController(() =&gt; controller.get.startLevel())</span><span style=''>
-</span>90 <span style=''>
-</span>91 <span style=''>    override def onPauseLevel(): Unit = </span><span style='background: #F0ADAD'>checkController(() =&gt; controller.get.pauseLevel())</span><span style=''>
-</span>92 <span style=''>
-</span>93 <span style=''>    override def onResumeLevel(): Unit = </span><span style='background: #F0ADAD'>checkController(() =&gt; controller.get.resumeLevel())</span><span style=''>
-</span>94 <span style=''>
-</span>95 <span style=''>    override def onStopLevel(victory: Boolean): Unit = </span><span style='background: #F0ADAD'>checkController(() =&gt; controller.get.stopLevel(victory))</span><span style=''>
-</span>96 <span style=''>
-</span>97 <span style=''>    override def onLevelSpeedChanged(increment: Boolean): Unit = </span><span style='background: #F0ADAD'>checkController(() =&gt; controller.get.changeLevelSpeed(increment))</span><span style=''>
-</span>98 <span style=''>
-</span>99 <span style=''>    /** After checking the controller, we ask to enter the lobby asynchronously and call the callback function after the future result
-</span>100 <span style=''>      *
-</span>101 <span style=''>      * @param user         the user requesting to enter the lobby
-</span>102 <span style=''>      * @param lobbyContext the lobby context, which may be used by the server to configure existing lobby users
-</span>103 <span style=''>      * @param callback     the callback
-</span>104 <span style=''>      */
-</span>105 <span style=''>    override def onLobbyRequest(user: User, levelInfo: Option[LevelInfo], lobbyContext: LobbyContext, callback: (User, Option[LevelInfo], LobbyContext, GenericResponse[Boolean]) =&gt; Unit): Unit =
-</span>106 <span style=''>      </span><span style='background: #F0ADAD'>checkController(() =&gt; controller.get.initLobby(user, lobbyContext).future.onComplete {
-</span>107 <span style=''></span><span style='background: #F0ADAD'>        case Success(value) =&gt; callback(user, levelInfo, lobbyContext, value)
-</span>108 <span style=''></span><span style='background: #F0ADAD'>        case Failure(e) =&gt; onDisplayError(&quot;Connection call succeeded but did not receive response&quot;)
-</span>109 <span style=''></span><span style='background: #F0ADAD'>      })</span><span style=''>
-</span>110 <span style=''>
-</span>111 <span style=''>    override def onStartMultiPlayerGameClick(levelInfo: LevelInfo): Unit = </span><span style='background: #F0ADAD'>checkController(() =&gt; controller.get.initMultiPlayerLevel(levelInfo).future.onComplete {
-</span>112 <span style=''></span><span style='background: #F0ADAD'>      case Failure(e) =&gt; onDisplayError(&quot;Failed controller init&quot;)
-</span>113 <span style=''></span><span style='background: #F0ADAD'>      case Success(_) =&gt; //do nothing
-</span>114 <span style=''></span><span style='background: #F0ADAD'>    })</span><span style=''>
-</span>115 <span style=''>
-</span>116 <span style=''>    /** Utility method that checks if controller is not empty and execute f() if that is the case
-</span>117 <span style=''>      *
-</span>118 <span style=''>      * @param f the function which will be executed if controller is not empty
-</span>119 <span style=''>      */
-</span>120 <span style=''>    private def checkController(f: () =&gt; Unit): Unit = </span><span style='background: #F0ADAD'>controller</span><span style=''> match {
-</span>121 <span style=''>      case Some(_) =&gt; </span><span style='background: #F0ADAD'>f()</span><span style=''>
-</span>122 <span style=''>      case _ </span><span style='background: #F0ADAD'>=&gt;</span><span style=''>
-</span>123 <span style=''>    }
-</span>124 <span style=''>
-</span>125 <span style=''>    def onDisplayError(message: String): Unit = {
-</span>126 <span style=''>      </span><span style='background: #F0ADAD'>Platform.runLater {
-</span>127 <span style=''></span><span style='background: #F0ADAD'>        AlertFactory.createErrorAlert(&quot;Error occurred&quot;, message).showAndWait()
-</span>128 <span style=''></span><span style='background: #F0ADAD'>      }</span><span style=''>
-</span>129 <span style=''>    }
-</span>130 <span style=''>
-</span>131 <span style=''>  }
-</span>132 <span style=''>
-</span>133 <span style=''>}
+</span>28 <span style=''>/** Companion object */
+</span>29 <span style=''>object View {
+</span>30 <span style=''>
+</span>31 <span style=''>  def apply(app: JFXApp): View = </span><span style='background: #F0ADAD'>new ViewImpl(app)</span><span style=''>
+</span>32 <span style=''>
+</span>33 <span style=''>  /** View implementation, holding the main stage and the current scene
+</span>34 <span style=''>    *
+</span>35 <span style=''>    * @param app a reference to the JFXApp, necessary to the correct setup of the whole application
+</span>36 <span style=''>    */
+</span>37 <span style=''>  class ViewImpl(private val app: JFXApp) extends View with PrimaryStageListener {
+</span>38 <span style=''>
+</span>39 <span style=''>    /** Implicit executor */
+</span>40 <span style=''>    implicit val executionContextExecutor: ExecutionContextExecutor = </span><span style='background: #F0ADAD'>ExecutionContext.global</span><span style=''>
+</span>41 <span style=''>
+</span>42 <span style=''>    /** Setting the primary stage */
+</span>43 <span style=''>    </span><span style='background: #F0ADAD'>app.stage = OsmosReduxPrimaryStage(this)</span><span style=''>
+</span>44 <span style=''>    private var controller: Option[Controller] = </span><span style='background: #F0ADAD'>Option.empty</span><span style=''>
+</span>45 <span style=''>
+</span>46 <span style=''>    override def setController(controller: Controller): Unit = {
+</span>47 <span style=''>      </span><span style='background: #F0ADAD'>this.controller = Option(controller)</span><span style=''>
+</span>48 <span style=''>    }
+</span>49 <span style=''>
+</span>50 <span style=''>    override def onLevelContextCreated(levelContext: LevelContext, level: String, isCustom: Boolean = false): Boolean = {
+</span>51 <span style=''>      </span><span style='background: #F0ADAD'>controller</span><span style=''> match {
+</span>52 <span style=''>        case Some(c) =&gt;
+</span>53 <span style=''>          </span><span style='background: #F0ADAD'>c.initLevel(levelContext, level, isCustom)</span><span style=''> match {
+</span>54 <span style=''>            case Failure(t) =&gt;
+</span>55 <span style=''>              </span><span style='background: #F0ADAD'>AlertFactory.createErrorAlert(&quot;Unable to start level&quot;, t.getMessage).showAndWait()</span><span style=''>
+</span>56 <span style=''>              </span><span style='background: #F0ADAD'>false</span><span style=''>
+</span>57 <span style=''>            case _ =&gt; </span><span style='background: #F0ADAD'>true</span><span style=''>
+</span>58 <span style=''>          }
+</span>59 <span style=''>        case None =&gt; </span><span style='background: #F0ADAD'>false</span><span style=''>
+</span>60 <span style=''>      }
+</span>61 <span style=''>    }
+</span>62 <span style=''>
+</span>63 <span style=''>    override def getSingleLevels: List[LevelInfo] = </span><span style='background: #F0ADAD'>controller</span><span style=''> match {
+</span>64 <span style=''>      case Some(c) =&gt; </span><span style='background: #F0ADAD'>c.getSinglePlayerLevels</span><span style=''>
+</span>65 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>List()</span><span style=''>
+</span>66 <span style=''>    }
+</span>67 <span style=''>
+</span>68 <span style=''>    override def getCustomLevels: List[LevelInfo] = </span><span style='background: #F0ADAD'>controller</span><span style=''> match {
+</span>69 <span style=''>      case Some(c) =&gt; </span><span style='background: #F0ADAD'>c.getCustomLevels</span><span style=''>
+</span>70 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>List()</span><span style=''>
+</span>71 <span style=''>    }
+</span>72 <span style=''>
+</span>73 <span style=''>    override def getMultiPlayerLevels: List[LevelInfo] = </span><span style='background: #F0ADAD'>controller</span><span style=''> match {
+</span>74 <span style=''>      case Some(c) =&gt; </span><span style='background: #F0ADAD'>c.getMultiPlayerLevels</span><span style=''>
+</span>75 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>List()</span><span style=''>
+</span>76 <span style=''>    }
+</span>77 <span style=''>
+</span>78 <span style=''>    override def getCampaignLevels: List[CampaignLevel] = </span><span style='background: #F0ADAD'>controller</span><span style=''> match {
+</span>79 <span style=''>      case Some(c) =&gt; </span><span style='background: #F0ADAD'>c.getCampaignLevels</span><span style=''>
+</span>80 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>List()</span><span style=''>
+</span>81 <span style=''>    }
+</span>82 <span style=''>
+</span>83 <span style=''>    override def onSaveLevel(name: String,
+</span>84 <span style=''>                             map: MapShape, victoryRules: VictoryRules.Value, collisionRules: CollisionRules.Value,
+</span>85 <span style=''>                             entities: Seq[CellEntity],
+</span>86 <span style=''>                             callback: Boolean =&gt; Unit): Unit = </span><span style='background: #F0ADAD'>checkController(() =&gt; callback(controller.get.saveLevel(name, map, victoryRules, collisionRules, entities)))</span><span style=''>
+</span>87 <span style=''>
+</span>88 <span style=''>    override def onDeleteLevel(level: String, callback: Boolean =&gt; Unit): Unit = </span><span style='background: #F0ADAD'>checkController(() =&gt; callback(controller.get.removeLevel(level)))</span><span style=''>
+</span>89 <span style=''>
+</span>90 <span style=''>    override def onStartLevel(): Unit = </span><span style='background: #F0ADAD'>checkController(() =&gt; controller.get.startLevel())</span><span style=''>
+</span>91 <span style=''>
+</span>92 <span style=''>    override def onPauseLevel(): Unit = </span><span style='background: #F0ADAD'>checkController(() =&gt; controller.get.pauseLevel())</span><span style=''>
+</span>93 <span style=''>
+</span>94 <span style=''>    override def onResumeLevel(): Unit = </span><span style='background: #F0ADAD'>checkController(() =&gt; controller.get.resumeLevel())</span><span style=''>
+</span>95 <span style=''>
+</span>96 <span style=''>    override def onStopLevel(victory: Boolean): Unit = </span><span style='background: #F0ADAD'>checkController(() =&gt; controller.get.stopLevel(victory))</span><span style=''>
+</span>97 <span style=''>
+</span>98 <span style=''>    override def onLevelSpeedChanged(increment: Boolean): Unit = </span><span style='background: #F0ADAD'>checkController(() =&gt; controller.get.changeLevelSpeed(increment))</span><span style=''>
+</span>99 <span style=''>
+</span>100 <span style=''>    /** After checking the controller, we ask to enter the lobby asynchronously and call the callback function after the future result
+</span>101 <span style=''>      *
+</span>102 <span style=''>      * @param user         the user requesting to enter the lobby
+</span>103 <span style=''>      * @param lobbyContext the lobby context, which may be used by the server to configure existing lobby users
+</span>104 <span style=''>      * @param callback     the callback
+</span>105 <span style=''>      */
+</span>106 <span style=''>    override def onLobbyRequest(user: User, levelInfo: Option[LevelInfo], lobbyContext: LobbyContext, callback: (User, Option[LevelInfo], LobbyContext, GenericResponse[Boolean]) =&gt; Unit): Unit =
+</span>107 <span style=''>      </span><span style='background: #F0ADAD'>checkController(() =&gt; controller.get.initLobby(user, lobbyContext).future.onComplete {
+</span>108 <span style=''></span><span style='background: #F0ADAD'>        case Success(value) =&gt; callback(user, levelInfo, lobbyContext, value)
+</span>109 <span style=''></span><span style='background: #F0ADAD'>        case Failure(e) =&gt; onDisplayError(&quot;Connection call succeeded but did not receive response&quot;)
+</span>110 <span style=''></span><span style='background: #F0ADAD'>      })</span><span style=''>
+</span>111 <span style=''>
+</span>112 <span style=''>    override def onStartMultiPlayerGameClick(levelInfo: LevelInfo): Unit = </span><span style='background: #F0ADAD'>checkController(() =&gt; controller.get.initMultiPlayerLevel(levelInfo).future.onComplete {
+</span>113 <span style=''></span><span style='background: #F0ADAD'>      case Failure(e) =&gt; onDisplayError(&quot;Failed controller init&quot;)
+</span>114 <span style=''></span><span style='background: #F0ADAD'>      case Success(_) =&gt; //do nothing
+</span>115 <span style=''></span><span style='background: #F0ADAD'>    })</span><span style=''>
+</span>116 <span style=''>
+</span>117 <span style=''>    /** Utility method that checks if controller is not empty and execute f() if that is the case
+</span>118 <span style=''>      *
+</span>119 <span style=''>      * @param f the function which will be executed if controller is not empty
+</span>120 <span style=''>      */
+</span>121 <span style=''>    private def checkController(f: () =&gt; Unit): Unit = </span><span style='background: #F0ADAD'>controller</span><span style=''> match {
+</span>122 <span style=''>      case Some(_) =&gt; </span><span style='background: #F0ADAD'>f()</span><span style=''>
+</span>123 <span style=''>      case _ </span><span style='background: #F0ADAD'>=&gt;</span><span style=''>
+</span>124 <span style=''>    }
+</span>125 <span style=''>
+</span>126 <span style=''>    def onDisplayError(message: String): Unit = {
+</span>127 <span style=''>      </span><span style='background: #F0ADAD'>Platform.runLater {
+</span>128 <span style=''></span><span style='background: #F0ADAD'>        AlertFactory.createErrorAlert(&quot;Error occurred&quot;, message).showAndWait()
+</span>129 <span style=''></span><span style='background: #F0ADAD'>      }</span><span style=''>
+</span>130 <span style=''>    }
+</span>131 <span style=''>
+</span>132 <span style=''>  }
+</span>133 <span style=''>
+</span>134 <span style=''>}
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -168,15 +169,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          30
+          31
         </td>
         <td>
-          3308
+          3307
         </td>
         <td>
-          976
+          1000
           -
-          993
+          1017
         </td>
         <td>
           Apply
@@ -189,15 +190,15 @@
         </td>
       </tr><tr>
         <td>
-          39
+          40
         </td>
         <td>
-          3309
+          3308
         </td>
         <td>
-          1363
+          1387
           -
-          1386
+          1410
         </td>
         <td>
           Select
@@ -210,78 +211,15 @@
         </td>
       </tr><tr>
         <td>
-          42
-        </td>
-        <td>
-          3313
-        </td>
-        <td>
-          1429
-          -
-          1469
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scalafx.application.JFXApp.stage_=
-        </td>
-        <td style="background: #F0ADAD">
-          ViewImpl.this.app.stage_=(it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply(this, it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply$default$2, it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply$default$3))
-        </td>
-      </tr><tr>
-        <td>
-          42
+          43
         </td>
         <td>
           3310
         </td>
         <td>
-          1441
+          1465
           -
-          1441
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply$default$2
-        </td>
-        <td style="background: #F0ADAD">
-          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply$default$2
-        </td>
-      </tr><tr>
-        <td>
-          42
-        </td>
-        <td>
-          3312
-        </td>
-        <td>
-          1441
-          -
-          1469
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply
-        </td>
-        <td style="background: #F0ADAD">
-          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply(this, it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply$default$2, it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply$default$3)
-        </td>
-      </tr><tr>
-        <td>
-          42
-        </td>
-        <td>
-          3311
-        </td>
-        <td>
-          1441
-          -
-          1441
+          1465
         </td>
         <td>
           Select
@@ -297,12 +235,75 @@
           43
         </td>
         <td>
-          3314
+          3309
         </td>
         <td>
-          1519
+          1465
           -
-          1531
+          1465
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply$default$2
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply$default$2
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          3312
+        </td>
+        <td>
+          1453
+          -
+          1493
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.application.JFXApp.stage_=
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.app.stage_=(it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply(this, it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply$default$2, it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply$default$3))
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          3311
+        </td>
+        <td>
+          1465
+          -
+          1493
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply(this, it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply$default$2, it.unibo.osmos.redux.mvc.view.stages.OsmosReduxPrimaryStage.apply$default$3)
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          3313
+        </td>
+        <td>
+          1543
+          -
+          1555
         </td>
         <td>
           TypeApply
@@ -315,15 +316,15 @@
         </td>
       </tr><tr>
         <td>
-          46
+          47
         </td>
         <td>
-          3316
+          3315
         </td>
         <td>
-          1604
+          1628
           -
-          1640
+          1664
         </td>
         <td>
           Apply
@@ -336,15 +337,15 @@
         </td>
       </tr><tr>
         <td>
-          46
+          47
         </td>
         <td>
-          3315
+          3314
         </td>
         <td>
-          1622
+          1646
           -
-          1640
+          1664
         </td>
         <td>
           Apply
@@ -357,15 +358,15 @@
         </td>
       </tr><tr>
         <td>
-          50
+          51
         </td>
         <td>
-          3317
+          3316
         </td>
         <td>
-          1776
+          1800
           -
-          1786
+          1810
         </td>
         <td>
           Select
@@ -378,15 +379,15 @@
         </td>
       </tr><tr>
         <td>
-          52
+          53
         </td>
         <td>
-          3318
+          3317
         </td>
         <td>
-          1829
+          1853
           -
-          1871
+          1895
         </td>
         <td>
           Apply
@@ -399,15 +400,15 @@
         </td>
       </tr><tr>
         <td>
-          54
+          55
         </td>
         <td>
-          3319
+          3318
         </td>
         <td>
-          1925
+          1949
           -
-          2007
+          2031
         </td>
         <td>
           Apply
@@ -420,15 +421,15 @@
         </td>
       </tr><tr>
         <td>
-          55
+          56
         </td>
         <td>
-          3320
+          3319
         </td>
         <td>
-          2022
+          2046
           -
-          2027
+          2051
         </td>
         <td>
           Literal
@@ -441,15 +442,15 @@
         </td>
       </tr><tr>
         <td>
-          56
+          57
         </td>
         <td>
-          3321
+          3320
         </td>
         <td>
-          2050
+          2074
           -
-          2054
+          2078
         </td>
         <td>
           Literal
@@ -462,15 +463,15 @@
         </td>
       </tr><tr>
         <td>
-          58
+          59
         </td>
         <td>
-          3322
+          3321
         </td>
         <td>
-          2088
+          2112
           -
-          2093
+          2117
         </td>
         <td>
           Literal
@@ -483,15 +484,15 @@
         </td>
       </tr><tr>
         <td>
-          62
+          63
         </td>
         <td>
-          3323
+          3322
         </td>
         <td>
-          2161
+          2185
           -
-          2171
+          2195
         </td>
         <td>
           Select
@@ -504,15 +505,15 @@
         </td>
       </tr><tr>
         <td>
-          63
+          64
         </td>
         <td>
-          3324
+          3323
         </td>
         <td>
-          2202
+          2226
           -
-          2225
+          2249
         </td>
         <td>
           Select
@@ -525,15 +526,15 @@
         </td>
       </tr><tr>
         <td>
-          64
+          65
         </td>
         <td>
-          3325
+          3324
         </td>
         <td>
-          2242
+          2266
           -
-          2248
+          2272
         </td>
         <td>
           Select
@@ -546,15 +547,15 @@
         </td>
       </tr><tr>
         <td>
-          67
+          68
         </td>
         <td>
-          3326
+          3325
         </td>
         <td>
-          2308
+          2332
           -
-          2318
+          2342
         </td>
         <td>
           Select
@@ -567,15 +568,15 @@
         </td>
       </tr><tr>
         <td>
-          68
+          69
         </td>
         <td>
-          3327
+          3326
         </td>
         <td>
-          2349
+          2373
           -
-          2366
+          2390
         </td>
         <td>
           Select
@@ -588,15 +589,15 @@
         </td>
       </tr><tr>
         <td>
-          69
+          70
         </td>
         <td>
-          3328
+          3327
         </td>
         <td>
-          2383
+          2407
           -
-          2389
+          2413
         </td>
         <td>
           Select
@@ -609,15 +610,15 @@
         </td>
       </tr><tr>
         <td>
-          72
+          73
         </td>
         <td>
-          3329
+          3328
         </td>
         <td>
-          2454
+          2478
           -
-          2464
+          2488
         </td>
         <td>
           Select
@@ -630,15 +631,15 @@
         </td>
       </tr><tr>
         <td>
-          73
+          74
         </td>
         <td>
-          3330
+          3329
         </td>
         <td>
-          2495
+          2519
           -
-          2517
+          2541
         </td>
         <td>
           Select
@@ -651,15 +652,15 @@
         </td>
       </tr><tr>
         <td>
-          74
+          75
         </td>
         <td>
-          3331
+          3330
         </td>
         <td>
-          2534
+          2558
           -
-          2540
+          2564
         </td>
         <td>
           Select
@@ -672,15 +673,15 @@
         </td>
       </tr><tr>
         <td>
-          77
+          78
         </td>
         <td>
-          3332
+          3331
         </td>
         <td>
-          2606
+          2630
           -
-          2616
+          2640
         </td>
         <td>
           Select
@@ -693,15 +694,15 @@
         </td>
       </tr><tr>
         <td>
-          78
+          79
         </td>
         <td>
-          3333
+          3332
         </td>
         <td>
-          2647
+          2671
           -
-          2666
+          2690
         </td>
         <td>
           Select
@@ -714,15 +715,15 @@
         </td>
       </tr><tr>
         <td>
-          79
+          80
         </td>
         <td>
-          3334
+          3333
         </td>
         <td>
-          2683
+          2707
           -
-          2689
+          2713
         </td>
         <td>
           Select
@@ -735,36 +736,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          86
         </td>
         <td>
-          3336
+          3334
         </td>
         <td>
-          2998
+          3031
           -
-          3083
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.Function1.apply
-        </td>
-        <td style="background: #F0ADAD">
-          callback.apply(ViewImpl.this.controller.get.saveLevel(name, map, victoryRules, collisionRules, entities))
-        </td>
-      </tr><tr>
-        <td>
-          85
-        </td>
-        <td>
-          3335
-        </td>
-        <td>
-          3007
-          -
-          3082
+          3106
         </td>
         <td>
           Apply
@@ -777,15 +757,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          86
         </td>
         <td>
-          3337
+          3336
         </td>
         <td>
-          2976
+          3000
           -
-          3084
+          3108
         </td>
         <td>
           Apply
@@ -798,15 +778,36 @@
         </td>
       </tr><tr>
         <td>
-          87
+          86
         </td>
         <td>
-          3340
+          3335
         </td>
         <td>
-          3167
+          3022
           -
-          3233
+          3107
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Function1.apply
+        </td>
+        <td style="background: #F0ADAD">
+          callback.apply(ViewImpl.this.controller.get.saveLevel(name, map, victoryRules, collisionRules, entities))
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          3339
+        </td>
+        <td>
+          3191
+          -
+          3257
         </td>
         <td>
           Apply
@@ -819,15 +820,15 @@
         </td>
       </tr><tr>
         <td>
-          87
+          88
         </td>
         <td>
-          3339
+          3338
         </td>
         <td>
-          3189
+          3213
           -
-          3232
+          3256
         </td>
         <td>
           Apply
@@ -840,15 +841,15 @@
         </td>
       </tr><tr>
         <td>
-          87
+          88
         </td>
         <td>
-          3338
+          3337
         </td>
         <td>
-          3198
+          3222
           -
-          3231
+          3255
         </td>
         <td>
           Apply
@@ -861,36 +862,15 @@
         </td>
       </tr><tr>
         <td>
-          89
+          90
         </td>
         <td>
-          3342
+          3340
         </td>
         <td>
-          3275
+          3321
           -
-          3325
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.mvc.view.View.ViewImpl.checkController
-        </td>
-        <td style="background: #F0ADAD">
-          ViewImpl.this.checkController((() =&gt; ViewImpl.this.controller.get.startLevel()))
-        </td>
-      </tr><tr>
-        <td>
-          89
-        </td>
-        <td>
-          3341
-        </td>
-        <td>
-          3297
-          -
-          3324
+          3348
         </td>
         <td>
           Apply
@@ -903,36 +883,36 @@
         </td>
       </tr><tr>
         <td>
-          91
+          90
         </td>
         <td>
-          3343
+          3341
         </td>
         <td>
-          3389
+          3299
           -
-          3416
+          3349
         </td>
         <td>
           Apply
         </td>
         <td>
-          it.unibo.osmos.redux.mvc.controller.Controller.pauseLevel
+          it.unibo.osmos.redux.mvc.view.View.ViewImpl.checkController
         </td>
         <td style="background: #F0ADAD">
-          ViewImpl.this.controller.get.pauseLevel()
+          ViewImpl.this.checkController((() =&gt; ViewImpl.this.controller.get.startLevel()))
         </td>
       </tr><tr>
         <td>
-          91
+          92
         </td>
         <td>
-          3344
+          3343
         </td>
         <td>
-          3367
+          3391
           -
-          3417
+          3441
         </td>
         <td>
           Apply
@@ -945,36 +925,36 @@
         </td>
       </tr><tr>
         <td>
-          93
+          92
         </td>
         <td>
-          3345
+          3342
         </td>
         <td>
-          3482
+          3413
           -
-          3510
+          3440
         </td>
         <td>
           Apply
         </td>
         <td>
-          it.unibo.osmos.redux.mvc.controller.Controller.resumeLevel
+          it.unibo.osmos.redux.mvc.controller.Controller.pauseLevel
         </td>
         <td style="background: #F0ADAD">
-          ViewImpl.this.controller.get.resumeLevel()
+          ViewImpl.this.controller.get.pauseLevel()
         </td>
       </tr><tr>
         <td>
-          93
+          94
         </td>
         <td>
-          3346
+          3345
         </td>
         <td>
-          3460
+          3484
           -
-          3511
+          3535
         </td>
         <td>
           Apply
@@ -987,15 +967,36 @@
         </td>
       </tr><tr>
         <td>
-          95
+          94
         </td>
         <td>
-          3348
+          3344
         </td>
         <td>
-          3568
+          3506
           -
-          3624
+          3534
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.Controller.resumeLevel
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.controller.get.resumeLevel()
+        </td>
+      </tr><tr>
+        <td>
+          96
+        </td>
+        <td>
+          3347
+        </td>
+        <td>
+          3592
+          -
+          3648
         </td>
         <td>
           Apply
@@ -1008,15 +1009,15 @@
         </td>
       </tr><tr>
         <td>
-          95
+          96
         </td>
         <td>
-          3347
+          3346
         </td>
         <td>
-          3590
+          3614
           -
-          3623
+          3647
         </td>
         <td>
           Apply
@@ -1029,36 +1030,15 @@
         </td>
       </tr><tr>
         <td>
-          97
+          98
         </td>
         <td>
           3349
         </td>
         <td>
-          3713
+          3715
           -
-          3755
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.mvc.controller.Controller.changeLevelSpeed
-        </td>
-        <td style="background: #F0ADAD">
-          ViewImpl.this.controller.get.changeLevelSpeed(increment)
-        </td>
-      </tr><tr>
-        <td>
-          97
-        </td>
-        <td>
-          3350
-        </td>
-        <td>
-          3691
-          -
-          3756
+          3780
         </td>
         <td>
           Apply
@@ -1071,39 +1051,36 @@
         </td>
       </tr><tr>
         <td>
-          106
+          98
         </td>
         <td>
-          3354
+          3348
         </td>
         <td>
-          4354
+          3737
           -
-          4604
+          3779
         </td>
         <td>
-          ApplyToImplicitArgs
+          Apply
         </td>
         <td>
-          scala.concurrent.Future.onComplete
+          it.unibo.osmos.redux.mvc.controller.Controller.changeLevelSpeed
         </td>
         <td style="background: #F0ADAD">
-          ViewImpl.this.controller.get.initLobby(user, lobbyContext).future.onComplete[Unit](((x0$1: scala.util.Try[it.unibo.osmos.redux.utils.GenericResponse[Boolean]]) =&gt; x0$1 match {
-  case (value: it.unibo.osmos.redux.utils.GenericResponse[Boolean])scala.util.Success[it.unibo.osmos.redux.utils.GenericResponse[Boolean]]((value @ _)) =&gt; callback.apply(user, levelInfo, lobbyContext, value)
-  case (exception: Throwable)scala.util.Failure[it.unibo.osmos.redux.utils.GenericResponse[Boolean]]((e @ _)) =&gt; ViewImpl.this.onDisplayError(&quot;Connection call succeeded but did not receive response&quot;)
-}))(ViewImpl.this.executionContextExecutor)
+          ViewImpl.this.controller.get.changeLevelSpeed(increment)
         </td>
       </tr><tr>
         <td>
-          106
+          107
         </td>
         <td>
-          3353
+          3352
         </td>
         <td>
-          4417
+          4441
           -
-          4417
+          4441
         </td>
         <td>
           Select
@@ -1116,15 +1093,15 @@
         </td>
       </tr><tr>
         <td>
-          106
+          107
         </td>
         <td>
-          3355
+          3354
         </td>
         <td>
-          4332
+          4356
           -
-          4605
+          4629
         </td>
         <td>
           Apply
@@ -1143,12 +1120,36 @@
           107
         </td>
         <td>
-          3351
+          3353
         </td>
         <td>
-          4450
+          4378
           -
-          4496
+          4628
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.concurrent.Future.onComplete
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.controller.get.initLobby(user, lobbyContext).future.onComplete[Unit](((x0$1: scala.util.Try[it.unibo.osmos.redux.utils.GenericResponse[Boolean]]) =&gt; x0$1 match {
+  case (value: it.unibo.osmos.redux.utils.GenericResponse[Boolean])scala.util.Success[it.unibo.osmos.redux.utils.GenericResponse[Boolean]]((value @ _)) =&gt; callback.apply(user, levelInfo, lobbyContext, value)
+  case (exception: Throwable)scala.util.Failure[it.unibo.osmos.redux.utils.GenericResponse[Boolean]]((e @ _)) =&gt; ViewImpl.this.onDisplayError(&quot;Connection call succeeded but did not receive response&quot;)
+}))(ViewImpl.this.executionContextExecutor)
+        </td>
+      </tr><tr>
+        <td>
+          108
+        </td>
+        <td>
+          3350
+        </td>
+        <td>
+          4474
+          -
+          4520
         </td>
         <td>
           Apply
@@ -1161,15 +1162,15 @@
         </td>
       </tr><tr>
         <td>
-          108
+          109
         </td>
         <td>
-          3352
+          3351
         </td>
         <td>
-          4524
+          4548
           -
-          4596
+          4620
         </td>
         <td>
           Apply
@@ -1182,60 +1183,15 @@
         </td>
       </tr><tr>
         <td>
-          111
+          112
         </td>
         <td>
           3358
         </td>
         <td>
-          4769
+          4728
           -
-          4769
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.mvc.view.View.ViewImpl.executionContextExecutor
-        </td>
-        <td style="background: #F0ADAD">
-          ViewImpl.this.executionContextExecutor
-        </td>
-      </tr><tr>
-        <td>
-          111
-        </td>
-        <td>
-          3360
-        </td>
-        <td>
-          4682
-          -
-          4881
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.mvc.view.View.ViewImpl.checkController
-        </td>
-        <td style="background: #F0ADAD">
-          ViewImpl.this.checkController((() =&gt; ViewImpl.this.controller.get.initMultiPlayerLevel(levelInfo).future.onComplete[Unit](((x0$2: scala.util.Try[it.unibo.osmos.redux.utils.GenericResponse[Boolean]]) =&gt; x0$2 match {
-  case (exception: Throwable)scala.util.Failure[it.unibo.osmos.redux.utils.GenericResponse[Boolean]]((e @ _)) =&gt; ViewImpl.this.onDisplayError(&quot;Failed controller init&quot;)
-  case (value: it.unibo.osmos.redux.utils.GenericResponse[Boolean])scala.util.Success[it.unibo.osmos.redux.utils.GenericResponse[Boolean]](_) =&gt; ()
-}))(ViewImpl.this.executionContextExecutor)))
-        </td>
-      </tr><tr>
-        <td>
-          111
-        </td>
-        <td>
-          3359
-        </td>
-        <td>
-          4704
-          -
-          4880
+          4904
         </td>
         <td>
           ApplyToImplicitArgs
@@ -1254,12 +1210,57 @@
           112
         </td>
         <td>
-          3356
+          3357
         </td>
         <td>
-          4796
+          4793
           -
-          4836
+          4793
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.View.ViewImpl.executionContextExecutor
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.executionContextExecutor
+        </td>
+      </tr><tr>
+        <td>
+          112
+        </td>
+        <td>
+          3359
+        </td>
+        <td>
+          4706
+          -
+          4905
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.View.ViewImpl.checkController
+        </td>
+        <td style="background: #F0ADAD">
+          ViewImpl.this.checkController((() =&gt; ViewImpl.this.controller.get.initMultiPlayerLevel(levelInfo).future.onComplete[Unit](((x0$2: scala.util.Try[it.unibo.osmos.redux.utils.GenericResponse[Boolean]]) =&gt; x0$2 match {
+  case (exception: Throwable)scala.util.Failure[it.unibo.osmos.redux.utils.GenericResponse[Boolean]]((e @ _)) =&gt; ViewImpl.this.onDisplayError(&quot;Failed controller init&quot;)
+  case (value: it.unibo.osmos.redux.utils.GenericResponse[Boolean])scala.util.Success[it.unibo.osmos.redux.utils.GenericResponse[Boolean]](_) =&gt; ()
+}))(ViewImpl.this.executionContextExecutor)))
+        </td>
+      </tr><tr>
+        <td>
+          113
+        </td>
+        <td>
+          3355
+        </td>
+        <td>
+          4820
+          -
+          4860
         </td>
         <td>
           Apply
@@ -1272,15 +1273,15 @@
         </td>
       </tr><tr>
         <td>
-          113
+          114
         </td>
         <td>
-          3357
+          3356
         </td>
         <td>
-          4859
+          4883
           -
-          4861
+          4885
         </td>
         <td>
           Literal
@@ -1293,15 +1294,15 @@
         </td>
       </tr><tr>
         <td>
-          120
+          121
         </td>
         <td>
-          3361
+          3360
         </td>
         <td>
-          5133
+          5157
           -
-          5143
+          5167
         </td>
         <td>
           Select
@@ -1314,15 +1315,15 @@
         </td>
       </tr><tr>
         <td>
-          121
+          122
         </td>
         <td>
-          3362
+          3361
         </td>
         <td>
-          5174
+          5198
           -
-          5177
+          5201
         </td>
         <td>
           Apply
@@ -1335,15 +1336,15 @@
         </td>
       </tr><tr>
         <td>
-          122
+          123
         </td>
         <td>
-          3363
+          3362
         </td>
         <td>
-          5191
+          5215
           -
-          5193
+          5217
         </td>
         <td>
           Literal
@@ -1356,15 +1357,15 @@
         </td>
       </tr><tr>
         <td>
-          126
+          127
         </td>
         <td>
-          3365
+          3364
         </td>
         <td>
-          5257
+          5281
           -
-          5363
+          5387
         </td>
         <td>
           Apply
@@ -1377,15 +1378,15 @@
         </td>
       </tr><tr>
         <td>
-          127
+          128
         </td>
         <td>
-          3364
+          3363
         </td>
         <td>
-          5285
+          5309
           -
-          5355
+          5379
         </td>
         <td>
           Apply

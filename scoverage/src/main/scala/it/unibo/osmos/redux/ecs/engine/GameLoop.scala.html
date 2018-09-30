@@ -81,50 +81,50 @@
 </span>57 <span style=''>    </span><span style='background: #F0ADAD'>status = GameStatus.Stopped</span><span style=''>
 </span>58 <span style=''>  }
 </span>59 <span style=''>
-</span>60 <span style=''>  /** Gets the current tick time.
-</span>61 <span style=''>    *
-</span>62 <span style=''>    * @return The current tick time in milliseconds.
-</span>63 <span style=''>    */
-</span>64 <span style=''>  private def getTickTime: Int = </span><span style='background: #F0ADAD'>1000 / engine.getFps</span><span style=''>
-</span>65 <span style=''>
-</span>66 <span style=''>  /** Pauses the execution. */
-</span>67 <span style=''>  def pause(): Unit = {
+</span>60 <span style=''>  /** Pauses the execution. */
+</span>61 <span style=''>  def pause(): Unit = {
+</span>62 <span style=''>
+</span>63 <span style=''>    if (</span><span style='background: #F0ADAD'>status != GameStatus.Running</span><span style=''>) </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Cannot pause the game if it's not running.&quot;)</span><span style=''>
+</span>64 <span style=''>
+</span>65 <span style=''>    </span><span style='background: #F0ADAD'>lock.lock()</span><span style=''>
+</span>66 <span style=''>    </span><span style='background: #F0ADAD'>status = GameStatus.Paused</span><span style=''>
+</span>67 <span style=''>  }
 </span>68 <span style=''>
-</span>69 <span style=''>    if (</span><span style='background: #F0ADAD'>status != GameStatus.Running</span><span style=''>) </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Cannot pause the game if it's not running.&quot;)</span><span style=''>
-</span>70 <span style=''>
-</span>71 <span style=''>    </span><span style='background: #F0ADAD'>lock.lock()</span><span style=''>
-</span>72 <span style=''>    </span><span style='background: #F0ADAD'>status = GameStatus.Paused</span><span style=''>
-</span>73 <span style=''>  }
-</span>74 <span style=''>
-</span>75 <span style=''>  /** Resumes the execution. */
-</span>76 <span style=''>  def unPause(): Unit = {
+</span>69 <span style=''>  /** Resumes the execution. */
+</span>70 <span style=''>  def unPause(): Unit = {
+</span>71 <span style=''>
+</span>72 <span style=''>    if (</span><span style='background: #F0ADAD'>status != GameStatus.Paused</span><span style=''>) </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Cannot unpause the game if it's not paused.&quot;)</span><span style=''>
+</span>73 <span style=''>
+</span>74 <span style=''>    </span><span style='background: #F0ADAD'>tryUnlock()</span><span style=''>
+</span>75 <span style=''>    </span><span style='background: #F0ADAD'>status = GameStatus.Running</span><span style=''>
+</span>76 <span style=''>  }
 </span>77 <span style=''>
-</span>78 <span style=''>    if (</span><span style='background: #F0ADAD'>status != GameStatus.Paused</span><span style=''>) </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Cannot unpause the game if it's not paused.&quot;)</span><span style=''>
-</span>79 <span style=''>
+</span>78 <span style=''>  /** Kills the execution. */
+</span>79 <span style=''>  def kill(): Unit = {
 </span>80 <span style=''>    </span><span style='background: #F0ADAD'>tryUnlock()</span><span style=''>
-</span>81 <span style=''>    </span><span style='background: #F0ADAD'>status = GameStatus.Running</span><span style=''>
+</span>81 <span style=''>    </span><span style='background: #F0ADAD'>stopFlag = true</span><span style=''>
 </span>82 <span style=''>  }
 </span>83 <span style=''>
-</span>84 <span style=''>  /** Kills the execution. */
-</span>85 <span style=''>  def kill(): Unit = {
-</span>86 <span style=''>    </span><span style='background: #F0ADAD'>tryUnlock()</span><span style=''>
-</span>87 <span style=''>    </span><span style='background: #F0ADAD'>stopFlag = true</span><span style=''>
-</span>88 <span style=''>  }
+</span>84 <span style=''>  /** Gets the current status.
+</span>85 <span style=''>    *
+</span>86 <span style=''>    * @return The current game status
+</span>87 <span style=''>    */
+</span>88 <span style=''>  def getStatus: GameStatus = </span><span style='background: #F0ADAD'>status</span><span style=''>
 </span>89 <span style=''>
-</span>90 <span style=''>  /** Tries to unlock the lock, if it fails it does not halt the game. */
-</span>91 <span style=''>  private def tryUnlock(): Unit = {
-</span>92 <span style=''>    try {
-</span>93 <span style=''>      </span><span style='background: #F0ADAD'>if (lock.isLocked) lock.unlock()</span><span style=''>
-</span>94 <span style=''>    } catch {
-</span>95 <span style=''>      case _: Throwable </span><span style='background: #F0ADAD'>=&gt;</span><span style=''> //do nothing
-</span>96 <span style=''>    }
-</span>97 <span style=''>  }
-</span>98 <span style=''>
-</span>99 <span style=''>  /** Gets the current status.
-</span>100 <span style=''>    *
-</span>101 <span style=''>    * @return The current game status
-</span>102 <span style=''>    */
-</span>103 <span style=''>  def getStatus: GameStatus = </span><span style='background: #F0ADAD'>status</span><span style=''>
+</span>90 <span style=''>  /** Gets the current tick time.
+</span>91 <span style=''>    *
+</span>92 <span style=''>    * @return The current tick time in milliseconds.
+</span>93 <span style=''>    */
+</span>94 <span style=''>  private def getTickTime: Int = </span><span style='background: #F0ADAD'>1000 / engine.getFps</span><span style=''>
+</span>95 <span style=''>
+</span>96 <span style=''>  /** Tries to unlock the lock, if it fails it does not halt the game. */
+</span>97 <span style=''>  private def tryUnlock(): Unit = {
+</span>98 <span style=''>    try {
+</span>99 <span style=''>      </span><span style='background: #F0ADAD'>if (lock.isLocked) lock.unlock()</span><span style=''>
+</span>100 <span style=''>    } catch {
+</span>101 <span style=''>      case _: Throwable </span><span style='background: #F0ADAD'>=&gt;</span><span style=''> //do nothing
+</span>102 <span style=''>    }
+</span>103 <span style=''>  }
 </span>104 <span style=''>
 </span>105 <span style=''>  /** Logs the runtime of a function.
 </span>106 <span style=''>    *
@@ -154,7 +154,7 @@
           17
         </td>
         <td>
-          188
+          187
         </td>
         <td>
           470
@@ -175,7 +175,7 @@
           18
         </td>
         <td>
-          189
+          188
         </td>
         <td>
           525
@@ -196,7 +196,7 @@
           19
         </td>
         <td>
-          190
+          189
         </td>
         <td>
           575
@@ -220,27 +220,6 @@
           191
         </td>
         <td>
-          626
-          -
-          644
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.engine.GameStatus.Running
-        </td>
-        <td style="background: #F0ADAD">
-          GameStatus.Running
-        </td>
-      </tr><tr>
-        <td>
-          22
-        </td>
-        <td>
-          192
-        </td>
-        <td>
           617
           -
           644
@@ -256,10 +235,52 @@
         </td>
       </tr><tr>
         <td>
+          22
+        </td>
+        <td>
+          190
+        </td>
+        <td>
+          626
+          -
+          644
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameStatus.Running
+        </td>
+        <td style="background: #F0ADAD">
+          GameStatus.Running
+        </td>
+      </tr><tr>
+        <td>
           24
         </td>
         <td>
-          218
+          214
+        </td>
+        <td>
+          668
+          -
+          668
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameLoop.while$1
+        </td>
+        <td style="background: #F0ADAD">
+          while$1()
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          217
         </td>
         <td>
           650
@@ -280,28 +301,7 @@
           24
         </td>
         <td>
-          193
-        </td>
-        <td>
-          657
-          -
-          666
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          scala.Boolean.unary_!
-        </td>
-        <td style="background: #F0ADAD">
-          GameLoop.this.stopFlag.unary_!
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          217
+          216
         </td>
         <td>
           650
@@ -322,7 +322,28 @@
           24
         </td>
         <td>
-          216
+          192
+        </td>
+        <td>
+          657
+          -
+          666
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #F0ADAD">
+          GameLoop.this.stopFlag.unary_!
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          215
         </td>
         <td>
           668
@@ -367,31 +388,10 @@
         </td>
       </tr><tr>
         <td>
-          24
-        </td>
-        <td>
-          215
-        </td>
-        <td>
-          668
-          -
-          668
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.engine.GameLoop.while$1
-        </td>
-        <td style="background: #F0ADAD">
-          while$1()
-        </td>
-      </tr><tr>
-        <td>
           25
         </td>
         <td>
-          194
+          193
         </td>
         <td>
           676
@@ -412,7 +412,7 @@
           27
         </td>
         <td>
-          195
+          194
         </td>
         <td>
           731
@@ -436,6 +436,27 @@
           196
         </td>
         <td>
+          830
+          -
+          858
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.foreach
+        </td>
+        <td style="background: #F0ADAD">
+          GameLoop.this.systems.foreach[Unit](((x$1: it.unibo.osmos.redux.ecs.systems.System) =&gt; x$1.update()))
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          195
+        </td>
+        <td>
           847
           -
           857
@@ -454,7 +475,7 @@
           30
         </td>
         <td>
-          198
+          197
         </td>
         <td>
           830
@@ -472,31 +493,10 @@
         </td>
       </tr><tr>
         <td>
-          30
-        </td>
-        <td>
-          197
-        </td>
-        <td>
-          830
-          -
-          858
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.collection.immutable.List.foreach
-        </td>
-        <td style="background: #F0ADAD">
-          GameLoop.this.systems.foreach[Unit](((x$1: it.unibo.osmos.redux.ecs.systems.System) =&gt; x$1.update()))
-        </td>
-      </tr><tr>
-        <td>
           34
         </td>
         <td>
-          200
+          199
         </td>
         <td>
           990
@@ -517,7 +517,7 @@
           34
         </td>
         <td>
-          199
+          198
         </td>
         <td>
           990
@@ -538,7 +538,7 @@
           38
         </td>
         <td>
-          201
+          200
         </td>
         <td>
           1137
@@ -559,70 +559,7 @@
           42
         </td>
         <td>
-          202
-        </td>
-        <td>
-          1265
-          -
-          1274
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          scala.Boolean.unary_!
-        </td>
-        <td style="background: #F0ADAD">
-          GameLoop.this.stopFlag.unary_!
-        </td>
-      </tr><tr>
-        <td>
-          42
-        </td>
-        <td>
-          214
-        </td>
-        <td>
-          1261
-          -
-          1261
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          42
-        </td>
-        <td>
-          213
-        </td>
-        <td>
-          1261
-          -
-          1261
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          42
-        </td>
-        <td>
-          212
+          211
         </td>
         <td>
           1276
@@ -653,10 +590,73 @@
         </td>
       </tr><tr>
         <td>
+          42
+        </td>
+        <td>
+          201
+        </td>
+        <td>
+          1265
+          -
+          1274
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #F0ADAD">
+          GameLoop.this.stopFlag.unary_!
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          213
+        </td>
+        <td>
+          1261
+          -
+          1261
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          212
+        </td>
+        <td>
+          1261
+          -
+          1261
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
           43
         </td>
         <td>
-          203
+          202
         </td>
         <td>
           1301
@@ -677,7 +677,7 @@
           44
         </td>
         <td>
-          209
+          208
         </td>
         <td>
           1346
@@ -705,7 +705,7 @@
           44
         </td>
         <td>
-          204
+          203
         </td>
         <td>
           1325
@@ -726,7 +726,7 @@
           45
         </td>
         <td>
-          205
+          204
         </td>
         <td>
           1374
@@ -747,7 +747,7 @@
           47
         </td>
         <td>
-          207
+          205
         </td>
         <td>
           1422
@@ -755,7 +755,7 @@
           1445
         </td>
         <td>
-          Block
+          Apply
         </td>
         <td>
           java.lang.Thread.sleep
@@ -776,7 +776,7 @@
           1445
         </td>
         <td>
-          Apply
+          Block
         </td>
         <td>
           java.lang.Thread.sleep
@@ -789,7 +789,7 @@
           49
         </td>
         <td>
-          208
+          207
         </td>
         <td>
           1496
@@ -810,7 +810,7 @@
           52
         </td>
         <td>
-          211
+          209
         </td>
         <td>
           1551
@@ -818,7 +818,7 @@
           1672
         </td>
         <td>
-          Block
+          Apply
         </td>
         <td>
           it.unibo.osmos.redux.utils.Logger.log
@@ -839,7 +839,7 @@
           1672
         </td>
         <td>
-          Apply
+          Block
         </td>
         <td>
           it.unibo.osmos.redux.utils.Logger.log
@@ -852,28 +852,7 @@
           57
         </td>
         <td>
-          220
-        </td>
-        <td>
-          1702
-          -
-          1729
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.engine.GameLoop.status_=
-        </td>
-        <td style="background: #F0ADAD">
-          GameLoop.this.status_=(GameStatus.Stopped)
-        </td>
-      </tr><tr>
-        <td>
-          57
-        </td>
-        <td>
-          219
+          218
         </td>
         <td>
           1711
@@ -891,183 +870,36 @@
         </td>
       </tr><tr>
         <td>
-          64
+          57
         </td>
         <td>
-          223
+          219
         </td>
         <td>
-          1868
+          1702
           -
-          1888
+          1729
         </td>
         <td>
           Apply
         </td>
         <td>
-          scala.Int./
+          it.unibo.osmos.redux.ecs.engine.GameLoop.status_=
         </td>
         <td style="background: #F0ADAD">
-          1000./(GameLoop.this.engine.getFps)
+          GameLoop.this.status_=(GameStatus.Stopped)
         </td>
       </tr><tr>
         <td>
-          64
+          63
         </td>
         <td>
-          222
+          220
         </td>
         <td>
-          1875
+          1809
           -
-          1888
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.engine.GameEngine.getFps
-        </td>
-        <td style="background: #F0ADAD">
-          GameLoop.this.engine.getFps
-        </td>
-      </tr><tr>
-        <td>
-          64
-        </td>
-        <td>
-          221
-        </td>
-        <td>
-          1868
-          -
-          1872
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          1000
-        </td>
-      </tr><tr>
-        <td>
-          69
-        </td>
-        <td>
-          227
-        </td>
-        <td>
-          1984
-          -
-          2061
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          throw new java.lang.IllegalStateException(&quot;Cannot pause the game if it\'s not running.&quot;)
-        </td>
-      </tr><tr>
-        <td>
-          69
-        </td>
-        <td>
-          226
-        </td>
-        <td>
-          1984
-          -
-          2061
-        </td>
-        <td>
-          Throw
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          throw new java.lang.IllegalStateException(&quot;Cannot pause the game if it\'s not running.&quot;)
-        </td>
-      </tr><tr>
-        <td>
-          69
-        </td>
-        <td>
-          229
-        </td>
-        <td>
-          1950
-          -
-          1950
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          69
-        </td>
-        <td>
-          225
-        </td>
-        <td>
-          1954
-          -
-          1982
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          java.lang.Object.!=
-        </td>
-        <td style="background: #F0ADAD">
-          GameLoop.this.status.!=(GameStatus.Running)
-        </td>
-      </tr><tr>
-        <td>
-          69
-        </td>
-        <td>
-          228
-        </td>
-        <td>
-          1950
-          -
-          1950
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          69
-        </td>
-        <td>
-          224
-        </td>
-        <td>
-          1964
-          -
-          1982
+          1827
         </td>
         <td>
           Select
@@ -1080,15 +912,120 @@
         </td>
       </tr><tr>
         <td>
-          71
+          63
         </td>
         <td>
-          230
+          223
         </td>
         <td>
-          2067
+          1829
           -
-          2078
+          1906
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new java.lang.IllegalStateException(&quot;Cannot pause the game if it\'s not running.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          225
+        </td>
+        <td>
+          1795
+          -
+          1795
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          222
+        </td>
+        <td>
+          1829
+          -
+          1906
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new java.lang.IllegalStateException(&quot;Cannot pause the game if it\'s not running.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          221
+        </td>
+        <td>
+          1799
+          -
+          1827
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.!=
+        </td>
+        <td style="background: #F0ADAD">
+          GameLoop.this.status.!=(GameStatus.Running)
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          224
+        </td>
+        <td>
+          1795
+          -
+          1795
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          226
+        </td>
+        <td>
+          1912
+          -
+          1923
         </td>
         <td>
           Apply
@@ -1101,15 +1038,36 @@
         </td>
       </tr><tr>
         <td>
-          72
+          66
         </td>
         <td>
-          232
+          227
         </td>
         <td>
-          2083
+          1937
           -
-          2109
+          1954
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameStatus.Paused
+        </td>
+        <td style="background: #F0ADAD">
+          GameStatus.Paused
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          228
+        </td>
+        <td>
+          1928
+          -
+          1954
         </td>
         <td>
           Apply
@@ -1125,12 +1083,12 @@
           72
         </td>
         <td>
-          231
+          229
         </td>
         <td>
-          2092
+          2037
           -
-          2109
+          2054
         </td>
         <td>
           Select
@@ -1143,15 +1101,15 @@
         </td>
       </tr><tr>
         <td>
-          78
+          72
         </td>
         <td>
-          236
+          232
         </td>
         <td>
-          2211
+          2056
           -
-          2289
+          2134
         </td>
         <td>
           Block
@@ -1164,15 +1122,36 @@
         </td>
       </tr><tr>
         <td>
-          78
+          72
         </td>
         <td>
-          235
+          234
         </td>
         <td>
-          2211
+          2023
           -
-          2289
+          2023
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          72
+        </td>
+        <td>
+          231
+        </td>
+        <td>
+          2056
+          -
+          2134
         </td>
         <td>
           Throw
@@ -1185,36 +1164,15 @@
         </td>
       </tr><tr>
         <td>
-          78
+          72
         </td>
         <td>
-          238
+          230
         </td>
         <td>
-          2178
+          2027
           -
-          2178
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          78
-        </td>
-        <td>
-          234
-        </td>
-        <td>
-          2182
-          -
-          2209
+          2054
         </td>
         <td>
           Apply
@@ -1227,15 +1185,15 @@
         </td>
       </tr><tr>
         <td>
-          78
+          72
         </td>
         <td>
-          237
+          233
         </td>
         <td>
-          2178
+          2023
           -
-          2178
+          2023
         </td>
         <td>
           Literal
@@ -1248,36 +1206,15 @@
         </td>
       </tr><tr>
         <td>
-          78
+          74
         </td>
         <td>
-          233
+          235
         </td>
         <td>
-          2192
+          2140
           -
-          2209
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.engine.GameStatus.Paused
-        </td>
-        <td style="background: #F0ADAD">
-          GameStatus.Paused
-        </td>
-      </tr><tr>
-        <td>
-          80
-        </td>
-        <td>
-          239
-        </td>
-        <td>
-          2295
-          -
-          2306
+          2151
         </td>
         <td>
           Apply
@@ -1290,36 +1227,15 @@
         </td>
       </tr><tr>
         <td>
-          81
+          75
         </td>
         <td>
-          241
+          236
         </td>
         <td>
-          2311
+          2165
           -
-          2338
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.engine.GameLoop.status_=
-        </td>
-        <td style="background: #F0ADAD">
-          GameLoop.this.status_=(GameStatus.Running)
-        </td>
-      </tr><tr>
-        <td>
-          81
-        </td>
-        <td>
-          240
-        </td>
-        <td>
-          2320
-          -
-          2338
+          2183
         </td>
         <td>
           Select
@@ -1332,15 +1248,36 @@
         </td>
       </tr><tr>
         <td>
-          86
+          75
         </td>
         <td>
-          242
+          237
         </td>
         <td>
-          2401
+          2156
           -
-          2412
+          2183
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameLoop.status_=
+        </td>
+        <td style="background: #F0ADAD">
+          GameLoop.this.status_=(GameStatus.Running)
+        </td>
+      </tr><tr>
+        <td>
+          80
+        </td>
+        <td>
+          238
+        </td>
+        <td>
+          2246
+          -
+          2257
         </td>
         <td>
           Apply
@@ -1353,15 +1290,15 @@
         </td>
       </tr><tr>
         <td>
-          87
+          81
         </td>
         <td>
-          243
+          239
         </td>
         <td>
-          2417
+          2262
           -
-          2432
+          2277
         </td>
         <td>
           Apply
@@ -1374,15 +1311,99 @@
         </td>
       </tr><tr>
         <td>
-          93
+          88
+        </td>
+        <td>
+          240
+        </td>
+        <td>
+          2395
+          -
+          2401
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameLoop.status
+        </td>
+        <td style="background: #F0ADAD">
+          GameLoop.this.status
+        </td>
+      </tr><tr>
+        <td>
+          94
+        </td>
+        <td>
+          241
+        </td>
+        <td>
+          2536
+          -
+          2540
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          1000
+        </td>
+      </tr><tr>
+        <td>
+          94
+        </td>
+        <td>
+          243
+        </td>
+        <td>
+          2536
+          -
+          2556
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int./
+        </td>
+        <td style="background: #F0ADAD">
+          1000./(GameLoop.this.engine.getFps)
+        </td>
+      </tr><tr>
+        <td>
+          94
+        </td>
+        <td>
+          242
+        </td>
+        <td>
+          2543
+          -
+          2556
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.engine.GameEngine.getFps
+        </td>
+        <td style="background: #F0ADAD">
+          GameLoop.this.engine.getFps
+        </td>
+      </tr><tr>
+        <td>
+          99
         </td>
         <td>
           245
         </td>
         <td>
-          2583
+          2703
           -
-          2596
+          2716
         </td>
         <td>
           Apply
@@ -1395,15 +1416,15 @@
         </td>
       </tr><tr>
         <td>
-          93
+          99
         </td>
         <td>
           244
         </td>
         <td>
-          2568
+          2688
           -
-          2581
+          2701
         </td>
         <td>
           Apply
@@ -1416,15 +1437,15 @@
         </td>
       </tr><tr>
         <td>
-          93
+          99
         </td>
         <td>
           247
         </td>
         <td>
-          2564
+          2684
           -
-          2564
+          2684
         </td>
         <td>
           Literal
@@ -1437,15 +1458,15 @@
         </td>
       </tr><tr>
         <td>
-          93
+          99
         </td>
         <td>
           249
         </td>
         <td>
-          2564
+          2684
           -
-          2596
+          2716
         </td>
         <td>
           If
@@ -1461,15 +1482,15 @@ else
         </td>
       </tr><tr>
         <td>
-          93
+          99
         </td>
         <td>
           246
         </td>
         <td>
-          2583
+          2703
           -
-          2596
+          2716
         </td>
         <td>
           Block
@@ -1482,15 +1503,15 @@ else
         </td>
       </tr><tr>
         <td>
-          93
+          99
         </td>
         <td>
           248
         </td>
         <td>
-          2564
+          2684
           -
-          2564
+          2684
         </td>
         <td>
           Block
@@ -1503,15 +1524,15 @@ else
         </td>
       </tr><tr>
         <td>
-          95
+          101
         </td>
         <td>
           250
         </td>
         <td>
-          2635
+          2755
           -
-          2637
+          2757
         </td>
         <td>
           Literal
@@ -1524,31 +1545,10 @@ else
         </td>
       </tr><tr>
         <td>
-          103
-        </td>
-        <td>
-          251
-        </td>
-        <td>
-          2774
-          -
-          2780
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.engine.GameLoop.status
-        </td>
-        <td style="background: #F0ADAD">
-          GameLoop.this.status
-        </td>
-      </tr><tr>
-        <td>
           111
         </td>
         <td>
-          252
+          251
         </td>
         <td>
           2996
@@ -1569,7 +1569,7 @@ else
           112
         </td>
         <td>
-          253
+          252
         </td>
         <td>
           3027
@@ -1590,7 +1590,7 @@ else
           113
         </td>
         <td>
-          254
+          253
         </td>
         <td>
           3045
@@ -1611,7 +1611,7 @@ else
           114
         </td>
         <td>
-          255
+          254
         </td>
         <td>
           3076

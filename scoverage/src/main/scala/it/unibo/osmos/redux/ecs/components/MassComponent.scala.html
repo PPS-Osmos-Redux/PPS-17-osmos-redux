@@ -42,19 +42,20 @@
 </span>18 <span style=''>  override def copy(): MassComponent
 </span>19 <span style=''>}
 </span>20 <span style=''>
-</span>21 <span style=''>object MassComponent {
-</span>22 <span style=''>
-</span>23 <span style=''>  def apply(dimension: DimensionComponent, specificWeight: SpecificWeightComponent): MassComponent =
-</span>24 <span style=''>    </span><span style='background: #AEF1AE'>MassComponentImpl(dimension, specificWeight)</span><span style=''>
-</span>25 <span style=''>
-</span>26 <span style=''>  case class MassComponentImpl(dimension: DimensionComponent, specificWeight: SpecificWeightComponent) extends MassComponent {
-</span>27 <span style=''>
-</span>28 <span style=''>    override def mass: Double = </span><span style='background: #AEF1AE'>MathUtils.circleArea(dimension.radius) * specificWeight.specificWeight</span><span style=''>
-</span>29 <span style=''>
-</span>30 <span style=''>    override def copy(): MassComponent = </span><span style='background: #F0ADAD'>MassComponent(dimension.copy(), specificWeight.copy())</span><span style=''>
-</span>31 <span style=''>  }
-</span>32 <span style=''>
-</span>33 <span style=''>}
+</span>21 <span style=''>/** Companion object */
+</span>22 <span style=''>object MassComponent {
+</span>23 <span style=''>
+</span>24 <span style=''>  def apply(dimension: DimensionComponent, specificWeight: SpecificWeightComponent): MassComponent =
+</span>25 <span style=''>    </span><span style='background: #AEF1AE'>MassComponentImpl(dimension, specificWeight)</span><span style=''>
+</span>26 <span style=''>
+</span>27 <span style=''>  case class MassComponentImpl(dimension: DimensionComponent, specificWeight: SpecificWeightComponent) extends MassComponent {
+</span>28 <span style=''>
+</span>29 <span style=''>    override def mass: Double = </span><span style='background: #AEF1AE'>MathUtils.circleArea(dimension.radius) * specificWeight.specificWeight</span><span style=''>
+</span>30 <span style=''>
+</span>31 <span style=''>    override def copy(): MassComponent = </span><span style='background: #F0ADAD'>MassComponent(dimension.copy(), specificWeight.copy())</span><span style=''>
+</span>32 <span style=''>  }
+</span>33 <span style=''>
+</span>34 <span style=''>}
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -68,15 +69,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          24
+          25
         </td>
         <td>
           21
         </td>
         <td>
-          527
+          551
           -
-          571
+          595
         </td>
         <td>
           Apply
@@ -89,15 +90,15 @@
         </td>
       </tr><tr>
         <td>
-          28
+          29
         </td>
         <td>
           23
         </td>
         <td>
-          774
+          798
           -
-          803
+          827
         </td>
         <td>
           Select
@@ -110,15 +111,15 @@
         </td>
       </tr><tr>
         <td>
-          28
+          29
         </td>
         <td>
           22
         </td>
         <td>
-          754
+          778
           -
-          770
+          794
         </td>
         <td>
           Select
@@ -131,15 +132,15 @@
         </td>
       </tr><tr>
         <td>
-          28
+          29
         </td>
         <td>
           24
         </td>
         <td>
-          733
+          757
           -
-          803
+          827
         </td>
         <td>
           Apply
@@ -152,15 +153,15 @@
         </td>
       </tr><tr>
         <td>
-          30
+          31
         </td>
         <td>
           26
         </td>
         <td>
-          878
+          902
           -
-          899
+          923
         </td>
         <td>
           Apply
@@ -173,15 +174,15 @@
         </td>
       </tr><tr>
         <td>
-          30
+          31
         </td>
         <td>
           25
         </td>
         <td>
-          860
+          884
           -
-          876
+          900
         </td>
         <td>
           Apply
@@ -194,15 +195,15 @@
         </td>
       </tr><tr>
         <td>
-          30
+          31
         </td>
         <td>
           27
         </td>
         <td>
-          846
+          870
           -
-          900
+          924
         </td>
         <td>
           Apply

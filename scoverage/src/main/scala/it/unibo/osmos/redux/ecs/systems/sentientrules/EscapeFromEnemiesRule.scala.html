@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          src/main/scala/it/unibo/osmos/redux/ecs/systems/sentientRule/EscapeFromEnemiesRule.scala.html
+          src/main/scala/it/unibo/osmos/redux/ecs/systems/sentientrules/EscapeFromEnemiesRule.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,11 +22,11 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.systems.sentientRule
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.systems.sentientrules
 </span>2 <span style=''>
 </span>3 <span style=''>import it.unibo.osmos.redux.ecs.entities.EntityType
 </span>4 <span style=''>import it.unibo.osmos.redux.ecs.entities.properties.composed.{SentientEnemyProperty, SentientProperty}
-</span>5 <span style=''>import it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils._
+</span>5 <span style=''>import it.unibo.osmos.redux.ecs.systems.sentientrules.SentientUtils._
 </span>6 <span style=''>import it.unibo.osmos.redux.utils.Constants.Sentient._
 </span>7 <span style=''>import it.unibo.osmos.redux.utils.{MathUtils, Vector}
 </span>8 <span style=''>
@@ -97,12 +97,12 @@
           19
         </td>
         <td>
-          1058
+          1061
         </td>
         <td>
-          832
+          834
           -
-          833
+          835
         </td>
         <td>
           Literal
@@ -118,18 +118,18 @@
           22
         </td>
         <td>
-          1061
+          1064
         </td>
         <td>
-          936
+          938
           -
-          1017
+          1019
         </td>
         <td>
           Apply
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.systems.sentientRule.EscapeFromEnemiesRule.escapeFromEnemies
+          it.unibo.osmos.redux.ecs.systems.sentientrules.EscapeFromEnemiesRule.escapeFromEnemies
         </td>
         <td style="background: #AEF1AE">
           EscapeFromEnemiesRule.this.escapeFromEnemies(sentient, EscapeFromEnemiesRule.this.findEnemies(sentient, EscapeFromEnemiesRule.this.enemies), previousAcceleration)
@@ -139,18 +139,18 @@
           22
         </td>
         <td>
-          1060
+          1063
         </td>
         <td>
-          964
+          966
           -
-          994
+          996
         </td>
         <td>
           Apply
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.systems.sentientRule.EscapeFromEnemiesRule.findEnemies
+          it.unibo.osmos.redux.ecs.systems.sentientrules.EscapeFromEnemiesRule.findEnemies
         </td>
         <td style="background: #AEF1AE">
           EscapeFromEnemiesRule.this.findEnemies(sentient, EscapeFromEnemiesRule.this.enemies)
@@ -160,18 +160,18 @@
           22
         </td>
         <td>
-          1059
+          1062
         </td>
         <td>
-          986
+          988
           -
-          993
+          995
         </td>
         <td>
           Select
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.systems.sentientRule.EscapeFromEnemiesRule.enemies
+          it.unibo.osmos.redux.ecs.systems.sentientrules.EscapeFromEnemiesRule.enemies
         </td>
         <td style="background: #AEF1AE">
           EscapeFromEnemiesRule.this.enemies
@@ -181,12 +181,12 @@
           32
         </td>
         <td>
-          1066
+          1069
         </td>
         <td>
-          1341
+          1343
           -
-          1526
+          1528
         </td>
         <td>
           Apply
@@ -205,30 +205,9 @@
           1065
         </td>
         <td>
-          1389
+          1424
           -
-          1525
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.Boolean.||
-        </td>
-        <td style="background: #AEF1AE">
-          e.getTypeComponent.typeEntity.==(it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter).||(sentient.getDimensionComponent.radius.&lt;(e.getDimensionComponent.radius))
-        </td>
-      </tr><tr>
-        <td>
-          33
-        </td>
-        <td>
-          1062
-        </td>
-        <td>
-          1422
-          -
-          1443
+          1445
         </td>
         <td>
           Select
@@ -241,36 +220,36 @@
         </td>
       </tr><tr>
         <td>
-          34
+          33
         </td>
         <td>
-          1064
+          1068
         </td>
         <td>
-          1455
+          1391
           -
-          1525
+          1527
         </td>
         <td>
           Apply
         </td>
         <td>
-          scala.Double.&lt;
+          scala.Boolean.||
         </td>
         <td style="background: #AEF1AE">
-          sentient.getDimensionComponent.radius.&lt;(e.getDimensionComponent.radius)
+          e.getTypeComponent.typeEntity.==(it.unibo.osmos.redux.ecs.entities.EntityType.AntiMatter).||(sentient.getDimensionComponent.radius.&lt;(e.getDimensionComponent.radius))
         </td>
       </tr><tr>
         <td>
           34
         </td>
         <td>
-          1067
+          1070
         </td>
         <td>
-          1321
+          1323
           -
-          1534
+          1536
         </td>
         <td>
           Select
@@ -286,12 +265,33 @@
           34
         </td>
         <td>
-          1063
+          1067
         </td>
         <td>
-          1495
+          1457
           -
-          1525
+          1527
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.&lt;
+        </td>
+        <td style="background: #AEF1AE">
+          sentient.getDimensionComponent.radius.&lt;(e.getDimensionComponent.radius)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          1066
+        </td>
+        <td>
+          1497
+          -
+          1527
         </td>
         <td>
           Select
@@ -307,12 +307,12 @@
           42
         </td>
         <td>
-          1068
+          1071
         </td>
         <td>
-          1843
+          1845
           -
-          1901
+          1903
         </td>
         <td>
           Apply
@@ -328,33 +328,33 @@
           43
         </td>
         <td>
-          1069
+          1072
         </td>
         <td>
-          1930
+          1932
           -
-          1963
+          1965
         </td>
         <td>
           Apply
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.getDesiredSeparation
+          it.unibo.osmos.redux.ecs.systems.sentientrules.SentientUtils.getDesiredSeparation
         </td>
         <td style="background: #AEF1AE">
-          it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.getDesiredSeparation(actualSpeed)
+          it.unibo.osmos.redux.ecs.systems.sentientrules.SentientUtils.getDesiredSeparation(actualSpeed)
         </td>
       </tr><tr>
         <td>
           48
         </td>
         <td>
-          1070
+          1073
         </td>
         <td>
-          1968
+          1970
           -
-          2351
+          2353
         </td>
         <td>
           Apply
@@ -363,19 +363,19 @@
           it.unibo.osmos.redux.utils.Vector.normalized
         </td>
         <td style="background: #AEF1AE">
-          it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.PimpedList[it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty](enemies.map[(it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double), List[(it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)]](((e: it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty) =&gt; scala.Tuple2.apply[it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double](e, EscapeFromEnemiesRule.this.computeDistance(sentient, e))))(immutable.this.List.canBuildFrom[(it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)]).filter(((p: (it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)) =&gt; p._2.&lt;(desiredSeparation)))).shiftDistance(EscapeFromEnemiesRule.this.minValueOfDistance).map[it.unibo.osmos.redux.utils.Vector, List[it.unibo.osmos.redux.utils.Vector]](((m: (it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)) =&gt; it.unibo.osmos.redux.utils.MathUtils.unitVector(sentient.getPositionComponent.point, m._1.getPositionComponent.point).divide(m._2)))(immutable.this.List.canBuildFrom[it.unibo.osmos.redux.utils.Vector]).foldLeft[(it.unibo.osmos.redux.utils.Vector, Int)](scala.Tuple2.apply[it.unibo.osmos.redux.utils.Vector, Int](it.unibo.osmos.redux.utils.Vector.zero(), 1))(((acc: (it.unibo.osmos.redux.utils.Vector, Int), i: it.unibo.osmos.redux.utils.Vector) =&gt; scala.Tuple2.apply[it.unibo.osmos.redux.utils.Vector, Int](acc._1.add(i.subtract(acc._1).divide(acc._2.toDouble)), acc._2.+(1))))._1.normalized()
+          it.unibo.osmos.redux.ecs.systems.sentientrules.SentientUtils.PimpedList[it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty](enemies.map[(it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double), List[(it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)]](((e: it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty) =&gt; scala.Tuple2.apply[it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double](e, EscapeFromEnemiesRule.this.computeDistance(sentient, e))))(immutable.this.List.canBuildFrom[(it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)]).filter(((p: (it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)) =&gt; p._2.&lt;(desiredSeparation)))).shiftDistance(EscapeFromEnemiesRule.this.minValueOfDistance).map[it.unibo.osmos.redux.utils.Vector, List[it.unibo.osmos.redux.utils.Vector]](((m: (it.unibo.osmos.redux.ecs.entities.properties.composed.SentientEnemyProperty, Double)) =&gt; it.unibo.osmos.redux.utils.MathUtils.unitVector(sentient.getPositionComponent.point, m._1.getPositionComponent.point).divide(m._2)))(immutable.this.List.canBuildFrom[it.unibo.osmos.redux.utils.Vector]).foldLeft[(it.unibo.osmos.redux.utils.Vector, Int)](scala.Tuple2.apply[it.unibo.osmos.redux.utils.Vector, Int](it.unibo.osmos.redux.utils.Vector.zero(), 1))(((acc: (it.unibo.osmos.redux.utils.Vector, Int), i: it.unibo.osmos.redux.utils.Vector) =&gt; scala.Tuple2.apply[it.unibo.osmos.redux.utils.Vector, Int](acc._1.add(i.subtract(acc._1).divide(acc._2.toDouble)), acc._2.+(1))))._1.normalized()
         </td>
       </tr><tr>
         <td>
           49
         </td>
         <td>
-          1073
+          1076
         </td>
         <td>
-          2445
+          2447
           -
-          2458
+          2460
         </td>
         <td>
           Apply
@@ -391,12 +391,12 @@
           49
         </td>
         <td>
-          1072
+          1075
         </td>
         <td>
-          2400
+          2402
           -
-          2441
+          2443
         </td>
         <td>
           Apply
@@ -412,12 +412,12 @@
           49
         </td>
         <td>
-          1071
+          1074
         </td>
         <td>
-          2429
+          2431
           -
-          2441
+          2443
         </td>
         <td>
           Apply
@@ -433,12 +433,12 @@
           51
         </td>
         <td>
-          1075
+          1078
         </td>
         <td>
-          2507
+          2509
           -
-          2606
+          2608
         </td>
         <td>
           Apply
@@ -447,19 +447,19 @@
           it.unibo.osmos.redux.utils.Vector.multiply
         </td>
         <td style="background: #AEF1AE">
-          it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.computeSteer(actualSpeed, unitVectorDesiredVelocity).multiply(it.unibo.osmos.redux.utils.Constants.Sentient.WeightOfEscapeAccelerationFromEnemies)
+          it.unibo.osmos.redux.ecs.systems.sentientrules.SentientUtils.computeSteer(actualSpeed, unitVectorDesiredVelocity).multiply(it.unibo.osmos.redux.utils.Constants.Sentient.WeightOfEscapeAccelerationFromEnemies)
         </td>
       </tr><tr>
         <td>
           51
         </td>
         <td>
-          1074
+          1077
         </td>
         <td>
-          2569
+          2571
           -
-          2606
+          2608
         </td>
         <td>
           Select
@@ -475,12 +475,12 @@
           56
         </td>
         <td>
-          1076
+          1079
         </td>
         <td>
-          2761
+          2763
           -
-          2790
+          2792
         </td>
         <td>
           Select
@@ -496,12 +496,12 @@
           56
         </td>
         <td>
-          1078
+          1081
         </td>
         <td>
-          2733
+          2735
           -
-          2819
+          2821
         </td>
         <td>
           Apply
@@ -517,12 +517,12 @@
           56
         </td>
         <td>
-          1077
+          1080
         </td>
         <td>
-          2792
+          2794
           -
-          2818
+          2820
         </td>
         <td>
           Select
@@ -538,12 +538,12 @@
           57
         </td>
         <td>
-          1079
+          1082
         </td>
         <td>
-          2831
+          2833
           -
-          2868
+          2870
         </td>
         <td>
           Select
@@ -559,12 +559,12 @@
           57
         </td>
         <td>
-          1081
+          1084
         </td>
         <td>
-          2824
+          2826
           -
-          2905
+          2907
         </td>
         <td>
           Apply
@@ -580,12 +580,12 @@
           57
         </td>
         <td>
-          1080
+          1083
         </td>
         <td>
-          2871
+          2873
           -
-          2905
+          2907
         </td>
         <td>
           Select

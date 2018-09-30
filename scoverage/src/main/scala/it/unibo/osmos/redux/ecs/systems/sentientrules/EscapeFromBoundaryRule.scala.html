@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          src/main/scala/it/unibo/osmos/redux/ecs/systems/sentientRule/EscapeFromBoundaryRule.scala.html
+          src/main/scala/it/unibo/osmos/redux/ecs/systems/sentientrules/EscapeFromBoundaryRule.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,12 +22,12 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.systems.sentientRule
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.systems.sentientrules
 </span>2 <span style=''>
 </span>3 <span style=''>import it.unibo.osmos.redux.ecs.entities.CellBuilder
 </span>4 <span style=''>import it.unibo.osmos.redux.ecs.entities.properties.composed.SentientProperty
 </span>5 <span style=''>import it.unibo.osmos.redux.ecs.systems.borderconditions.{CircularBorder, RectangularBorder}
-</span>6 <span style=''>import it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils._
+</span>6 <span style=''>import it.unibo.osmos.redux.ecs.systems.sentientrules.SentientUtils._
 </span>7 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.{Circle, Rectangle}
 </span>8 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.{CollisionRules, Level}
 </span>9 <span style=''>import it.unibo.osmos.redux.utils.Constants.Sentient._
@@ -83,12 +83,12 @@
           18
         </td>
         <td>
-          1029
+          1032
         </td>
         <td>
-          887
+          889
           -
-          914
+          916
         </td>
         <td>
           Select
@@ -104,33 +104,12 @@
           19
         </td>
         <td>
-          1031
+          1037
         </td>
         <td>
-          992
+          1036
           -
-          1006
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.utils.Point.y
-        </td>
-        <td style="background: #AEF1AE">
-          shape.center.y
-        </td>
-      </tr><tr>
-        <td>
-          19
-        </td>
-        <td>
-          1034
-        </td>
-        <td>
-          1034
-          -
-          1044
+          1046
         </td>
         <td>
           Select
@@ -146,12 +125,54 @@
           19
         </td>
         <td>
+          1034
+        </td>
+        <td>
+          994
+          -
+          1008
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.y
+        </td>
+        <td style="background: #AEF1AE">
+          shape.center.y
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
           1033
         </td>
         <td>
-          1009
+          978
           -
-          1032
+          992
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.x
+        </td>
+        <td style="background: #AEF1AE">
+          shape.center.x
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1036
+        </td>
+        <td>
+          1011
+          -
+          1034
         </td>
         <td>
           Select
@@ -167,12 +188,12 @@
           19
         </td>
         <td>
-          1036
+          1039
         </td>
         <td>
-          952
+          954
           -
-          1059
+          1061
         </td>
         <td>
           Apply
@@ -188,54 +209,12 @@
           19
         </td>
         <td>
-          1030
+          1038
         </td>
         <td>
-          976
+          1048
           -
-          990
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.utils.Point.x
-        </td>
-        <td style="background: #AEF1AE">
-          shape.center.x
-        </td>
-      </tr><tr>
-        <td>
-          19
-        </td>
-        <td>
-          1032
-        </td>
-        <td>
-          970
-          -
-          1007
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.utils.Point.apply
-        </td>
-        <td style="background: #AEF1AE">
-          it.unibo.osmos.redux.utils.Point.apply(shape.center.x, shape.center.y)
-        </td>
-      </tr><tr>
-        <td>
-          19
-        </td>
-        <td>
-          1035
-        </td>
-        <td>
-          1046
-          -
-          1058
+          1060
         </td>
         <td>
           Select
@@ -248,15 +227,57 @@
         </td>
       </tr><tr>
         <td>
+          19
+        </td>
+        <td>
+          1035
+        </td>
+        <td>
+          972
+          -
+          1009
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.apply
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.Point.apply(shape.center.x, shape.center.y)
+        </td>
+      </tr><tr>
+        <td>
           20
         </td>
         <td>
-          1037
+          1043
         </td>
         <td>
-          1107
+          1142
           -
-          1121
+          1165
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CollisionRules.bouncing
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.levels.structure.CollisionRules.bouncing
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          1040
+        </td>
+        <td>
+          1109
+          -
+          1123
         </td>
         <td>
           Select
@@ -272,33 +293,33 @@
           20
         </td>
         <td>
-          1040
+          1042
         </td>
         <td>
-          1140
+          1103
           -
-          1163
+          1140
         </td>
         <td>
-          Select
+          Apply
         </td>
         <td>
-          it.unibo.osmos.redux.mvc.controller.levels.structure.CollisionRules.bouncing
+          it.unibo.osmos.redux.utils.Point.apply
         </td>
         <td style="background: #F0ADAD">
-          it.unibo.osmos.redux.mvc.controller.levels.structure.CollisionRules.bouncing
+          it.unibo.osmos.redux.utils.Point.apply(shape.center.x, shape.center.y)
         </td>
       </tr><tr>
         <td>
           20
         </td>
         <td>
-          1042
+          1045
         </td>
         <td>
-          1086
+          1088
           -
-          1178
+          1180
         </td>
         <td>
           Apply
@@ -314,33 +335,12 @@
           20
         </td>
         <td>
-          1039
+          1041
         </td>
         <td>
-          1101
+          1125
           -
-          1138
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.utils.Point.apply
-        </td>
-        <td style="background: #F0ADAD">
-          it.unibo.osmos.redux.utils.Point.apply(shape.center.x, shape.center.y)
-        </td>
-      </tr><tr>
-        <td>
-          20
-        </td>
-        <td>
-          1038
-        </td>
-        <td>
-          1123
-          -
-          1137
+          1139
         </td>
         <td>
           Select
@@ -356,12 +356,12 @@
           20
         </td>
         <td>
-          1041
+          1044
         </td>
         <td>
-          1165
+          1167
           -
-          1177
+          1179
         </td>
         <td>
           Select
@@ -377,12 +377,12 @@
           21
         </td>
         <td>
-          1043
+          1046
         </td>
         <td>
-          1193
+          1195
           -
-          1227
+          1229
         </td>
         <td>
           Throw
@@ -398,18 +398,18 @@
           25
         </td>
         <td>
-          1044
+          1047
         </td>
         <td>
-          1334
+          1336
           -
-          1384
+          1386
         </td>
         <td>
           Apply
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.systems.sentientRule.EscapeFromBoundaryRule.escapeFromBoundary
+          it.unibo.osmos.redux.ecs.systems.sentientrules.EscapeFromBoundaryRule.escapeFromBoundary
         </td>
         <td style="background: #AEF1AE">
           EscapeFromBoundaryRule.this.escapeFromBoundary(sentient, previousAcceleration)
@@ -419,12 +419,12 @@
           29
         </td>
         <td>
-          1045
+          1048
         </td>
         <td>
-          1584
+          1586
           -
-          1616
+          1618
         </td>
         <td>
           Select
@@ -440,12 +440,12 @@
           31
         </td>
         <td>
-          1046
+          1049
         </td>
         <td>
-          1689
+          1691
           -
-          1747
+          1749
         </td>
         <td>
           Apply
@@ -461,12 +461,12 @@
           35
         </td>
         <td>
-          1047
+          1050
         </td>
         <td>
-          1773
+          1775
           -
-          2008
+          2010
         </td>
         <td>
           Apply
@@ -475,19 +475,19 @@
           it.unibo.osmos.redux.ecs.entities.CellBuilder.buildSentientEntity
         </td>
         <td style="background: #AEF1AE">
-          it.unibo.osmos.redux.ecs.entities.CellBuilder.apply().withPosition(sentient.getPositionComponent).withDimension(sentient.getDimensionComponent.radius.+(it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.getDesiredSeparation(actualSpeed))).withSpeed(actualSpeed.x, actualSpeed.y).buildSentientEntity()
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.apply().withPosition(sentient.getPositionComponent).withDimension(sentient.getDimensionComponent.radius.+(it.unibo.osmos.redux.ecs.systems.sentientrules.SentientUtils.getDesiredSeparation(actualSpeed))).withSpeed(actualSpeed.x, actualSpeed.y).buildSentientEntity()
         </td>
       </tr><tr>
         <td>
           36
         </td>
         <td>
-          1048
+          1051
         </td>
         <td>
-          2015
+          2017
           -
-          2062
+          2064
         </td>
         <td>
           Apply
@@ -503,12 +503,12 @@
           37
         </td>
         <td>
-          1049
+          1052
         </td>
         <td>
-          2073
+          2075
           -
-          2125
+          2127
         </td>
         <td>
           Apply
@@ -524,12 +524,12 @@
           38
         </td>
         <td>
-          1051
+          1054
         </td>
         <td>
-          2137
+          2139
           -
-          2150
+          2152
         </td>
         <td>
           Block
@@ -545,12 +545,12 @@
           38
         </td>
         <td>
-          1050
+          1053
         </td>
         <td>
-          2137
+          2139
           -
-          2150
+          2152
         </td>
         <td>
           Apply
@@ -566,12 +566,12 @@
           39
         </td>
         <td>
-          1056
+          1059
         </td>
         <td>
-          2164
+          2166
           -
-          2333
+          2335
         </td>
         <td>
           Block
@@ -581,7 +581,7 @@
         </td>
         <td style="background: #AEF1AE">
           {
-  val steer: it.unibo.osmos.redux.utils.Vector = it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.computeSteer(actualSpeed, sentientCopy.getSpeedComponent.vector.normalized());
+  val steer: it.unibo.osmos.redux.utils.Vector = it.unibo.osmos.redux.ecs.systems.sentientrules.SentientUtils.computeSteer(actualSpeed, sentientCopy.getSpeedComponent.vector.normalized());
   steer.multiply(it.unibo.osmos.redux.utils.Constants.Sentient.WeightOfEscapeAccelerationFromBoundary)
 }
         </td>
@@ -590,12 +590,12 @@
           40
         </td>
         <td>
-          1052
+          1055
         </td>
         <td>
-          2212
+          2214
           -
-          2262
+          2264
         </td>
         <td>
           Apply
@@ -611,33 +611,33 @@
           40
         </td>
         <td>
-          1053
+          1056
         </td>
         <td>
-          2186
+          2188
           -
-          2263
+          2265
         </td>
         <td>
           Apply
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.computeSteer
+          it.unibo.osmos.redux.ecs.systems.sentientrules.SentientUtils.computeSteer
         </td>
         <td style="background: #AEF1AE">
-          it.unibo.osmos.redux.ecs.systems.sentientRule.SentientUtils.computeSteer(actualSpeed, sentientCopy.getSpeedComponent.vector.normalized())
+          it.unibo.osmos.redux.ecs.systems.sentientrules.SentientUtils.computeSteer(actualSpeed, sentientCopy.getSpeedComponent.vector.normalized())
         </td>
       </tr><tr>
         <td>
           41
         </td>
         <td>
-          1055
+          1058
         </td>
         <td>
-          2272
+          2274
           -
-          2325
+          2327
         </td>
         <td>
           Apply
@@ -653,12 +653,12 @@
           41
         </td>
         <td>
-          1054
+          1057
         </td>
         <td>
-          2287
+          2289
           -
-          2325
+          2327
         </td>
         <td>
           Select
@@ -674,12 +674,12 @@
           43
         </td>
         <td>
-          1057
+          1060
         </td>
         <td>
-          2348
+          2350
           -
-          2361
+          2363
         </td>
         <td>
           Apply

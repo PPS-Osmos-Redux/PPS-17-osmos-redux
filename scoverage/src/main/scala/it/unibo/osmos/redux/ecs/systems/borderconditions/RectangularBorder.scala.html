@@ -24,89 +24,72 @@
           <div class="tab-pane active" id="codegrid">
             <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.ecs.systems.borderconditions
 </span>2 <span style=''>
-</span>3 <span style=''>import it.unibo.osmos.redux.ecs.components.{DimensionComponent, PositionComponent, SpeedComponent}
-</span>4 <span style=''>import it.unibo.osmos.redux.ecs.entities.properties.composed.CollidableProperty
-</span>5 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.CollisionRules
-</span>6 <span style=''>import it.unibo.osmos.redux.utils.{MathUtils, Point, Vector}
-</span>7 <span style=''>
-</span>8 <span style=''>/** Collision implementation for a playing field with rectangular shape */
-</span>9 <span style=''>case class RectangularBorder(levelCenter: Point, collisionRule: CollisionRules.Value, base: Double, height: Double) extends AbstractBorder(levelCenter, collisionRule) {
-</span>10 <span style=''>
-</span>11 <span style=''>  private var dimensionComponent: DimensionComponent = _
-</span>12 <span style=''>  private var entityRadius: Double = _
-</span>13 <span style=''>  private var speedComponent: SpeedComponent = _
-</span>14 <span style=''>  /** minimum horizontal position reachable by the current entity */
-</span>15 <span style=''>  private var minHorizontalPoint: Double = _
-</span>16 <span style=''>  /** maximum horizontal position reachable by the current entity */
-</span>17 <span style=''>  private var maxHorizontalPoint: Double = _
-</span>18 <span style=''>  /** minimum vertical position reachable by the current entity */
-</span>19 <span style=''>  private var minVerticalPoint: Double = _
-</span>20 <span style=''>  /** maximum vertical position reachable by the current entity */
-</span>21 <span style=''>  private var maxVerticalPoint: Double = _
-</span>22 <span style=''>  private var positionComponent: PositionComponent = _
-</span>23 <span style=''>  private var position: Point = _
-</span>24 <span style=''>
-</span>25 <span style=''>  override def checkAndSolveCollision(entity: CollidableProperty): Unit = {
-</span>26 <span style=''>    </span><span style='background: #AEF1AE'>initEntityCollisionData(entity)</span><span style=''>
-</span>27 <span style=''>    </span><span style='background: #AEF1AE'>collisionRule</span><span style=''> match {
-</span>28 <span style=''>      case CollisionRules.bouncing =&gt;
-</span>29 <span style=''>        val newPosition = </span><span style='background: #AEF1AE'>computeNewPosition()</span><span style=''>
-</span>30 <span style=''>        val newSpeed = </span><span style='background: #AEF1AE'>computeNewSpeed(newPosition)</span><span style=''>
-</span>31 <span style=''>        </span><span style='background: #AEF1AE'>positionComponent.point_(newPosition)</span><span style=''>
-</span>32 <span style=''>        </span><span style='background: #AEF1AE'>speedComponent.vector_(newSpeed)</span><span style=''>
-</span>33 <span style=''>      case CollisionRules.instantDeath =&gt;
-</span>34 <span style=''>        </span><span style='background: #AEF1AE'>computeNewRadius(position.x, minHorizontalPoint, maxHorizontalPoint)</span><span style=''>
-</span>35 <span style=''>        </span><span style='background: #AEF1AE'>computeNewRadius(position.y, minVerticalPoint, maxVerticalPoint)</span><span style=''>
-</span>36 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>throw new IllegalArgumentException</span><span style=''>
-</span>37 <span style=''>    }
-</span>38 <span style=''>  }
-</span>39 <span style=''>
-</span>40 <span style=''>  private def initEntityCollisionData(entity: CollidableProperty): Unit = {
-</span>41 <span style=''>    </span><span style='background: #AEF1AE'>dimensionComponent = entity.getDimensionComponent</span><span style=''>
-</span>42 <span style=''>    </span><span style='background: #AEF1AE'>entityRadius = dimensionComponent.radius</span><span style=''>
-</span>43 <span style=''>    </span><span style='background: #AEF1AE'>speedComponent = entity.getSpeedComponent</span><span style=''>
-</span>44 <span style=''>    </span><span style='background: #AEF1AE'>minHorizontalPoint = getLowerBoundary(entityRadius, levelCenter.x, base)</span><span style=''>
-</span>45 <span style=''>    </span><span style='background: #AEF1AE'>maxHorizontalPoint = getUpperBoundary(entityRadius, levelCenter.x, base)</span><span style=''>
-</span>46 <span style=''>    </span><span style='background: #AEF1AE'>minVerticalPoint = getLowerBoundary(entityRadius, levelCenter.y, height)</span><span style=''>
-</span>47 <span style=''>    </span><span style='background: #AEF1AE'>maxVerticalPoint = getUpperBoundary(entityRadius, levelCenter.y, height)</span><span style=''>
-</span>48 <span style=''>    </span><span style='background: #AEF1AE'>positionComponent = entity.getPositionComponent</span><span style=''>
-</span>49 <span style=''>    </span><span style='background: #AEF1AE'>position = positionComponent.point</span><span style=''>
-</span>50 <span style=''>  }
-</span>51 <span style=''>
-</span>52 <span style=''>  private def getLowerBoundary(radius: Double, centerCoordinate: Double, borderLength: Double): Double = {
-</span>53 <span style=''>    </span><span style='background: #AEF1AE'>centerCoordinate - borderLength / 2 + radius</span><span style=''>
-</span>54 <span style=''>  }
-</span>55 <span style=''>
-</span>56 <span style=''>  private def getUpperBoundary(radius: Double, centerCoordinate: Double, borderLength: Double): Double = {
-</span>57 <span style=''>    </span><span style='background: #AEF1AE'>centerCoordinate + borderLength / 2 - radius</span><span style=''>
-</span>58 <span style=''>  }
-</span>59 <span style=''>
-</span>60 <span style=''>  private def computeNewPosition(): Point = {
-</span>61 <span style=''>    val newX = </span><span style='background: #AEF1AE'>MathUtils.clamp(position.x, minHorizontalPoint, maxHorizontalPoint)</span><span style=''>
-</span>62 <span style=''>    val newY = </span><span style='background: #AEF1AE'>MathUtils.clamp(position.y, minVerticalPoint, maxVerticalPoint)</span><span style=''>
-</span>63 <span style=''>    </span><span style='background: #AEF1AE'>Point(newX, newY)</span><span style=''>
-</span>64 <span style=''>  }
-</span>65 <span style=''>
-</span>66 <span style=''>  private def computeNewSpeed(point: Point): Vector = {
-</span>67 <span style=''>    val newSpeedX: Double = if (</span><span style='background: #AEF1AE'>point.x == position.x</span><span style=''>) </span><span style='background: #AEF1AE'>speedComponent.vector.x</span><span style=''> else </span><span style='background: #AEF1AE'>-speedComponent.vector.x</span><span style=''>
-</span>68 <span style=''>    val newSpeedY: Double = if (</span><span style='background: #AEF1AE'>point.y == position.y</span><span style=''>) </span><span style='background: #AEF1AE'>speedComponent.vector.y</span><span style=''> else </span><span style='background: #AEF1AE'>-speedComponent.vector.y</span><span style=''>
-</span>69 <span style=''>    </span><span style='background: #AEF1AE'>Vector(newSpeedX, newSpeedY)</span><span style=''>
-</span>70 <span style=''>  }
-</span>71 <span style=''>
-</span>72 <span style=''>  private def computeNewRadius(position: Double, minReachablePosition: Double, maxReachablePosition: Double): Unit = {
-</span>73 <span style=''>    val entityRadius = </span><span style='background: #AEF1AE'>dimensionComponent.radius</span><span style=''>
-</span>74 <span style=''>    position match {
-</span>75 <span style=''>      case p if </span><span style='background: #AEF1AE'>p &lt; minReachablePosition</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>dimensionComponent.radius_(entityRadius - (minReachablePosition - p))</span><span style=''>
-</span>76 <span style=''>      case p if </span><span style='background: #AEF1AE'>p &gt; maxReachablePosition</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>dimensionComponent.radius_(entityRadius - (p - maxReachablePosition))</span><span style=''>
-</span>77 <span style=''>      case _ </span><span style='background: #AEF1AE'>=&gt;</span><span style=''> // no border collision, do nothing
-</span>78 <span style=''>    }
-</span>79 <span style=''>  }
-</span>80 <span style=''>
-</span>81 <span style=''>  override def repositionIfOutsideMap(entity: CollidableProperty): Unit = {
-</span>82 <span style=''>    </span><span style='background: #AEF1AE'>initEntityCollisionData(entity)</span><span style=''>
-</span>83 <span style=''>    </span><span style='background: #AEF1AE'>positionComponent.point_(computeNewPosition())</span><span style=''>
-</span>84 <span style=''>  }
-</span>85 <span style=''>}
+</span>3 <span style=''>import it.unibo.osmos.redux.ecs.entities.properties.composed.CollidableProperty
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.controller.levels.structure.CollisionRules
+</span>5 <span style=''>import it.unibo.osmos.redux.utils.{MathUtils, Point, Vector}
+</span>6 <span style=''>
+</span>7 <span style=''>/** Collision implementation for a playing field with rectangular shape */
+</span>8 <span style=''>case class RectangularBorder(levelCenter: Point, collisionRule: CollisionRules.Value, base: Double, height: Double) extends AbstractBorder(levelCenter, collisionRule) {
+</span>9 <span style=''>
+</span>10 <span style=''>  private var currentPositionCopy: Point = _
+</span>11 <span style=''>  /** minimum horizontal position reachable by the current entity */
+</span>12 <span style=''>  private var minHorizontalPoint: Double = _
+</span>13 <span style=''>  /** maximum horizontal position reachable by the current entity */
+</span>14 <span style=''>  private var maxHorizontalPoint: Double = _
+</span>15 <span style=''>  /** minimum vertical position reachable by the current entity */
+</span>16 <span style=''>  private var minVerticalPoint: Double = _
+</span>17 <span style=''>  /** maximum vertical position reachable by the current entity */
+</span>18 <span style=''>  private var maxVerticalPoint: Double = _
+</span>19 <span style=''>
+</span>20 <span style=''>  override protected def initCollisionParameters(entity: CollidableProperty): Unit = {
+</span>21 <span style=''>    </span><span style='background: #AEF1AE'>super.initCollisionParameters(entity)</span><span style=''>
+</span>22 <span style=''>    </span><span style='background: #AEF1AE'>currentPositionCopy = currentPosition</span><span style=''>
+</span>23 <span style=''>    </span><span style='background: #AEF1AE'>minHorizontalPoint = getLowerBoundary(entityRadius, levelCenter.x, base)</span><span style=''>
+</span>24 <span style=''>    </span><span style='background: #AEF1AE'>maxHorizontalPoint = getUpperBoundary(entityRadius, levelCenter.x, base)</span><span style=''>
+</span>25 <span style=''>    </span><span style='background: #AEF1AE'>minVerticalPoint = getLowerBoundary(entityRadius, levelCenter.y, height)</span><span style=''>
+</span>26 <span style=''>    </span><span style='background: #AEF1AE'>maxVerticalPoint = getUpperBoundary(entityRadius, levelCenter.y, height)</span><span style=''>
+</span>27 <span style=''>  }
+</span>28 <span style=''>
+</span>29 <span style=''>  private def getLowerBoundary(radius: Double, centerCoordinate: Double, borderLength: Double): Double = {
+</span>30 <span style=''>    </span><span style='background: #AEF1AE'>centerCoordinate - borderLength / 2 + radius</span><span style=''>
+</span>31 <span style=''>  }
+</span>32 <span style=''>
+</span>33 <span style=''>  private def getUpperBoundary(radius: Double, centerCoordinate: Double, borderLength: Double): Double = {
+</span>34 <span style=''>    </span><span style='background: #AEF1AE'>centerCoordinate + borderLength / 2 - radius</span><span style=''>
+</span>35 <span style=''>  }
+</span>36 <span style=''>
+</span>37 <span style=''>  override protected def hasCollidedWithBorder: Boolean = {
+</span>38 <span style=''>    </span><span style='background: #AEF1AE'>currentPosition.x &lt; minHorizontalPoint || currentPosition.x &gt; maxHorizontalPoint || currentPosition.y &lt; minVerticalPoint || currentPosition.y &gt; maxVerticalPoint</span><span style=''>
+</span>39 <span style=''>  }
+</span>40 <span style=''>
+</span>41 <span style=''>  override protected def computeNewPosition(): Point = {
+</span>42 <span style=''>    val newX = </span><span style='background: #AEF1AE'>MathUtils.clamp(currentPosition.x, minHorizontalPoint, maxHorizontalPoint)</span><span style=''>
+</span>43 <span style=''>    val newY = </span><span style='background: #AEF1AE'>MathUtils.clamp(currentPosition.y, minVerticalPoint, maxVerticalPoint)</span><span style=''>
+</span>44 <span style=''>    </span><span style='background: #AEF1AE'>Point(newX, newY)</span><span style=''>
+</span>45 <span style=''>  }
+</span>46 <span style=''>
+</span>47 <span style=''>  override protected def computeNewSpeed(newPosition: Point): Vector = {
+</span>48 <span style=''>    val newSpeedX = if (</span><span style='background: #AEF1AE'>newPosition.x == currentPositionCopy.x</span><span style=''>) </span><span style='background: #AEF1AE'>speedComponent.vector.x</span><span style=''> else </span><span style='background: #AEF1AE'>-speedComponent.vector.x</span><span style=''>
+</span>49 <span style=''>    val newSpeedY = if (</span><span style='background: #AEF1AE'>newPosition.y == currentPositionCopy.y</span><span style=''>) </span><span style='background: #AEF1AE'>speedComponent.vector.y</span><span style=''> else </span><span style='background: #AEF1AE'>-speedComponent.vector.y</span><span style=''>
+</span>50 <span style=''>    </span><span style='background: #AEF1AE'>Vector(newSpeedX, newSpeedY)</span><span style=''>
+</span>51 <span style=''>  }
+</span>52 <span style=''>
+</span>53 <span style=''>  override protected def computeNewRadius(): Double = {
+</span>54 <span style=''>    val resX = </span><span style='background: #AEF1AE'>getPortionOutsideBorder(currentPosition.x, minHorizontalPoint, maxHorizontalPoint)</span><span style=''>
+</span>55 <span style=''>    val resY = </span><span style='background: #AEF1AE'>getPortionOutsideBorder(currentPosition.y, minVerticalPoint, maxVerticalPoint)</span><span style=''>
+</span>56 <span style=''>    </span><span style='background: #AEF1AE'>entityRadius - resX - resY</span><span style=''>
+</span>57 <span style=''>  }
+</span>58 <span style=''>
+</span>59 <span style=''>  private def getPortionOutsideBorder(position: Double, minReachablePosition: Double, maxReachablePosition: Double): Double = {
+</span>60 <span style=''>    position match {
+</span>61 <span style=''>      case p if </span><span style='background: #AEF1AE'>p &lt; minReachablePosition</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>minReachablePosition - p</span><span style=''>
+</span>62 <span style=''>      case p if </span><span style='background: #AEF1AE'>p &gt; maxReachablePosition</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>p - maxReachablePosition</span><span style=''>
+</span>63 <span style=''>      case _ =&gt; </span><span style='background: #AEF1AE'>0</span><span style=''> // the entity is inside the map edge =&gt; radius portion outside the map is 0
+</span>64 <span style=''>    }
+</span>65 <span style=''>  }
+</span>66 <span style=''>
+</span>67 <span style=''>  override protected def reposition(): Unit = </span><span style='background: #AEF1AE'>positionComponent.point_(computeNewPosition())</span><span style=''>
+</span>68 <span style=''>}
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -120,540 +103,78 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          26
-        </td>
-        <td>
-          947
-        </td>
-        <td>
-          1383
-          -
-          1414
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.initEntityCollisionData
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.initEntityCollisionData(entity)
-        </td>
-      </tr><tr>
-        <td>
-          27
-        </td>
-        <td>
-          948
-        </td>
-        <td>
-          1419
-          -
-          1432
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.collisionRule
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.collisionRule
-        </td>
-      </tr><tr>
-        <td>
-          29
-        </td>
-        <td>
-          949
-        </td>
-        <td>
-          1505
-          -
-          1525
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.computeNewPosition
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.computeNewPosition()
-        </td>
-      </tr><tr>
-        <td>
-          30
-        </td>
-        <td>
-          950
-        </td>
-        <td>
-          1549
-          -
-          1577
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.computeNewSpeed
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.computeNewSpeed(newPosition)
-        </td>
-      </tr><tr>
-        <td>
-          31
-        </td>
-        <td>
-          951
-        </td>
-        <td>
-          1586
-          -
-          1623
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.components.PositionComponent.point_
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.positionComponent.point_(newPosition)
-        </td>
-      </tr><tr>
-        <td>
-          32
-        </td>
-        <td>
-          952
-        </td>
-        <td>
-          1632
-          -
-          1664
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.components.VectorComponent.vector_
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.speedComponent.vector_(newSpeed)
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          953
-        </td>
-        <td>
-          1732
-          -
-          1742
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.utils.Point.x
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.position.x
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          956
-        </td>
-        <td>
-          1715
-          -
-          1783
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.computeNewRadius
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.computeNewRadius(RectangularBorder.this.position.x, RectangularBorder.this.minHorizontalPoint, RectangularBorder.this.maxHorizontalPoint)
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          955
-        </td>
-        <td>
-          1764
-          -
-          1782
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.maxHorizontalPoint
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.maxHorizontalPoint
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          954
-        </td>
-        <td>
-          1744
-          -
-          1762
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.minHorizontalPoint
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.minHorizontalPoint
-        </td>
-      </tr><tr>
-        <td>
-          35
-        </td>
-        <td>
-          959
-        </td>
-        <td>
-          1839
-          -
-          1855
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.maxVerticalPoint
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.maxVerticalPoint
-        </td>
-      </tr><tr>
-        <td>
-          35
-        </td>
-        <td>
-          958
-        </td>
-        <td>
-          1821
-          -
-          1837
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.minVerticalPoint
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.minVerticalPoint
-        </td>
-      </tr><tr>
-        <td>
-          35
-        </td>
-        <td>
-          960
-        </td>
-        <td>
-          1792
-          -
-          1856
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.computeNewRadius
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.computeNewRadius(RectangularBorder.this.position.y, RectangularBorder.this.minVerticalPoint, RectangularBorder.this.maxVerticalPoint)
-        </td>
-      </tr><tr>
-        <td>
-          35
-        </td>
-        <td>
-          957
-        </td>
-        <td>
-          1809
-          -
-          1819
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.utils.Point.y
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.position.y
-        </td>
-      </tr><tr>
-        <td>
-          36
+          21
         </td>
         <td>
           961
         </td>
         <td>
-          1873
+          1106
           -
-          1907
+          1143
         </td>
         <td>
-          Throw
+          Apply
         </td>
         <td>
-          &lt;nosymbol&gt;
+          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.initCollisionParameters
         </td>
-        <td style="background: #F0ADAD">
-          throw new scala.`package`.IllegalArgumentException()
+        <td style="background: #AEF1AE">
+          RectangularBorder.super.initCollisionParameters(entity)
         </td>
       </tr><tr>
         <td>
-          41
+          22
         </td>
         <td>
           962
         </td>
         <td>
-          2020
+          1170
           -
-          2048
+          1185
         </td>
         <td>
           Select
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.entities.properties.basic.Dimension.getDimensionComponent
+          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.currentPosition
         </td>
         <td style="background: #AEF1AE">
-          entity.getDimensionComponent
+          RectangularBorder.this.currentPosition
         </td>
       </tr><tr>
         <td>
-          41
+          22
         </td>
         <td>
           963
         </td>
         <td>
-          1999
+          1148
           -
-          2048
+          1185
         </td>
         <td>
           Apply
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.dimensionComponent_=
+          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.currentPositionCopy_=
         </td>
         <td style="background: #AEF1AE">
-          RectangularBorder.this.dimensionComponent_=(entity.getDimensionComponent)
+          RectangularBorder.this.currentPositionCopy_=(RectangularBorder.this.currentPosition)
         </td>
       </tr><tr>
         <td>
-          42
-        </td>
-        <td>
-          965
-        </td>
-        <td>
-          2053
-          -
-          2093
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.entityRadius_=
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.entityRadius_=(RectangularBorder.this.dimensionComponent.radius)
-        </td>
-      </tr><tr>
-        <td>
-          42
-        </td>
-        <td>
-          964
-        </td>
-        <td>
-          2068
-          -
-          2093
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.components.DimensionComponent.radius
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.dimensionComponent.radius
-        </td>
-      </tr><tr>
-        <td>
-          43
-        </td>
-        <td>
-          967
-        </td>
-        <td>
-          2098
-          -
-          2139
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.speedComponent_=
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.speedComponent_=(entity.getSpeedComponent)
-        </td>
-      </tr><tr>
-        <td>
-          43
-        </td>
-        <td>
-          966
-        </td>
-        <td>
-          2115
-          -
-          2139
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.entities.properties.basic.Speed.getSpeedComponent
-        </td>
-        <td style="background: #AEF1AE">
-          entity.getSpeedComponent
-        </td>
-      </tr><tr>
-        <td>
-          44
+          23
         </td>
         <td>
           968
         </td>
         <td>
-          2182
+          1190
           -
-          2194
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.entityRadius
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.entityRadius
-        </td>
-      </tr><tr>
-        <td>
-          44
-        </td>
-        <td>
-          971
-        </td>
-        <td>
-          2165
-          -
-          2216
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.getLowerBoundary
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.getLowerBoundary(RectangularBorder.this.entityRadius, RectangularBorder.this.levelCenter.x, RectangularBorder.this.base)
-        </td>
-      </tr><tr>
-        <td>
-          44
-        </td>
-        <td>
-          970
-        </td>
-        <td>
-          2211
-          -
-          2215
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.base
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.base
-        </td>
-      </tr><tr>
-        <td>
-          44
-        </td>
-        <td>
-          969
-        </td>
-        <td>
-          2196
-          -
-          2209
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.utils.Point.x
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.levelCenter.x
-        </td>
-      </tr><tr>
-        <td>
-          44
-        </td>
-        <td>
-          972
-        </td>
-        <td>
-          2144
-          -
-          2216
+          1262
         </td>
         <td>
           Apply
@@ -666,36 +187,15 @@
         </td>
       </tr><tr>
         <td>
-          45
+          23
         </td>
         <td>
-          977
+          965
         </td>
         <td>
-          2221
+          1242
           -
-          2293
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.maxHorizontalPoint_=
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.maxHorizontalPoint_=(RectangularBorder.this.getUpperBoundary(RectangularBorder.this.entityRadius, RectangularBorder.this.levelCenter.x, RectangularBorder.this.base))
-        </td>
-      </tr><tr>
-        <td>
-          45
-        </td>
-        <td>
-          974
-        </td>
-        <td>
-          2273
-          -
-          2286
+          1255
         </td>
         <td>
           Select
@@ -708,57 +208,57 @@
         </td>
       </tr><tr>
         <td>
-          45
+          23
         </td>
         <td>
-          973
+          964
         </td>
         <td>
-          2259
+          1228
           -
-          2271
+          1240
         </td>
         <td>
           Select
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.entityRadius
+          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.entityRadius
         </td>
         <td style="background: #AEF1AE">
           RectangularBorder.this.entityRadius
         </td>
       </tr><tr>
         <td>
-          45
+          23
         </td>
         <td>
-          976
+          967
         </td>
         <td>
-          2242
+          1211
           -
-          2293
+          1262
         </td>
         <td>
           Apply
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.getUpperBoundary
+          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.getLowerBoundary
         </td>
         <td style="background: #AEF1AE">
-          RectangularBorder.this.getUpperBoundary(RectangularBorder.this.entityRadius, RectangularBorder.this.levelCenter.x, RectangularBorder.this.base)
+          RectangularBorder.this.getLowerBoundary(RectangularBorder.this.entityRadius, RectangularBorder.this.levelCenter.x, RectangularBorder.this.base)
         </td>
       </tr><tr>
         <td>
-          45
+          23
         </td>
         <td>
-          975
+          966
         </td>
         <td>
-          2288
+          1257
           -
-          2292
+          1261
         </td>
         <td>
           Select
@@ -771,99 +271,120 @@
         </td>
       </tr><tr>
         <td>
-          46
+          24
         </td>
         <td>
-          980
+          971
         </td>
         <td>
-          2363
+          1334
           -
-          2369
+          1338
         </td>
         <td>
           Select
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.height
+          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.base
         </td>
         <td style="background: #AEF1AE">
-          RectangularBorder.this.height
+          RectangularBorder.this.base
         </td>
       </tr><tr>
         <td>
-          46
+          24
         </td>
         <td>
-          982
+          973
         </td>
         <td>
-          2298
+          1267
           -
-          2370
+          1339
         </td>
         <td>
           Apply
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.minVerticalPoint_=
+          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.maxHorizontalPoint_=
         </td>
         <td style="background: #AEF1AE">
-          RectangularBorder.this.minVerticalPoint_=(RectangularBorder.this.getLowerBoundary(RectangularBorder.this.entityRadius, RectangularBorder.this.levelCenter.y, RectangularBorder.this.height))
+          RectangularBorder.this.maxHorizontalPoint_=(RectangularBorder.this.getUpperBoundary(RectangularBorder.this.entityRadius, RectangularBorder.this.levelCenter.x, RectangularBorder.this.base))
         </td>
       </tr><tr>
         <td>
-          46
+          24
         </td>
         <td>
-          979
+          970
         </td>
         <td>
-          2348
+          1319
           -
-          2361
+          1332
         </td>
         <td>
           Select
         </td>
         <td>
-          it.unibo.osmos.redux.utils.Point.y
+          it.unibo.osmos.redux.utils.Point.x
         </td>
         <td style="background: #AEF1AE">
-          RectangularBorder.this.levelCenter.y
+          RectangularBorder.this.levelCenter.x
         </td>
       </tr><tr>
         <td>
-          46
+          24
         </td>
         <td>
-          978
+          969
         </td>
         <td>
-          2334
+          1305
           -
-          2346
+          1317
         </td>
         <td>
           Select
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.entityRadius
+          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.entityRadius
         </td>
         <td style="background: #AEF1AE">
           RectangularBorder.this.entityRadius
         </td>
       </tr><tr>
         <td>
-          46
+          24
         </td>
         <td>
-          981
+          972
         </td>
         <td>
-          2317
+          1288
           -
-          2370
+          1339
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.getUpperBoundary
+        </td>
+        <td style="background: #AEF1AE">
+          RectangularBorder.this.getUpperBoundary(RectangularBorder.this.entityRadius, RectangularBorder.this.levelCenter.x, RectangularBorder.this.base)
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          977
+        </td>
+        <td>
+          1363
+          -
+          1416
         </td>
         <td>
           Apply
@@ -876,57 +397,36 @@
         </td>
       </tr><tr>
         <td>
-          47
+          25
         </td>
         <td>
-          983
+          974
         </td>
         <td>
-          2411
+          1380
           -
-          2423
+          1392
         </td>
         <td>
           Select
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.entityRadius
+          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.entityRadius
         </td>
         <td style="background: #AEF1AE">
           RectangularBorder.this.entityRadius
         </td>
       </tr><tr>
         <td>
-          47
+          25
         </td>
         <td>
-          986
+          976
         </td>
         <td>
-          2394
+          1409
           -
-          2447
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.getUpperBoundary
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.getUpperBoundary(RectangularBorder.this.entityRadius, RectangularBorder.this.levelCenter.y, RectangularBorder.this.height)
-        </td>
-      </tr><tr>
-        <td>
-          47
-        </td>
-        <td>
-          985
-        </td>
-        <td>
-          2440
-          -
-          2446
+          1415
         </td>
         <td>
           Select
@@ -939,36 +439,36 @@
         </td>
       </tr><tr>
         <td>
-          47
+          25
         </td>
         <td>
-          987
+          978
         </td>
         <td>
-          2375
+          1344
           -
-          2447
+          1416
         </td>
         <td>
           Apply
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.maxVerticalPoint_=
+          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.minVerticalPoint_=
         </td>
         <td style="background: #AEF1AE">
-          RectangularBorder.this.maxVerticalPoint_=(RectangularBorder.this.getUpperBoundary(RectangularBorder.this.entityRadius, RectangularBorder.this.levelCenter.y, RectangularBorder.this.height))
+          RectangularBorder.this.minVerticalPoint_=(RectangularBorder.this.getLowerBoundary(RectangularBorder.this.entityRadius, RectangularBorder.this.levelCenter.y, RectangularBorder.this.height))
         </td>
       </tr><tr>
         <td>
-          47
+          25
         </td>
         <td>
-          984
+          975
         </td>
         <td>
-          2425
+          1394
           -
-          2438
+          1407
         </td>
         <td>
           Select
@@ -981,99 +481,120 @@
         </td>
       </tr><tr>
         <td>
-          48
+          26
         </td>
         <td>
-          989
+          983
         </td>
         <td>
-          2452
+          1421
           -
-          2499
+          1493
         </td>
         <td>
           Apply
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.positionComponent_=
+          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.maxVerticalPoint_=
         </td>
         <td style="background: #AEF1AE">
-          RectangularBorder.this.positionComponent_=(entity.getPositionComponent)
+          RectangularBorder.this.maxVerticalPoint_=(RectangularBorder.this.getUpperBoundary(RectangularBorder.this.entityRadius, RectangularBorder.this.levelCenter.y, RectangularBorder.this.height))
         </td>
       </tr><tr>
         <td>
-          48
+          26
         </td>
         <td>
-          988
+          980
         </td>
         <td>
-          2472
+          1471
           -
-          2499
+          1484
         </td>
         <td>
           Select
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.entities.properties.basic.Position.getPositionComponent
+          it.unibo.osmos.redux.utils.Point.y
         </td>
         <td style="background: #AEF1AE">
-          entity.getPositionComponent
+          RectangularBorder.this.levelCenter.y
         </td>
       </tr><tr>
         <td>
-          49
+          26
         </td>
         <td>
-          991
+          982
         </td>
         <td>
-          2504
+          1440
           -
-          2538
+          1493
         </td>
         <td>
           Apply
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.position_=
+          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.getUpperBoundary
         </td>
         <td style="background: #AEF1AE">
-          RectangularBorder.this.position_=(RectangularBorder.this.positionComponent.point)
+          RectangularBorder.this.getUpperBoundary(RectangularBorder.this.entityRadius, RectangularBorder.this.levelCenter.y, RectangularBorder.this.height)
         </td>
       </tr><tr>
         <td>
-          49
+          26
         </td>
         <td>
-          990
+          979
         </td>
         <td>
-          2515
+          1457
           -
-          2538
+          1469
         </td>
         <td>
           Select
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.components.PositionComponent.point
+          it.unibo.osmos.redux.ecs.systems.borderconditions.AbstractBorder.entityRadius
         </td>
         <td style="background: #AEF1AE">
-          RectangularBorder.this.positionComponent.point
+          RectangularBorder.this.entityRadius
         </td>
       </tr><tr>
         <td>
-          53
+          26
         </td>
         <td>
-          992
+          981
         </td>
         <td>
-          2655
+          1486
           -
-          2699
+          1492
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.height
+        </td>
+        <td style="background: #AEF1AE">
+          RectangularBorder.this.height
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          984
+        </td>
+        <td>
+          1610
+          -
+          1654
         </td>
         <td>
           Apply
@@ -1086,15 +607,15 @@
         </td>
       </tr><tr>
         <td>
-          57
+          34
         </td>
         <td>
-          993
+          985
         </td>
         <td>
-          2816
+          1771
           -
-          2860
+          1815
         </td>
         <td>
           Apply
@@ -1107,15 +628,36 @@
         </td>
       </tr><tr>
         <td>
-          61
+          38
         </td>
         <td>
-          995
+          992
         </td>
         <td>
-          2955
+          2009
           -
-          2973
+          2045
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          RectangularBorder.this.currentPosition.y.&gt;(RectangularBorder.this.maxVerticalPoint)
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          986
+        </td>
+        <td>
+          1905
+          -
+          1923
         </td>
         <td>
           Select
@@ -1128,141 +670,15 @@
         </td>
       </tr><tr>
         <td>
-          61
+          38
         </td>
         <td>
-          997
+          989
         </td>
         <td>
-          2927
+          1989
           -
-          2994
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.utils.MathUtils.clamp
-        </td>
-        <td style="background: #AEF1AE">
-          it.unibo.osmos.redux.utils.MathUtils.clamp(RectangularBorder.this.position.x, RectangularBorder.this.minHorizontalPoint, RectangularBorder.this.maxHorizontalPoint)
-        </td>
-      </tr><tr>
-        <td>
-          61
-        </td>
-        <td>
-          994
-        </td>
-        <td>
-          2943
-          -
-          2953
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.utils.Point.x
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.position.x
-        </td>
-      </tr><tr>
-        <td>
-          61
-        </td>
-        <td>
-          996
-        </td>
-        <td>
-          2975
-          -
-          2993
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.maxHorizontalPoint
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.maxHorizontalPoint
-        </td>
-      </tr><tr>
-        <td>
-          62
-        </td>
-        <td>
-          1001
-        </td>
-        <td>
-          3010
-          -
-          3073
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.utils.MathUtils.clamp
-        </td>
-        <td style="background: #AEF1AE">
-          it.unibo.osmos.redux.utils.MathUtils.clamp(RectangularBorder.this.position.y, RectangularBorder.this.minVerticalPoint, RectangularBorder.this.maxVerticalPoint)
-        </td>
-      </tr><tr>
-        <td>
-          62
-        </td>
-        <td>
-          998
-        </td>
-        <td>
-          3026
-          -
-          3036
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.utils.Point.y
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.position.y
-        </td>
-      </tr><tr>
-        <td>
-          62
-        </td>
-        <td>
-          1000
-        </td>
-        <td>
-          3056
-          -
-          3072
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.maxVerticalPoint
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.maxVerticalPoint
-        </td>
-      </tr><tr>
-        <td>
-          62
-        </td>
-        <td>
-          999
-        </td>
-        <td>
-          3038
-          -
-          3054
+          2005
         </td>
         <td>
           Select
@@ -1275,15 +691,288 @@
         </td>
       </tr><tr>
         <td>
-          63
+          38
+        </td>
+        <td>
+          991
+        </td>
+        <td>
+          2029
+          -
+          2045
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.maxVerticalPoint
+        </td>
+        <td style="background: #AEF1AE">
+          RectangularBorder.this.maxVerticalPoint
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          988
+        </td>
+        <td>
+          1927
+          -
+          1965
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          RectangularBorder.this.currentPosition.x.&gt;(RectangularBorder.this.maxHorizontalPoint)
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          987
+        </td>
+        <td>
+          1947
+          -
+          1965
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.maxHorizontalPoint
+        </td>
+        <td style="background: #AEF1AE">
+          RectangularBorder.this.maxHorizontalPoint
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          990
+        </td>
+        <td>
+          1969
+          -
+          2005
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.&lt;
+        </td>
+        <td style="background: #AEF1AE">
+          RectangularBorder.this.currentPosition.y.&lt;(RectangularBorder.this.minVerticalPoint)
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          993
+        </td>
+        <td>
+          1885
+          -
+          2045
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.||
+        </td>
+        <td style="background: #AEF1AE">
+          RectangularBorder.this.currentPosition.x.&lt;(RectangularBorder.this.minHorizontalPoint).||(RectangularBorder.this.currentPosition.x.&gt;(RectangularBorder.this.maxHorizontalPoint)).||(RectangularBorder.this.currentPosition.y.&lt;(RectangularBorder.this.minVerticalPoint)).||(RectangularBorder.this.currentPosition.y.&gt;(RectangularBorder.this.maxVerticalPoint))
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          995
+        </td>
+        <td>
+          2158
+          -
+          2176
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.minHorizontalPoint
+        </td>
+        <td style="background: #AEF1AE">
+          RectangularBorder.this.minHorizontalPoint
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          997
+        </td>
+        <td>
+          2123
+          -
+          2197
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.MathUtils.clamp
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.MathUtils.clamp(RectangularBorder.this.currentPosition.x, RectangularBorder.this.minHorizontalPoint, RectangularBorder.this.maxHorizontalPoint)
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          994
+        </td>
+        <td>
+          2139
+          -
+          2156
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.x
+        </td>
+        <td style="background: #AEF1AE">
+          RectangularBorder.this.currentPosition.x
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          996
+        </td>
+        <td>
+          2178
+          -
+          2196
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.maxHorizontalPoint
+        </td>
+        <td style="background: #AEF1AE">
+          RectangularBorder.this.maxHorizontalPoint
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          1001
+        </td>
+        <td>
+          2213
+          -
+          2283
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.MathUtils.clamp
+        </td>
+        <td style="background: #AEF1AE">
+          it.unibo.osmos.redux.utils.MathUtils.clamp(RectangularBorder.this.currentPosition.y, RectangularBorder.this.minVerticalPoint, RectangularBorder.this.maxVerticalPoint)
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          998
+        </td>
+        <td>
+          2229
+          -
+          2246
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.y
+        </td>
+        <td style="background: #AEF1AE">
+          RectangularBorder.this.currentPosition.y
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          1000
+        </td>
+        <td>
+          2266
+          -
+          2282
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.maxVerticalPoint
+        </td>
+        <td style="background: #AEF1AE">
+          RectangularBorder.this.maxVerticalPoint
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          999
+        </td>
+        <td>
+          2248
+          -
+          2264
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.minVerticalPoint
+        </td>
+        <td style="background: #AEF1AE">
+          RectangularBorder.this.minVerticalPoint
+        </td>
+      </tr><tr>
+        <td>
+          44
         </td>
         <td>
           1002
         </td>
         <td>
-          3078
+          2288
           -
-          3095
+          2305
         </td>
         <td>
           Apply
@@ -1296,15 +985,15 @@
         </td>
       </tr><tr>
         <td>
-          67
+          48
         </td>
         <td>
           1004
         </td>
         <td>
-          3189
+          2408
           -
-          3210
+          2446
         </td>
         <td>
           Apply
@@ -1313,19 +1002,19 @@
           scala.Double.==
         </td>
         <td style="background: #AEF1AE">
-          point.x.==(RectangularBorder.this.position.x)
+          newPosition.x.==(RectangularBorder.this.currentPositionCopy.x)
         </td>
       </tr><tr>
         <td>
-          67
+          48
         </td>
         <td>
           1007
         </td>
         <td>
-          3241
+          2477
           -
-          3265
+          2501
         </td>
         <td>
           Select
@@ -1338,15 +1027,15 @@
         </td>
       </tr><tr>
         <td>
-          67
+          48
         </td>
         <td>
           1006
         </td>
         <td>
-          3212
+          2448
           -
-          3235
+          2471
         </td>
         <td>
           Block
@@ -1359,15 +1048,15 @@
         </td>
       </tr><tr>
         <td>
-          67
+          48
         </td>
         <td>
           1003
         </td>
         <td>
-          3200
+          2425
           -
-          3210
+          2446
         </td>
         <td>
           Select
@@ -1376,19 +1065,19 @@
           it.unibo.osmos.redux.utils.Point.x
         </td>
         <td style="background: #AEF1AE">
-          RectangularBorder.this.position.x
+          RectangularBorder.this.currentPositionCopy.x
         </td>
       </tr><tr>
         <td>
-          67
+          48
         </td>
         <td>
           1005
         </td>
         <td>
-          3212
+          2448
           -
-          3235
+          2471
         </td>
         <td>
           Select
@@ -1401,15 +1090,15 @@
         </td>
       </tr><tr>
         <td>
-          67
+          48
         </td>
         <td>
           1008
         </td>
         <td>
-          3241
+          2477
           -
-          3265
+          2501
         </td>
         <td>
           Block
@@ -1422,15 +1111,15 @@
         </td>
       </tr><tr>
         <td>
-          68
+          49
         </td>
         <td>
           1010
         </td>
         <td>
-          3298
+          2526
           -
-          3319
+          2564
         </td>
         <td>
           Apply
@@ -1439,19 +1128,19 @@
           scala.Double.==
         </td>
         <td style="background: #AEF1AE">
-          point.y.==(RectangularBorder.this.position.y)
+          newPosition.y.==(RectangularBorder.this.currentPositionCopy.y)
         </td>
       </tr><tr>
         <td>
-          68
+          49
         </td>
         <td>
           1013
         </td>
         <td>
-          3350
+          2595
           -
-          3374
+          2619
         </td>
         <td>
           Select
@@ -1464,15 +1153,15 @@
         </td>
       </tr><tr>
         <td>
-          68
+          49
         </td>
         <td>
           1009
         </td>
         <td>
-          3309
+          2543
           -
-          3319
+          2564
         </td>
         <td>
           Select
@@ -1481,19 +1170,19 @@
           it.unibo.osmos.redux.utils.Point.y
         </td>
         <td style="background: #AEF1AE">
-          RectangularBorder.this.position.y
+          RectangularBorder.this.currentPositionCopy.y
         </td>
       </tr><tr>
         <td>
-          68
+          49
         </td>
         <td>
           1012
         </td>
         <td>
-          3321
+          2566
           -
-          3344
+          2589
         </td>
         <td>
           Block
@@ -1506,15 +1195,15 @@
         </td>
       </tr><tr>
         <td>
-          68
+          49
         </td>
         <td>
           1014
         </td>
         <td>
-          3350
+          2595
           -
-          3374
+          2619
         </td>
         <td>
           Block
@@ -1527,15 +1216,15 @@
         </td>
       </tr><tr>
         <td>
-          68
+          49
         </td>
         <td>
           1011
         </td>
         <td>
-          3321
+          2566
           -
-          3344
+          2589
         </td>
         <td>
           Select
@@ -1548,15 +1237,15 @@
         </td>
       </tr><tr>
         <td>
-          69
+          50
         </td>
         <td>
           1015
         </td>
         <td>
-          3379
+          2624
           -
-          3407
+          2652
         </td>
         <td>
           Apply
@@ -1569,57 +1258,183 @@
         </td>
       </tr><tr>
         <td>
-          73
-        </td>
-        <td>
-          1016
-        </td>
-        <td>
-          3555
-          -
-          3580
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.components.DimensionComponent.radius
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.dimensionComponent.radius
-        </td>
-      </tr><tr>
-        <td>
-          75
+          54
         </td>
         <td>
           1019
         </td>
         <td>
-          3673
+          2729
           -
-          3714
+          2811
         </td>
         <td>
           Apply
         </td>
         <td>
-          scala.Double.-
+          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.getPortionOutsideBorder
         </td>
         <td style="background: #AEF1AE">
-          entityRadius.-(minReachablePosition.-(p))
+          RectangularBorder.this.getPortionOutsideBorder(RectangularBorder.this.currentPosition.x, RectangularBorder.this.minHorizontalPoint, RectangularBorder.this.maxHorizontalPoint)
         </td>
       </tr><tr>
         <td>
-          75
+          54
+        </td>
+        <td>
+          1016
+        </td>
+        <td>
+          2753
+          -
+          2770
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.x
+        </td>
+        <td style="background: #AEF1AE">
+          RectangularBorder.this.currentPosition.x
+        </td>
+      </tr><tr>
+        <td>
+          54
         </td>
         <td>
           1018
         </td>
         <td>
-          3689
+          2792
           -
-          3713
+          2810
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.maxHorizontalPoint
+        </td>
+        <td style="background: #AEF1AE">
+          RectangularBorder.this.maxHorizontalPoint
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          1017
+        </td>
+        <td>
+          2772
+          -
+          2790
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.minHorizontalPoint
+        </td>
+        <td style="background: #AEF1AE">
+          RectangularBorder.this.minHorizontalPoint
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          1022
+        </td>
+        <td>
+          2888
+          -
+          2904
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.maxVerticalPoint
+        </td>
+        <td style="background: #AEF1AE">
+          RectangularBorder.this.maxVerticalPoint
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          1021
+        </td>
+        <td>
+          2870
+          -
+          2886
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.minVerticalPoint
+        </td>
+        <td style="background: #AEF1AE">
+          RectangularBorder.this.minVerticalPoint
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          1020
+        </td>
+        <td>
+          2851
+          -
+          2868
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.utils.Point.y
+        </td>
+        <td style="background: #AEF1AE">
+          RectangularBorder.this.currentPosition.y
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          1023
+        </td>
+        <td>
+          2827
+          -
+          2905
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.getPortionOutsideBorder
+        </td>
+        <td style="background: #AEF1AE">
+          RectangularBorder.this.getPortionOutsideBorder(RectangularBorder.this.currentPosition.y, RectangularBorder.this.minVerticalPoint, RectangularBorder.this.maxVerticalPoint)
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          1024
+        </td>
+        <td>
+          2910
+          -
+          2936
         </td>
         <td>
           Apply
@@ -1628,40 +1443,19 @@
           scala.Double.-
         </td>
         <td style="background: #AEF1AE">
-          minReachablePosition.-(p)
+          RectangularBorder.this.entityRadius.-(resX).-(resY)
         </td>
       </tr><tr>
         <td>
-          75
+          61
         </td>
         <td>
-          1020
+          1025
         </td>
         <td>
-          3646
+          3107
           -
-          3715
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.components.DimensionComponent.radius_
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.dimensionComponent.radius_(entityRadius.-(minReachablePosition.-(p)))
-        </td>
-      </tr><tr>
-        <td>
-          75
-        </td>
-        <td>
-          1017
-        </td>
-        <td>
-          3618
-          -
-          3642
+          3131
         </td>
         <td>
           Apply
@@ -1674,15 +1468,36 @@
         </td>
       </tr><tr>
         <td>
-          76
+          61
         </td>
         <td>
-          1022
+          1026
         </td>
         <td>
-          3803
+          3135
           -
-          3827
+          3159
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Double.-
+        </td>
+        <td style="background: #AEF1AE">
+          minReachablePosition.-(p)
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          1028
+        </td>
+        <td>
+          3204
+          -
+          3228
         </td>
         <td>
           Apply
@@ -1695,36 +1510,15 @@
         </td>
       </tr><tr>
         <td>
-          76
+          62
         </td>
         <td>
-          1024
+          1027
         </td>
         <td>
-          3760
+          3176
           -
-          3829
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.components.DimensionComponent.radius_
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.dimensionComponent.radius_(entityRadius.-(p.-(maxReachablePosition)))
-        </td>
-      </tr><tr>
-        <td>
-          76
-        </td>
-        <td>
-          1021
-        </td>
-        <td>
-          3732
-          -
-          3756
+          3200
         </td>
         <td>
           Apply
@@ -1737,36 +1531,15 @@
         </td>
       </tr><tr>
         <td>
-          76
+          63
         </td>
         <td>
-          1023
+          1029
         </td>
         <td>
-          3787
+          3245
           -
-          3828
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.Double.-
-        </td>
-        <td style="background: #AEF1AE">
-          entityRadius.-(p.-(maxReachablePosition))
-        </td>
-      </tr><tr>
-        <td>
-          77
-        </td>
-        <td>
-          1025
-        </td>
-        <td>
-          3843
-          -
-          3845
+          3246
         </td>
         <td>
           Literal
@@ -1775,40 +1548,19 @@
           &lt;nosymbol&gt;
         </td>
         <td style="background: #AEF1AE">
-          ()
+          0.0
         </td>
       </tr><tr>
         <td>
-          82
+          67
         </td>
         <td>
-          1026
+          1031
         </td>
         <td>
-          3972
+          3380
           -
-          4003
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.systems.borderconditions.RectangularBorder.initEntityCollisionData
-        </td>
-        <td style="background: #AEF1AE">
-          RectangularBorder.this.initEntityCollisionData(entity)
-        </td>
-      </tr><tr>
-        <td>
-          83
-        </td>
-        <td>
-          1028
-        </td>
-        <td>
-          4008
-          -
-          4054
+          3426
         </td>
         <td>
           Apply
@@ -1821,15 +1573,15 @@
         </td>
       </tr><tr>
         <td>
-          83
+          67
         </td>
         <td>
-          1027
+          1030
         </td>
         <td>
-          4033
+          3405
           -
-          4053
+          3425
         </td>
         <td>
           Apply

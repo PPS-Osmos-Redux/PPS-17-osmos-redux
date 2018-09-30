@@ -24,133 +24,132 @@
           <div class="tab-pane active" id="codegrid">
             <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package it.unibo.osmos.redux.mvc.view.scenes
 </span>2 <span style=''>
-</span>3 <span style=''>import it.unibo.osmos.redux.multiplayer.common.ActorSystemHolder
-</span>4 <span style=''>import it.unibo.osmos.redux.mvc.controller.manager.sounds.{MusicPlayer, SoundsType}
-</span>5 <span style=''>import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.BackgroundTexture
-</span>6 <span style=''>import it.unibo.osmos.redux.mvc.view.components.instructions.{GameInstructionScreen, GameLegendScreen}
-</span>7 <span style=''>import it.unibo.osmos.redux.mvc.view.components.menu.{MainMenuCenterBox, MainMenuCenterBoxListener}
-</span>8 <span style=''>import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
-</span>9 <span style=''>import javafx.scene.input.KeyCode
-</span>10 <span style=''>import scalafx.beans.property.BooleanProperty
-</span>11 <span style=''>import scalafx.geometry.{Insets, Pos}
-</span>12 <span style=''>import scalafx.scene.effect.DropShadow
-</span>13 <span style=''>import scalafx.scene.image.ImageView
-</span>14 <span style=''>import scalafx.scene.layout._
-</span>15 <span style=''>import scalafx.scene.paint.Color
-</span>16 <span style=''>import scalafx.scene.text.Text
-</span>17 <span style=''>import scalafx.stage.Stage
-</span>18 <span style=''>
-</span>19 <span style=''>/** Opening scene, showing the menu and the menu bar
-</span>20 <span style=''>  *
-</span>21 <span style=''>  * @param parentStage the parent stage
-</span>22 <span style=''>  * @param listener    the MainSceneListener
-</span>23 <span style=''>  */
-</span>24 <span style=''>class MainScene(override val parentStage: Stage, val listener: MainSceneListener) extends BaseScene(parentStage)
-</span>25 <span style=''>  with MainMenuCenterBoxListener with BackClickListener {
-</span>26 <span style=''>
-</span>27 <span style=''>  </span><span style='background: #F0ADAD'>MusicPlayer.play(SoundsType.menu)</span><span style=''>
-</span>28 <span style=''>
-</span>29 <span style=''>  /** Background image when displaying controls */
-</span>30 <span style=''>  val background: ImageView = </span><span style='background: #F0ADAD'>new</span><span style=''> ImageView(ImageLoader.getImage(BackgroundTexture)) {
-</span>31 <span style=''>    </span><span style='background: #F0ADAD'>fitWidth &lt;== parentStage.width</span><span style=''>
-</span>32 <span style=''>    </span><span style='background: #F0ADAD'>fitHeight &lt;== parentStage.height</span><span style=''>
-</span>33 <span style=''>  }
-</span>34 <span style=''>
-</span>35 <span style=''>  /** Boolean binding with the legendScreen */
-</span>36 <span style=''>  private val legendScreenVisible: BooleanProperty = </span><span style='background: #F0ADAD'>BooleanProperty(false)</span><span style=''>
-</span>37 <span style=''>  /** The legend screen */
-</span>38 <span style=''>  private val legendScreen = </span><span style='background: #F0ADAD'>new GameLegendScreen(this).legendScreen</span><span style=''>
-</span>39 <span style=''>  </span><span style='background: #F0ADAD'>legendScreen.visible &lt;== legendScreenVisible</span><span style=''>
-</span>40 <span style=''>  /** Boolean binding with the instructionScreen */
-</span>41 <span style=''>  private val controlsScreenVisible: BooleanProperty = </span><span style='background: #F0ADAD'>BooleanProperty(false)</span><span style=''>
-</span>42 <span style=''>  /** The instruction screen */
-</span>43 <span style=''>  private val instructionScreen = </span><span style='background: #F0ADAD'>new GameInstructionScreen(this).instructionScreen</span><span style=''>
-</span>44 <span style=''>  /** Requesting a structured layout */
-</span>45 <span style=''>  private val rootLayout: BorderPane = </span><span style='background: #F0ADAD'>new</span><span style=''> BorderPane {
-</span>46 <span style=''>    </span><span style='background: #F0ADAD'>prefWidth &lt;== parentStage.width</span><span style=''>
-</span>47 <span style=''>    </span><span style='background: #F0ADAD'>prefHeight &lt;== parentStage.height</span><span style=''>
-</span>48 <span style=''>    </span><span style='background: #F0ADAD'>visible &lt;== !controlsScreenVisible and !legendScreenVisible</span><span style=''>
-</span>49 <span style=''>    /** Setting the upper MenuBar */
-</span>50 <span style=''>    </span><span style='background: #F0ADAD'>center = new MainMenuCenterBox(MainScene.this)</span><span style=''>
-</span>51 <span style=''>    </span><span style='background: #F0ADAD'>bottom = new VBox(4.0, new Text(&quot;Press [C] to show/hide the game controls&quot;) {
-</span>52 <span style=''></span><span style='background: #F0ADAD'>      style = &quot;-fx-font-size: 20pt&quot;
-</span>53 <span style=''></span><span style='background: #F0ADAD'>      fill = Color.White
-</span>54 <span style=''></span><span style='background: #F0ADAD'>      effect = new DropShadow {
-</span>55 <span style=''></span><span style='background: #F0ADAD'>        color = Color.Blue
-</span>56 <span style=''></span><span style='background: #F0ADAD'>      }
-</span>57 <span style=''></span><span style='background: #F0ADAD'>    }, new Text(&quot;Press [L] to show/hide the game legend&quot;) {
-</span>58 <span style=''></span><span style='background: #F0ADAD'>      style = &quot;-fx-font-size: 20pt&quot;
-</span>59 <span style=''></span><span style='background: #F0ADAD'>      fill = Color.White
-</span>60 <span style=''></span><span style='background: #F0ADAD'>      effect = new DropShadow {
-</span>61 <span style=''></span><span style='background: #F0ADAD'>        color = Color.Blue
-</span>62 <span style=''></span><span style='background: #F0ADAD'>      }
-</span>63 <span style=''></span><span style='background: #F0ADAD'>    }
-</span>64 <span style=''></span><span style='background: #F0ADAD'>    ) {
-</span>65 <span style=''></span><span style='background: #F0ADAD'>      margin = Insets(50.0)
-</span>66 <span style=''></span><span style='background: #F0ADAD'>      alignment = Pos.Center
-</span>67 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
-</span>68 <span style=''>    </span><span style='background: #F0ADAD'>styleClass.add(&quot;default-background&quot;)</span><span style=''>
-</span>69 <span style=''>  }
-</span>70 <span style=''>  </span><span style='background: #F0ADAD'>instructionScreen.visible &lt;== controlsScreenVisible</span><span style=''>
-</span>71 <span style=''>
-</span>72 <span style=''>  </span><span style='background: #F0ADAD'>onKeyPressed = key =&gt; key.getCode match {
-</span>73 <span style=''></span><span style='background: #F0ADAD'>    case KeyCode.C =&gt; changeControlsScreenState()
-</span>74 <span style=''></span><span style='background: #F0ADAD'>    case KeyCode.L =&gt; changeLegendScreenState()
-</span>75 <span style=''></span><span style='background: #F0ADAD'>    case _ =&gt;
-</span>76 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
-</span>77 <span style=''>
-</span>78 <span style=''>  </span><span style='background: #F0ADAD'>content = Seq(background, rootLayout, instructionScreen, legendScreen)</span><span style=''>
-</span>79 <span style=''>
-</span>80 <span style=''>  override def backToMainMenu(): Unit = </span><span style='background: #F0ADAD'>{}</span><span style=''>
-</span>81 <span style=''>
-</span>82 <span style=''>  override def onPlayClick(): Unit = </span><span style='background: #F0ADAD'>listener.onPlayClick()</span><span style=''>
-</span>83 <span style=''>
-</span>84 <span style=''>  override def onMultiPlayerClick(): Unit = </span><span style='background: #F0ADAD'>listener.onMultiPlayerClick()</span><span style=''>
-</span>85 <span style=''>
-</span>86 <span style=''>  override def onEditorClick(): Unit = </span><span style='background: #F0ADAD'>listener.onEditorClick()</span><span style=''>
-</span>87 <span style=''>
-</span>88 <span style=''>  override def onSettingsClick(): Unit = </span><span style='background: #F0ADAD'>listener.onSettingsClick()</span><span style=''>
-</span>89 <span style=''>
-</span>90 <span style=''>  override def onExitClick(): Unit = </span><span style='background: #F0ADAD'>System.exit(0)</span><span style=''>
-</span>91 <span style=''>
-</span>92 <span style=''>  override def onBackClick(): Unit = </span><span style='background: #F0ADAD'>parentStage.scene = this</span><span style=''>
-</span>93 <span style=''>
-</span>94 <span style=''>  override def onStatsClick(): Unit = </span><span style='background: #F0ADAD'>listener.onStatsClick()</span><span style=''>
-</span>95 <span style=''>
-</span>96 <span style=''>  /** This method makes the legend screen appear/disappear */
-</span>97 <span style=''>  private def changeLegendScreenState(): Unit = {
-</span>98 <span style=''>    if (</span><span style='background: #F0ADAD'>controlsScreenVisible.value</span><span style=''>) </span><span style='background: #F0ADAD'>controlsScreenVisible.value = false</span><span style=''>
-</span>99 <span style=''>    </span><span style='background: #F0ADAD'>legendScreenVisible.value = !legendScreenVisible.value</span><span style=''>
-</span>100 <span style=''>    </span><span style='background: #F0ADAD'>background.opacity = if (legendScreenVisible.value) 0.3 else 1.0</span><span style=''>
-</span>101 <span style=''>  }
-</span>102 <span style=''>
-</span>103 <span style=''>  /** This method makes the instruction screen appear/disappear */
-</span>104 <span style=''>  private def changeControlsScreenState(): Unit = {
-</span>105 <span style=''>    if (</span><span style='background: #F0ADAD'>legendScreenVisible.value</span><span style=''>) </span><span style='background: #F0ADAD'>legendScreenVisible.value = false</span><span style=''>
-</span>106 <span style=''>    </span><span style='background: #F0ADAD'>controlsScreenVisible.value = !controlsScreenVisible.value</span><span style=''>
-</span>107 <span style=''>    </span><span style='background: #F0ADAD'>background.opacity = if (controlsScreenVisible.value) 0.3 else 1.0</span><span style=''>
-</span>108 <span style=''>  }
-</span>109 <span style=''>}
-</span>110 <span style=''>
-</span>111 <span style=''>/** Trait which gets notified when a MainScene event occurs */
-</span>112 <span style=''>trait MainSceneListener {
-</span>113 <span style=''>
-</span>114 <span style=''>  /** Called when the user clicks on the play button */
-</span>115 <span style=''>  def onPlayClick()
-</span>116 <span style=''>
-</span>117 <span style=''>  /** Called when the user clicks on the play button */
-</span>118 <span style=''>  def onMultiPlayerClick()
-</span>119 <span style=''>
-</span>120 <span style=''>  /** Called when the user clicks on the editor button */
-</span>121 <span style=''>  def onEditorClick()
-</span>122 <span style=''>
-</span>123 <span style=''>  /** Called when the user clicks on the stats button */
-</span>124 <span style=''>  def onStatsClick()
-</span>125 <span style=''>
-</span>126 <span style=''>  /** Called when the user clicks on the settings button */
-</span>127 <span style=''>  def onSettingsClick()
-</span>128 <span style=''>
-</span>129 <span style=''>}
+</span>3 <span style=''>import it.unibo.osmos.redux.mvc.controller.manager.sounds.{MusicPlayer, SoundsType}
+</span>4 <span style=''>import it.unibo.osmos.redux.mvc.view.ViewConstants.Entities.Textures.BackgroundTexture
+</span>5 <span style=''>import it.unibo.osmos.redux.mvc.view.components.instructions.{GameInstructionScreen, GameLegendScreen}
+</span>6 <span style=''>import it.unibo.osmos.redux.mvc.view.components.menu.{MainMenuCenterBox, MainMenuCenterBoxListener}
+</span>7 <span style=''>import it.unibo.osmos.redux.mvc.view.loaders.ImageLoader
+</span>8 <span style=''>import javafx.scene.input.KeyCode
+</span>9 <span style=''>import scalafx.beans.property.BooleanProperty
+</span>10 <span style=''>import scalafx.geometry.{Insets, Pos}
+</span>11 <span style=''>import scalafx.scene.effect.DropShadow
+</span>12 <span style=''>import scalafx.scene.image.ImageView
+</span>13 <span style=''>import scalafx.scene.layout._
+</span>14 <span style=''>import scalafx.scene.paint.Color
+</span>15 <span style=''>import scalafx.scene.text.Text
+</span>16 <span style=''>import scalafx.stage.Stage
+</span>17 <span style=''>
+</span>18 <span style=''>/** Opening scene, showing the menu and the menu bar
+</span>19 <span style=''>  *
+</span>20 <span style=''>  * @param parentStage the parent stage
+</span>21 <span style=''>  * @param listener    the MainSceneListener
+</span>22 <span style=''>  */
+</span>23 <span style=''>class MainScene(override val parentStage: Stage, val listener: MainSceneListener) extends BaseScene(parentStage)
+</span>24 <span style=''>  with MainMenuCenterBoxListener with BackClickListener {
+</span>25 <span style=''>
+</span>26 <span style=''>  </span><span style='background: #F0ADAD'>MusicPlayer.play(SoundsType.menu)</span><span style=''>
+</span>27 <span style=''>
+</span>28 <span style=''>  /** Background image when displaying controls */
+</span>29 <span style=''>  val background: ImageView = </span><span style='background: #F0ADAD'>new</span><span style=''> ImageView(ImageLoader.getImage(BackgroundTexture)) {
+</span>30 <span style=''>    </span><span style='background: #F0ADAD'>fitWidth &lt;== parentStage.width</span><span style=''>
+</span>31 <span style=''>    </span><span style='background: #F0ADAD'>fitHeight &lt;== parentStage.height</span><span style=''>
+</span>32 <span style=''>  }
+</span>33 <span style=''>
+</span>34 <span style=''>  /** Boolean binding with the legendScreen */
+</span>35 <span style=''>  private val legendScreenVisible: BooleanProperty = </span><span style='background: #F0ADAD'>BooleanProperty(false)</span><span style=''>
+</span>36 <span style=''>  /** The legend screen */
+</span>37 <span style=''>  private val legendScreen = </span><span style='background: #F0ADAD'>new GameLegendScreen(this).legendScreen</span><span style=''>
+</span>38 <span style=''>  </span><span style='background: #F0ADAD'>legendScreen.visible &lt;== legendScreenVisible</span><span style=''>
+</span>39 <span style=''>  /** Boolean binding with the instructionScreen */
+</span>40 <span style=''>  private val controlsScreenVisible: BooleanProperty = </span><span style='background: #F0ADAD'>BooleanProperty(false)</span><span style=''>
+</span>41 <span style=''>  /** The instruction screen */
+</span>42 <span style=''>  private val instructionScreen = </span><span style='background: #F0ADAD'>new GameInstructionScreen(this).instructionScreen</span><span style=''>
+</span>43 <span style=''>  /** Requesting a structured layout */
+</span>44 <span style=''>  private val rootLayout: BorderPane = </span><span style='background: #F0ADAD'>new</span><span style=''> BorderPane {
+</span>45 <span style=''>    </span><span style='background: #F0ADAD'>prefWidth &lt;== parentStage.width</span><span style=''>
+</span>46 <span style=''>    </span><span style='background: #F0ADAD'>prefHeight &lt;== parentStage.height</span><span style=''>
+</span>47 <span style=''>    </span><span style='background: #F0ADAD'>visible &lt;== !controlsScreenVisible and !legendScreenVisible</span><span style=''>
+</span>48 <span style=''>    /** Setting the upper MenuBar */
+</span>49 <span style=''>    </span><span style='background: #F0ADAD'>center = new MainMenuCenterBox(MainScene.this)</span><span style=''>
+</span>50 <span style=''>    </span><span style='background: #F0ADAD'>bottom = new VBox(4.0, new Text(&quot;Press [C] to show/hide the game controls&quot;) {
+</span>51 <span style=''></span><span style='background: #F0ADAD'>      style = &quot;-fx-font-size: 20pt&quot;
+</span>52 <span style=''></span><span style='background: #F0ADAD'>      fill = Color.White
+</span>53 <span style=''></span><span style='background: #F0ADAD'>      effect = new DropShadow {
+</span>54 <span style=''></span><span style='background: #F0ADAD'>        color = Color.Blue
+</span>55 <span style=''></span><span style='background: #F0ADAD'>      }
+</span>56 <span style=''></span><span style='background: #F0ADAD'>    }, new Text(&quot;Press [L] to show/hide the game legend&quot;) {
+</span>57 <span style=''></span><span style='background: #F0ADAD'>      style = &quot;-fx-font-size: 20pt&quot;
+</span>58 <span style=''></span><span style='background: #F0ADAD'>      fill = Color.White
+</span>59 <span style=''></span><span style='background: #F0ADAD'>      effect = new DropShadow {
+</span>60 <span style=''></span><span style='background: #F0ADAD'>        color = Color.Blue
+</span>61 <span style=''></span><span style='background: #F0ADAD'>      }
+</span>62 <span style=''></span><span style='background: #F0ADAD'>    }
+</span>63 <span style=''></span><span style='background: #F0ADAD'>    ) {
+</span>64 <span style=''></span><span style='background: #F0ADAD'>      margin = Insets(50.0)
+</span>65 <span style=''></span><span style='background: #F0ADAD'>      alignment = Pos.Center
+</span>66 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
+</span>67 <span style=''>    </span><span style='background: #F0ADAD'>styleClass.add(&quot;default-background&quot;)</span><span style=''>
+</span>68 <span style=''>  }
+</span>69 <span style=''>  </span><span style='background: #F0ADAD'>instructionScreen.visible &lt;== controlsScreenVisible</span><span style=''>
+</span>70 <span style=''>
+</span>71 <span style=''>  </span><span style='background: #F0ADAD'>onKeyPressed = key =&gt; key.getCode match {
+</span>72 <span style=''></span><span style='background: #F0ADAD'>    case KeyCode.C =&gt; changeControlsScreenState()
+</span>73 <span style=''></span><span style='background: #F0ADAD'>    case KeyCode.L =&gt; changeLegendScreenState()
+</span>74 <span style=''></span><span style='background: #F0ADAD'>    case _ =&gt;
+</span>75 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
+</span>76 <span style=''>
+</span>77 <span style=''>  </span><span style='background: #F0ADAD'>content = Seq(background, rootLayout, instructionScreen, legendScreen)</span><span style=''>
+</span>78 <span style=''>
+</span>79 <span style=''>  override def backToMainMenu(): Unit = </span><span style='background: #F0ADAD'>{}</span><span style=''>
+</span>80 <span style=''>
+</span>81 <span style=''>  override def onPlayClick(): Unit = </span><span style='background: #F0ADAD'>listener.onPlayClick()</span><span style=''>
+</span>82 <span style=''>
+</span>83 <span style=''>  override def onMultiPlayerClick(): Unit = </span><span style='background: #F0ADAD'>listener.onMultiPlayerClick()</span><span style=''>
+</span>84 <span style=''>
+</span>85 <span style=''>  override def onEditorClick(): Unit = </span><span style='background: #F0ADAD'>listener.onEditorClick()</span><span style=''>
+</span>86 <span style=''>
+</span>87 <span style=''>  override def onSettingsClick(): Unit = </span><span style='background: #F0ADAD'>listener.onSettingsClick()</span><span style=''>
+</span>88 <span style=''>
+</span>89 <span style=''>  override def onExitClick(): Unit = </span><span style='background: #F0ADAD'>System.exit(0)</span><span style=''>
+</span>90 <span style=''>
+</span>91 <span style=''>  override def onBackClick(): Unit = </span><span style='background: #F0ADAD'>parentStage.scene = this</span><span style=''>
+</span>92 <span style=''>
+</span>93 <span style=''>  override def onStatsClick(): Unit = </span><span style='background: #F0ADAD'>listener.onStatsClick()</span><span style=''>
+</span>94 <span style=''>
+</span>95 <span style=''>  /** This method makes the legend screen appear/disappear */
+</span>96 <span style=''>  private def changeLegendScreenState(): Unit = {
+</span>97 <span style=''>    if (</span><span style='background: #F0ADAD'>controlsScreenVisible.value</span><span style=''>) </span><span style='background: #F0ADAD'>controlsScreenVisible.value = false</span><span style=''>
+</span>98 <span style=''>    </span><span style='background: #F0ADAD'>legendScreenVisible.value = !legendScreenVisible.value</span><span style=''>
+</span>99 <span style=''>    </span><span style='background: #F0ADAD'>background.opacity = if (legendScreenVisible.value) 0.3 else 1.0</span><span style=''>
+</span>100 <span style=''>  }
+</span>101 <span style=''>
+</span>102 <span style=''>  /** This method makes the instruction screen appear/disappear */
+</span>103 <span style=''>  private def changeControlsScreenState(): Unit = {
+</span>104 <span style=''>    if (</span><span style='background: #F0ADAD'>legendScreenVisible.value</span><span style=''>) </span><span style='background: #F0ADAD'>legendScreenVisible.value = false</span><span style=''>
+</span>105 <span style=''>    </span><span style='background: #F0ADAD'>controlsScreenVisible.value = !controlsScreenVisible.value</span><span style=''>
+</span>106 <span style=''>    </span><span style='background: #F0ADAD'>background.opacity = if (controlsScreenVisible.value) 0.3 else 1.0</span><span style=''>
+</span>107 <span style=''>  }
+</span>108 <span style=''>}
+</span>109 <span style=''>
+</span>110 <span style=''>/** Trait which gets notified when a MainScene event occurs */
+</span>111 <span style=''>trait MainSceneListener {
+</span>112 <span style=''>
+</span>113 <span style=''>  /** Called when the user clicks on the play button */
+</span>114 <span style=''>  def onPlayClick()
+</span>115 <span style=''>
+</span>116 <span style=''>  /** Called when the user clicks on the play button */
+</span>117 <span style=''>  def onMultiPlayerClick()
+</span>118 <span style=''>
+</span>119 <span style=''>  /** Called when the user clicks on the editor button */
+</span>120 <span style=''>  def onEditorClick()
+</span>121 <span style=''>
+</span>122 <span style=''>  /** Called when the user clicks on the stats button */
+</span>123 <span style=''>  def onStatsClick()
+</span>124 <span style=''>
+</span>125 <span style=''>  /** Called when the user clicks on the settings button */
+</span>126 <span style=''>  def onSettingsClick()
+</span>127 <span style=''>
+</span>128 <span style=''>}
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -164,15 +163,36 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          27
+          26
         </td>
         <td>
-          4944
+          4942
         </td>
         <td>
-          1179
+          1131
           -
-          1212
+          1146
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.SoundsType.menu
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.mvc.controller.manager.sounds.SoundsType.menu
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          4943
+        </td>
+        <td>
+          1114
+          -
+          1147
         </td>
         <td>
           Apply
@@ -185,36 +205,15 @@
         </td>
       </tr><tr>
         <td>
-          27
+          29
         </td>
         <td>
-          4943
+          4948
         </td>
         <td>
-          1196
+          1230
           -
-          1211
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.mvc.controller.manager.sounds.SoundsType.menu
-        </td>
-        <td style="background: #F0ADAD">
-          it.unibo.osmos.redux.mvc.controller.manager.sounds.SoundsType.menu
-        </td>
-      </tr><tr>
-        <td>
-          30
-        </td>
-        <td>
-          4949
-        </td>
-        <td>
-          1295
-          -
-          1298
+          1233
         </td>
         <td>
           Apply
@@ -227,15 +226,15 @@
         </td>
       </tr><tr>
         <td>
-          31
+          30
         </td>
         <td>
-          4946
+          4945
         </td>
         <td>
-          1356
+          1291
           -
-          1386
+          1321
         </td>
         <td>
           Apply
@@ -248,15 +247,15 @@
         </td>
       </tr><tr>
         <td>
-          31
+          30
         </td>
         <td>
-          4945
+          4944
         </td>
         <td>
-          1369
+          1304
           -
-          1386
+          1321
         </td>
         <td>
           Select
@@ -269,36 +268,15 @@
         </td>
       </tr><tr>
         <td>
-          32
+          31
         </td>
         <td>
-          4948
+          4946
         </td>
         <td>
-          1391
+          1340
           -
-          1423
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scalafx.beans.property.Property.&lt;==
-        </td>
-        <td style="background: #F0ADAD">
-          $anon.this.fitHeight.&lt;==(MainScene.this.parentStage.height)
-        </td>
-      </tr><tr>
-        <td>
-          32
-        </td>
-        <td>
-          4947
-        </td>
-        <td>
-          1405
-          -
-          1423
+          1358
         </td>
         <td>
           Select
@@ -311,15 +289,36 @@
         </td>
       </tr><tr>
         <td>
-          36
+          31
         </td>
         <td>
-          4950
+          4947
         </td>
         <td>
-          1529
+          1326
           -
-          1551
+          1358
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.fitHeight.&lt;==(MainScene.this.parentStage.height)
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          4949
+        </td>
+        <td>
+          1464
+          -
+          1486
         </td>
         <td>
           Apply
@@ -332,15 +331,15 @@
         </td>
       </tr><tr>
         <td>
-          38
+          37
         </td>
         <td>
-          4951
+          4950
         </td>
         <td>
-          1608
+          1543
           -
-          1647
+          1582
         </td>
         <td>
           Select
@@ -353,36 +352,15 @@
         </td>
       </tr><tr>
         <td>
-          39
+          38
         </td>
         <td>
-          4953
+          4951
         </td>
         <td>
-          1650
+          1610
           -
-          1694
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scalafx.beans.property.Property.&lt;==
-        </td>
-        <td style="background: #F0ADAD">
-          MainScene.this.legendScreen.visible.&lt;==(MainScene.this.legendScreenVisible)
-        </td>
-      </tr><tr>
-        <td>
-          39
-        </td>
-        <td>
-          4952
-        </td>
-        <td>
-          1675
-          -
-          1694
+          1629
         </td>
         <td>
           Select
@@ -395,15 +373,36 @@
         </td>
       </tr><tr>
         <td>
-          41
+          38
         </td>
         <td>
-          4954
+          4952
         </td>
         <td>
-          1802
+          1585
           -
-          1824
+          1629
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.legendScreen.visible.&lt;==(MainScene.this.legendScreenVisible)
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          4953
+        </td>
+        <td>
+          1737
+          -
+          1759
         </td>
         <td>
           Apply
@@ -416,15 +415,15 @@
         </td>
       </tr><tr>
         <td>
-          43
+          42
         </td>
         <td>
-          4955
+          4954
         </td>
         <td>
-          1891
+          1826
           -
-          1940
+          1875
         </td>
         <td>
           Select
@@ -437,15 +436,15 @@
         </td>
       </tr><tr>
         <td>
-          45
+          44
         </td>
         <td>
-          4972
+          4971
         </td>
         <td>
-          2020
+          1955
           -
-          2023
+          1958
         </td>
         <td>
           Apply
@@ -458,15 +457,36 @@
         </td>
       </tr><tr>
         <td>
-          46
+          45
         </td>
         <td>
-          4957
+          4955
         </td>
         <td>
-          2041
+          1990
           -
-          2072
+          2007
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.stage.Window.width
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.parentStage.width
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          4956
+        </td>
+        <td>
+          1976
+          -
+          2007
         </td>
         <td>
           Apply
@@ -482,33 +502,33 @@
           46
         </td>
         <td>
-          4956
-        </td>
-        <td>
-          2055
-          -
-          2072
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          scalafx.stage.Window.width
-        </td>
-        <td style="background: #F0ADAD">
-          MainScene.this.parentStage.width
-        </td>
-      </tr><tr>
-        <td>
-          47
-        </td>
-        <td>
           4958
         </td>
         <td>
-          2092
+          2012
           -
-          2110
+          2045
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.prefHeight.&lt;==(MainScene.this.parentStage.height)
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          4957
+        </td>
+        <td>
+          2027
+          -
+          2045
         </td>
         <td>
           Select
@@ -524,75 +544,12 @@
           47
         </td>
         <td>
-          4959
-        </td>
-        <td>
-          2077
-          -
-          2110
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scalafx.beans.property.Property.&lt;==
-        </td>
-        <td style="background: #F0ADAD">
-          $anon.this.prefHeight.&lt;==(MainScene.this.parentStage.height)
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
           4960
         </td>
         <td>
-          2154
+          2062
           -
-          2174
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scalafx.beans.binding.BooleanExpression.unary_!
-        </td>
-        <td style="background: #F0ADAD">
-          MainScene.this.legendScreenVisible.unary_!()
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          4962
-        </td>
-        <td>
-          2115
-          -
-          2174
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scalafx.beans.property.Property.&lt;==
-        </td>
-        <td style="background: #F0ADAD">
-          $anon.this.visible.&lt;==(MainScene.this.controlsScreenVisible.unary_!().and(MainScene.this.legendScreenVisible.unary_!()))
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          4961
-        </td>
-        <td>
-          2127
-          -
-          2174
+          2109
         </td>
         <td>
           Apply
@@ -605,15 +562,57 @@
         </td>
       </tr><tr>
         <td>
-          50
+          47
         </td>
         <td>
-          4964
+          4959
         </td>
         <td>
-          2216
+          2089
           -
-          2262
+          2109
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.binding.BooleanExpression.unary_!
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.legendScreenVisible.unary_!()
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          4961
+        </td>
+        <td>
+          2050
+          -
+          2109
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.Property.&lt;==
+        </td>
+        <td style="background: #F0ADAD">
+          $anon.this.visible.&lt;==(MainScene.this.controlsScreenVisible.unary_!().and(MainScene.this.legendScreenVisible.unary_!()))
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          4963
+        </td>
+        <td>
+          2151
+          -
+          2197
         </td>
         <td>
           Apply
@@ -626,15 +625,15 @@
         </td>
       </tr><tr>
         <td>
-          50
+          49
         </td>
         <td>
-          4963
+          4962
         </td>
         <td>
-          2225
+          2160
           -
-          2262
+          2197
         </td>
         <td>
           Apply
@@ -647,36 +646,15 @@
         </td>
       </tr><tr>
         <td>
-          51
+          50
         </td>
         <td>
           4969
         </td>
         <td>
-          2276
+          2202
           -
-          2279
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.mvc.view.scenes.MainScene.$anon.$anon.&lt;init&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          new $anon()
-        </td>
-      </tr><tr>
-        <td>
-          51
-        </td>
-        <td>
-          4970
-        </td>
-        <td>
-          2267
-          -
-          2737
+          2672
         </td>
         <td>
           Apply
@@ -739,15 +717,57 @@
         </td>
       </tr><tr>
         <td>
-          65
+          50
         </td>
         <td>
-          4966
+          4968
         </td>
         <td>
-          2681
+          2211
           -
-          2702
+          2214
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MainScene.$anon.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          64
+        </td>
+        <td>
+          4964
+        </td>
+        <td>
+          2625
+          -
+          2637
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.geometry.Insets.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.geometry.Insets.apply(50.0)
+        </td>
+      </tr><tr>
+        <td>
+          64
+        </td>
+        <td>
+          4965
+        </td>
+        <td>
+          2616
+          -
+          2637
         </td>
         <td>
           Apply
@@ -763,54 +783,12 @@
           65
         </td>
         <td>
-          4965
-        </td>
-        <td>
-          2690
-          -
-          2702
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scalafx.geometry.Insets.apply
-        </td>
-        <td style="background: #F0ADAD">
-          scalafx.geometry.Insets.apply(50.0)
-        </td>
-      </tr><tr>
-        <td>
-          66
-        </td>
-        <td>
           4967
         </td>
         <td>
-          2721
+          2644
           -
-          2731
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          scalafx.geometry.Pos.Center
-        </td>
-        <td style="background: #F0ADAD">
-          scalafx.geometry.Pos.Center
-        </td>
-      </tr><tr>
-        <td>
-          66
-        </td>
-        <td>
-          4968
-        </td>
-        <td>
-          2709
-          -
-          2731
+          2666
         </td>
         <td>
           Apply
@@ -823,15 +801,36 @@
         </td>
       </tr><tr>
         <td>
-          68
+          65
         </td>
         <td>
-          4971
+          4966
         </td>
         <td>
-          2742
+          2656
           -
-          2778
+          2666
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.geometry.Pos.Center
+        </td>
+        <td style="background: #F0ADAD">
+          scalafx.geometry.Pos.Center
+        </td>
+      </tr><tr>
+        <td>
+          67
+        </td>
+        <td>
+          4970
+        </td>
+        <td>
+          2677
+          -
+          2713
         </td>
         <td>
           Apply
@@ -844,36 +843,15 @@
         </td>
       </tr><tr>
         <td>
-          70
+          69
         </td>
         <td>
           4973
         </td>
         <td>
-          2815
+          2720
           -
-          2836
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.mvc.view.scenes.MainScene.controlsScreenVisible
-        </td>
-        <td style="background: #F0ADAD">
-          MainScene.this.controlsScreenVisible
-        </td>
-      </tr><tr>
-        <td>
-          70
-        </td>
-        <td>
-          4974
-        </td>
-        <td>
-          2785
-          -
-          2836
+          2771
         </td>
         <td>
           Apply
@@ -886,36 +864,36 @@
         </td>
       </tr><tr>
         <td>
-          72
+          69
         </td>
         <td>
-          4975
+          4972
         </td>
         <td>
-          2862
+          2750
           -
-          2873
+          2771
         </td>
         <td>
-          Apply
+          Select
         </td>
         <td>
-          javafx.scene.input.KeyEvent.getCode
+          it.unibo.osmos.redux.mvc.view.scenes.MainScene.controlsScreenVisible
         </td>
         <td style="background: #F0ADAD">
-          key.getCode()
+          MainScene.this.controlsScreenVisible
         </td>
       </tr><tr>
         <td>
-          72
+          71
         </td>
         <td>
-          4979
+          4978
         </td>
         <td>
-          2840
+          2775
           -
-          2997
+          2932
         </td>
         <td>
           Apply
@@ -932,15 +910,36 @@
         </td>
       </tr><tr>
         <td>
-          73
+          71
         </td>
         <td>
-          4976
+          4974
         </td>
         <td>
-          2904
+          2797
           -
-          2931
+          2808
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          javafx.scene.input.KeyEvent.getCode
+        </td>
+        <td style="background: #F0ADAD">
+          key.getCode()
+        </td>
+      </tr><tr>
+        <td>
+          72
+        </td>
+        <td>
+          4975
+        </td>
+        <td>
+          2839
+          -
+          2866
         </td>
         <td>
           Apply
@@ -953,15 +952,15 @@
         </td>
       </tr><tr>
         <td>
-          74
+          73
         </td>
         <td>
-          4977
+          4976
         </td>
         <td>
-          2954
+          2889
           -
-          2979
+          2914
         </td>
         <td>
           Apply
@@ -974,15 +973,15 @@
         </td>
       </tr><tr>
         <td>
-          75
+          74
         </td>
         <td>
-          4978
+          4977
         </td>
         <td>
-          2991
+          2926
           -
-          2993
+          2928
         </td>
         <td>
           Literal
@@ -995,99 +994,15 @@
         </td>
       </tr><tr>
         <td>
-          78
+          77
         </td>
         <td>
           4982
         </td>
         <td>
-          3039
+          2993
           -
-          3056
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.mvc.view.scenes.MainScene.instructionScreen
-        </td>
-        <td style="background: #F0ADAD">
-          MainScene.this.instructionScreen
-        </td>
-      </tr><tr>
-        <td>
-          78
-        </td>
-        <td>
-          4984
-        </td>
-        <td>
-          3011
-          -
-          3071
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.collection.generic.GenericCompanion.apply
-        </td>
-        <td style="background: #F0ADAD">
-          scala.collection.Seq.apply[scalafx.scene.Node](MainScene.this.background, MainScene.this.rootLayout, MainScene.this.instructionScreen, MainScene.this.legendScreen)
-        </td>
-      </tr><tr>
-        <td>
-          78
-        </td>
-        <td>
-          4981
-        </td>
-        <td>
-          3027
-          -
-          3037
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.mvc.view.scenes.MainScene.rootLayout
-        </td>
-        <td style="background: #F0ADAD">
-          MainScene.this.rootLayout
-        </td>
-      </tr><tr>
-        <td>
-          78
-        </td>
-        <td>
-          4980
-        </td>
-        <td>
-          3015
-          -
-          3025
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.mvc.view.scenes.MainScene.background
-        </td>
-        <td style="background: #F0ADAD">
-          MainScene.this.background
-        </td>
-      </tr><tr>
-        <td>
-          78
-        </td>
-        <td>
-          4983
-        </td>
-        <td>
-          3058
-          -
-          3070
+          3005
         </td>
         <td>
           Select
@@ -1100,15 +1015,15 @@
         </td>
       </tr><tr>
         <td>
-          78
+          77
         </td>
         <td>
-          4985
+          4984
         </td>
         <td>
-          3001
+          2936
           -
-          3071
+          3006
         </td>
         <td>
           Apply
@@ -1121,15 +1036,99 @@
         </td>
       </tr><tr>
         <td>
-          80
+          77
         </td>
         <td>
-          4986
+          4981
         </td>
         <td>
-          3113
+          2974
           -
-          3115
+          2991
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MainScene.instructionScreen
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.instructionScreen
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          4980
+        </td>
+        <td>
+          2962
+          -
+          2972
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MainScene.rootLayout
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.rootLayout
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          4983
+        </td>
+        <td>
+          2946
+          -
+          3006
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #F0ADAD">
+          scala.collection.Seq.apply[scalafx.scene.Node](MainScene.this.background, MainScene.this.rootLayout, MainScene.this.instructionScreen, MainScene.this.legendScreen)
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          4979
+        </td>
+        <td>
+          2950
+          -
+          2960
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.view.scenes.MainScene.background
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.background
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          4985
+        </td>
+        <td>
+          3048
+          -
+          3050
         </td>
         <td>
           Literal
@@ -1142,15 +1141,15 @@
         </td>
       </tr><tr>
         <td>
-          82
+          81
         </td>
         <td>
-          4987
+          4986
         </td>
         <td>
-          3154
+          3089
           -
-          3176
+          3111
         </td>
         <td>
           Apply
@@ -1163,15 +1162,15 @@
         </td>
       </tr><tr>
         <td>
-          84
+          83
         </td>
         <td>
-          4988
+          4987
         </td>
         <td>
-          3222
+          3157
           -
-          3251
+          3186
         </td>
         <td>
           Apply
@@ -1184,15 +1183,15 @@
         </td>
       </tr><tr>
         <td>
-          86
+          85
         </td>
         <td>
-          4989
+          4988
         </td>
         <td>
-          3292
+          3227
           -
-          3316
+          3251
         </td>
         <td>
           Apply
@@ -1205,15 +1204,15 @@
         </td>
       </tr><tr>
         <td>
-          88
+          87
         </td>
         <td>
-          4990
+          4989
         </td>
         <td>
-          3359
+          3294
           -
-          3385
+          3320
         </td>
         <td>
           Apply
@@ -1226,15 +1225,15 @@
         </td>
       </tr><tr>
         <td>
-          90
+          89
         </td>
         <td>
-          4991
+          4990
         </td>
         <td>
-          3424
+          3359
           -
-          3438
+          3373
         </td>
         <td>
           Apply
@@ -1247,15 +1246,15 @@
         </td>
       </tr><tr>
         <td>
-          92
+          91
         </td>
         <td>
-          4992
+          4991
         </td>
         <td>
-          3477
+          3412
           -
-          3501
+          3436
         </td>
         <td>
           Apply
@@ -1268,15 +1267,15 @@
         </td>
       </tr><tr>
         <td>
-          94
+          93
         </td>
         <td>
-          4993
+          4992
         </td>
         <td>
-          3541
+          3476
           -
-          3564
+          3499
         </td>
         <td>
           Apply
@@ -1289,78 +1288,15 @@
         </td>
       </tr><tr>
         <td>
-          98
+          97
         </td>
         <td>
-          4996
+          4993
         </td>
         <td>
-          3715
+          3621
           -
-          3750
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          scalafx.beans.property.BooleanProperty.value_=
-        </td>
-        <td style="background: #F0ADAD">
-          MainScene.this.controlsScreenVisible.value_=(false)
-        </td>
-      </tr><tr>
-        <td>
-          98
-        </td>
-        <td>
-          4998
-        </td>
-        <td>
-          3682
-          -
-          3682
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          98
-        </td>
-        <td>
-          4995
-        </td>
-        <td>
-          3715
-          -
-          3750
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scalafx.beans.property.BooleanProperty.value_=
-        </td>
-        <td style="background: #F0ADAD">
-          MainScene.this.controlsScreenVisible.value_=(false)
-        </td>
-      </tr><tr>
-        <td>
-          98
-        </td>
-        <td>
-          4994
-        </td>
-        <td>
-          3686
-          -
-          3713
+          3648
         </td>
         <td>
           Select
@@ -1373,15 +1309,15 @@
         </td>
       </tr><tr>
         <td>
-          98
+          97
         </td>
         <td>
-          4997
+          4996
         </td>
         <td>
-          3682
+          3617
           -
-          3682
+          3617
         </td>
         <td>
           Literal
@@ -1394,15 +1330,78 @@
         </td>
       </tr><tr>
         <td>
-          99
+          97
         </td>
         <td>
-          5000
+          4995
         </td>
         <td>
-          3755
+          3650
           -
-          3809
+          3685
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          scalafx.beans.property.BooleanProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.controlsScreenVisible.value_=(false)
+        </td>
+      </tr><tr>
+        <td>
+          97
+        </td>
+        <td>
+          4994
+        </td>
+        <td>
+          3650
+          -
+          3685
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scalafx.beans.property.BooleanProperty.value_=
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.controlsScreenVisible.value_=(false)
+        </td>
+      </tr><tr>
+        <td>
+          97
+        </td>
+        <td>
+          4997
+        </td>
+        <td>
+          3617
+          -
+          3617
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          98
+        </td>
+        <td>
+          4999
+        </td>
+        <td>
+          3690
+          -
+          3744
         </td>
         <td>
           Apply
@@ -1415,15 +1414,15 @@
         </td>
       </tr><tr>
         <td>
-          99
+          98
         </td>
         <td>
-          4999
+          4998
         </td>
         <td>
-          3783
+          3718
           -
-          3809
+          3744
         </td>
         <td>
           Select
@@ -1436,57 +1435,15 @@
         </td>
       </tr><tr>
         <td>
-          100
+          99
         </td>
         <td>
-          5002
+          5000
         </td>
         <td>
-          3866
+          3774
           -
-          3869
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          0.3
-        </td>
-      </tr><tr>
-        <td>
-          100
-        </td>
-        <td>
-          5005
-        </td>
-        <td>
-          3875
-          -
-          3878
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          1.0
-        </td>
-      </tr><tr>
-        <td>
-          100
-        </td>
-        <td>
-          5001
-        </td>
-        <td>
-          3839
-          -
-          3864
+          3799
         </td>
         <td>
           Select
@@ -1499,36 +1456,15 @@
         </td>
       </tr><tr>
         <td>
-          100
+          99
         </td>
         <td>
-          5004
+          5002
         </td>
         <td>
-          3875
+          3801
           -
-          3878
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          1.0
-        </td>
-      </tr><tr>
-        <td>
-          100
-        </td>
-        <td>
-          5003
-        </td>
-        <td>
-          3866
-          -
-          3869
+          3804
         </td>
         <td>
           Block
@@ -1541,15 +1477,15 @@
         </td>
       </tr><tr>
         <td>
-          100
+          99
         </td>
         <td>
-          5006
+          5005
         </td>
         <td>
-          3814
+          3749
           -
-          3878
+          3813
         </td>
         <td>
           Apply
@@ -1565,15 +1501,99 @@ else
         </td>
       </tr><tr>
         <td>
-          105
+          99
+        </td>
+        <td>
+          5001
+        </td>
+        <td>
+          3801
+          -
+          3804
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          0.3
+        </td>
+      </tr><tr>
+        <td>
+          99
+        </td>
+        <td>
+          5004
+        </td>
+        <td>
+          3810
+          -
+          3813
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          1.0
+        </td>
+      </tr><tr>
+        <td>
+          99
+        </td>
+        <td>
+          5003
+        </td>
+        <td>
+          3810
+          -
+          3813
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          1.0
+        </td>
+      </tr><tr>
+        <td>
+          104
         </td>
         <td>
           5009
         </td>
         <td>
-          4038
+          3942
           -
-          4071
+          3942
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          104
+        </td>
+        <td>
+          5008
+        </td>
+        <td>
+          3973
+          -
+          4006
         </td>
         <td>
           Block
@@ -1586,15 +1606,15 @@ else
         </td>
       </tr><tr>
         <td>
-          105
+          104
         </td>
         <td>
-          5008
+          5007
         </td>
         <td>
-          4038
+          3973
           -
-          4071
+          4006
         </td>
         <td>
           Apply
@@ -1607,15 +1627,15 @@ else
         </td>
       </tr><tr>
         <td>
-          105
+          104
         </td>
         <td>
-          5011
+          5010
         </td>
         <td>
-          4007
+          3942
           -
-          4007
+          3942
         </td>
         <td>
           Block
@@ -1628,15 +1648,15 @@ else
         </td>
       </tr><tr>
         <td>
-          105
+          104
         </td>
         <td>
-          5007
+          5006
         </td>
         <td>
-          4011
+          3946
           -
-          4036
+          3971
         </td>
         <td>
           Select
@@ -1652,33 +1672,33 @@ else
           105
         </td>
         <td>
-          5010
+          5011
         </td>
         <td>
-          4007
+          4041
           -
-          4007
+          4069
         </td>
         <td>
-          Literal
+          Select
         </td>
         <td>
-          &lt;nosymbol&gt;
+          scala.Boolean.unary_!
         </td>
         <td style="background: #F0ADAD">
-          ()
+          MainScene.this.controlsScreenVisible.value.unary_!
         </td>
       </tr><tr>
         <td>
-          106
+          105
         </td>
         <td>
-          5013
+          5012
         </td>
         <td>
-          4076
+          4011
           -
-          4134
+          4069
         </td>
         <td>
           Apply
@@ -1694,117 +1714,12 @@ else
           106
         </td>
         <td>
-          5012
-        </td>
-        <td>
-          4106
-          -
-          4134
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          scala.Boolean.unary_!
-        </td>
-        <td style="background: #F0ADAD">
-          MainScene.this.controlsScreenVisible.value.unary_!
-        </td>
-      </tr><tr>
-        <td>
-          107
-        </td>
-        <td>
           5018
         </td>
         <td>
-          4202
+          4074
           -
-          4205
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          1.0
-        </td>
-      </tr><tr>
-        <td>
-          107
-        </td>
-        <td>
-          5017
-        </td>
-        <td>
-          4202
-          -
-          4205
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          1.0
-        </td>
-      </tr><tr>
-        <td>
-          107
-        </td>
-        <td>
-          5014
-        </td>
-        <td>
-          4164
-          -
-          4191
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          scalafx.beans.property.ReadOnlyBooleanProperty.value
-        </td>
-        <td style="background: #F0ADAD">
-          MainScene.this.controlsScreenVisible.value
-        </td>
-      </tr><tr>
-        <td>
-          107
-        </td>
-        <td>
-          5016
-        </td>
-        <td>
-          4193
-          -
-          4196
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          0.3
-        </td>
-      </tr><tr>
-        <td>
-          107
-        </td>
-        <td>
-          5019
-        </td>
-        <td>
-          4139
-          -
-          4205
+          4140
         </td>
         <td>
           Apply
@@ -1820,18 +1735,102 @@ else
         </td>
       </tr><tr>
         <td>
-          107
+          106
+        </td>
+        <td>
+          5017
+        </td>
+        <td>
+          4137
+          -
+          4140
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          1.0
+        </td>
+      </tr><tr>
+        <td>
+          106
+        </td>
+        <td>
+          5014
+        </td>
+        <td>
+          4128
+          -
+          4131
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          0.3
+        </td>
+      </tr><tr>
+        <td>
+          106
+        </td>
+        <td>
+          5016
+        </td>
+        <td>
+          4137
+          -
+          4140
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          1.0
+        </td>
+      </tr><tr>
+        <td>
+          106
+        </td>
+        <td>
+          5013
+        </td>
+        <td>
+          4099
+          -
+          4126
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scalafx.beans.property.ReadOnlyBooleanProperty.value
+        </td>
+        <td style="background: #F0ADAD">
+          MainScene.this.controlsScreenVisible.value
+        </td>
+      </tr><tr>
+        <td>
+          106
         </td>
         <td>
           5015
         </td>
         <td>
-          4193
+          4128
           -
-          4196
+          4131
         </td>
         <td>
-          Literal
+          Block
         </td>
         <td>
           &lt;nosymbol&gt;

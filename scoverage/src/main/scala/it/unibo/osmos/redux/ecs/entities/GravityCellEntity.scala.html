@@ -31,52 +31,53 @@
 </span>7 <span style=''>/** Trait representing a CellEntity with gravity force */
 </span>8 <span style=''>trait GravityCellEntity extends CellEntity with GravityProperty with SpecificWeight {}
 </span>9 <span style=''>
-</span>10 <span style=''>object GravityCellEntity {
-</span>11 <span style=''>
-</span>12 <span style=''>  def apply(acceleration: AccelerationComponent,
-</span>13 <span style=''>            collidable: CollidableComponent,
-</span>14 <span style=''>            dimension: DimensionComponent,
-</span>15 <span style=''>            position: PositionComponent,
-</span>16 <span style=''>            speed: SpeedComponent,
-</span>17 <span style=''>            visible: VisibleComponent,
-</span>18 <span style=''>            typeEntity: TypeComponent,
-</span>19 <span style=''>            specificWeight: SpecificWeightComponent): GravityCellEntity =
-</span>20 <span style=''>    </span><span style='background: #AEF1AE'>GravityCellEntityImpl(CellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity),
-</span>21 <span style=''></span><span style='background: #AEF1AE'>      MassComponent(dimension, specificWeight), specificWeight)</span><span style=''>
-</span>22 <span style=''>
-</span>23 <span style=''>  def apply(builder: CellBuilder, specificWeight: SpecificWeightComponent): GravityCellEntity =
-</span>24 <span style=''>    </span><span style='background: #F0ADAD'>apply(builder.buildCellEntity(), specificWeight)</span><span style=''>
-</span>25 <span style=''>
-</span>26 <span style=''>  def apply(cell: CellEntity, specificWeight: SpecificWeightComponent): GravityCellEntity =
-</span>27 <span style=''>    </span><span style='background: #AEF1AE'>GravityCellEntityImpl(cell, MassComponent(cell.getDimensionComponent, specificWeight), specificWeight)</span><span style=''>
-</span>28 <span style=''>
-</span>29 <span style=''>  private case class GravityCellEntityImpl(cellEntity: CellEntity, mass: MassComponent, specificWeight: SpecificWeightComponent) extends GravityCellEntity {
-</span>30 <span style=''>
-</span>31 <span style=''>    </span><span style='background: #AEF1AE'>require(Seq(EntityType.Attractive, EntityType.Repulsive) contains cellEntity.getTypeComponent.typeEntity)</span><span style=''>
-</span>32 <span style=''>    </span><span style='background: #AEF1AE'>require(specificWeight.specificWeight &gt; 0)</span><span style=''>
-</span>33 <span style=''>
-</span>34 <span style=''>    override def getPositionComponent: PositionComponent = </span><span style='background: #AEF1AE'>cellEntity.getPositionComponent</span><span style=''>
-</span>35 <span style=''>
-</span>36 <span style=''>    override def getDimensionComponent: DimensionComponent = </span><span style='background: #AEF1AE'>cellEntity.getDimensionComponent</span><span style=''>
-</span>37 <span style=''>
-</span>38 <span style=''>    override def getCollidableComponent: CollidableComponent = </span><span style='background: #AEF1AE'>cellEntity.getCollidableComponent</span><span style=''>
-</span>39 <span style=''>
-</span>40 <span style=''>    override def getSpeedComponent: SpeedComponent = </span><span style='background: #AEF1AE'>cellEntity.getSpeedComponent</span><span style=''>
-</span>41 <span style=''>
-</span>42 <span style=''>    override def getAccelerationComponent: AccelerationComponent = </span><span style='background: #AEF1AE'>cellEntity.getAccelerationComponent</span><span style=''>
-</span>43 <span style=''>
-</span>44 <span style=''>    override def getTypeComponent: TypeComponent = </span><span style='background: #AEF1AE'>cellEntity.getTypeComponent</span><span style=''>
-</span>45 <span style=''>
-</span>46 <span style=''>    override def getUUID: String = </span><span style='background: #F0ADAD'>cellEntity.getUUID</span><span style=''>
-</span>47 <span style=''>
-</span>48 <span style=''>    override def getVisibleComponent: VisibleComponent = </span><span style='background: #AEF1AE'>cellEntity.getVisibleComponent</span><span style=''>
-</span>49 <span style=''>
-</span>50 <span style=''>    override def getMassComponent: MassComponent = </span><span style='background: #AEF1AE'>mass</span><span style=''>
-</span>51 <span style=''>
-</span>52 <span style=''>    override def getSpecificWeightComponent: SpecificWeightComponent = </span><span style='background: #AEF1AE'>specificWeight</span><span style=''>
-</span>53 <span style=''>  }
-</span>54 <span style=''>
-</span>55 <span style=''>}
+</span>10 <span style=''>/** Companion object */
+</span>11 <span style=''>object GravityCellEntity {
+</span>12 <span style=''>
+</span>13 <span style=''>  def apply(acceleration: AccelerationComponent,
+</span>14 <span style=''>            collidable: CollidableComponent,
+</span>15 <span style=''>            dimension: DimensionComponent,
+</span>16 <span style=''>            position: PositionComponent,
+</span>17 <span style=''>            speed: SpeedComponent,
+</span>18 <span style=''>            visible: VisibleComponent,
+</span>19 <span style=''>            typeEntity: TypeComponent,
+</span>20 <span style=''>            specificWeight: SpecificWeightComponent): GravityCellEntity =
+</span>21 <span style=''>    </span><span style='background: #AEF1AE'>GravityCellEntityImpl(CellEntity(acceleration, collidable, dimension, position, speed, visible, typeEntity),
+</span>22 <span style=''></span><span style='background: #AEF1AE'>      MassComponent(dimension, specificWeight), specificWeight)</span><span style=''>
+</span>23 <span style=''>
+</span>24 <span style=''>  def apply(builder: CellBuilder, specificWeight: SpecificWeightComponent): GravityCellEntity =
+</span>25 <span style=''>    </span><span style='background: #F0ADAD'>apply(builder.buildCellEntity(), specificWeight)</span><span style=''>
+</span>26 <span style=''>
+</span>27 <span style=''>  def apply(cell: CellEntity, specificWeight: SpecificWeightComponent): GravityCellEntity =
+</span>28 <span style=''>    </span><span style='background: #AEF1AE'>GravityCellEntityImpl(cell, MassComponent(cell.getDimensionComponent, specificWeight), specificWeight)</span><span style=''>
+</span>29 <span style=''>
+</span>30 <span style=''>  private case class GravityCellEntityImpl(cellEntity: CellEntity, mass: MassComponent, specificWeight: SpecificWeightComponent) extends GravityCellEntity {
+</span>31 <span style=''>
+</span>32 <span style=''>    </span><span style='background: #AEF1AE'>require(Seq(EntityType.Attractive, EntityType.Repulsive) contains cellEntity.getTypeComponent.typeEntity)</span><span style=''>
+</span>33 <span style=''>    </span><span style='background: #AEF1AE'>require(specificWeight.specificWeight &gt; 0)</span><span style=''>
+</span>34 <span style=''>
+</span>35 <span style=''>    override def getPositionComponent: PositionComponent = </span><span style='background: #AEF1AE'>cellEntity.getPositionComponent</span><span style=''>
+</span>36 <span style=''>
+</span>37 <span style=''>    override def getDimensionComponent: DimensionComponent = </span><span style='background: #AEF1AE'>cellEntity.getDimensionComponent</span><span style=''>
+</span>38 <span style=''>
+</span>39 <span style=''>    override def getCollidableComponent: CollidableComponent = </span><span style='background: #AEF1AE'>cellEntity.getCollidableComponent</span><span style=''>
+</span>40 <span style=''>
+</span>41 <span style=''>    override def getSpeedComponent: SpeedComponent = </span><span style='background: #AEF1AE'>cellEntity.getSpeedComponent</span><span style=''>
+</span>42 <span style=''>
+</span>43 <span style=''>    override def getAccelerationComponent: AccelerationComponent = </span><span style='background: #AEF1AE'>cellEntity.getAccelerationComponent</span><span style=''>
+</span>44 <span style=''>
+</span>45 <span style=''>    override def getTypeComponent: TypeComponent = </span><span style='background: #AEF1AE'>cellEntity.getTypeComponent</span><span style=''>
+</span>46 <span style=''>
+</span>47 <span style=''>    override def getUUID: String = </span><span style='background: #F0ADAD'>cellEntity.getUUID</span><span style=''>
+</span>48 <span style=''>
+</span>49 <span style=''>    override def getVisibleComponent: VisibleComponent = </span><span style='background: #AEF1AE'>cellEntity.getVisibleComponent</span><span style=''>
+</span>50 <span style=''>
+</span>51 <span style=''>    override def getMassComponent: MassComponent = </span><span style='background: #AEF1AE'>mass</span><span style=''>
+</span>52 <span style=''>
+</span>53 <span style=''>    override def getSpecificWeightComponent: SpecificWeightComponent = </span><span style='background: #AEF1AE'>specificWeight</span><span style=''>
+</span>54 <span style=''>  }
+</span>55 <span style=''>
+</span>56 <span style=''>}
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -90,15 +91,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          20
+          21
         </td>
         <td>
-          394
+          393
         </td>
         <td>
-          804
+          828
           -
-          889
+          913
         </td>
         <td>
           Apply
@@ -111,15 +112,15 @@
         </td>
       </tr><tr>
         <td>
-          20
+          21
         </td>
         <td>
-          396
+          395
         </td>
         <td>
-          782
+          806
           -
-          954
+          978
         </td>
         <td>
           Apply
@@ -132,15 +133,15 @@
         </td>
       </tr><tr>
         <td>
-          21
+          22
         </td>
         <td>
-          395
+          394
         </td>
         <td>
-          897
+          921
           -
-          937
+          961
         </td>
         <td>
           Apply
@@ -153,36 +154,15 @@
         </td>
       </tr><tr>
         <td>
-          24
+          25
         </td>
         <td>
           397
         </td>
         <td>
-          1062
+          1080
           -
-          1087
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.entities.CellBuilder.buildCellEntity
-        </td>
-        <td style="background: #F0ADAD">
-          builder.buildCellEntity()
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          398
-        </td>
-        <td>
-          1056
-          -
-          1104
+          1128
         </td>
         <td>
           Apply
@@ -195,57 +175,36 @@
         </td>
       </tr><tr>
         <td>
-          27
+          25
         </td>
         <td>
-          400
+          396
         </td>
         <td>
-          1230
+          1086
           -
-          1287
+          1111
         </td>
         <td>
           Apply
         </td>
         <td>
-          it.unibo.osmos.redux.ecs.components.MassComponent.apply
+          it.unibo.osmos.redux.ecs.entities.CellBuilder.buildCellEntity
         </td>
-        <td style="background: #AEF1AE">
-          it.unibo.osmos.redux.ecs.components.MassComponent.apply(cell.getDimensionComponent, specificWeight)
-        </td>
-      </tr><tr>
-        <td>
-          27
-        </td>
-        <td>
-          399
-        </td>
-        <td>
-          1244
-          -
-          1270
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.entities.properties.basic.Dimension.getDimensionComponent
-        </td>
-        <td style="background: #AEF1AE">
-          cell.getDimensionComponent
+        <td style="background: #F0ADAD">
+          builder.buildCellEntity()
         </td>
       </tr><tr>
         <td>
-          27
+          28
         </td>
         <td>
-          401
+          400
         </td>
         <td>
-          1202
+          1226
           -
-          1304
+          1328
         </td>
         <td>
           Apply
@@ -258,99 +217,57 @@
         </td>
       </tr><tr>
         <td>
-          31
+          28
         </td>
         <td>
-          406
+          399
         </td>
         <td>
-          1468
+          1254
           -
-          1573
+          1311
         </td>
         <td>
           Apply
         </td>
         <td>
-          scala.Predef.require
+          it.unibo.osmos.redux.ecs.components.MassComponent.apply
         </td>
         <td style="background: #AEF1AE">
-          scala.Predef.require(scala.collection.Seq.apply[it.unibo.osmos.redux.ecs.entities.EntityType.Value](EntityType.Attractive, EntityType.Repulsive).contains[it.unibo.osmos.redux.ecs.entities.EntityType.Value](GravityCellEntityImpl.this.cellEntity.getTypeComponent.typeEntity))
+          it.unibo.osmos.redux.ecs.components.MassComponent.apply(cell.getDimensionComponent, specificWeight)
         </td>
       </tr><tr>
         <td>
-          31
+          28
+        </td>
+        <td>
+          398
+        </td>
+        <td>
+          1268
+          -
+          1294
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.properties.basic.Dimension.getDimensionComponent
+        </td>
+        <td style="background: #AEF1AE">
+          cell.getDimensionComponent
+        </td>
+      </tr><tr>
+        <td>
+          32
         </td>
         <td>
           403
         </td>
         <td>
-          1503
+          1558
           -
-          1523
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.entities.EntityType.Repulsive
-        </td>
-        <td style="background: #AEF1AE">
-          EntityType.Repulsive
-        </td>
-      </tr><tr>
-        <td>
-          31
-        </td>
-        <td>
-          405
-        </td>
-        <td>
-          1476
-          -
-          1572
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.collection.SeqLike.contains
-        </td>
-        <td style="background: #AEF1AE">
-          scala.collection.Seq.apply[it.unibo.osmos.redux.ecs.entities.EntityType.Value](EntityType.Attractive, EntityType.Repulsive).contains[it.unibo.osmos.redux.ecs.entities.EntityType.Value](GravityCellEntityImpl.this.cellEntity.getTypeComponent.typeEntity)
-        </td>
-      </tr><tr>
-        <td>
-          31
-        </td>
-        <td>
-          402
-        </td>
-        <td>
-          1480
-          -
-          1501
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.ecs.entities.EntityType.Attractive
-        </td>
-        <td style="background: #AEF1AE">
-          EntityType.Attractive
-        </td>
-      </tr><tr>
-        <td>
-          31
-        </td>
-        <td>
-          404
-        </td>
-        <td>
-          1534
-          -
-          1572
+          1596
         </td>
         <td>
           Select
@@ -366,12 +283,12 @@
           32
         </td>
         <td>
-          408
+          405
         </td>
         <td>
-          1578
+          1492
           -
-          1620
+          1597
         </td>
         <td>
           Apply
@@ -380,19 +297,82 @@
           scala.Predef.require
         </td>
         <td style="background: #AEF1AE">
-          scala.Predef.require(GravityCellEntityImpl.this.specificWeight.specificWeight.&gt;(0))
+          scala.Predef.require(scala.collection.Seq.apply[it.unibo.osmos.redux.ecs.entities.EntityType.Value](EntityType.Attractive, EntityType.Repulsive).contains[it.unibo.osmos.redux.ecs.entities.EntityType.Value](GravityCellEntityImpl.this.cellEntity.getTypeComponent.typeEntity))
         </td>
       </tr><tr>
         <td>
           32
         </td>
         <td>
-          407
+          402
         </td>
         <td>
-          1586
+          1527
           -
-          1619
+          1547
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityType.Repulsive
+        </td>
+        <td style="background: #AEF1AE">
+          EntityType.Repulsive
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          401
+        </td>
+        <td>
+          1504
+          -
+          1525
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.ecs.entities.EntityType.Attractive
+        </td>
+        <td style="background: #AEF1AE">
+          EntityType.Attractive
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          404
+        </td>
+        <td>
+          1500
+          -
+          1596
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.SeqLike.contains
+        </td>
+        <td style="background: #AEF1AE">
+          scala.collection.Seq.apply[it.unibo.osmos.redux.ecs.entities.EntityType.Value](EntityType.Attractive, EntityType.Repulsive).contains[it.unibo.osmos.redux.ecs.entities.EntityType.Value](GravityCellEntityImpl.this.cellEntity.getTypeComponent.typeEntity)
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          406
+        </td>
+        <td>
+          1610
+          -
+          1643
         </td>
         <td>
           Apply
@@ -405,15 +385,36 @@
         </td>
       </tr><tr>
         <td>
-          34
+          33
         </td>
         <td>
-          409
+          407
         </td>
         <td>
-          1681
+          1602
           -
-          1712
+          1644
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Predef.require
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Predef.require(GravityCellEntityImpl.this.specificWeight.specificWeight.&gt;(0))
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          408
+        </td>
+        <td>
+          1705
+          -
+          1736
         </td>
         <td>
           Select
@@ -426,15 +427,15 @@
         </td>
       </tr><tr>
         <td>
-          36
+          37
         </td>
         <td>
-          410
+          409
         </td>
         <td>
-          1775
+          1799
           -
-          1807
+          1831
         </td>
         <td>
           Select
@@ -447,15 +448,15 @@
         </td>
       </tr><tr>
         <td>
-          38
+          39
         </td>
         <td>
-          411
+          410
         </td>
         <td>
-          1872
+          1896
           -
-          1905
+          1929
         </td>
         <td>
           Select
@@ -468,15 +469,15 @@
         </td>
       </tr><tr>
         <td>
-          40
+          41
         </td>
         <td>
-          412
+          411
         </td>
         <td>
-          1960
+          1984
           -
-          1988
+          2012
         </td>
         <td>
           Select
@@ -489,15 +490,15 @@
         </td>
       </tr><tr>
         <td>
-          42
+          43
         </td>
         <td>
-          413
+          412
         </td>
         <td>
-          2057
+          2081
           -
-          2092
+          2116
         </td>
         <td>
           Select
@@ -510,15 +511,15 @@
         </td>
       </tr><tr>
         <td>
-          44
+          45
         </td>
         <td>
-          414
+          413
         </td>
         <td>
-          2145
+          2169
           -
-          2172
+          2196
         </td>
         <td>
           Select
@@ -531,15 +532,15 @@
         </td>
       </tr><tr>
         <td>
-          46
+          47
         </td>
         <td>
-          415
+          414
         </td>
         <td>
-          2209
+          2233
           -
-          2227
+          2251
         </td>
         <td>
           Select
@@ -552,15 +553,15 @@
         </td>
       </tr><tr>
         <td>
-          48
+          49
         </td>
         <td>
-          416
+          415
         </td>
         <td>
-          2286
+          2310
           -
-          2316
+          2340
         </td>
         <td>
           Select
@@ -573,15 +574,15 @@
         </td>
       </tr><tr>
         <td>
-          50
+          51
         </td>
         <td>
-          417
+          416
         </td>
         <td>
-          2369
+          2393
           -
-          2373
+          2397
         </td>
         <td>
           Select
@@ -594,15 +595,15 @@
         </td>
       </tr><tr>
         <td>
-          52
+          53
         </td>
         <td>
-          418
+          417
         </td>
         <td>
-          2446
+          2470
           -
-          2460
+          2484
         </td>
         <td>
           Select

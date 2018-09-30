@@ -155,270 +155,271 @@
 </span>131 <span style=''>  def addPlayerToLobby(actorRef: ActorRef, player: BasePlayer): Boolean
 </span>132 <span style=''>}
 </span>133 <span style=''>
-</span>134 <span style=''>object Server {
-</span>135 <span style=''>
-</span>136 <span style=''>  /** The server username in the lobby.
-</span>137 <span style=''>    *
-</span>138 <span style=''>    * @param username The username
-</span>139 <span style=''>    * @return A ServerImpl instance
-</span>140 <span style=''>    */
-</span>141 <span style=''>  def apply(username: String): Server = </span><span style='background: #F0ADAD'>ServerImpl(username)</span><span style=''>
-</span>142 <span style=''>
-</span>143 <span style=''>  final case class ServerImpl(private var username: String) extends Server {
-</span>144 <span style=''>
-</span>145 <span style=''>    //the uuid of the cell entity that represents this client
-</span>146 <span style=''>    private var uuid: String = _
-</span>147 <span style=''>    //current state of the server
-</span>148 <span style=''>    private var status: ServerState = </span><span style='background: #F0ADAD'>ServerState.Idle</span><span style=''>
-</span>149 <span style=''>    //the current lobby
-</span>150 <span style=''>    private var lobby: Option[GameLobby[ReferablePlayer]] = </span><span style='background: #F0ADAD'>None</span><span style=''>
-</span>151 <span style=''>    //the actor ref used to send and receive
-</span>152 <span style=''>    private var ref: Option[ActorRef] = </span><span style='background: #F0ADAD'>None</span><span style=''>
-</span>153 <span style=''>
-</span>154 <span style=''>    //MAIN METHODS
-</span>155 <span style=''>
-</span>156 <span style=''>    override def bind(actorRef: ActorRef): Unit = </span><span style='background: #F0ADAD'>ref = Some(actorRef)</span><span style=''>
-</span>157 <span style=''>
-</span>158 <span style=''>    override def getUUID: String = </span><span style='background: #F0ADAD'>uuid</span><span style=''>
-</span>159 <span style=''>
-</span>160 <span style=''>    override def getUsername: String = </span><span style='background: #F0ADAD'>username</span><span style=''>
-</span>161 <span style=''>
-</span>162 <span style=''>    override def getState: ServerState = </span><span style='background: #F0ADAD'>status</span><span style=''>
-</span>163 <span style=''>
-</span>164 <span style=''>    override def kill(): Unit = {
-</span>165 <span style=''>      </span><span style='background: #F0ADAD'>status</span><span style=''> match {
-</span>166 <span style=''>        case ServerState.Game =&gt; </span><span style='background: #F0ADAD'>broadcastMessage(GameEnded(false))</span><span style=''>
-</span>167 <span style=''>        case ServerState.Lobby =&gt; </span><span style='background: #F0ADAD'>broadcastMessage(LobbyClosed)</span><span style=''>
-</span>168 <span style=''>        case _ </span><span style='background: #F0ADAD'>=&gt;</span><span style=''> //do nothing is other states
-</span>169 <span style=''>      }
-</span>170 <span style=''>
-</span>171 <span style=''>      if (</span><span style='background: #F0ADAD'>lobby.nonEmpty</span><span style=''>) {
-</span>172 <span style=''>        </span><span style='background: #F0ADAD'>lobby = None</span><span style=''>
-</span>173 <span style=''>      }
-</span>174 <span style=''>
-</span>175 <span style=''>      if (</span><span style='background: #F0ADAD'>ref.nonEmpty</span><span style=''>) </span><span style='background: #F0ADAD'>{
-</span>176 <span style=''></span><span style='background: #F0ADAD'>        ref.get ! PoisonPill
-</span>177 <span style=''></span><span style='background: #F0ADAD'>        ref = None
-</span>178 <span style=''></span><span style='background: #F0ADAD'>      }</span><span style=''>
-</span>179 <span style=''>
-</span>180 <span style=''>      </span><span style='background: #F0ADAD'>status = ServerState.Dead</span><span style=''>
-</span>181 <span style=''>    }
-</span>182 <span style=''>
-</span>183 <span style=''>    //COMMUNICATION
-</span>184 <span style=''>
-</span>185 <span style=''>    override def broadcastMessage(message: Any, clientsToExclude: String*): Unit = {
-</span>186 <span style=''>      if (</span><span style='background: #F0ADAD'>ref.isEmpty</span><span style=''>) </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Unable to broadcast the message, server is not bind to an actor.&quot;)</span><span style=''>
-</span>187 <span style=''>
-</span>188 <span style=''>      val usernameToExclude = </span><span style='background: #F0ADAD'>clientsToExclude :+ this.username</span><span style=''>
-</span>189 <span style=''>      val actors = </span><span style='background: #F0ADAD'>lobby.get.getPlayers.filterNot(p =&gt; (usernameToExclude contains p.getUsername) || !p.isAlive).map(_.getActorRef)</span><span style=''>
-</span>190 <span style=''>      </span><span style='background: #F0ADAD'>actors.foreach(a =&gt; a ! message)</span><span style=''>
-</span>191 <span style=''>    }
-</span>192 <span style=''>
-</span>193 <span style=''>    override def initGame(level: Level): Promise[Boolean] = {
-</span>194 <span style=''>      if (</span><span style='background: #F0ADAD'>status != ServerState.Lobby</span><span style=''>) </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Cannot init the game because the server is in the state: $status&quot;)</span><span style=''>
-</span>195 <span style=''>
-</span>196 <span style=''>      val promise = </span><span style='background: #F0ADAD'>Promise[Boolean]()</span><span style=''>
-</span>197 <span style=''>      //assign player cells to lobby players
-</span>198 <span style=''>      val futures = </span><span style='background: #F0ADAD'>setupClients(level)</span><span style=''>
-</span>199 <span style=''>      </span><span style='background: #F0ADAD'>Future.sequence(futures) onComplete {
-</span>200 <span style=''></span><span style='background: #F0ADAD'>        case Success(_) =&gt; promise success true
-</span>201 <span style=''></span><span style='background: #F0ADAD'>        case Failure(t) =&gt; promise failure t
-</span>202 <span style=''></span><span style='background: #F0ADAD'>      }</span><span style=''>
-</span>203 <span style=''>      promise
-</span>204 <span style=''>    }
-</span>205 <span style=''>
-</span>206 <span style=''>    //GAME MANAGEMENT
-</span>207 <span style=''>
-</span>208 <span style=''>    private def setupClients(level: Level): Seq[Future[Any]] = {
-</span>209 <span style=''>      val availablePlayerCells = </span><span style='background: #F0ADAD'>level.entities.filter(_.isInstanceOf[PlayerCellEntity]).map(p =&gt; Some(p.getUUID))</span><span style=''>
-</span>210 <span style=''>      val otherPlayers = </span><span style='background: #F0ADAD'>lobby.get.getPlayers.filterNot(_.getUsername == this.username)</span><span style=''>
-</span>211 <span style=''>
-</span>212 <span style=''>      if (</span><span style='background: #F0ADAD'>availablePlayerCells.size &lt;= 0</span><span style=''>) </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Cannot setup clients if the level has no player cells.&quot;)</span><span style=''>
-</span>213 <span style=''>
-</span>214 <span style=''>      //assign first available player cell to the server
-</span>215 <span style=''>      </span><span style='background: #F0ADAD'>this.uuid = availablePlayerCells.head.get</span><span style=''>
-</span>216 <span style=''>
-</span>217 <span style=''>      //update uuid of the server players
-</span>218 <span style=''>      val serverPlayer = </span><span style='background: #F0ADAD'>getPlayerFromLobby(this.username)</span><span style=''>
-</span>219 <span style=''>      if (</span><span style='background: #F0ADAD'>serverPlayer.isEmpty</span><span style=''>) </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Cannot update server player uuid because the player was not found.&quot;)</span><span style=''>
-</span>220 <span style=''>      </span><span style='background: #F0ADAD'>serverPlayer.get.setUUID(this.uuid)</span><span style=''>
-</span>221 <span style=''>
-</span>222 <span style=''>      //get map shape and send to the clients along with the assigned uuid
-</span>223 <span style=''>      val mapShape = </span><span style='background: #F0ADAD'>level.levelMap.mapShape</span><span style=''>
-</span>224 <span style=''>
-</span>225 <span style=''>      //gather extra player cells
-</span>226 <span style=''>      val remainingPlayerCells = </span><span style='background: #F0ADAD'>availablePlayerCells.tail</span><span style=''>
-</span>227 <span style=''>      val extraCellPlayers = </span><span style='background: #F0ADAD'>remainingPlayerCells.slice(otherPlayers.size, remainingPlayerCells.size).map(_.get)</span><span style=''>
-</span>228 <span style=''>      //update level entities by removing the extra player cells
-</span>229 <span style=''>      </span><span style='background: #F0ADAD'>level.entities = for (
-</span>230 <span style=''></span><span style='background: #F0ADAD'>        e &lt;- level.entities
-</span>231 <span style=''></span><span style='background: #F0ADAD'>        if !(extraCellPlayers contains e.getUUID)
-</span>232 <span style=''></span><span style='background: #F0ADAD'>      ) yield e</span><span style=''>
-</span>233 <span style=''>
-</span>234 <span style=''>      //prepare ask requests for all clients and return futures
-</span>235 <span style=''>      </span><span style='background: #F0ADAD'>otherPlayers.map(Some(_)).zipAll(availablePlayerCells.tail, None, None).map {
-</span>236 <span style=''></span><span style='background: #F0ADAD'>        case (Some(p), Some(id)) =&gt; p.setUUID(id); Some(p.getActorRef ? GameStarted(id, level.levelInfo, mapShape))
-</span>237 <span style=''></span><span style='background: #F0ADAD'>        case (None, _) =&gt; None
-</span>238 <span style=''></span><span style='background: #F0ADAD'>        case _ =&gt; throw new IllegalStateException(&quot;Not enough player cells for all the clients.&quot;)
-</span>239 <span style=''></span><span style='background: #F0ADAD'>      }.filter(_.nonEmpty).map(_.get)</span><span style=''>
-</span>240 <span style=''>    }
-</span>241 <span style=''>
-</span>242 <span style=''>    override def startGame(levelContext: MultiPlayerLevelContext, levelInfo: LevelInfo): Unit = {
-</span>243 <span style=''>      if (</span><span style='background: #F0ADAD'>status != ServerState.Lobby</span><span style=''>) </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Cannot start game because the server is in the state: $status&quot;)</span><span style=''>
-</span>244 <span style=''>
-</span>245 <span style=''>      </span><span style='background: #F0ADAD'>lobby</span><span style=''> match {
-</span>246 <span style=''>        case Some(gameLobby) =&gt;
-</span>247 <span style=''>          </span><span style='background: #F0ADAD'>gameLobby.notifyGameStarted(levelContext, levelInfo)</span><span style=''>
-</span>248 <span style=''>          </span><span style='background: #F0ADAD'>status = ServerState.Game</span><span style=''>
-</span>249 <span style=''>        case _ =&gt; </span><span style='background: #F0ADAD'>throw new IllegalArgumentException(&quot;Unable to start the game if the lobby is not defined.&quot;)</span><span style=''>
-</span>250 <span style=''>      }
-</span>251 <span style=''>    }
-</span>252 <span style=''>
-</span>253 <span style=''>    override def stopGame(winner: String = username): Unit = {
-</span>254 <span style=''>      if (</span><span style='background: #F0ADAD'>status != ServerState.Lobby &amp;&amp; status != ServerState.Game</span><span style=''>) </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Cannot stop game because the server is in the state: $status&quot;)</span><span style=''>
-</span>255 <span style=''>
-</span>256 <span style=''>      //if the server won, everyone else lost
-</span>257 <span style=''>      if (</span><span style='background: #F0ADAD'>winner.equals(username)</span><span style=''>) {
-</span>258 <span style=''>        </span><span style='background: #F0ADAD'>broadcastMessage(ServerActor.GameEnded(false))</span><span style=''>
-</span>259 <span style=''>      } else </span><span style='background: #F0ADAD'>{
-</span>260 <span style=''></span><span style='background: #F0ADAD'>        deliverMessage(winner, GameEnded(true))
-</span>261 <span style=''></span><span style='background: #F0ADAD'>        broadcastMessage(GameEnded(false), winner)
-</span>262 <span style=''></span><span style='background: #F0ADAD'>      }</span><span style=''>
-</span>263 <span style=''>      //reset lobby death status
-</span>264 <span style=''>      </span><span style='background: #F0ADAD'>resetLobbyPlayersDeathStatus()</span><span style=''>
-</span>265 <span style=''>      //change current server status
-</span>266 <span style=''>      </span><span style='background: #F0ADAD'>status = ServerState.Lobby</span><span style=''>
-</span>267 <span style=''>    }
-</span>268 <span style=''>
-</span>269 <span style=''>    override def deliverMessage(username: String, message: Any): Unit = {
-</span>270 <span style=''>      if (</span><span style='background: #F0ADAD'>lobby.isEmpty</span><span style=''>) </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(&quot;Cannot deliver message to specific client if the lobby is not defined.&quot;)</span><span style=''>
-</span>271 <span style=''>
-</span>272 <span style=''>      </span><span style='background: #F0ADAD'>lobby.get.getPlayers.find(_.getUsername == username)</span><span style=''> match {
-</span>273 <span style=''>        case Some(player) =&gt; </span><span style='background: #F0ADAD'>player.getActorRef ! message</span><span style=''>
-</span>274 <span style=''>        case None =&gt; </span><span style='background: #F0ADAD'>throw new IllegalArgumentException(&quot;Cannot deliver message to specific client if the username does not match any player.&quot;)</span><span style=''>
-</span>275 <span style=''>      }
-</span>276 <span style=''>    }
-</span>277 <span style=''>
-</span>278 <span style=''>    private def resetLobbyPlayersDeathStatus(): Unit = </span><span style='background: #F0ADAD'>lobby</span><span style=''> match {
-</span>279 <span style=''>      case Some(gameLobby) =&gt; </span><span style='background: #F0ADAD'>gameLobby.getPlayers.foreach(_ setLiveness true)</span><span style=''>
-</span>280 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(&quot;Cannot reset lobby players death status if the lobby is not defined.&quot;)</span><span style=''>
-</span>281 <span style=''>    }
-</span>282 <span style=''>
-</span>283 <span style=''>    //LOBBY MANAGEMENT
-</span>284 <span style=''>
-</span>285 <span style=''>    override def notifyClientInputEvent(event: MouseEventWrapper): Unit = {
-</span>286 <span style=''>      if (</span><span style='background: #F0ADAD'>status != ServerState.Game</span><span style=''>) </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Cannot manage client input event because the server is in the state: $status&quot;)</span><span style=''>
-</span>287 <span style=''>
-</span>288 <span style=''>      </span><span style='background: #F0ADAD'>InputEventQueue enqueue event</span><span style=''>
-</span>289 <span style=''>    }
-</span>290 <span style=''>
-</span>291 <span style=''>    override def removePlayerFromGame(username: String, notify: Boolean = false): Unit = {
-</span>292 <span style=''>      if (</span><span style='background: #F0ADAD'>status != ServerState.Game</span><span style=''>) </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Cannot remove player from game because it's in the state: $status&quot;)</span><span style=''>
-</span>293 <span style=''>
-</span>294 <span style=''>      //detect if the dead player is the server itself
-</span>295 <span style=''>      val isServer = </span><span style='background: #F0ADAD'>username == this.username</span><span style=''>
-</span>296 <span style=''>
-</span>297 <span style=''>      //remove entity cell relative to the player that has left
-</span>298 <span style=''>      val player = </span><span style='background: #F0ADAD'>getPlayerFromLobby(username)</span><span style=''>
-</span>299 <span style=''>      if (</span><span style='background: #F0ADAD'>player.isEmpty</span><span style=''>) </span><span style='background: #F0ADAD'>throw new IllegalArgumentException(&quot;Cannot remove player from game because it was not found.&quot;)</span><span style=''>
-</span>300 <span style=''>
-</span>301 <span style=''>      //notify player that he has lost (just clients)
-</span>302 <span style=''>      if (</span><span style='background: #F0ADAD'>notify &amp;&amp; !isServer</span><span style=''>) </span><span style='background: #F0ADAD'>player.get.getActorRef ! GameEnded(false)</span><span style=''>
-</span>303 <span style=''>
-</span>304 <span style=''>      //get the player entity
-</span>305 <span style=''>      val playerEntity = </span><span style='background: #F0ADAD'>EntityManager.filterEntities(classOf[PlayerCellEntity]).find(_.getUUID == player.get.getUUID)</span><span style=''>
-</span>306 <span style=''>      if (</span><span style='background: #F0ADAD'>playerEntity.isEmpty</span><span style=''>) </span><span style='background: #F0ADAD'>throw new IllegalArgumentException(&quot;Cannot remove player cell from game because it was not found.&quot;)</span><span style=''>
-</span>307 <span style=''>
-</span>308 <span style=''>      </span><span style='background: #F0ADAD'>EntityManager.delete(playerEntity.get)</span><span style=''>
-</span>309 <span style=''>      //set the player as dead only if it's not the server itself
-</span>310 <span style=''>      </span><span style='background: #F0ADAD'>setLobbyPlayerAsDead(username)</span><span style=''>
-</span>311 <span style=''>    }
-</span>312 <span style=''>
-</span>313 <span style=''>    private def getPlayerFromLobby(username: String): Option[ReferablePlayer] = </span><span style='background: #F0ADAD'>lobby</span><span style=''> match {
-</span>314 <span style=''>      case Some(gameLobby) =&gt; </span><span style='background: #F0ADAD'>gameLobby.getPlayers.find(_.getUsername == username)</span><span style=''>
-</span>315 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(&quot;Cannot get lobby player if the lobby is not defined.&quot;)</span><span style=''>
-</span>316 <span style=''>    }
-</span>317 <span style=''>
-</span>318 <span style=''>    private def setLobbyPlayerAsDead(username: String): Unit = </span><span style='background: #F0ADAD'>lobby</span><span style=''> match {
-</span>319 <span style=''>      case Some(gameLobby) =&gt; </span><span style='background: #F0ADAD'>gameLobby.getPlayers.filter(_.getUsername == username).foreach(_ setLiveness false)</span><span style=''>
-</span>320 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(&quot;Cannot set lobby player as dead if the lobby is not defined.&quot;)</span><span style=''>
-</span>321 <span style=''>    }
-</span>322 <span style=''>
-</span>323 <span style=''>    override def createLobby(lobbyContext: LobbyContext): Unit = {
-</span>324 <span style=''>      if (</span><span style='background: #F0ADAD'>status != ServerState.Idle</span><span style=''>) </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Server cannot close lobby because it's in the state: $status&quot;)</span><span style=''>
-</span>325 <span style=''>
-</span>326 <span style=''>      //retrieve actor system address
-</span>327 <span style=''>      val address = </span><span style='background: #F0ADAD'>ActorSystemHolder.systemAddress</span><span style=''>
-</span>328 <span style=''>      //abort if something is wrong with the system
-</span>329 <span style=''>      if (</span><span style='background: #F0ADAD'>!NetworkUtils.validatePort(address.port.getOrElse(-1)) ||
-</span>330 <span style=''></span><span style='background: #F0ADAD'>        !NetworkUtils.validateIPV4Address(address.host.getOrElse(&quot;&quot;))</span><span style=''>) {
-</span>331 <span style=''>        </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Server cannot create the lobby because the actor system gave invalid address or port.&quot;)</span><span style=''>
-</span>332 <span style=''>      }
-</span>333 <span style=''>
-</span>334 <span style=''>      //Create the lobby
-</span>335 <span style=''>      </span><span style='background: #F0ADAD'>lobby = Some(GameLobby(lobbyContext))</span><span style=''>
-</span>336 <span style=''>      //add the server itself
-</span>337 <span style=''>      val serverPlayer = </span><span style='background: #F0ADAD'>BasePlayer(username, address.host.get, address.port.get)</span><span style=''>
-</span>338 <span style=''>      //let interface to show immediately the server player
-</span>339 <span style=''>      </span><span style='background: #F0ADAD'>lobbyContext.users = Seq(new User(serverPlayer, true))</span><span style=''>
-</span>340 <span style=''>      //add himself to the lobby
-</span>341 <span style=''>      </span><span style='background: #F0ADAD'>lobby.get.addPlayer(new ReferablePlayer(serverPlayer, ref.get))</span><span style=''>
-</span>342 <span style=''>
-</span>343 <span style=''>      </span><span style='background: #F0ADAD'>status = ServerState.Lobby</span><span style=''>
-</span>344 <span style=''>    }
-</span>345 <span style=''>
-</span>346 <span style=''>    //HELPER METHODS
-</span>347 <span style=''>
-</span>348 <span style=''>    override def closeLobby(): Unit = {
-</span>349 <span style=''>      if (</span><span style='background: #F0ADAD'>status != ServerState.Lobby</span><span style=''>) </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Server cannot close lobby because it's in the state: $status&quot;)</span><span style=''>
-</span>350 <span style=''>      if (</span><span style='background: #F0ADAD'>lobby.isEmpty</span><span style=''>) </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Cannot close lobby if it's not defined.&quot;)</span><span style=''>
-</span>351 <span style=''>
-</span>352 <span style=''>      //broadcast that the lobby is closed
-</span>353 <span style=''>      </span><span style='background: #F0ADAD'>broadcastMessage(LobbyClosed)</span><span style=''>
-</span>354 <span style=''>      //let view change scene
-</span>355 <span style=''>      </span><span style='background: #F0ADAD'>lobby.get.notifyLobbyClosed()</span><span style=''>
-</span>356 <span style=''>      //clear lobby variable
-</span>357 <span style=''>      </span><span style='background: #F0ADAD'>lobby = None</span><span style=''>
-</span>358 <span style=''>
-</span>359 <span style=''>      </span><span style='background: #F0ADAD'>status = ServerState.Idle</span><span style=''>
-</span>360 <span style=''>    }
-</span>361 <span style=''>
-</span>362 <span style=''>    override def getLobbyPlayers: Seq[ReferablePlayer] = {
-</span>363 <span style=''>      (status, lobby) match {
-</span>364 <span style=''>        case (ServerState.Lobby | ServerState.Game, Some(gameLobby)) =&gt; </span><span style='background: #F0ADAD'>gameLobby.getPlayers</span><span style=''>
-</span>365 <span style=''>        case (_, None) =&gt; </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Cannot get lobby players because the lobby is not defined.&quot;)</span><span style=''>
-</span>366 <span style=''>        case _ =&gt; </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Cannot because it's in the state: $status&quot;)</span><span style=''>
-</span>367 <span style=''>      }
-</span>368 <span style=''>    }
-</span>369 <span style=''>
-</span>370 <span style=''>    override def addPlayerToLobby(actorRef: ActorRef, player: BasePlayer): Boolean = {
-</span>371 <span style=''>      (status, lobby) match {
-</span>372 <span style=''>        case (ServerState.Lobby, Some(gameLobby)) =&gt;
-</span>373 <span style=''>          if (</span><span style='background: #F0ADAD'>!gameLobby.isFull</span><span style=''>) </span><span style='background: #F0ADAD'>{
-</span>374 <span style=''></span><span style='background: #F0ADAD'>            val newPlayer = new ReferablePlayer(player.getUsername, player.getAddress, player.getPort, actorRef)
-</span>375 <span style=''></span><span style='background: #F0ADAD'>            //tell everyone a new player entered the lobby
-</span>376 <span style=''></span><span style='background: #F0ADAD'>            broadcastMessage(PlayerEnteredLobby(newPlayer.toBasicPlayer))
-</span>377 <span style=''></span><span style='background: #F0ADAD'>            //add the player to the lobby
-</span>378 <span style=''></span><span style='background: #F0ADAD'>            gameLobby.addPlayer(newPlayer)
-</span>379 <span style=''></span><span style='background: #F0ADAD'>            true
-</span>380 <span style=''></span><span style='background: #F0ADAD'>          }</span><span style=''> else </span><span style='background: #F0ADAD'>false</span><span style=''>
-</span>381 <span style=''>        case _ =&gt; </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Unable to add player to lobby because the lobby is undefined&quot;)</span><span style=''>
-</span>382 <span style=''>      }
-</span>383 <span style=''>    }
-</span>384 <span style=''>
-</span>385 <span style=''>    override def removePlayerFromLobby(username: String): Unit = {
-</span>386 <span style=''>      (status, lobby) match {
-</span>387 <span style=''>        case (ServerState.Lobby | ServerState.Game, Some(gameLobby)) =&gt;
-</span>388 <span style=''>          //effectively remove player from lobby
-</span>389 <span style=''>          </span><span style='background: #F0ADAD'>gameLobby.removePlayer(username)</span><span style=''>
-</span>390 <span style=''>          //tell everyone the player left the game
-</span>391 <span style=''>          </span><span style='background: #F0ADAD'>broadcastMessage(PlayerLeftLobby(username))</span><span style=''>
-</span>392 <span style=''>        case _ =&gt; </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Unable to remove player to lobby because the lobby is undefined&quot;)</span><span style=''>
-</span>393 <span style=''>      }
-</span>394 <span style=''>    }
-</span>395 <span style=''>  }
-</span>396 <span style=''>
-</span>397 <span style=''>}
+</span>134 <span style=''>/** Companion object */
+</span>135 <span style=''>object Server {
+</span>136 <span style=''>
+</span>137 <span style=''>  /** The server username in the lobby.
+</span>138 <span style=''>    *
+</span>139 <span style=''>    * @param username The username
+</span>140 <span style=''>    * @return A ServerImpl instance
+</span>141 <span style=''>    */
+</span>142 <span style=''>  def apply(username: String): Server = </span><span style='background: #F0ADAD'>ServerImpl(username)</span><span style=''>
+</span>143 <span style=''>
+</span>144 <span style=''>  final case class ServerImpl(private var username: String) extends Server {
+</span>145 <span style=''>
+</span>146 <span style=''>    //the uuid of the cell entity that represents this client
+</span>147 <span style=''>    private var uuid: String = _
+</span>148 <span style=''>    //current state of the server
+</span>149 <span style=''>    private var status: ServerState = </span><span style='background: #F0ADAD'>ServerState.Idle</span><span style=''>
+</span>150 <span style=''>    //the current lobby
+</span>151 <span style=''>    private var lobby: Option[GameLobby[ReferablePlayer]] = </span><span style='background: #F0ADAD'>None</span><span style=''>
+</span>152 <span style=''>    //the actor ref used to send and receive
+</span>153 <span style=''>    private var ref: Option[ActorRef] = </span><span style='background: #F0ADAD'>None</span><span style=''>
+</span>154 <span style=''>
+</span>155 <span style=''>    //MAIN METHODS
+</span>156 <span style=''>
+</span>157 <span style=''>    override def bind(actorRef: ActorRef): Unit = </span><span style='background: #F0ADAD'>ref = Some(actorRef)</span><span style=''>
+</span>158 <span style=''>
+</span>159 <span style=''>    override def getUUID: String = </span><span style='background: #F0ADAD'>uuid</span><span style=''>
+</span>160 <span style=''>
+</span>161 <span style=''>    override def getUsername: String = </span><span style='background: #F0ADAD'>username</span><span style=''>
+</span>162 <span style=''>
+</span>163 <span style=''>    override def getState: ServerState = </span><span style='background: #F0ADAD'>status</span><span style=''>
+</span>164 <span style=''>
+</span>165 <span style=''>    override def kill(): Unit = {
+</span>166 <span style=''>      </span><span style='background: #F0ADAD'>status</span><span style=''> match {
+</span>167 <span style=''>        case ServerState.Game =&gt; </span><span style='background: #F0ADAD'>broadcastMessage(GameEnded(false))</span><span style=''>
+</span>168 <span style=''>        case ServerState.Lobby =&gt; </span><span style='background: #F0ADAD'>broadcastMessage(LobbyClosed)</span><span style=''>
+</span>169 <span style=''>        case _ </span><span style='background: #F0ADAD'>=&gt;</span><span style=''> //do nothing is other states
+</span>170 <span style=''>      }
+</span>171 <span style=''>
+</span>172 <span style=''>      if (</span><span style='background: #F0ADAD'>lobby.nonEmpty</span><span style=''>) {
+</span>173 <span style=''>        </span><span style='background: #F0ADAD'>lobby = None</span><span style=''>
+</span>174 <span style=''>      }
+</span>175 <span style=''>
+</span>176 <span style=''>      if (</span><span style='background: #F0ADAD'>ref.nonEmpty</span><span style=''>) </span><span style='background: #F0ADAD'>{
+</span>177 <span style=''></span><span style='background: #F0ADAD'>        ref.get ! PoisonPill
+</span>178 <span style=''></span><span style='background: #F0ADAD'>        ref = None
+</span>179 <span style=''></span><span style='background: #F0ADAD'>      }</span><span style=''>
+</span>180 <span style=''>
+</span>181 <span style=''>      </span><span style='background: #F0ADAD'>status = ServerState.Dead</span><span style=''>
+</span>182 <span style=''>    }
+</span>183 <span style=''>
+</span>184 <span style=''>    //COMMUNICATION
+</span>185 <span style=''>
+</span>186 <span style=''>    override def broadcastMessage(message: Any, clientsToExclude: String*): Unit = {
+</span>187 <span style=''>      if (</span><span style='background: #F0ADAD'>ref.isEmpty</span><span style=''>) </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Unable to broadcast the message, server is not bind to an actor.&quot;)</span><span style=''>
+</span>188 <span style=''>
+</span>189 <span style=''>      val usernameToExclude = </span><span style='background: #F0ADAD'>clientsToExclude :+ this.username</span><span style=''>
+</span>190 <span style=''>      val actors = </span><span style='background: #F0ADAD'>lobby.get.getPlayers.filterNot(p =&gt; (usernameToExclude contains p.getUsername) || !p.isAlive).map(_.getActorRef)</span><span style=''>
+</span>191 <span style=''>      </span><span style='background: #F0ADAD'>actors.foreach(a =&gt; a ! message)</span><span style=''>
+</span>192 <span style=''>    }
+</span>193 <span style=''>
+</span>194 <span style=''>    override def initGame(level: Level): Promise[Boolean] = {
+</span>195 <span style=''>      if (</span><span style='background: #F0ADAD'>status != ServerState.Lobby</span><span style=''>) </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Cannot init the game because the server is in the state: $status&quot;)</span><span style=''>
+</span>196 <span style=''>
+</span>197 <span style=''>      val promise = </span><span style='background: #F0ADAD'>Promise[Boolean]()</span><span style=''>
+</span>198 <span style=''>      //assign player cells to lobby players
+</span>199 <span style=''>      val futures = </span><span style='background: #F0ADAD'>setupClients(level)</span><span style=''>
+</span>200 <span style=''>      </span><span style='background: #F0ADAD'>Future.sequence(futures) onComplete {
+</span>201 <span style=''></span><span style='background: #F0ADAD'>        case Success(_) =&gt; promise success true
+</span>202 <span style=''></span><span style='background: #F0ADAD'>        case Failure(t) =&gt; promise failure t
+</span>203 <span style=''></span><span style='background: #F0ADAD'>      }</span><span style=''>
+</span>204 <span style=''>      promise
+</span>205 <span style=''>    }
+</span>206 <span style=''>
+</span>207 <span style=''>    //GAME MANAGEMENT
+</span>208 <span style=''>
+</span>209 <span style=''>    private def setupClients(level: Level): Seq[Future[Any]] = {
+</span>210 <span style=''>      val availablePlayerCells = </span><span style='background: #F0ADAD'>level.entities.filter(_.isInstanceOf[PlayerCellEntity]).map(p =&gt; Some(p.getUUID))</span><span style=''>
+</span>211 <span style=''>      val otherPlayers = </span><span style='background: #F0ADAD'>lobby.get.getPlayers.filterNot(_.getUsername == this.username)</span><span style=''>
+</span>212 <span style=''>
+</span>213 <span style=''>      if (</span><span style='background: #F0ADAD'>availablePlayerCells.size &lt;= 0</span><span style=''>) </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Cannot setup clients if the level has no player cells.&quot;)</span><span style=''>
+</span>214 <span style=''>
+</span>215 <span style=''>      //assign first available player cell to the server
+</span>216 <span style=''>      </span><span style='background: #F0ADAD'>this.uuid = availablePlayerCells.head.get</span><span style=''>
+</span>217 <span style=''>
+</span>218 <span style=''>      //update uuid of the server players
+</span>219 <span style=''>      val serverPlayer = </span><span style='background: #F0ADAD'>getPlayerFromLobby(this.username)</span><span style=''>
+</span>220 <span style=''>      if (</span><span style='background: #F0ADAD'>serverPlayer.isEmpty</span><span style=''>) </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Cannot update server player uuid because the player was not found.&quot;)</span><span style=''>
+</span>221 <span style=''>      </span><span style='background: #F0ADAD'>serverPlayer.get.setUUID(this.uuid)</span><span style=''>
+</span>222 <span style=''>
+</span>223 <span style=''>      //get map shape and send to the clients along with the assigned uuid
+</span>224 <span style=''>      val mapShape = </span><span style='background: #F0ADAD'>level.levelMap.mapShape</span><span style=''>
+</span>225 <span style=''>
+</span>226 <span style=''>      //gather extra player cells
+</span>227 <span style=''>      val remainingPlayerCells = </span><span style='background: #F0ADAD'>availablePlayerCells.tail</span><span style=''>
+</span>228 <span style=''>      val extraCellPlayers = </span><span style='background: #F0ADAD'>remainingPlayerCells.slice(otherPlayers.size, remainingPlayerCells.size).map(_.get)</span><span style=''>
+</span>229 <span style=''>      //update level entities by removing the extra player cells
+</span>230 <span style=''>      </span><span style='background: #F0ADAD'>level.entities = for (
+</span>231 <span style=''></span><span style='background: #F0ADAD'>        e &lt;- level.entities
+</span>232 <span style=''></span><span style='background: #F0ADAD'>        if !(extraCellPlayers contains e.getUUID)
+</span>233 <span style=''></span><span style='background: #F0ADAD'>      ) yield e</span><span style=''>
+</span>234 <span style=''>
+</span>235 <span style=''>      //prepare ask requests for all clients and return futures
+</span>236 <span style=''>      </span><span style='background: #F0ADAD'>otherPlayers.map(Some(_)).zipAll(availablePlayerCells.tail, None, None).map {
+</span>237 <span style=''></span><span style='background: #F0ADAD'>        case (Some(p), Some(id)) =&gt; p.setUUID(id); Some(p.getActorRef ? GameStarted(id, level.levelInfo, mapShape))
+</span>238 <span style=''></span><span style='background: #F0ADAD'>        case (None, _) =&gt; None
+</span>239 <span style=''></span><span style='background: #F0ADAD'>        case _ =&gt; throw new IllegalStateException(&quot;Not enough player cells for all the clients.&quot;)
+</span>240 <span style=''></span><span style='background: #F0ADAD'>      }.filter(_.nonEmpty).map(_.get)</span><span style=''>
+</span>241 <span style=''>    }
+</span>242 <span style=''>
+</span>243 <span style=''>    override def startGame(levelContext: MultiPlayerLevelContext, levelInfo: LevelInfo): Unit = {
+</span>244 <span style=''>      if (</span><span style='background: #F0ADAD'>status != ServerState.Lobby</span><span style=''>) </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Cannot start game because the server is in the state: $status&quot;)</span><span style=''>
+</span>245 <span style=''>
+</span>246 <span style=''>      </span><span style='background: #F0ADAD'>lobby</span><span style=''> match {
+</span>247 <span style=''>        case Some(gameLobby) =&gt;
+</span>248 <span style=''>          </span><span style='background: #F0ADAD'>gameLobby.notifyGameStarted(levelContext, levelInfo)</span><span style=''>
+</span>249 <span style=''>          </span><span style='background: #F0ADAD'>status = ServerState.Game</span><span style=''>
+</span>250 <span style=''>        case _ =&gt; </span><span style='background: #F0ADAD'>throw new IllegalArgumentException(&quot;Unable to start the game if the lobby is not defined.&quot;)</span><span style=''>
+</span>251 <span style=''>      }
+</span>252 <span style=''>    }
+</span>253 <span style=''>
+</span>254 <span style=''>    override def stopGame(winner: String = username): Unit = {
+</span>255 <span style=''>      if (</span><span style='background: #F0ADAD'>status != ServerState.Lobby &amp;&amp; status != ServerState.Game</span><span style=''>) </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Cannot stop game because the server is in the state: $status&quot;)</span><span style=''>
+</span>256 <span style=''>
+</span>257 <span style=''>      //if the server won, everyone else lost
+</span>258 <span style=''>      if (</span><span style='background: #F0ADAD'>winner.equals(username)</span><span style=''>) {
+</span>259 <span style=''>        </span><span style='background: #F0ADAD'>broadcastMessage(ServerActor.GameEnded(false))</span><span style=''>
+</span>260 <span style=''>      } else </span><span style='background: #F0ADAD'>{
+</span>261 <span style=''></span><span style='background: #F0ADAD'>        deliverMessage(winner, GameEnded(true))
+</span>262 <span style=''></span><span style='background: #F0ADAD'>        broadcastMessage(GameEnded(false), winner)
+</span>263 <span style=''></span><span style='background: #F0ADAD'>      }</span><span style=''>
+</span>264 <span style=''>      //reset lobby death status
+</span>265 <span style=''>      </span><span style='background: #F0ADAD'>resetLobbyPlayersDeathStatus()</span><span style=''>
+</span>266 <span style=''>      //change current server status
+</span>267 <span style=''>      </span><span style='background: #F0ADAD'>status = ServerState.Lobby</span><span style=''>
+</span>268 <span style=''>    }
+</span>269 <span style=''>
+</span>270 <span style=''>    override def deliverMessage(username: String, message: Any): Unit = {
+</span>271 <span style=''>      if (</span><span style='background: #F0ADAD'>lobby.isEmpty</span><span style=''>) </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(&quot;Cannot deliver message to specific client if the lobby is not defined.&quot;)</span><span style=''>
+</span>272 <span style=''>
+</span>273 <span style=''>      </span><span style='background: #F0ADAD'>lobby.get.getPlayers.find(_.getUsername == username)</span><span style=''> match {
+</span>274 <span style=''>        case Some(player) =&gt; </span><span style='background: #F0ADAD'>player.getActorRef ! message</span><span style=''>
+</span>275 <span style=''>        case None =&gt; </span><span style='background: #F0ADAD'>throw new IllegalArgumentException(&quot;Cannot deliver message to specific client if the username does not match any player.&quot;)</span><span style=''>
+</span>276 <span style=''>      }
+</span>277 <span style=''>    }
+</span>278 <span style=''>
+</span>279 <span style=''>    private def resetLobbyPlayersDeathStatus(): Unit = </span><span style='background: #F0ADAD'>lobby</span><span style=''> match {
+</span>280 <span style=''>      case Some(gameLobby) =&gt; </span><span style='background: #F0ADAD'>gameLobby.getPlayers.foreach(_ setLiveness true)</span><span style=''>
+</span>281 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(&quot;Cannot reset lobby players death status if the lobby is not defined.&quot;)</span><span style=''>
+</span>282 <span style=''>    }
+</span>283 <span style=''>
+</span>284 <span style=''>    //LOBBY MANAGEMENT
+</span>285 <span style=''>
+</span>286 <span style=''>    override def notifyClientInputEvent(event: MouseEventWrapper): Unit = {
+</span>287 <span style=''>      if (</span><span style='background: #F0ADAD'>status != ServerState.Game</span><span style=''>) </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Cannot manage client input event because the server is in the state: $status&quot;)</span><span style=''>
+</span>288 <span style=''>
+</span>289 <span style=''>      </span><span style='background: #F0ADAD'>InputEventQueue enqueue event</span><span style=''>
+</span>290 <span style=''>    }
+</span>291 <span style=''>
+</span>292 <span style=''>    override def removePlayerFromGame(username: String, notify: Boolean = false): Unit = {
+</span>293 <span style=''>      if (</span><span style='background: #F0ADAD'>status != ServerState.Game</span><span style=''>) </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Cannot remove player from game because it's in the state: $status&quot;)</span><span style=''>
+</span>294 <span style=''>
+</span>295 <span style=''>      //detect if the dead player is the server itself
+</span>296 <span style=''>      val isServer = </span><span style='background: #F0ADAD'>username == this.username</span><span style=''>
+</span>297 <span style=''>
+</span>298 <span style=''>      //remove entity cell relative to the player that has left
+</span>299 <span style=''>      val player = </span><span style='background: #F0ADAD'>getPlayerFromLobby(username)</span><span style=''>
+</span>300 <span style=''>      if (</span><span style='background: #F0ADAD'>player.isEmpty</span><span style=''>) </span><span style='background: #F0ADAD'>throw new IllegalArgumentException(&quot;Cannot remove player from game because it was not found.&quot;)</span><span style=''>
+</span>301 <span style=''>
+</span>302 <span style=''>      //notify player that he has lost (just clients)
+</span>303 <span style=''>      if (</span><span style='background: #F0ADAD'>notify &amp;&amp; !isServer</span><span style=''>) </span><span style='background: #F0ADAD'>player.get.getActorRef ! GameEnded(false)</span><span style=''>
+</span>304 <span style=''>
+</span>305 <span style=''>      //get the player entity
+</span>306 <span style=''>      val playerEntity = </span><span style='background: #F0ADAD'>EntityManager.filterEntities(classOf[PlayerCellEntity]).find(_.getUUID == player.get.getUUID)</span><span style=''>
+</span>307 <span style=''>      if (</span><span style='background: #F0ADAD'>playerEntity.isEmpty</span><span style=''>) </span><span style='background: #F0ADAD'>throw new IllegalArgumentException(&quot;Cannot remove player cell from game because it was not found.&quot;)</span><span style=''>
+</span>308 <span style=''>
+</span>309 <span style=''>      </span><span style='background: #F0ADAD'>EntityManager.delete(playerEntity.get)</span><span style=''>
+</span>310 <span style=''>      //set the player as dead only if it's not the server itself
+</span>311 <span style=''>      </span><span style='background: #F0ADAD'>setLobbyPlayerAsDead(username)</span><span style=''>
+</span>312 <span style=''>    }
+</span>313 <span style=''>
+</span>314 <span style=''>    private def getPlayerFromLobby(username: String): Option[ReferablePlayer] = </span><span style='background: #F0ADAD'>lobby</span><span style=''> match {
+</span>315 <span style=''>      case Some(gameLobby) =&gt; </span><span style='background: #F0ADAD'>gameLobby.getPlayers.find(_.getUsername == username)</span><span style=''>
+</span>316 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(&quot;Cannot get lobby player if the lobby is not defined.&quot;)</span><span style=''>
+</span>317 <span style=''>    }
+</span>318 <span style=''>
+</span>319 <span style=''>    private def setLobbyPlayerAsDead(username: String): Unit = </span><span style='background: #F0ADAD'>lobby</span><span style=''> match {
+</span>320 <span style=''>      case Some(gameLobby) =&gt; </span><span style='background: #F0ADAD'>gameLobby.getPlayers.filter(_.getUsername == username).foreach(_ setLiveness false)</span><span style=''>
+</span>321 <span style=''>      case _ =&gt; </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(&quot;Cannot set lobby player as dead if the lobby is not defined.&quot;)</span><span style=''>
+</span>322 <span style=''>    }
+</span>323 <span style=''>
+</span>324 <span style=''>    override def createLobby(lobbyContext: LobbyContext): Unit = {
+</span>325 <span style=''>      if (</span><span style='background: #F0ADAD'>status != ServerState.Idle</span><span style=''>) </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Server cannot close lobby because it's in the state: $status&quot;)</span><span style=''>
+</span>326 <span style=''>
+</span>327 <span style=''>      //retrieve actor system address
+</span>328 <span style=''>      val address = </span><span style='background: #F0ADAD'>ActorSystemHolder.systemAddress</span><span style=''>
+</span>329 <span style=''>      //abort if something is wrong with the system
+</span>330 <span style=''>      if (</span><span style='background: #F0ADAD'>!NetworkUtils.validatePort(address.port.getOrElse(-1)) ||
+</span>331 <span style=''></span><span style='background: #F0ADAD'>        !NetworkUtils.validateIPV4Address(address.host.getOrElse(&quot;&quot;))</span><span style=''>) {
+</span>332 <span style=''>        </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Server cannot create the lobby because the actor system gave invalid address or port.&quot;)</span><span style=''>
+</span>333 <span style=''>      }
+</span>334 <span style=''>
+</span>335 <span style=''>      //Create the lobby
+</span>336 <span style=''>      </span><span style='background: #F0ADAD'>lobby = Some(GameLobby(lobbyContext))</span><span style=''>
+</span>337 <span style=''>      //add the server itself
+</span>338 <span style=''>      val serverPlayer = </span><span style='background: #F0ADAD'>BasePlayer(username, address.host.get, address.port.get)</span><span style=''>
+</span>339 <span style=''>      //let interface to show immediately the server player
+</span>340 <span style=''>      </span><span style='background: #F0ADAD'>lobbyContext.users = Seq(new User(serverPlayer, true))</span><span style=''>
+</span>341 <span style=''>      //add himself to the lobby
+</span>342 <span style=''>      </span><span style='background: #F0ADAD'>lobby.get.addPlayer(new ReferablePlayer(serverPlayer, ref.get))</span><span style=''>
+</span>343 <span style=''>
+</span>344 <span style=''>      </span><span style='background: #F0ADAD'>status = ServerState.Lobby</span><span style=''>
+</span>345 <span style=''>    }
+</span>346 <span style=''>
+</span>347 <span style=''>    //HELPER METHODS
+</span>348 <span style=''>
+</span>349 <span style=''>    override def closeLobby(): Unit = {
+</span>350 <span style=''>      if (</span><span style='background: #F0ADAD'>status != ServerState.Lobby</span><span style=''>) </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Server cannot close lobby because it's in the state: $status&quot;)</span><span style=''>
+</span>351 <span style=''>      if (</span><span style='background: #F0ADAD'>lobby.isEmpty</span><span style=''>) </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Cannot close lobby if it's not defined.&quot;)</span><span style=''>
+</span>352 <span style=''>
+</span>353 <span style=''>      //broadcast that the lobby is closed
+</span>354 <span style=''>      </span><span style='background: #F0ADAD'>broadcastMessage(LobbyClosed)</span><span style=''>
+</span>355 <span style=''>      //let view change scene
+</span>356 <span style=''>      </span><span style='background: #F0ADAD'>lobby.get.notifyLobbyClosed()</span><span style=''>
+</span>357 <span style=''>      //clear lobby variable
+</span>358 <span style=''>      </span><span style='background: #F0ADAD'>lobby = None</span><span style=''>
+</span>359 <span style=''>
+</span>360 <span style=''>      </span><span style='background: #F0ADAD'>status = ServerState.Idle</span><span style=''>
+</span>361 <span style=''>    }
+</span>362 <span style=''>
+</span>363 <span style=''>    override def getLobbyPlayers: Seq[ReferablePlayer] = {
+</span>364 <span style=''>      (status, lobby) match {
+</span>365 <span style=''>        case (ServerState.Lobby | ServerState.Game, Some(gameLobby)) =&gt; </span><span style='background: #F0ADAD'>gameLobby.getPlayers</span><span style=''>
+</span>366 <span style=''>        case (_, None) =&gt; </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Cannot get lobby players because the lobby is not defined.&quot;)</span><span style=''>
+</span>367 <span style=''>        case _ =&gt; </span><span style='background: #F0ADAD'>throw new UnsupportedOperationException(s&quot;Cannot because it's in the state: $status&quot;)</span><span style=''>
+</span>368 <span style=''>      }
+</span>369 <span style=''>    }
+</span>370 <span style=''>
+</span>371 <span style=''>    override def addPlayerToLobby(actorRef: ActorRef, player: BasePlayer): Boolean = {
+</span>372 <span style=''>      (status, lobby) match {
+</span>373 <span style=''>        case (ServerState.Lobby, Some(gameLobby)) =&gt;
+</span>374 <span style=''>          if (</span><span style='background: #F0ADAD'>!gameLobby.isFull</span><span style=''>) </span><span style='background: #F0ADAD'>{
+</span>375 <span style=''></span><span style='background: #F0ADAD'>            val newPlayer = new ReferablePlayer(player.getUsername, player.getAddress, player.getPort, actorRef)
+</span>376 <span style=''></span><span style='background: #F0ADAD'>            //tell everyone a new player entered the lobby
+</span>377 <span style=''></span><span style='background: #F0ADAD'>            broadcastMessage(PlayerEnteredLobby(newPlayer.toBasicPlayer))
+</span>378 <span style=''></span><span style='background: #F0ADAD'>            //add the player to the lobby
+</span>379 <span style=''></span><span style='background: #F0ADAD'>            gameLobby.addPlayer(newPlayer)
+</span>380 <span style=''></span><span style='background: #F0ADAD'>            true
+</span>381 <span style=''></span><span style='background: #F0ADAD'>          }</span><span style=''> else </span><span style='background: #F0ADAD'>false</span><span style=''>
+</span>382 <span style=''>        case _ =&gt; </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Unable to add player to lobby because the lobby is undefined&quot;)</span><span style=''>
+</span>383 <span style=''>      }
+</span>384 <span style=''>    }
+</span>385 <span style=''>
+</span>386 <span style=''>    override def removePlayerFromLobby(username: String): Unit = {
+</span>387 <span style=''>      (status, lobby) match {
+</span>388 <span style=''>        case (ServerState.Lobby | ServerState.Game, Some(gameLobby)) =&gt;
+</span>389 <span style=''>          //effectively remove player from lobby
+</span>390 <span style=''>          </span><span style='background: #F0ADAD'>gameLobby.removePlayer(username)</span><span style=''>
+</span>391 <span style=''>          //tell everyone the player left the game
+</span>392 <span style=''>          </span><span style='background: #F0ADAD'>broadcastMessage(PlayerLeftLobby(username))</span><span style=''>
+</span>393 <span style=''>        case _ =&gt; </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Unable to remove player to lobby because the lobby is undefined&quot;)</span><span style=''>
+</span>394 <span style=''>      }
+</span>395 <span style=''>    }
+</span>396 <span style=''>  }
+</span>397 <span style=''>
+</span>398 <span style=''>}
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -435,7 +436,7 @@
           27
         </td>
         <td>
-          1579
+          1582
         </td>
         <td>
           1125
@@ -456,7 +457,7 @@
           28
         </td>
         <td>
-          1581
+          1584
         </td>
         <td>
           1176
@@ -477,7 +478,7 @@
           28
         </td>
         <td>
-          1580
+          1583
         </td>
         <td>
           1176
@@ -498,7 +499,7 @@
           28
         </td>
         <td>
-          1582
+          1585
         </td>
         <td>
           1168
@@ -516,15 +517,15 @@
         </td>
       </tr><tr>
         <td>
-          141
+          142
         </td>
         <td>
-          1583
+          1586
         </td>
         <td>
-          4439
+          4463
           -
-          4459
+          4483
         </td>
         <td>
           Apply
@@ -537,15 +538,15 @@
         </td>
       </tr><tr>
         <td>
-          148
+          149
         </td>
         <td>
-          1584
+          1587
         </td>
         <td>
-          4706
+          4730
           -
-          4722
+          4746
         </td>
         <td>
           Select
@@ -558,15 +559,15 @@
         </td>
       </tr><tr>
         <td>
-          150
+          151
         </td>
         <td>
-          1585
+          1588
         </td>
         <td>
-          4807
+          4831
           -
-          4811
+          4835
         </td>
         <td>
           Select
@@ -579,15 +580,15 @@
         </td>
       </tr><tr>
         <td>
-          152
+          153
         </td>
         <td>
-          1586
+          1589
         </td>
         <td>
-          4897
+          4921
           -
-          4901
+          4925
         </td>
         <td>
           Select
@@ -600,15 +601,15 @@
         </td>
       </tr><tr>
         <td>
-          156
+          157
         </td>
         <td>
-          1587
+          1590
         </td>
         <td>
-          4979
+          5003
           -
-          4993
+          5017
         </td>
         <td>
           Apply
@@ -621,15 +622,15 @@
         </td>
       </tr><tr>
         <td>
-          156
+          157
         </td>
         <td>
-          1588
+          1591
         </td>
         <td>
-          4973
+          4997
           -
-          4993
+          5017
         </td>
         <td>
           Apply
@@ -642,15 +643,15 @@
         </td>
       </tr><tr>
         <td>
-          158
+          159
         </td>
         <td>
-          1589
+          1592
         </td>
         <td>
-          5030
+          5054
           -
-          5034
+          5058
         </td>
         <td>
           Select
@@ -663,15 +664,15 @@
         </td>
       </tr><tr>
         <td>
-          160
+          161
         </td>
         <td>
-          1590
+          1593
         </td>
         <td>
-          5075
+          5099
           -
-          5083
+          5107
         </td>
         <td>
           Select
@@ -684,36 +685,15 @@
         </td>
       </tr><tr>
         <td>
-          162
+          163
         </td>
         <td>
-          1591
+          1594
         </td>
         <td>
-          5126
+          5150
           -
-          5132
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.status
-        </td>
-        <td style="background: #F0ADAD">
-          ServerImpl.this.status
-        </td>
-      </tr><tr>
-        <td>
-          165
-        </td>
-        <td>
-          1592
-        </td>
-        <td>
-          5174
-          -
-          5180
+          5156
         </td>
         <td>
           Select
@@ -729,12 +709,33 @@
           166
         </td>
         <td>
-          1593
+          1595
         </td>
         <td>
-          5239
+          5198
           -
-          5255
+          5204
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.status
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.status
+        </td>
+      </tr><tr>
+        <td>
+          167
+        </td>
+        <td>
+          1596
+        </td>
+        <td>
+          5263
+          -
+          5279
         </td>
         <td>
           Apply
@@ -747,15 +748,15 @@
         </td>
       </tr><tr>
         <td>
-          166
+          167
         </td>
         <td>
-          1594
+          1597
         </td>
         <td>
-          5222
+          5246
           -
-          5256
+          5280
         </td>
         <td>
           Apply
@@ -768,15 +769,15 @@
         </td>
       </tr><tr>
         <td>
-          167
+          168
         </td>
         <td>
-          1596
+          1599
         </td>
         <td>
-          5291
+          5315
           -
-          5320
+          5344
         </td>
         <td>
           Apply
@@ -789,15 +790,15 @@
         </td>
       </tr><tr>
         <td>
-          167
+          168
         </td>
         <td>
-          1595
+          1598
         </td>
         <td>
-          5308
+          5332
           -
-          5319
+          5343
         </td>
         <td>
           Select
@@ -810,15 +811,15 @@
         </td>
       </tr><tr>
         <td>
-          168
+          169
         </td>
         <td>
-          1597
+          1600
         </td>
         <td>
-          5336
+          5360
           -
-          5338
+          5362
         </td>
         <td>
           Literal
@@ -831,15 +832,15 @@
         </td>
       </tr><tr>
         <td>
-          171
+          172
         </td>
         <td>
-          1602
+          1605
         </td>
         <td>
-          5383
+          5407
           -
-          5383
+          5407
         </td>
         <td>
           Literal
@@ -852,15 +853,15 @@
         </td>
       </tr><tr>
         <td>
-          171
+          172
         </td>
         <td>
-          1598
+          1601
         </td>
         <td>
-          5387
+          5411
           -
-          5401
+          5425
         </td>
         <td>
           Select
@@ -873,15 +874,15 @@
         </td>
       </tr><tr>
         <td>
-          171
+          172
         </td>
         <td>
-          1603
+          1606
         </td>
         <td>
-          5383
+          5407
           -
-          5383
+          5407
         </td>
         <td>
           Block
@@ -894,15 +895,15 @@
         </td>
       </tr><tr>
         <td>
-          172
+          173
         </td>
         <td>
-          1599
+          1602
         </td>
         <td>
-          5421
+          5445
           -
-          5425
+          5449
         </td>
         <td>
           Select
@@ -915,15 +916,15 @@
         </td>
       </tr><tr>
         <td>
-          172
+          173
         </td>
         <td>
-          1601
+          1604
         </td>
         <td>
-          5413
+          5437
           -
-          5425
+          5449
         </td>
         <td>
           Block
@@ -936,15 +937,15 @@
         </td>
       </tr><tr>
         <td>
-          172
+          173
         </td>
         <td>
-          1600
+          1603
         </td>
         <td>
-          5413
+          5437
           -
-          5425
+          5449
         </td>
         <td>
           Apply
@@ -957,15 +958,15 @@
         </td>
       </tr><tr>
         <td>
-          175
+          176
         </td>
         <td>
-          1614
+          1617
         </td>
         <td>
-          5441
+          5465
           -
-          5441
+          5465
         </td>
         <td>
           Block
@@ -978,15 +979,15 @@
         </td>
       </tr><tr>
         <td>
-          175
+          176
         </td>
         <td>
-          1613
+          1616
         </td>
         <td>
-          5441
+          5465
           -
-          5441
+          5465
         </td>
         <td>
           Literal
@@ -999,15 +1000,15 @@
         </td>
       </tr><tr>
         <td>
-          175
+          176
         </td>
         <td>
-          1604
+          1607
         </td>
         <td>
-          5445
+          5469
           -
-          5457
+          5481
         </td>
         <td>
           Select
@@ -1020,15 +1021,15 @@
         </td>
       </tr><tr>
         <td>
-          175
+          176
         </td>
         <td>
-          1612
+          1615
         </td>
         <td>
-          5459
+          5483
           -
-          5516
+          5540
         </td>
         <td>
           Block
@@ -1049,15 +1050,15 @@
         </td>
       </tr><tr>
         <td>
-          176
+          177
         </td>
         <td>
-          1605
+          1608
         </td>
         <td>
-          5469
+          5493
           -
-          5476
+          5500
         </td>
         <td>
           Select
@@ -1070,15 +1071,15 @@
         </td>
       </tr><tr>
         <td>
-          176
+          177
         </td>
         <td>
-          1608
+          1611
         </td>
         <td>
-          5477
+          5501
           -
-          5477
+          5501
         </td>
         <td>
           Apply
@@ -1091,15 +1092,15 @@
         </td>
       </tr><tr>
         <td>
-          176
+          177
         </td>
         <td>
-          1607
+          1610
         </td>
         <td>
-          5479
+          5503
           -
-          5489
+          5513
         </td>
         <td>
           Select
@@ -1112,15 +1113,15 @@
         </td>
       </tr><tr>
         <td>
-          176
+          177
         </td>
         <td>
-          1606
+          1609
         </td>
         <td>
-          5469
+          5493
           -
-          5476
+          5500
         </td>
         <td>
           ApplyImplicitView
@@ -1133,15 +1134,15 @@
         </td>
       </tr><tr>
         <td>
-          176
+          177
         </td>
         <td>
-          1609
+          1612
         </td>
         <td>
-          5469
+          5493
           -
-          5489
+          5513
         </td>
         <td>
           ApplyToImplicitArgs
@@ -1154,15 +1155,15 @@
         </td>
       </tr><tr>
         <td>
-          177
+          178
         </td>
         <td>
-          1611
+          1614
         </td>
         <td>
-          5498
+          5522
           -
-          5508
+          5532
         </td>
         <td>
           Apply
@@ -1175,15 +1176,15 @@
         </td>
       </tr><tr>
         <td>
-          177
+          178
         </td>
         <td>
-          1610
+          1613
         </td>
         <td>
-          5504
+          5528
           -
-          5508
+          5532
         </td>
         <td>
           Select
@@ -1196,15 +1197,15 @@
         </td>
       </tr><tr>
         <td>
-          180
+          181
         </td>
         <td>
-          1616
+          1619
         </td>
         <td>
-          5524
+          5548
           -
-          5549
+          5573
         </td>
         <td>
           Apply
@@ -1217,15 +1218,15 @@
         </td>
       </tr><tr>
         <td>
-          180
+          181
         </td>
         <td>
-          1615
+          1618
         </td>
         <td>
-          5533
+          5557
           -
-          5549
+          5573
         </td>
         <td>
           Select
@@ -1238,36 +1239,15 @@
         </td>
       </tr><tr>
         <td>
-          186
+          187
         </td>
         <td>
           1620
         </td>
         <td>
-          5669
+          5697
           -
-          5669
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          186
-        </td>
-        <td>
-          1617
-        </td>
-        <td>
-          5673
-          -
-          5684
+          5708
         </td>
         <td>
           Select
@@ -1280,15 +1260,36 @@
         </td>
       </tr><tr>
         <td>
-          186
+          187
         </td>
         <td>
-          1619
+          1623
         </td>
         <td>
-          5686
+          5693
           -
-          5785
+          5693
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          187
+        </td>
+        <td>
+          1622
+        </td>
+        <td>
+          5710
+          -
+          5809
         </td>
         <td>
           Block
@@ -1301,36 +1302,15 @@
         </td>
       </tr><tr>
         <td>
-          186
+          187
         </td>
         <td>
-          1618
+          1624
         </td>
         <td>
-          5686
+          5693
           -
-          5785
-        </td>
-        <td>
-          Throw
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          throw new java.lang.IllegalStateException(&quot;Unable to broadcast the message, server is not bind to an actor.&quot;)
-        </td>
-      </tr><tr>
-        <td>
-          186
-        </td>
-        <td>
-          1621
-        </td>
-        <td>
-          5669
-          -
-          5669
+          5693
         </td>
         <td>
           Block
@@ -1343,15 +1323,36 @@
         </td>
       </tr><tr>
         <td>
-          188
+          187
         </td>
         <td>
-          1623
+          1621
         </td>
         <td>
-          5834
+          5710
           -
-          5834
+          5809
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new java.lang.IllegalStateException(&quot;Unable to broadcast the message, server is not bind to an actor.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          189
+        </td>
+        <td>
+          1626
+        </td>
+        <td>
+          5858
+          -
+          5858
         </td>
         <td>
           TypeApply
@@ -1364,15 +1365,15 @@
         </td>
       </tr><tr>
         <td>
-          188
+          189
         </td>
         <td>
-          1622
+          1625
         </td>
         <td>
-          5837
+          5861
           -
-          5850
+          5874
         </td>
         <td>
           Select
@@ -1385,15 +1386,15 @@
         </td>
       </tr><tr>
         <td>
-          188
+          189
         </td>
         <td>
-          1624
+          1627
         </td>
         <td>
-          5817
+          5841
           -
-          5850
+          5874
         </td>
         <td>
           ApplyToImplicitArgs
@@ -1406,36 +1407,15 @@
         </td>
       </tr><tr>
         <td>
-          189
+          190
         </td>
         <td>
           1629
         </td>
         <td>
-          5967
+          5976
           -
-          5967
-        </td>
-        <td>
-          TypeApply
-        </td>
-        <td>
-          scala.collection.Seq.canBuildFrom
-        </td>
-        <td style="background: #F0ADAD">
-          collection.this.Seq.canBuildFrom[akka.actor.ActorRef]
-        </td>
-      </tr><tr>
-        <td>
-          189
-        </td>
-        <td>
-          1626
-        </td>
-        <td>
-          5952
-          -
-          5962
+          5986
         </td>
         <td>
           Select
@@ -1448,36 +1428,36 @@
         </td>
       </tr><tr>
         <td>
-          189
+          190
+        </td>
+        <td>
+          1632
+        </td>
+        <td>
+          5991
+          -
+          5991
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.Seq.canBuildFrom
+        </td>
+        <td style="background: #F0ADAD">
+          collection.this.Seq.canBuildFrom[akka.actor.ActorRef]
+        </td>
+      </tr><tr>
+        <td>
+          190
         </td>
         <td>
           1628
         </td>
         <td>
-          5968
+          5958
           -
-          5981
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.multiplayer.players.ReferablePlayer.getActorRef
-        </td>
-        <td style="background: #F0ADAD">
-          x$1.getActorRef
-        </td>
-      </tr><tr>
-        <td>
-          189
-        </td>
-        <td>
-          1625
-        </td>
-        <td>
-          5934
-          -
-          5947
+          5971
         </td>
         <td>
           Select
@@ -1490,36 +1470,36 @@
         </td>
       </tr><tr>
         <td>
-          189
+          190
         </td>
         <td>
-          1627
+          1631
         </td>
         <td>
-          5906
+          5992
           -
-          5962
+          6005
         </td>
         <td>
-          Apply
+          Select
         </td>
         <td>
-          scala.Boolean.||
+          it.unibo.osmos.redux.multiplayer.players.ReferablePlayer.getActorRef
         </td>
         <td style="background: #F0ADAD">
-          usernameToExclude.contains[String](p.getUsername).||(p.isAlive.unary_!)
+          x$1.getActorRef
         </td>
       </tr><tr>
         <td>
-          189
+          190
         </td>
         <td>
-          1630
+          1633
         </td>
         <td>
-          5870
+          5894
           -
-          5982
+          6006
         </td>
         <td>
           ApplyToImplicitArgs
@@ -1535,12 +1515,33 @@
           190
         </td>
         <td>
-          1632
+          1630
         </td>
         <td>
-          6011
+          5930
           -
-          6011
+          5986
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.||
+        </td>
+        <td style="background: #F0ADAD">
+          usernameToExclude.contains[String](p.getUsername).||(p.isAlive.unary_!)
+        </td>
+      </tr><tr>
+        <td>
+          191
+        </td>
+        <td>
+          1635
+        </td>
+        <td>
+          6035
+          -
+          6035
         </td>
         <td>
           Apply
@@ -1553,15 +1554,36 @@
         </td>
       </tr><tr>
         <td>
-          190
+          191
         </td>
         <td>
           1634
         </td>
         <td>
-          5989
+          6033
           -
-          6021
+          6034
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          akka.actor.actorRef2Scala
+        </td>
+        <td style="background: #F0ADAD">
+          actor.this.`package`.actorRef2Scala(a)
+        </td>
+      </tr><tr>
+        <td>
+          191
+        </td>
+        <td>
+          1637
+        </td>
+        <td>
+          6013
+          -
+          6045
         </td>
         <td>
           Apply
@@ -1579,36 +1601,15 @@
         </td>
       </tr><tr>
         <td>
-          190
+          191
         </td>
         <td>
-          1631
+          1636
         </td>
         <td>
-          6009
+          6033
           -
-          6010
-        </td>
-        <td>
-          ApplyImplicitView
-        </td>
-        <td>
-          akka.actor.actorRef2Scala
-        </td>
-        <td style="background: #F0ADAD">
-          actor.this.`package`.actorRef2Scala(a)
-        </td>
-      </tr><tr>
-        <td>
-          190
-        </td>
-        <td>
-          1633
-        </td>
-        <td>
-          6009
-          -
-          6020
+          6044
         </td>
         <td>
           ApplyToImplicitArgs
@@ -1621,36 +1622,15 @@
         </td>
       </tr><tr>
         <td>
-          194
+          195
         </td>
         <td>
           1638
         </td>
         <td>
-          6130
+          6135
           -
-          6238
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Cannot init the game because the server is in the state: &quot;, &quot;&quot;).s(ServerImpl.this.status))
-        </td>
-      </tr><tr>
-        <td>
-          194
-        </td>
-        <td>
-          1635
-        </td>
-        <td>
-          6111
-          -
-          6128
+          6152
         </td>
         <td>
           Select
@@ -1663,18 +1643,18 @@
         </td>
       </tr><tr>
         <td>
-          194
+          195
         </td>
         <td>
-          1637
+          1641
         </td>
         <td>
-          6130
+          6154
           -
-          6238
+          6262
         </td>
         <td>
-          Throw
+          Block
         </td>
         <td>
           &lt;nosymbol&gt;
@@ -1684,15 +1664,15 @@
         </td>
       </tr><tr>
         <td>
-          194
+          195
         </td>
         <td>
-          1640
+          1643
         </td>
         <td>
-          6097
+          6121
           -
-          6097
+          6121
         </td>
         <td>
           Block
@@ -1705,36 +1685,36 @@
         </td>
       </tr><tr>
         <td>
-          194
+          195
         </td>
         <td>
-          1636
+          1640
         </td>
         <td>
-          6101
+          6154
           -
-          6128
+          6262
         </td>
         <td>
-          Apply
+          Throw
         </td>
         <td>
-          java.lang.Object.!=
+          &lt;nosymbol&gt;
         </td>
         <td style="background: #F0ADAD">
-          ServerImpl.this.status.!=(ServerState.Lobby)
+          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Cannot init the game because the server is in the state: &quot;, &quot;&quot;).s(ServerImpl.this.status))
         </td>
       </tr><tr>
         <td>
-          194
+          195
         </td>
         <td>
-          1639
+          1642
         </td>
         <td>
-          6097
+          6121
           -
-          6097
+          6121
         </td>
         <td>
           Literal
@@ -1747,15 +1727,36 @@
         </td>
       </tr><tr>
         <td>
-          196
+          195
         </td>
         <td>
-          1641
+          1639
         </td>
         <td>
-          6260
+          6125
           -
-          6278
+          6152
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.!=
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.status.!=(ServerState.Lobby)
+        </td>
+      </tr><tr>
+        <td>
+          197
+        </td>
+        <td>
+          1644
+        </td>
+        <td>
+          6284
+          -
+          6302
         </td>
         <td>
           Apply
@@ -1768,15 +1769,15 @@
         </td>
       </tr><tr>
         <td>
-          198
+          199
         </td>
         <td>
-          1642
+          1645
         </td>
         <td>
-          6344
+          6368
           -
-          6363
+          6387
         </td>
         <td>
           Apply
@@ -1789,15 +1790,15 @@
         </td>
       </tr><tr>
         <td>
-          199
+          200
         </td>
         <td>
-          1643
+          1646
         </td>
         <td>
-          6385
+          6409
           -
-          6385
+          6409
         </td>
         <td>
           TypeApply
@@ -1810,15 +1811,15 @@
         </td>
       </tr><tr>
         <td>
-          199
+          200
         </td>
         <td>
-          1646
+          1649
         </td>
         <td>
-          6370
+          6394
           -
-          6508
+          6532
         </td>
         <td>
           ApplyToImplicitArgs
@@ -1834,15 +1835,15 @@
         </td>
       </tr><tr>
         <td>
-          200
+          201
         </td>
         <td>
-          1644
+          1647
         </td>
         <td>
-          6435
+          6459
           -
-          6455
+          6479
         </td>
         <td>
           Apply
@@ -1855,15 +1856,15 @@
         </td>
       </tr><tr>
         <td>
-          201
+          202
         </td>
         <td>
-          1645
+          1648
         </td>
         <td>
-          6483
+          6507
           -
-          6500
+          6524
         </td>
         <td>
           Apply
@@ -1876,15 +1877,15 @@
         </td>
       </tr><tr>
         <td>
-          209
+          210
         </td>
         <td>
-          1647
+          1650
         </td>
         <td>
-          6673
+          6697
           -
-          6705
+          6729
         </td>
         <td>
           TypeApply
@@ -1897,15 +1898,15 @@
         </td>
       </tr><tr>
         <td>
-          209
+          210
         </td>
         <td>
-          1650
+          1653
         </td>
         <td>
-          6710
+          6734
           -
-          6710
+          6734
         </td>
         <td>
           TypeApply
@@ -1918,15 +1919,15 @@
         </td>
       </tr><tr>
         <td>
-          209
+          210
         </td>
         <td>
-          1649
+          1652
         </td>
         <td>
-          6716
+          6740
           -
-          6731
+          6755
         </td>
         <td>
           Apply
@@ -1939,36 +1940,15 @@
         </td>
       </tr><tr>
         <td>
-          209
+          210
         </td>
         <td>
           1651
         </td>
         <td>
-          6651
+          6745
           -
-          6732
-        </td>
-        <td>
-          ApplyToImplicitArgs
-        </td>
-        <td>
-          scala.collection.immutable.List.map
-        </td>
-        <td style="background: #F0ADAD">
-          level.entities.filter(((x$2: it.unibo.osmos.redux.ecs.entities.CellEntity) =&gt; x$2.isInstanceOf[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity])).map[Some[String], List[Some[String]]](((p: it.unibo.osmos.redux.ecs.entities.CellEntity) =&gt; scala.Some.apply[String](p.getUUID)))(immutable.this.List.canBuildFrom[Some[String]])
-        </td>
-      </tr><tr>
-        <td>
-          209
-        </td>
-        <td>
-          1648
-        </td>
-        <td>
-          6721
-          -
-          6730
+          6754
         </td>
         <td>
           Select
@@ -1984,12 +1964,33 @@
           210
         </td>
         <td>
-          1653
+          1654
         </td>
         <td>
-          6789
+          6675
           -
-          6819
+          6756
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.immutable.List.map
+        </td>
+        <td style="background: #F0ADAD">
+          level.entities.filter(((x$2: it.unibo.osmos.redux.ecs.entities.CellEntity) =&gt; x$2.isInstanceOf[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity])).map[Some[String], List[Some[String]]](((p: it.unibo.osmos.redux.ecs.entities.CellEntity) =&gt; scala.Some.apply[String](p.getUUID)))(immutable.this.List.canBuildFrom[Some[String]])
+        </td>
+      </tr><tr>
+        <td>
+          211
+        </td>
+        <td>
+          1656
+        </td>
+        <td>
+          6813
+          -
+          6843
         </td>
         <td>
           Apply
@@ -2002,15 +2003,15 @@
         </td>
       </tr><tr>
         <td>
-          210
+          211
         </td>
         <td>
-          1652
+          1655
         </td>
         <td>
-          6806
+          6830
           -
-          6819
+          6843
         </td>
         <td>
           Select
@@ -2023,15 +2024,15 @@
         </td>
       </tr><tr>
         <td>
-          210
+          211
         </td>
         <td>
-          1654
+          1657
         </td>
         <td>
-          6758
+          6782
           -
-          6820
+          6844
         </td>
         <td>
           Apply
@@ -2044,15 +2045,15 @@
         </td>
       </tr><tr>
         <td>
-          212
+          213
         </td>
         <td>
-          1656
+          1659
         </td>
         <td>
-          6864
+          6888
           -
-          6953
+          6977
         </td>
         <td>
           Throw
@@ -2065,15 +2066,15 @@
         </td>
       </tr><tr>
         <td>
-          212
+          213
         </td>
         <td>
-          1659
+          1662
         </td>
         <td>
-          6828
+          6852
           -
-          6828
+          6852
         </td>
         <td>
           Block
@@ -2086,15 +2087,36 @@
         </td>
       </tr><tr>
         <td>
-          212
+          213
         </td>
         <td>
-          1655
+          1661
         </td>
         <td>
-          6832
+          6852
           -
-          6862
+          6852
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          213
+        </td>
+        <td>
+          1658
+        </td>
+        <td>
+          6856
+          -
+          6886
         </td>
         <td>
           Apply
@@ -2107,36 +2129,15 @@
         </td>
       </tr><tr>
         <td>
-          212
+          213
         </td>
         <td>
-          1658
+          1660
         </td>
         <td>
-          6828
+          6888
           -
-          6828
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          212
-        </td>
-        <td>
-          1657
-        </td>
-        <td>
-          6864
-          -
-          6953
+          6977
         </td>
         <td>
           Block
@@ -2149,15 +2150,15 @@
         </td>
       </tr><tr>
         <td>
-          215
+          216
         </td>
         <td>
-          1661
+          1664
         </td>
         <td>
-          7018
+          7042
           -
-          7059
+          7083
         </td>
         <td>
           Apply
@@ -2170,15 +2171,15 @@
         </td>
       </tr><tr>
         <td>
-          215
+          216
         </td>
         <td>
-          1660
+          1663
         </td>
         <td>
-          7030
+          7054
           -
-          7059
+          7083
         </td>
         <td>
           Select
@@ -2191,15 +2192,15 @@
         </td>
       </tr><tr>
         <td>
-          218
+          219
         </td>
         <td>
-          1662
+          1665
         </td>
         <td>
-          7147
+          7171
           -
-          7160
+          7184
         </td>
         <td>
           Select
@@ -2212,15 +2213,15 @@
         </td>
       </tr><tr>
         <td>
-          218
+          219
         </td>
         <td>
-          1663
+          1666
         </td>
         <td>
-          7128
+          7152
           -
-          7161
+          7185
         </td>
         <td>
           Apply
@@ -2233,15 +2234,15 @@
         </td>
       </tr><tr>
         <td>
-          219
+          220
         </td>
         <td>
-          1665
+          1668
         </td>
         <td>
-          7194
+          7218
           -
-          7295
+          7319
         </td>
         <td>
           Throw
@@ -2254,15 +2255,15 @@
         </td>
       </tr><tr>
         <td>
-          219
+          220
         </td>
         <td>
-          1668
+          1671
         </td>
         <td>
-          7168
+          7192
           -
-          7168
+          7192
         </td>
         <td>
           Block
@@ -2275,36 +2276,15 @@
         </td>
       </tr><tr>
         <td>
-          219
+          220
         </td>
         <td>
-          1664
+          1670
         </td>
         <td>
-          7172
+          7192
           -
           7192
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          scala.Option.isEmpty
-        </td>
-        <td style="background: #F0ADAD">
-          serverPlayer.isEmpty
-        </td>
-      </tr><tr>
-        <td>
-          219
-        </td>
-        <td>
-          1667
-        </td>
-        <td>
-          7168
-          -
-          7168
         </td>
         <td>
           Literal
@@ -2317,15 +2297,36 @@
         </td>
       </tr><tr>
         <td>
-          219
+          220
         </td>
         <td>
-          1666
+          1667
         </td>
         <td>
-          7194
+          7196
           -
-          7295
+          7216
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.isEmpty
+        </td>
+        <td style="background: #F0ADAD">
+          serverPlayer.isEmpty
+        </td>
+      </tr><tr>
+        <td>
+          220
+        </td>
+        <td>
+          1669
+        </td>
+        <td>
+          7218
+          -
+          7319
         </td>
         <td>
           Block
@@ -2338,15 +2339,15 @@
         </td>
       </tr><tr>
         <td>
-          220
+          221
         </td>
         <td>
-          1670
+          1673
         </td>
         <td>
-          7302
+          7326
           -
-          7337
+          7361
         </td>
         <td>
           Apply
@@ -2359,15 +2360,15 @@
         </td>
       </tr><tr>
         <td>
-          220
+          221
         </td>
         <td>
-          1669
+          1672
         </td>
         <td>
-          7327
+          7351
           -
-          7336
+          7360
         </td>
         <td>
           Select
@@ -2380,15 +2381,15 @@
         </td>
       </tr><tr>
         <td>
-          223
+          224
         </td>
         <td>
-          1671
+          1674
         </td>
         <td>
-          7435
+          7459
           -
-          7458
+          7482
         </td>
         <td>
           Select
@@ -2401,15 +2402,15 @@
         </td>
       </tr><tr>
         <td>
-          226
+          227
         </td>
         <td>
-          1672
+          1675
         </td>
         <td>
-          7527
+          7551
           -
-          7552
+          7576
         </td>
         <td>
           Select
@@ -2422,36 +2423,15 @@
         </td>
       </tr><tr>
         <td>
-          227
+          228
         </td>
         <td>
-          1674
+          1680
         </td>
         <td>
-          7628
+          7606
           -
-          7653
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          scala.collection.SeqLike.size
-        </td>
-        <td style="background: #F0ADAD">
-          remainingPlayerCells.size
-        </td>
-      </tr><tr>
-        <td>
-          227
-        </td>
-        <td>
-          1677
-        </td>
-        <td>
-          7582
-          -
-          7665
+          7689
         </td>
         <td>
           ApplyToImplicitArgs
@@ -2464,15 +2444,15 @@
         </td>
       </tr><tr>
         <td>
-          227
+          228
         </td>
         <td>
-          1673
+          1677
         </td>
         <td>
-          7609
+          7652
           -
-          7626
+          7677
         </td>
         <td>
           Select
@@ -2481,19 +2461,19 @@
           scala.collection.SeqLike.size
         </td>
         <td style="background: #F0ADAD">
-          otherPlayers.size
+          remainingPlayerCells.size
         </td>
       </tr><tr>
         <td>
-          227
+          228
         </td>
         <td>
-          1676
+          1679
         </td>
         <td>
-          7658
+          7682
           -
-          7658
+          7682
         </td>
         <td>
           TypeApply
@@ -2506,15 +2486,36 @@
         </td>
       </tr><tr>
         <td>
-          227
+          228
         </td>
         <td>
-          1675
+          1676
         </td>
         <td>
-          7659
+          7633
           -
-          7664
+          7650
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.SeqLike.size
+        </td>
+        <td style="background: #F0ADAD">
+          otherPlayers.size
+        </td>
+      </tr><tr>
+        <td>
+          228
+        </td>
+        <td>
+          1678
+        </td>
+        <td>
+          7683
+          -
+          7688
         </td>
         <td>
           Select
@@ -2527,15 +2528,15 @@
         </td>
       </tr><tr>
         <td>
-          229
+          230
         </td>
         <td>
-          1682
+          1685
         </td>
         <td>
-          7737
+          7761
           -
-          7853
+          7877
         </td>
         <td>
           Apply
@@ -2548,15 +2549,15 @@
         </td>
       </tr><tr>
         <td>
-          230
+          231
         </td>
         <td>
-          1680
+          1683
         </td>
         <td>
-          7770
+          7794
           -
-          7770
+          7794
         </td>
         <td>
           TypeApply
@@ -2569,15 +2570,15 @@
         </td>
       </tr><tr>
         <td>
-          230
+          231
         </td>
         <td>
-          1681
+          1684
         </td>
         <td>
-          7754
+          7778
           -
-          7853
+          7877
         </td>
         <td>
           ApplyToImplicitArgs
@@ -2590,15 +2591,15 @@
         </td>
       </tr><tr>
         <td>
-          231
+          232
         </td>
         <td>
-          1679
+          1682
         </td>
         <td>
-          7799
+          7823
           -
-          7837
+          7861
         </td>
         <td>
           Select
@@ -2611,15 +2612,15 @@
         </td>
       </tr><tr>
         <td>
-          231
+          232
         </td>
         <td>
-          1678
+          1681
         </td>
         <td>
-          7827
+          7851
           -
-          7836
+          7860
         </td>
         <td>
           Select
@@ -2632,15 +2633,36 @@
         </td>
       </tr><tr>
         <td>
-          235
+          236
         </td>
         <td>
-          1683
+          1689
         </td>
         <td>
-          7942
+          8009
           -
-          7949
+          8013
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #F0ADAD">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          236
+        </td>
+        <td>
+          1686
+        </td>
+        <td>
+          7966
+          -
+          7973
         </td>
         <td>
           Apply
@@ -2653,57 +2675,15 @@
         </td>
       </tr><tr>
         <td>
-          235
+          236
         </td>
         <td>
-          1686
+          1703
         </td>
         <td>
-          7985
+          8025
           -
-          7989
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          scala.None
-        </td>
-        <td style="background: #F0ADAD">
-          scala.None
-        </td>
-      </tr><tr>
-        <td>
-          235
-        </td>
-        <td>
-          1688
-        </td>
-        <td>
-          7957
-          -
-          7957
-        </td>
-        <td>
-          TypeApply
-        </td>
-        <td>
-          scala.collection.Seq.canBuildFrom
-        </td>
-        <td style="background: #F0ADAD">
-          collection.this.Seq.canBuildFrom[(Option[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer], Option[String])]
-        </td>
-      </tr><tr>
-        <td>
-          235
-        </td>
-        <td>
-          1700
-        </td>
-        <td>
-          8001
-          -
-          8001
+          8025
         </td>
         <td>
           TypeApply
@@ -2716,15 +2696,15 @@
         </td>
       </tr><tr>
         <td>
-          235
+          236
         </td>
         <td>
-          1685
+          1688
         </td>
         <td>
-          7958
+          7982
           -
-          7983
+          8007
         </td>
         <td>
           Select
@@ -2737,15 +2717,36 @@
         </td>
       </tr><tr>
         <td>
-          235
+          236
         </td>
         <td>
-          1684
+          1691
         </td>
         <td>
-          7941
+          7981
           -
-          7941
+          7981
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.Seq.canBuildFrom
+        </td>
+        <td style="background: #F0ADAD">
+          collection.this.Seq.canBuildFrom[(Option[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer], Option[String])]
+        </td>
+      </tr><tr>
+        <td>
+          236
+        </td>
+        <td>
+          1687
+        </td>
+        <td>
+          7965
+          -
+          7965
         </td>
         <td>
           TypeApply
@@ -2758,15 +2759,15 @@
         </td>
       </tr><tr>
         <td>
-          235
+          236
         </td>
         <td>
-          1687
+          1690
         </td>
         <td>
-          7991
+          8015
           -
-          7995
+          8019
         </td>
         <td>
           Select
@@ -2779,57 +2780,15 @@
         </td>
       </tr><tr>
         <td>
-          236
+          237
         </td>
         <td>
-          1689
+          1698
         </td>
         <td>
-          8039
+          8097
           -
-          8052
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.multiplayer.players.Referable.setUUID
-        </td>
-        <td style="background: #F0ADAD">
-          p.setUUID(id)
-        </td>
-      </tr><tr>
-        <td>
-          236
-        </td>
-        <td>
-          1692
-        </td>
-        <td>
-          8091
-          -
-          8106
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.mvc.controller.levels.structure.Level.levelInfo
-        </td>
-        <td style="background: #F0ADAD">
-          level.levelInfo
-        </td>
-      </tr><tr>
-        <td>
-          236
-        </td>
-        <td>
-          1695
-        </td>
-        <td>
-          8073
-          -
-          8073
+          8097
         </td>
         <td>
           Apply
@@ -2842,15 +2801,78 @@
         </td>
       </tr><tr>
         <td>
-          236
+          237
+        </td>
+        <td>
+          1692
+        </td>
+        <td>
+          8063
+          -
+          8076
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.Referable.setUUID
+        </td>
+        <td style="background: #F0ADAD">
+          p.setUUID(id)
+        </td>
+      </tr><tr>
+        <td>
+          237
+        </td>
+        <td>
+          1695
+        </td>
+        <td>
+          8115
+          -
+          8130
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.mvc.controller.levels.structure.Level.levelInfo
+        </td>
+        <td style="background: #F0ADAD">
+          level.levelInfo
+        </td>
+      </tr><tr>
+        <td>
+          237
         </td>
         <td>
           1694
         </td>
         <td>
-          8073
+          8083
           -
-          8073
+          8096
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          akka.pattern.AskSupport.ask
+        </td>
+        <td style="background: #F0ADAD">
+          akka.pattern.`package`.ask(p.getActorRef)
+        </td>
+      </tr><tr>
+        <td>
+          237
+        </td>
+        <td>
+          1697
+        </td>
+        <td>
+          8097
+          -
+          8097
         </td>
         <td>
           Select
@@ -2863,15 +2885,15 @@
         </td>
       </tr><tr>
         <td>
-          236
+          237
         </td>
         <td>
-          1697
+          1700
         </td>
         <td>
-          8054
+          8078
           -
-          8118
+          8142
         </td>
         <td>
           Apply
@@ -2890,78 +2912,15 @@
         </td>
       </tr><tr>
         <td>
-          236
-        </td>
-        <td>
-          1691
-        </td>
-        <td>
-          8059
-          -
-          8072
-        </td>
-        <td>
-          ApplyImplicitView
-        </td>
-        <td>
-          akka.pattern.AskSupport.ask
-        </td>
-        <td style="background: #F0ADAD">
-          akka.pattern.`package`.ask(p.getActorRef)
-        </td>
-      </tr><tr>
-        <td>
-          236
+          237
         </td>
         <td>
           1693
         </td>
         <td>
-          8075
+          8083
           -
-          8117
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.multiplayer.server.ServerActor.GameStarted.apply
-        </td>
-        <td style="background: #F0ADAD">
-          it.unibo.osmos.redux.multiplayer.server.ServerActor.GameStarted.apply(id, level.levelInfo, mapShape)
-        </td>
-      </tr><tr>
-        <td>
-          236
-        </td>
-        <td>
-          1696
-        </td>
-        <td>
-          8059
-          -
-          8117
-        </td>
-        <td>
-          ApplyToImplicitArgs
-        </td>
-        <td>
-          akka.pattern.AskableActorRef.?
-        </td>
-        <td style="background: #F0ADAD">
-          qual$3.?(x$18)(x$19, x$20)
-        </td>
-      </tr><tr>
-        <td>
-          236
-        </td>
-        <td>
-          1690
-        </td>
-        <td>
-          8059
-          -
-          8072
+          8096
         </td>
         <td>
           Select
@@ -2977,12 +2936,54 @@
           237
         </td>
         <td>
-          1698
+          1696
         </td>
         <td>
-          8145
+          8099
           -
-          8149
+          8141
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.GameStarted.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.GameStarted.apply(id, level.levelInfo, mapShape)
+        </td>
+      </tr><tr>
+        <td>
+          237
+        </td>
+        <td>
+          1699
+        </td>
+        <td>
+          8083
+          -
+          8141
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          akka.pattern.AskableActorRef.?
+        </td>
+        <td style="background: #F0ADAD">
+          qual$3.?(x$18)(x$19, x$20)
+        </td>
+      </tr><tr>
+        <td>
+          238
+        </td>
+        <td>
+          1701
+        </td>
+        <td>
+          8169
+          -
+          8173
         </td>
         <td>
           Select
@@ -2995,15 +2996,15 @@
         </td>
       </tr><tr>
         <td>
-          238
+          239
         </td>
         <td>
-          1699
+          1702
         </td>
         <td>
-          8168
+          8192
           -
-          8247
+          8271
         </td>
         <td>
           Throw
@@ -3016,36 +3017,15 @@
         </td>
       </tr><tr>
         <td>
-          239
+          240
         </td>
         <td>
-          1701
+          1707
         </td>
         <td>
-          8263
+          7949
           -
-          8273
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          scala.Option.nonEmpty
-        </td>
-        <td style="background: #F0ADAD">
-          x$6.nonEmpty
-        </td>
-      </tr><tr>
-        <td>
-          239
-        </td>
-        <td>
-          1704
-        </td>
-        <td>
-          7925
-          -
-          8285
+          8309
         </td>
         <td>
           ApplyToImplicitArgs
@@ -3071,15 +3051,36 @@
         </td>
       </tr><tr>
         <td>
-          239
+          240
         </td>
         <td>
-          1703
+          1704
         </td>
         <td>
-          8278
+          8287
           -
-          8278
+          8297
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.nonEmpty
+        </td>
+        <td style="background: #F0ADAD">
+          x$6.nonEmpty
+        </td>
+      </tr><tr>
+        <td>
+          240
+        </td>
+        <td>
+          1706
+        </td>
+        <td>
+          8302
+          -
+          8302
         </td>
         <td>
           TypeApply
@@ -3092,15 +3093,15 @@
         </td>
       </tr><tr>
         <td>
-          239
+          240
         </td>
         <td>
-          1702
+          1705
         </td>
         <td>
-          8279
+          8303
           -
-          8284
+          8308
         </td>
         <td>
           Select
@@ -3113,15 +3114,15 @@
         </td>
       </tr><tr>
         <td>
-          243
+          244
         </td>
         <td>
-          1707
+          1710
         </td>
         <td>
-          8430
+          8454
           -
-          8535
+          8559
         </td>
         <td>
           Throw
@@ -3134,15 +3135,15 @@
         </td>
       </tr><tr>
         <td>
-          243
+          244
         </td>
         <td>
-          1710
+          1713
         </td>
         <td>
-          8397
+          8421
           -
-          8397
+          8421
         </td>
         <td>
           Block
@@ -3155,15 +3156,36 @@
         </td>
       </tr><tr>
         <td>
-          243
+          244
         </td>
         <td>
-          1706
+          1712
         </td>
         <td>
-          8401
+          8421
           -
-          8428
+          8421
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          244
+        </td>
+        <td>
+          1709
+        </td>
+        <td>
+          8425
+          -
+          8452
         </td>
         <td>
           Apply
@@ -3176,57 +3198,15 @@
         </td>
       </tr><tr>
         <td>
-          243
+          244
         </td>
         <td>
-          1709
+          1711
         </td>
         <td>
-          8397
+          8454
           -
-          8397
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          243
-        </td>
-        <td>
-          1705
-        </td>
-        <td>
-          8411
-          -
-          8428
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.multiplayer.server.ServerState.Lobby
-        </td>
-        <td style="background: #F0ADAD">
-          ServerState.Lobby
-        </td>
-      </tr><tr>
-        <td>
-          243
-        </td>
-        <td>
-          1708
-        </td>
-        <td>
-          8430
-          -
-          8535
+          8559
         </td>
         <td>
           Block
@@ -3239,120 +3219,15 @@
         </td>
       </tr><tr>
         <td>
-          245
+          244
         </td>
         <td>
-          1711
+          1708
         </td>
         <td>
-          8543
+          8435
           -
-          8548
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.lobby
-        </td>
-        <td style="background: #F0ADAD">
-          ServerImpl.this.lobby
-        </td>
-      </tr><tr>
-        <td>
-          247
-        </td>
-        <td>
-          1712
-        </td>
-        <td>
-          8599
-          -
-          8651
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.multiplayer.lobby.AbstractLobby.notifyGameStarted
-        </td>
-        <td style="background: #F0ADAD">
-          gameLobby.notifyGameStarted(levelContext, levelInfo)
-        </td>
-      </tr><tr>
-        <td>
-          248
-        </td>
-        <td>
-          1713
-        </td>
-        <td>
-          8671
-          -
-          8687
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.multiplayer.server.ServerState.Game
-        </td>
-        <td style="background: #F0ADAD">
-          ServerState.Game
-        </td>
-      </tr><tr>
-        <td>
-          248
-        </td>
-        <td>
-          1714
-        </td>
-        <td>
-          8662
-          -
-          8687
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.status_=
-        </td>
-        <td style="background: #F0ADAD">
-          ServerImpl.this.status_=(ServerState.Game)
-        </td>
-      </tr><tr>
-        <td>
-          249
-        </td>
-        <td>
-          1715
-        </td>
-        <td>
-          8706
-          -
-          8797
-        </td>
-        <td>
-          Throw
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          throw new scala.`package`.IllegalArgumentException(&quot;Unable to start the game if the lobby is not defined.&quot;)
-        </td>
-      </tr><tr>
-        <td>
-          254
-        </td>
-        <td>
-          1716
-        </td>
-        <td>
-          8896
-          -
-          8913
+          8452
         </td>
         <td>
           Select
@@ -3365,99 +3240,57 @@
         </td>
       </tr><tr>
         <td>
-          254
+          246
         </td>
         <td>
-          1719
+          1714
         </td>
         <td>
-          8886
+          8567
           -
-          8943
+          8572
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.lobby
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.lobby
+        </td>
+      </tr><tr>
+        <td>
+          248
+        </td>
+        <td>
+          1715
+        </td>
+        <td>
+          8623
+          -
+          8675
         </td>
         <td>
           Apply
         </td>
         <td>
-          scala.Boolean.&amp;&amp;
+          it.unibo.osmos.redux.multiplayer.lobby.AbstractLobby.notifyGameStarted
         </td>
         <td style="background: #F0ADAD">
-          ServerImpl.this.status.!=(ServerState.Lobby).&amp;&amp;(ServerImpl.this.status.!=(ServerState.Game))
+          gameLobby.notifyGameStarted(levelContext, levelInfo)
         </td>
       </tr><tr>
         <td>
-          254
+          249
         </td>
         <td>
-          1722
+          1716
         </td>
         <td>
-          8882
+          8695
           -
-          8882
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          254
-        </td>
-        <td>
-          1721
-        </td>
-        <td>
-          8945
-          -
-          9049
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Cannot stop game because the server is in the state: &quot;, &quot;&quot;).s(ServerImpl.this.status))
-        </td>
-      </tr><tr>
-        <td>
-          254
-        </td>
-        <td>
-          1718
-        </td>
-        <td>
-          8917
-          -
-          8943
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          java.lang.Object.!=
-        </td>
-        <td style="background: #F0ADAD">
-          ServerImpl.this.status.!=(ServerState.Game)
-        </td>
-      </tr><tr>
-        <td>
-          254
-        </td>
-        <td>
-          1717
-        </td>
-        <td>
-          8927
-          -
-          8943
+          8711
         </td>
         <td>
           Select
@@ -3470,18 +3303,144 @@
         </td>
       </tr><tr>
         <td>
-          254
+          249
         </td>
         <td>
-          1720
+          1717
         </td>
         <td>
-          8945
+          8686
           -
-          9049
+          8711
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.status_=
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.status_=(ServerState.Game)
+        </td>
+      </tr><tr>
+        <td>
+          250
+        </td>
+        <td>
+          1718
+        </td>
+        <td>
+          8730
+          -
+          8821
         </td>
         <td>
           Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.IllegalArgumentException(&quot;Unable to start the game if the lobby is not defined.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          255
+        </td>
+        <td>
+          1725
+        </td>
+        <td>
+          8906
+          -
+          8906
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          255
+        </td>
+        <td>
+          1719
+        </td>
+        <td>
+          8920
+          -
+          8937
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerState.Lobby
+        </td>
+        <td style="background: #F0ADAD">
+          ServerState.Lobby
+        </td>
+      </tr><tr>
+        <td>
+          255
+        </td>
+        <td>
+          1722
+        </td>
+        <td>
+          8910
+          -
+          8967
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.&amp;&amp;
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.status.!=(ServerState.Lobby).&amp;&amp;(ServerImpl.this.status.!=(ServerState.Game))
+        </td>
+      </tr><tr>
+        <td>
+          255
+        </td>
+        <td>
+          1721
+        </td>
+        <td>
+          8941
+          -
+          8967
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.!=
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.status.!=(ServerState.Game)
+        </td>
+      </tr><tr>
+        <td>
+          255
+        </td>
+        <td>
+          1724
+        </td>
+        <td>
+          8969
+          -
+          9073
+        </td>
+        <td>
+          Block
         </td>
         <td>
           &lt;nosymbol&gt;
@@ -3491,15 +3450,15 @@
         </td>
       </tr><tr>
         <td>
-          254
+          255
         </td>
         <td>
-          1723
+          1726
         </td>
         <td>
-          8882
+          8906
           -
-          8882
+          8906
         </td>
         <td>
           Block
@@ -3512,15 +3471,57 @@
         </td>
       </tr><tr>
         <td>
-          257
+          255
         </td>
         <td>
-          1725
+          1720
         </td>
         <td>
-          9107
+          8951
           -
-          9130
+          8967
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerState.Game
+        </td>
+        <td style="background: #F0ADAD">
+          ServerState.Game
+        </td>
+      </tr><tr>
+        <td>
+          255
+        </td>
+        <td>
+          1723
+        </td>
+        <td>
+          8969
+          -
+          9073
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Cannot stop game because the server is in the state: &quot;, &quot;&quot;).s(ServerImpl.this.status))
+        </td>
+      </tr><tr>
+        <td>
+          258
+        </td>
+        <td>
+          1728
+        </td>
+        <td>
+          9131
+          -
+          9154
         </td>
         <td>
           Apply
@@ -3533,15 +3534,15 @@
         </td>
       </tr><tr>
         <td>
-          257
+          258
         </td>
         <td>
-          1724
+          1727
         </td>
         <td>
-          9121
+          9145
           -
-          9129
+          9153
         </td>
         <td>
           Select
@@ -3554,15 +3555,15 @@
         </td>
       </tr><tr>
         <td>
-          258
+          259
         </td>
         <td>
-          1728
+          1731
         </td>
         <td>
-          9142
+          9166
           -
-          9188
+          9212
         </td>
         <td>
           Block
@@ -3575,15 +3576,15 @@
         </td>
       </tr><tr>
         <td>
-          258
+          259
         </td>
         <td>
-          1727
+          1730
         </td>
         <td>
-          9142
+          9166
           -
-          9188
+          9212
         </td>
         <td>
           Apply
@@ -3596,15 +3597,15 @@
         </td>
       </tr><tr>
         <td>
-          258
+          259
         </td>
         <td>
-          1726
+          1729
         </td>
         <td>
-          9159
+          9183
           -
-          9187
+          9211
         </td>
         <td>
           Apply
@@ -3617,15 +3618,15 @@
         </td>
       </tr><tr>
         <td>
-          259
+          260
         </td>
         <td>
-          1733
+          1736
         </td>
         <td>
-          9202
+          9226
           -
-          9310
+          9334
         </td>
         <td>
           Block
@@ -3641,15 +3642,15 @@
         </td>
       </tr><tr>
         <td>
-          260
+          261
         </td>
         <td>
-          1730
+          1733
         </td>
         <td>
-          9212
+          9236
           -
-          9251
+          9275
         </td>
         <td>
           Apply
@@ -3662,15 +3663,15 @@
         </td>
       </tr><tr>
         <td>
-          260
+          261
         </td>
         <td>
-          1729
+          1732
         </td>
         <td>
-          9235
+          9259
           -
-          9250
+          9274
         </td>
         <td>
           Apply
@@ -3683,15 +3684,15 @@
         </td>
       </tr><tr>
         <td>
-          261
+          262
         </td>
         <td>
-          1731
+          1734
         </td>
         <td>
-          9277
+          9301
           -
-          9293
+          9317
         </td>
         <td>
           Apply
@@ -3704,15 +3705,15 @@
         </td>
       </tr><tr>
         <td>
-          261
+          262
         </td>
         <td>
-          1732
+          1735
         </td>
         <td>
-          9260
+          9284
           -
-          9302
+          9326
         </td>
         <td>
           Apply
@@ -3725,15 +3726,15 @@
         </td>
       </tr><tr>
         <td>
-          264
+          265
         </td>
         <td>
-          1734
+          1737
         </td>
         <td>
-          9350
+          9374
           -
-          9380
+          9404
         </td>
         <td>
           Apply
@@ -3746,15 +3747,15 @@
         </td>
       </tr><tr>
         <td>
-          266
+          267
         </td>
         <td>
-          1736
+          1739
         </td>
         <td>
-          9424
+          9448
           -
-          9450
+          9474
         </td>
         <td>
           Apply
@@ -3767,15 +3768,15 @@
         </td>
       </tr><tr>
         <td>
-          266
+          267
         </td>
         <td>
-          1735
+          1738
         </td>
         <td>
-          9433
+          9457
           -
-          9450
+          9474
         </td>
         <td>
           Select
@@ -3788,99 +3789,15 @@
         </td>
       </tr><tr>
         <td>
-          270
+          271
         </td>
         <td>
-          1737
+          1743
         </td>
         <td>
-          9542
+          9562
           -
-          9555
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          scala.Option.isEmpty
-        </td>
-        <td style="background: #F0ADAD">
-          ServerImpl.this.lobby.isEmpty
-        </td>
-      </tr><tr>
-        <td>
-          270
-        </td>
-        <td>
-          1739
-        </td>
-        <td>
-          9557
-          -
-          9670
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          throw new scala.`package`.UnsupportedOperationException(&quot;Cannot deliver message to specific client if the lobby is not defined.&quot;)
-        </td>
-      </tr><tr>
-        <td>
-          270
-        </td>
-        <td>
-          1738
-        </td>
-        <td>
-          9557
-          -
-          9670
-        </td>
-        <td>
-          Throw
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          throw new scala.`package`.UnsupportedOperationException(&quot;Cannot deliver message to specific client if the lobby is not defined.&quot;)
-        </td>
-      </tr><tr>
-        <td>
-          270
-        </td>
-        <td>
-          1741
-        </td>
-        <td>
-          9538
-          -
-          9538
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          270
-        </td>
-        <td>
-          1740
-        </td>
-        <td>
-          9538
-          -
-          9538
+          9562
         </td>
         <td>
           Literal
@@ -3893,15 +3810,99 @@
         </td>
       </tr><tr>
         <td>
-          272
+          271
         </td>
         <td>
-          1743
+          1742
         </td>
         <td>
-          9678
+          9581
           -
-          9730
+          9694
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(&quot;Cannot deliver message to specific client if the lobby is not defined.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          271
+        </td>
+        <td>
+          1744
+        </td>
+        <td>
+          9562
+          -
+          9562
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          271
+        </td>
+        <td>
+          1741
+        </td>
+        <td>
+          9581
+          -
+          9694
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(&quot;Cannot deliver message to specific client if the lobby is not defined.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          271
+        </td>
+        <td>
+          1740
+        </td>
+        <td>
+          9566
+          -
+          9579
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.isEmpty
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.lobby.isEmpty
+        </td>
+      </tr><tr>
+        <td>
+          273
+        </td>
+        <td>
+          1746
+        </td>
+        <td>
+          9702
+          -
+          9754
         </td>
         <td>
           Apply
@@ -3914,15 +3915,15 @@
         </td>
       </tr><tr>
         <td>
-          272
+          273
         </td>
         <td>
-          1742
+          1745
         </td>
         <td>
-          9704
+          9728
           -
-          9729
+          9753
         </td>
         <td>
           Apply
@@ -3935,36 +3936,15 @@
         </td>
       </tr><tr>
         <td>
-          273
+          274
         </td>
         <td>
-          1746
+          1748
         </td>
         <td>
-          9787
+          9792
           -
-          9787
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          akka.actor.ScalaActorRef.!$default$2
-        </td>
-        <td style="background: #F0ADAD">
-          qual$4.!$default$2(x$21)
-        </td>
-      </tr><tr>
-        <td>
-          273
-        </td>
-        <td>
-          1745
-        </td>
-        <td>
-          9768
-          -
-          9786
+          9810
         </td>
         <td>
           ApplyImplicitView
@@ -3977,15 +3957,15 @@
         </td>
       </tr><tr>
         <td>
-          273
+          274
         </td>
         <td>
-          1744
+          1747
         </td>
         <td>
-          9768
+          9792
           -
-          9786
+          9810
         </td>
         <td>
           Select
@@ -3998,15 +3978,15 @@
         </td>
       </tr><tr>
         <td>
-          273
+          274
         </td>
         <td>
-          1747
+          1750
         </td>
         <td>
-          9768
+          9792
           -
-          9796
+          9820
         </td>
         <td>
           ApplyToImplicitArgs
@@ -4022,12 +4002,33 @@
           274
         </td>
         <td>
-          1748
+          1749
         </td>
         <td>
-          9818
+          9811
           -
-          9940
+          9811
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          akka.actor.ScalaActorRef.!$default$2
+        </td>
+        <td style="background: #F0ADAD">
+          qual$4.!$default$2(x$21)
+        </td>
+      </tr><tr>
+        <td>
+          275
+        </td>
+        <td>
+          1751
+        </td>
+        <td>
+          9842
+          -
+          9964
         </td>
         <td>
           Throw
@@ -4040,15 +4041,15 @@
         </td>
       </tr><tr>
         <td>
-          278
+          279
         </td>
         <td>
-          1749
+          1752
         </td>
         <td>
-          10011
+          10035
           -
-          10016
+          10040
         </td>
         <td>
           Select
@@ -4061,15 +4062,15 @@
         </td>
       </tr><tr>
         <td>
-          279
+          280
         </td>
         <td>
-          1751
+          1754
         </td>
         <td>
-          10055
+          10079
           -
-          10103
+          10127
         </td>
         <td>
           Apply
@@ -4082,15 +4083,15 @@
         </td>
       </tr><tr>
         <td>
-          279
+          280
         </td>
         <td>
-          1750
+          1753
         </td>
         <td>
-          10084
+          10108
           -
-          10102
+          10126
         </td>
         <td>
           Apply
@@ -4103,15 +4104,15 @@
         </td>
       </tr><tr>
         <td>
-          280
+          281
         </td>
         <td>
-          1752
+          1755
         </td>
         <td>
-          10120
+          10144
           -
-          10231
+          10255
         </td>
         <td>
           Throw
@@ -4124,36 +4125,36 @@
         </td>
       </tr><tr>
         <td>
-          286
+          287
         </td>
         <td>
-          1755
+          1761
         </td>
         <td>
-          10377
+          10369
           -
-          10497
+          10369
         </td>
         <td>
-          Throw
+          Block
         </td>
         <td>
           &lt;nosymbol&gt;
         </td>
         <td style="background: #F0ADAD">
-          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Cannot manage client input event because the server is in the state: &quot;, &quot;&quot;).s(ServerImpl.this.status))
+          ()
         </td>
       </tr><tr>
         <td>
-          286
+          287
         </td>
         <td>
-          1754
+          1757
         </td>
         <td>
-          10349
+          10373
           -
-          10375
+          10399
         </td>
         <td>
           Apply
@@ -4166,15 +4167,15 @@
         </td>
       </tr><tr>
         <td>
-          286
+          287
         </td>
         <td>
-          1757
+          1760
         </td>
         <td>
-          10345
+          10369
           -
-          10345
+          10369
         </td>
         <td>
           Literal
@@ -4187,15 +4188,15 @@
         </td>
       </tr><tr>
         <td>
-          286
+          287
         </td>
         <td>
-          1753
+          1756
         </td>
         <td>
-          10359
+          10383
           -
-          10375
+          10399
         </td>
         <td>
           Select
@@ -4208,15 +4209,15 @@
         </td>
       </tr><tr>
         <td>
-          286
+          287
         </td>
         <td>
-          1756
+          1759
         </td>
         <td>
-          10377
+          10401
           -
-          10497
+          10521
         </td>
         <td>
           Block
@@ -4229,36 +4230,36 @@
         </td>
       </tr><tr>
         <td>
-          286
+          287
         </td>
         <td>
           1758
         </td>
         <td>
-          10345
+          10401
           -
-          10345
+          10521
         </td>
         <td>
-          Block
+          Throw
         </td>
         <td>
           &lt;nosymbol&gt;
         </td>
         <td style="background: #F0ADAD">
-          ()
+          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Cannot manage client input event because the server is in the state: &quot;, &quot;&quot;).s(ServerImpl.this.status))
         </td>
       </tr><tr>
         <td>
-          288
+          289
         </td>
         <td>
-          1759
+          1762
         </td>
         <td>
-          10505
+          10529
           -
-          10534
+          10558
         </td>
         <td>
           Apply
@@ -4271,15 +4272,15 @@
         </td>
       </tr><tr>
         <td>
-          292
+          293
         </td>
         <td>
-          1761
+          1764
         </td>
         <td>
-          10643
+          10667
           -
-          10669
+          10693
         </td>
         <td>
           Apply
@@ -4292,57 +4293,15 @@
         </td>
       </tr><tr>
         <td>
-          292
-        </td>
-        <td>
-          1764
-        </td>
-        <td>
-          10639
-          -
-          10639
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          292
+          293
         </td>
         <td>
           1763
         </td>
         <td>
-          10671
+          10677
           -
-          10780
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Cannot remove player from game because it\'s in the state: &quot;, &quot;&quot;).s(ServerImpl.this.status))
-        </td>
-      </tr><tr>
-        <td>
-          292
-        </td>
-        <td>
-          1760
-        </td>
-        <td>
-          10653
-          -
-          10669
+          10693
         </td>
         <td>
           Select
@@ -4355,15 +4314,36 @@
         </td>
       </tr><tr>
         <td>
-          292
+          293
         </td>
         <td>
-          1762
+          1766
         </td>
         <td>
-          10671
+          10695
           -
-          10780
+          10804
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Cannot remove player from game because it\'s in the state: &quot;, &quot;&quot;).s(ServerImpl.this.status))
+        </td>
+      </tr><tr>
+        <td>
+          293
+        </td>
+        <td>
+          1765
+        </td>
+        <td>
+          10695
+          -
+          10804
         </td>
         <td>
           Throw
@@ -4376,15 +4356,15 @@
         </td>
       </tr><tr>
         <td>
-          292
+          293
         </td>
         <td>
-          1765
+          1768
         </td>
         <td>
-          10639
+          10663
           -
-          10639
+          10663
         </td>
         <td>
           Block
@@ -4397,36 +4377,36 @@
         </td>
       </tr><tr>
         <td>
-          295
-        </td>
-        <td>
-          1766
-        </td>
-        <td>
-          10870
-          -
-          10883
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.username
-        </td>
-        <td style="background: #F0ADAD">
-          this.username
-        </td>
-      </tr><tr>
-        <td>
-          295
+          293
         </td>
         <td>
           1767
         </td>
         <td>
-          10858
+          10663
           -
-          10883
+          10663
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          296
+        </td>
+        <td>
+          1770
+        </td>
+        <td>
+          10882
+          -
+          10907
         </td>
         <td>
           Apply
@@ -4439,15 +4419,36 @@
         </td>
       </tr><tr>
         <td>
-          298
+          296
         </td>
         <td>
-          1768
+          1769
         </td>
         <td>
-          10968
+          10894
           -
-          10996
+          10907
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.username
+        </td>
+        <td style="background: #F0ADAD">
+          this.username
+        </td>
+      </tr><tr>
+        <td>
+          299
+        </td>
+        <td>
+          1771
+        </td>
+        <td>
+          10992
+          -
+          11020
         </td>
         <td>
           Apply
@@ -4460,15 +4461,15 @@
         </td>
       </tr><tr>
         <td>
-          299
+          300
         </td>
         <td>
-          1770
+          1773
         </td>
         <td>
-          11023
+          11047
           -
-          11117
+          11141
         </td>
         <td>
           Throw
@@ -4481,57 +4482,15 @@
         </td>
       </tr><tr>
         <td>
-          299
-        </td>
-        <td>
-          1773
-        </td>
-        <td>
-          11003
-          -
-          11003
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          299
+          300
         </td>
         <td>
           1772
         </td>
         <td>
-          11003
+          11031
           -
-          11003
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          299
-        </td>
-        <td>
-          1769
-        </td>
-        <td>
-          11007
-          -
-          11021
+          11045
         </td>
         <td>
           Select
@@ -4544,57 +4503,15 @@
         </td>
       </tr><tr>
         <td>
-          299
+          300
         </td>
         <td>
-          1771
+          1775
         </td>
         <td>
-          11023
+          11027
           -
-          11117
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          throw new scala.`package`.IllegalArgumentException(&quot;Cannot remove player from game because it was not found.&quot;)
-        </td>
-      </tr><tr>
-        <td>
-          302
-        </td>
-        <td>
-          1779
-        </td>
-        <td>
-          11227
-          -
-          11227
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          akka.actor.ScalaActorRef.!$default$2
-        </td>
-        <td style="background: #F0ADAD">
-          qual$5.!$default$2(x$23)
-        </td>
-      </tr><tr>
-        <td>
-          302
-        </td>
-        <td>
-          1782
-        </td>
-        <td>
-          11179
-          -
-          11179
+          11027
         </td>
         <td>
           Literal
@@ -4607,15 +4524,120 @@
         </td>
       </tr><tr>
         <td>
-          302
+          300
+        </td>
+        <td>
+          1774
+        </td>
+        <td>
+          11047
+          -
+          11141
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.IllegalArgumentException(&quot;Cannot remove player from game because it was not found.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          300
+        </td>
+        <td>
+          1776
+        </td>
+        <td>
+          11027
+          -
+          11027
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          303
+        </td>
+        <td>
+          1779
+        </td>
+        <td>
+          11228
+          -
+          11250
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.ReferablePlayer.getActorRef
+        </td>
+        <td style="background: #F0ADAD">
+          player.get.getActorRef
+        </td>
+      </tr><tr>
+        <td>
+          303
+        </td>
+        <td>
+          1782
+        </td>
+        <td>
+          11251
+          -
+          11251
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          akka.actor.ScalaActorRef.!$default$2
+        </td>
+        <td style="background: #F0ADAD">
+          qual$5.!$default$2(x$23)
+        </td>
+      </tr><tr>
+        <td>
+          303
         </td>
         <td>
           1781
         </td>
         <td>
-          11204
+          11253
           -
-          11245
+          11269
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.GameEnded.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.GameEnded.apply(false)
+        </td>
+      </tr><tr>
+        <td>
+          303
+        </td>
+        <td>
+          1784
+        </td>
+        <td>
+          11228
+          -
+          11269
         </td>
         <td>
           Block
@@ -4633,15 +4655,15 @@
         </td>
       </tr><tr>
         <td>
-          302
+          303
         </td>
         <td>
-          1775
+          1778
         </td>
         <td>
-          11183
+          11207
           -
-          11202
+          11226
         </td>
         <td>
           Apply
@@ -4654,78 +4676,15 @@
         </td>
       </tr><tr>
         <td>
-          302
+          303
         </td>
         <td>
-          1778
+          1786
         </td>
         <td>
-          11229
+          11203
           -
-          11245
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.multiplayer.server.ServerActor.GameEnded.apply
-        </td>
-        <td style="background: #F0ADAD">
-          it.unibo.osmos.redux.multiplayer.server.ServerActor.GameEnded.apply(false)
-        </td>
-      </tr><tr>
-        <td>
-          302
-        </td>
-        <td>
-          1777
-        </td>
-        <td>
-          11204
-          -
-          11226
-        </td>
-        <td>
-          ApplyImplicitView
-        </td>
-        <td>
-          akka.actor.actorRef2Scala
-        </td>
-        <td style="background: #F0ADAD">
-          actor.this.`package`.actorRef2Scala(player.get.getActorRef)
-        </td>
-      </tr><tr>
-        <td>
-          302
-        </td>
-        <td>
-          1780
-        </td>
-        <td>
-          11204
-          -
-          11245
-        </td>
-        <td>
-          ApplyToImplicitArgs
-        </td>
-        <td>
-          akka.actor.ScalaActorRef.!
-        </td>
-        <td style="background: #F0ADAD">
-          qual$5.!(x$23)(x$24)
-        </td>
-      </tr><tr>
-        <td>
-          302
-        </td>
-        <td>
-          1783
-        </td>
-        <td>
-          11179
-          -
-          11179
+          11203
         </td>
         <td>
           Block
@@ -4738,15 +4697,15 @@
         </td>
       </tr><tr>
         <td>
-          302
+          303
         </td>
         <td>
-          1774
+          1777
         </td>
         <td>
-          11193
+          11217
           -
-          11202
+          11226
         </td>
         <td>
           Select
@@ -4759,36 +4718,57 @@
         </td>
       </tr><tr>
         <td>
-          302
+          303
         </td>
         <td>
-          1776
+          1780
         </td>
         <td>
-          11204
+          11228
           -
-          11226
+          11250
         </td>
         <td>
-          Select
+          ApplyImplicitView
         </td>
         <td>
-          it.unibo.osmos.redux.multiplayer.players.ReferablePlayer.getActorRef
+          akka.actor.actorRef2Scala
         </td>
         <td style="background: #F0ADAD">
-          player.get.getActorRef
+          actor.this.`package`.actorRef2Scala(player.get.getActorRef)
         </td>
       </tr><tr>
         <td>
-          305
+          303
         </td>
         <td>
-          1784
+          1783
         </td>
         <td>
-          11331
+          11228
           -
-          11356
+          11269
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          akka.actor.ScalaActorRef.!
+        </td>
+        <td style="background: #F0ADAD">
+          qual$5.!(x$23)(x$24)
+        </td>
+      </tr><tr>
+        <td>
+          303
+        </td>
+        <td>
+          1785
+        </td>
+        <td>
+          11203
+          -
+          11203
         </td>
         <td>
           Literal
@@ -4797,61 +4777,19 @@
           &lt;nosymbol&gt;
         </td>
         <td style="background: #F0ADAD">
-          classOf[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity]
+          ()
         </td>
       </tr><tr>
         <td>
-          305
+          306
         </td>
         <td>
-          1787
+          1788
         </td>
         <td>
-          11302
+          11400
           -
-          11395
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.collection.LinearSeqOptimized.find
-        </td>
-        <td style="background: #F0ADAD">
-          it.unibo.osmos.redux.ecs.entities.EntityManager.filterEntities(classOf[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity]).find(((x$10: it.unibo.osmos.redux.ecs.entities.properties.basic.Property) =&gt; x$10.getUUID.==(player.get.getUUID)))
-        </td>
-      </tr><tr>
-        <td>
-          305
-        </td>
-        <td>
-          1786
-        </td>
-        <td>
-          11363
-          -
-          11394
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          java.lang.Object.==
-        </td>
-        <td style="background: #F0ADAD">
-          x$10.getUUID.==(player.get.getUUID)
-        </td>
-      </tr><tr>
-        <td>
-          305
-        </td>
-        <td>
-          1785
-        </td>
-        <td>
-          11376
-          -
-          11394
+          11418
         </td>
         <td>
           Select
@@ -4867,12 +4805,75 @@
           306
         </td>
         <td>
-          1788
+          1790
         </td>
         <td>
-          11406
+          11326
           -
-          11426
+          11419
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.LinearSeqOptimized.find
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.ecs.entities.EntityManager.filterEntities(classOf[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity]).find(((x$10: it.unibo.osmos.redux.ecs.entities.properties.basic.Property) =&gt; x$10.getUUID.==(player.get.getUUID)))
+        </td>
+      </tr><tr>
+        <td>
+          306
+        </td>
+        <td>
+          1787
+        </td>
+        <td>
+          11355
+          -
+          11380
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          classOf[it.unibo.osmos.redux.ecs.entities.PlayerCellEntity]
+        </td>
+      </tr><tr>
+        <td>
+          306
+        </td>
+        <td>
+          1789
+        </td>
+        <td>
+          11387
+          -
+          11418
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.==
+        </td>
+        <td style="background: #F0ADAD">
+          x$10.getUUID.==(player.get.getUUID)
+        </td>
+      </tr><tr>
+        <td>
+          307
+        </td>
+        <td>
+          1791
+        </td>
+        <td>
+          11430
+          -
+          11450
         </td>
         <td>
           Select
@@ -4885,36 +4886,15 @@
         </td>
       </tr><tr>
         <td>
-          306
+          307
         </td>
         <td>
-          1791
+          1793
         </td>
         <td>
-          11402
+          11452
           -
-          11402
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          306
-        </td>
-        <td>
-          1790
-        </td>
-        <td>
-          11428
-          -
-          11527
+          11551
         </td>
         <td>
           Block
@@ -4927,15 +4907,36 @@
         </td>
       </tr><tr>
         <td>
-          306
+          307
         </td>
         <td>
-          1789
+          1795
         </td>
         <td>
-          11428
+          11426
           -
-          11527
+          11426
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          307
+        </td>
+        <td>
+          1792
+        </td>
+        <td>
+          11452
+          -
+          11551
         </td>
         <td>
           Throw
@@ -4948,18 +4949,18 @@
         </td>
       </tr><tr>
         <td>
-          306
+          307
         </td>
         <td>
-          1792
+          1794
         </td>
         <td>
-          11402
+          11426
           -
-          11402
+          11426
         </td>
         <td>
-          Block
+          Literal
         </td>
         <td>
           &lt;nosymbol&gt;
@@ -4969,36 +4970,15 @@
         </td>
       </tr><tr>
         <td>
-          308
+          309
         </td>
         <td>
-          1793
+          1797
         </td>
         <td>
-          11556
+          11559
           -
-          11572
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          scala.Option.get
-        </td>
-        <td style="background: #F0ADAD">
-          playerEntity.get
-        </td>
-      </tr><tr>
-        <td>
-          308
-        </td>
-        <td>
-          1794
-        </td>
-        <td>
-          11535
-          -
-          11573
+          11597
         </td>
         <td>
           Apply
@@ -5011,15 +4991,36 @@
         </td>
       </tr><tr>
         <td>
-          310
+          309
         </td>
         <td>
-          1795
+          1796
         </td>
         <td>
-          11646
+          11580
           -
-          11676
+          11596
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.get
+        </td>
+        <td style="background: #F0ADAD">
+          playerEntity.get
+        </td>
+      </tr><tr>
+        <td>
+          311
+        </td>
+        <td>
+          1798
+        </td>
+        <td>
+          11670
+          -
+          11700
         </td>
         <td>
           Apply
@@ -5032,15 +5033,15 @@
         </td>
       </tr><tr>
         <td>
-          313
+          314
         </td>
         <td>
-          1796
+          1799
         </td>
         <td>
-          11764
+          11788
           -
-          11769
+          11793
         </td>
         <td>
           Select
@@ -5053,36 +5054,15 @@
         </td>
       </tr><tr>
         <td>
-          314
+          315
         </td>
         <td>
-          1797
+          1801
         </td>
         <td>
-          11834
+          11832
           -
-          11859
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          java.lang.Object.==
-        </td>
-        <td style="background: #F0ADAD">
-          x$11.getUsername.==(username)
-        </td>
-      </tr><tr>
-        <td>
-          314
-        </td>
-        <td>
-          1798
-        </td>
-        <td>
-          11808
-          -
-          11860
+          11884
         </td>
         <td>
           Apply
@@ -5098,12 +5078,33 @@
           315
         </td>
         <td>
-          1799
+          1800
         </td>
         <td>
-          11877
+          11858
           -
-          11972
+          11883
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.==
+        </td>
+        <td style="background: #F0ADAD">
+          x$11.getUsername.==(username)
+        </td>
+      </tr><tr>
+        <td>
+          316
+        </td>
+        <td>
+          1802
+        </td>
+        <td>
+          11901
+          -
+          11996
         </td>
         <td>
           Throw
@@ -5116,15 +5117,15 @@
         </td>
       </tr><tr>
         <td>
-          318
+          319
         </td>
         <td>
-          1800
+          1803
         </td>
         <td>
-          12043
+          12067
           -
-          12048
+          12072
         </td>
         <td>
           Select
@@ -5137,57 +5138,15 @@
         </td>
       </tr><tr>
         <td>
-          319
+          320
         </td>
         <td>
-          1802
+          1806
         </td>
         <td>
-          12150
+          12111
           -
-          12169
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.multiplayer.players.Alive.setLiveness
-        </td>
-        <td style="background: #F0ADAD">
-          x$13.setLiveness(false)
-        </td>
-      </tr><tr>
-        <td>
-          319
-        </td>
-        <td>
-          1801
-        </td>
-        <td>
-          12115
-          -
-          12140
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          java.lang.Object.==
-        </td>
-        <td style="background: #F0ADAD">
-          x$12.getUsername.==(username)
-        </td>
-      </tr><tr>
-        <td>
-          319
-        </td>
-        <td>
-          1803
-        </td>
-        <td>
-          12087
-          -
-          12170
+          12194
         </td>
         <td>
           Apply
@@ -5203,12 +5162,54 @@
           320
         </td>
         <td>
+          1805
+        </td>
+        <td>
+          12174
+          -
+          12193
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.Alive.setLiveness
+        </td>
+        <td style="background: #F0ADAD">
+          x$13.setLiveness(false)
+        </td>
+      </tr><tr>
+        <td>
+          320
+        </td>
+        <td>
           1804
         </td>
         <td>
-          12187
+          12139
           -
-          12290
+          12164
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.==
+        </td>
+        <td style="background: #F0ADAD">
+          x$12.getUsername.==(username)
+        </td>
+      </tr><tr>
+        <td>
+          321
+        </td>
+        <td>
+          1807
+        </td>
+        <td>
+          12211
+          -
+          12314
         </td>
         <td>
           Throw
@@ -5221,57 +5222,15 @@
         </td>
       </tr><tr>
         <td>
-          324
-        </td>
-        <td>
-          1806
-        </td>
-        <td>
-          12375
-          -
-          12401
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          java.lang.Object.!=
-        </td>
-        <td style="background: #F0ADAD">
-          ServerImpl.this.status.!=(ServerState.Idle)
-        </td>
-      </tr><tr>
-        <td>
-          324
+          325
         </td>
         <td>
           1808
         </td>
         <td>
-          12403
+          12409
           -
-          12507
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Server cannot close lobby because it\'s in the state: &quot;, &quot;&quot;).s(ServerImpl.this.status))
-        </td>
-      </tr><tr>
-        <td>
-          324
-        </td>
-        <td>
-          1805
-        </td>
-        <td>
-          12385
-          -
-          12401
+          12425
         </td>
         <td>
           Select
@@ -5284,15 +5243,57 @@
         </td>
       </tr><tr>
         <td>
-          324
+          325
         </td>
         <td>
-          1807
+          1811
         </td>
         <td>
-          12403
+          12427
           -
-          12507
+          12531
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Server cannot close lobby because it\'s in the state: &quot;, &quot;&quot;).s(ServerImpl.this.status))
+        </td>
+      </tr><tr>
+        <td>
+          325
+        </td>
+        <td>
+          1813
+        </td>
+        <td>
+          12395
+          -
+          12395
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          325
+        </td>
+        <td>
+          1810
+        </td>
+        <td>
+          12427
+          -
+          12531
         </td>
         <td>
           Throw
@@ -5305,36 +5306,36 @@
         </td>
       </tr><tr>
         <td>
-          324
-        </td>
-        <td>
-          1810
-        </td>
-        <td>
-          12371
-          -
-          12371
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          324
+          325
         </td>
         <td>
           1809
         </td>
         <td>
-          12371
+          12399
           -
-          12371
+          12425
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.!=
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.status.!=(ServerState.Idle)
+        </td>
+      </tr><tr>
+        <td>
+          325
+        </td>
+        <td>
+          1812
+        </td>
+        <td>
+          12395
+          -
+          12395
         </td>
         <td>
           Literal
@@ -5347,15 +5348,15 @@
         </td>
       </tr><tr>
         <td>
-          327
+          328
         </td>
         <td>
-          1811
+          1814
         </td>
         <td>
-          12567
+          12591
           -
-          12598
+          12622
         </td>
         <td>
           Select
@@ -5368,78 +5369,15 @@
         </td>
       </tr><tr>
         <td>
-          329
+          330
         </td>
         <td>
           1815
         </td>
         <td>
-          12661
+          12712
           -
-          12788
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.Boolean.||
-        </td>
-        <td style="background: #F0ADAD">
-          it.unibo.osmos.redux.multiplayer.common.NetworkUtils.validatePort(address.port.getOrElse[Int](-1)).unary_!.||(it.unibo.osmos.redux.multiplayer.common.NetworkUtils.validateIPV4Address(address.host.getOrElse[String](&quot;&quot;)).unary_!)
-        </td>
-      </tr><tr>
-        <td>
-          329
-        </td>
-        <td>
-          1819
-        </td>
-        <td>
-          12657
-          -
-          12657
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          329
-        </td>
-        <td>
-          1818
-        </td>
-        <td>
-          12657
-          -
-          12657
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          329
-        </td>
-        <td>
-          1812
-        </td>
-        <td>
-          12688
-          -
-          12714
+          12738
         </td>
         <td>
           Apply
@@ -5455,12 +5393,75 @@
           330
         </td>
         <td>
-          1814
+          1822
         </td>
         <td>
-          12727
+          12681
           -
-          12788
+          12681
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          330
+        </td>
+        <td>
+          1818
+        </td>
+        <td>
+          12685
+          -
+          12812
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.||
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.multiplayer.common.NetworkUtils.validatePort(address.port.getOrElse[Int](-1)).unary_!.||(it.unibo.osmos.redux.multiplayer.common.NetworkUtils.validateIPV4Address(address.host.getOrElse[String](&quot;&quot;)).unary_!)
+        </td>
+      </tr><tr>
+        <td>
+          330
+        </td>
+        <td>
+          1821
+        </td>
+        <td>
+          12681
+          -
+          12681
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          331
+        </td>
+        <td>
+          1817
+        </td>
+        <td>
+          12751
+          -
+          12812
         </td>
         <td>
           Select
@@ -5473,15 +5474,15 @@
         </td>
       </tr><tr>
         <td>
-          330
+          331
         </td>
         <td>
-          1813
+          1816
         </td>
         <td>
-          12761
+          12785
           -
-          12787
+          12811
         </td>
         <td>
           Apply
@@ -5494,15 +5495,15 @@
         </td>
       </tr><tr>
         <td>
-          331
+          332
         </td>
         <td>
-          1817
+          1820
         </td>
         <td>
-          12800
+          12824
           -
-          12920
+          12944
         </td>
         <td>
           Block
@@ -5515,15 +5516,15 @@
         </td>
       </tr><tr>
         <td>
-          331
+          332
         </td>
         <td>
-          1816
+          1819
         </td>
         <td>
-          12800
+          12824
           -
-          12920
+          12944
         </td>
         <td>
           Throw
@@ -5536,57 +5537,15 @@
         </td>
       </tr><tr>
         <td>
-          335
+          336
         </td>
         <td>
-          1820
+          1824
         </td>
         <td>
-          12974
+          12993
           -
-          12997
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.multiplayer.lobby.GameLobby.apply
-        </td>
-        <td style="background: #F0ADAD">
-          it.unibo.osmos.redux.multiplayer.lobby.GameLobby.apply[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer](lobbyContext)
-        </td>
-      </tr><tr>
-        <td>
-          335
-        </td>
-        <td>
-          1822
-        </td>
-        <td>
-          12961
-          -
-          12998
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.lobby_=
-        </td>
-        <td style="background: #F0ADAD">
-          ServerImpl.this.lobby_=(scala.Some.apply[it.unibo.osmos.redux.multiplayer.lobby.GameLobby[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer]](it.unibo.osmos.redux.multiplayer.lobby.GameLobby.apply[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer](lobbyContext)))
-        </td>
-      </tr><tr>
-        <td>
-          335
-        </td>
-        <td>
-          1821
-        </td>
-        <td>
-          12969
-          -
-          12998
+          13022
         </td>
         <td>
           Apply
@@ -5599,36 +5558,57 @@
         </td>
       </tr><tr>
         <td>
-          337
-        </td>
-        <td>
-          1824
-        </td>
-        <td>
-          13075
-          -
-          13091
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          scala.Option.get
-        </td>
-        <td style="background: #F0ADAD">
-          address.host.get
-        </td>
-      </tr><tr>
-        <td>
-          337
+          336
         </td>
         <td>
           1823
         </td>
         <td>
-          13065
+          12998
           -
-          13073
+          13021
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.lobby.GameLobby.apply
+        </td>
+        <td style="background: #F0ADAD">
+          it.unibo.osmos.redux.multiplayer.lobby.GameLobby.apply[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer](lobbyContext)
+        </td>
+      </tr><tr>
+        <td>
+          336
+        </td>
+        <td>
+          1825
+        </td>
+        <td>
+          12985
+          -
+          13022
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.Server.ServerImpl.lobby_=
+        </td>
+        <td style="background: #F0ADAD">
+          ServerImpl.this.lobby_=(scala.Some.apply[it.unibo.osmos.redux.multiplayer.lobby.GameLobby[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer]](it.unibo.osmos.redux.multiplayer.lobby.GameLobby.apply[it.unibo.osmos.redux.multiplayer.players.ReferablePlayer](lobbyContext)))
+        </td>
+      </tr><tr>
+        <td>
+          338
+        </td>
+        <td>
+          1826
+        </td>
+        <td>
+          13089
+          -
+          13097
         </td>
         <td>
           Select
@@ -5641,15 +5621,15 @@
         </td>
       </tr><tr>
         <td>
-          337
+          338
         </td>
         <td>
-          1826
+          1829
         </td>
         <td>
-          13054
+          13078
           -
-          13110
+          13134
         </td>
         <td>
           Apply
@@ -5662,15 +5642,15 @@
         </td>
       </tr><tr>
         <td>
-          337
+          338
         </td>
         <td>
-          1825
+          1828
         </td>
         <td>
-          13093
+          13117
           -
-          13109
+          13133
         </td>
         <td>
           Select
@@ -5683,15 +5663,36 @@
         </td>
       </tr><tr>
         <td>
-          339
+          338
         </td>
         <td>
-          1829
+          1827
         </td>
         <td>
-          13177
+          13099
           -
-          13231
+          13115
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.get
+        </td>
+        <td style="background: #F0ADAD">
+          address.host.get
+        </td>
+      </tr><tr>
+        <td>
+          340
+        </td>
+        <td>
+          1832
+        </td>
+        <td>
+          13201
+          -
+          13255
         </td>
         <td>
           Apply
@@ -5704,15 +5705,15 @@
         </td>
       </tr><tr>
         <td>
-          339
+          340
         </td>
         <td>
-          1828
+          1831
         </td>
         <td>
-          13198
+          13222
           -
-          13231
+          13255
         </td>
         <td>
           Apply
@@ -5725,15 +5726,15 @@
         </td>
       </tr><tr>
         <td>
-          339
+          340
         </td>
         <td>
-          1827
+          1830
         </td>
         <td>
-          13202
+          13226
           -
-          13230
+          13254
         </td>
         <td>
           Apply
@@ -5746,57 +5747,15 @@
         </td>
       </tr><tr>
         <td>
-          341
+          342
         </td>
         <td>
-          1832
+          1833
         </td>
         <td>
-          13271
+          13349
           -
-          13334
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.multiplayer.lobby.GameLobby.addPlayer
-        </td>
-        <td style="background: #F0ADAD">
-          ServerImpl.this.lobby.get.addPlayer(new it.unibo.osmos.redux.multiplayer.players.ReferablePlayer(serverPlayer, ServerImpl.this.ref.get))
-        </td>
-      </tr><tr>
-        <td>
-          341
-        </td>
-        <td>
-          1831
-        </td>
-        <td>
-          13291
-          -
-          13333
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.multiplayer.players.ReferablePlayer.&lt;init&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          new it.unibo.osmos.redux.multiplayer.players.ReferablePlayer(serverPlayer, ServerImpl.this.ref.get)
-        </td>
-      </tr><tr>
-        <td>
-          341
-        </td>
-        <td>
-          1830
-        </td>
-        <td>
-          13325
-          -
-          13332
+          13356
         </td>
         <td>
           Select
@@ -5809,36 +5768,57 @@
         </td>
       </tr><tr>
         <td>
-          343
+          342
         </td>
         <td>
-          1833
+          1835
         </td>
         <td>
-          13351
+          13295
           -
-          13368
+          13358
         </td>
         <td>
-          Select
+          Apply
         </td>
         <td>
-          it.unibo.osmos.redux.multiplayer.server.ServerState.Lobby
+          it.unibo.osmos.redux.multiplayer.lobby.GameLobby.addPlayer
         </td>
         <td style="background: #F0ADAD">
-          ServerState.Lobby
+          ServerImpl.this.lobby.get.addPlayer(new it.unibo.osmos.redux.multiplayer.players.ReferablePlayer(serverPlayer, ServerImpl.this.ref.get))
         </td>
       </tr><tr>
         <td>
-          343
+          342
         </td>
         <td>
           1834
         </td>
         <td>
-          13342
+          13315
           -
-          13368
+          13357
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.players.ReferablePlayer.&lt;init&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          new it.unibo.osmos.redux.multiplayer.players.ReferablePlayer(serverPlayer, ServerImpl.this.ref.get)
+        </td>
+      </tr><tr>
+        <td>
+          344
+        </td>
+        <td>
+          1837
+        </td>
+        <td>
+          13366
+          -
+          13392
         </td>
         <td>
           Apply
@@ -5851,15 +5831,15 @@
         </td>
       </tr><tr>
         <td>
-          349
+          344
         </td>
         <td>
-          1835
+          1836
         </td>
         <td>
-          13458
+          13375
           -
-          13475
+          13392
         </td>
         <td>
           Select
@@ -5872,15 +5852,36 @@
         </td>
       </tr><tr>
         <td>
-          349
+          350
         </td>
         <td>
-          1838
+          1842
         </td>
         <td>
-          13477
+          13468
           -
-          13581
+          13468
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          350
+        </td>
+        <td>
+          1841
+        </td>
+        <td>
+          13501
+          -
+          13605
         </td>
         <td>
           Block
@@ -5893,15 +5894,36 @@
         </td>
       </tr><tr>
         <td>
-          349
+          350
         </td>
         <td>
-          1837
+          1838
         </td>
         <td>
-          13477
+          13482
           -
-          13581
+          13499
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.server.ServerState.Lobby
+        </td>
+        <td style="background: #F0ADAD">
+          ServerState.Lobby
+        </td>
+      </tr><tr>
+        <td>
+          350
+        </td>
+        <td>
+          1840
+        </td>
+        <td>
+          13501
+          -
+          13605
         </td>
         <td>
           Throw
@@ -5914,15 +5936,15 @@
         </td>
       </tr><tr>
         <td>
-          349
+          350
         </td>
         <td>
-          1840
+          1843
         </td>
         <td>
-          13444
+          13468
           -
-          13444
+          13468
         </td>
         <td>
           Block
@@ -5935,15 +5957,15 @@
         </td>
       </tr><tr>
         <td>
-          349
+          350
         </td>
         <td>
-          1836
+          1839
         </td>
         <td>
-          13448
+          13472
           -
-          13475
+          13499
         </td>
         <td>
           Apply
@@ -5956,57 +5978,15 @@
         </td>
       </tr><tr>
         <td>
-          349
+          351
         </td>
         <td>
-          1839
+          1844
         </td>
         <td>
-          13444
+          13616
           -
-          13444
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          350
-        </td>
-        <td>
-          1842
-        </td>
-        <td>
-          13607
-          -
-          13690
-        </td>
-        <td>
-          Throw
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #F0ADAD">
-          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Cannot close lobby if it\'s not defined.&quot;).s())
-        </td>
-      </tr><tr>
-        <td>
-          350
-        </td>
-        <td>
-          1841
-        </td>
-        <td>
-          13592
-          -
-          13605
+          13629
         </td>
         <td>
           Select
@@ -6019,15 +5999,15 @@
         </td>
       </tr><tr>
         <td>
-          350
+          351
         </td>
         <td>
-          1844
+          1847
         </td>
         <td>
-          13588
+          13612
           -
-          13588
+          13612
         </td>
         <td>
           Literal
@@ -6040,15 +6020,15 @@
         </td>
       </tr><tr>
         <td>
-          350
+          351
         </td>
         <td>
-          1843
+          1846
         </td>
         <td>
-          13607
+          13631
           -
-          13690
+          13714
         </td>
         <td>
           Block
@@ -6061,15 +6041,36 @@
         </td>
       </tr><tr>
         <td>
-          350
+          351
         </td>
         <td>
           1845
         </td>
         <td>
-          13588
+          13631
           -
-          13588
+          13714
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.UnsupportedOperationException(scala.StringContext.apply(&quot;Cannot close lobby if it\'s not defined.&quot;).s())
+        </td>
+      </tr><tr>
+        <td>
+          351
+        </td>
+        <td>
+          1848
+        </td>
+        <td>
+          13612
+          -
+          13612
         </td>
         <td>
           Block
@@ -6082,15 +6083,15 @@
         </td>
       </tr><tr>
         <td>
-          353
+          354
         </td>
         <td>
-          1847
+          1850
         </td>
         <td>
-          13741
+          13765
           -
-          13770
+          13794
         </td>
         <td>
           Apply
@@ -6103,78 +6104,36 @@
         </td>
       </tr><tr>
         <td>
-          353
-        </td>
-        <td>
-          1846
-        </td>
-        <td>
-          13758
-          -
-          13769
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          it.unibo.osmos.redux.multiplayer.server.ServerActor.LobbyClosed
-        </td>
-        <td style="background: #F0ADAD">
-          it.unibo.osmos.redux.multiplayer.server.ServerActor.LobbyClosed
-        </td>
-      </tr><tr>
-        <td>
-          355
-        </td>
-        <td>
-          1850
-        </td>
-        <td>
-          13807
-          -
-          13836
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          it.unibo.osmos.redux.multiplayer.lobby.AbstractLobby.notifyLobbyClosed
-        </td>
-        <td style="background: #F0ADAD">
-          qual$6.notifyLobbyClosed(x$25)
-        </td>
-      </tr><tr>
-        <td>
-          355
+          354
         </td>
         <td>
           1849
         </td>
         <td>
-          13817
+          13782
           -
-          13817
+          13793
         </td>
         <td>
           Select
         </td>
         <td>
-          it.unibo.osmos.redux.multiplayer.lobby.AbstractLobby.notifyLobbyClosed$default$1
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.LobbyClosed
         </td>
         <td style="background: #F0ADAD">
-          qual$6.notifyLobbyClosed$default$1
+          it.unibo.osmos.redux.multiplayer.server.ServerActor.LobbyClosed
         </td>
       </tr><tr>
         <td>
-          355
+          356
         </td>
         <td>
-          1848
+          1851
         </td>
         <td>
-          13807
+          13831
           -
-          13816
+          13840
         </td>
         <td>
           Select
@@ -6187,36 +6146,57 @@
         </td>
       </tr><tr>
         <td>
-          357
+          356
         </td>
         <td>
-          1851
+          1853
         </td>
         <td>
-          13880
+          13831
           -
-          13884
+          13860
         </td>
         <td>
-          Select
+          Apply
         </td>
         <td>
-          scala.None
+          it.unibo.osmos.redux.multiplayer.lobby.AbstractLobby.notifyLobbyClosed
         </td>
         <td style="background: #F0ADAD">
-          scala.None
+          qual$6.notifyLobbyClosed(x$25)
         </td>
       </tr><tr>
         <td>
-          357
+          356
         </td>
         <td>
           1852
         </td>
         <td>
-          13872
+          13841
           -
-          13884
+          13841
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          it.unibo.osmos.redux.multiplayer.lobby.AbstractLobby.notifyLobbyClosed$default$1
+        </td>
+        <td style="background: #F0ADAD">
+          qual$6.notifyLobbyClosed$default$1
+        </td>
+      </tr><tr>
+        <td>
+          358
+        </td>
+        <td>
+          1855
+        </td>
+        <td>
+          13896
+          -
+          13908
         </td>
         <td>
           Apply
@@ -6229,15 +6209,36 @@
         </td>
       </tr><tr>
         <td>
-          359
+          358
         </td>
         <td>
-          1853
+          1854
         </td>
         <td>
-          13901
+          13904
           -
-          13917
+          13908
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #F0ADAD">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          360
+        </td>
+        <td>
+          1856
+        </td>
+        <td>
+          13925
+          -
+          13941
         </td>
         <td>
           Select
@@ -6250,15 +6251,15 @@
         </td>
       </tr><tr>
         <td>
-          359
+          360
         </td>
         <td>
-          1854
+          1857
         </td>
         <td>
-          13892
+          13916
           -
-          13917
+          13941
         </td>
         <td>
           Apply
@@ -6271,15 +6272,15 @@
         </td>
       </tr><tr>
         <td>
-          364
+          365
         </td>
         <td>
-          1855
+          1858
         </td>
         <td>
-          14086
+          14110
           -
-          14106
+          14130
         </td>
         <td>
           Select
@@ -6292,15 +6293,15 @@
         </td>
       </tr><tr>
         <td>
-          365
+          366
         </td>
         <td>
-          1856
+          1859
         </td>
         <td>
-          14133
+          14157
           -
-          14235
+          14259
         </td>
         <td>
           Throw
@@ -6313,15 +6314,15 @@
         </td>
       </tr><tr>
         <td>
-          366
+          367
         </td>
         <td>
-          1857
+          1860
         </td>
         <td>
-          14254
+          14278
           -
-          14339
+          14363
         </td>
         <td>
           Throw
@@ -6334,15 +6335,15 @@
         </td>
       </tr><tr>
         <td>
-          373
+          374
         </td>
         <td>
-          1868
+          1871
         </td>
         <td>
-          14558
+          14582
           -
-          14919
+          14943
         </td>
         <td>
           Block
@@ -6360,15 +6361,15 @@
         </td>
       </tr><tr>
         <td>
-          373
+          374
         </td>
         <td>
-          1858
+          1861
         </td>
         <td>
-          14539
+          14563
           -
-          14556
+          14580
         </td>
         <td>
           Select
@@ -6381,15 +6382,15 @@
         </td>
       </tr><tr>
         <td>
-          374
+          375
         </td>
         <td>
-          1859
+          1862
         </td>
         <td>
-          14608
+          14632
           -
-          14626
+          14650
         </td>
         <td>
           Select
@@ -6402,15 +6403,15 @@
         </td>
       </tr><tr>
         <td>
-          374
+          375
         </td>
         <td>
-          1862
+          1865
         </td>
         <td>
-          14588
+          14612
           -
-          14672
+          14696
         </td>
         <td>
           Apply
@@ -6423,15 +6424,15 @@
         </td>
       </tr><tr>
         <td>
-          374
+          375
         </td>
         <td>
-          1861
+          1864
         </td>
         <td>
-          14647
+          14671
           -
-          14661
+          14685
         </td>
         <td>
           Select
@@ -6444,15 +6445,15 @@
         </td>
       </tr><tr>
         <td>
-          374
+          375
         </td>
         <td>
-          1860
+          1863
         </td>
         <td>
-          14628
+          14652
           -
-          14645
+          14669
         </td>
         <td>
           Select
@@ -6465,15 +6466,15 @@
         </td>
       </tr><tr>
         <td>
-          376
+          377
         </td>
         <td>
-          1865
+          1868
         </td>
         <td>
-          14744
+          14768
           -
-          14805
+          14829
         </td>
         <td>
           Apply
@@ -6486,15 +6487,15 @@
         </td>
       </tr><tr>
         <td>
-          376
+          377
         </td>
         <td>
-          1864
+          1867
         </td>
         <td>
-          14761
+          14785
           -
-          14804
+          14828
         </td>
         <td>
           Apply
@@ -6507,15 +6508,15 @@
         </td>
       </tr><tr>
         <td>
-          376
+          377
         </td>
         <td>
-          1863
+          1866
         </td>
         <td>
-          14780
+          14804
           -
-          14803
+          14827
         </td>
         <td>
           Select
@@ -6528,15 +6529,15 @@
         </td>
       </tr><tr>
         <td>
-          378
+          379
         </td>
         <td>
-          1866
+          1869
         </td>
         <td>
-          14860
+          14884
           -
-          14890
+          14914
         </td>
         <td>
           Apply
@@ -6549,15 +6550,15 @@
         </td>
       </tr><tr>
         <td>
-          379
+          380
         </td>
         <td>
-          1867
+          1870
         </td>
         <td>
-          14903
+          14927
           -
-          14907
+          14931
         </td>
         <td>
           Literal
@@ -6570,15 +6571,15 @@
         </td>
       </tr><tr>
         <td>
-          380
+          381
         </td>
         <td>
-          1870
+          1873
         </td>
         <td>
-          14925
+          14949
           -
-          14930
+          14954
         </td>
         <td>
           Block
@@ -6591,15 +6592,15 @@
         </td>
       </tr><tr>
         <td>
-          380
+          381
         </td>
         <td>
-          1869
+          1872
         </td>
         <td>
-          14925
+          14949
           -
-          14930
+          14954
         </td>
         <td>
           Literal
@@ -6612,15 +6613,15 @@
         </td>
       </tr><tr>
         <td>
-          381
+          382
         </td>
         <td>
-          1871
+          1874
         </td>
         <td>
-          14949
+          14973
           -
-          15044
+          15068
         </td>
         <td>
           Throw
@@ -6633,15 +6634,15 @@
         </td>
       </tr><tr>
         <td>
-          389
+          390
         </td>
         <td>
-          1872
+          1875
         </td>
         <td>
-          15288
+          15312
           -
-          15320
+          15344
         </td>
         <td>
           Apply
@@ -6654,15 +6655,15 @@
         </td>
       </tr><tr>
         <td>
-          391
+          392
         </td>
         <td>
-          1874
+          1877
         </td>
         <td>
-          15382
+          15406
           -
-          15425
+          15449
         </td>
         <td>
           Apply
@@ -6675,15 +6676,15 @@
         </td>
       </tr><tr>
         <td>
-          391
+          392
         </td>
         <td>
-          1873
+          1876
         </td>
         <td>
-          15399
+          15423
           -
-          15424
+          15448
         </td>
         <td>
           Apply
@@ -6696,15 +6697,15 @@
         </td>
       </tr><tr>
         <td>
-          392
+          393
         </td>
         <td>
-          1875
+          1878
         </td>
         <td>
-          15444
+          15468
           -
-          15542
+          15566
         </td>
         <td>
           Throw
