@@ -19,7 +19,7 @@ apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'org.scoverage'
 apply plugin: 'com.github.maiflai.scalatest'
 
-version '1.3.1'
+version '1.3.2'
 
 mainClassName = 'it.unibo.osmos.redux.main.AppLauncher'
 sourceCompatibility = 1.8
@@ -89,6 +89,15 @@ task scalaTests(dependsOn: ['testClasses'], type: JavaExec) {
     args = ['-R', 'build/classes/scala/test', '-o']
     classpath = sourceSets.test.runtimeClasspath
 }
+
+/* to exclude unwanted packages from coverage
+scoverage {
+    // excludedFiles = [ 'path/to/file.scala', 'path/to/another/file.scala' ]
+    excludedPackages = [ 'it.unibo.osmos.redux.main.*',
+                         'it.unibo.osmos.redux.multiplayer.*',
+                         'it.unibo.osmos.redux.mvc.view.*',
+                         'it.unibo.osmos.redux.utils.*']
+}*/
 
 // tests can't run parallely or build will fail
 test {
