@@ -55,7 +55,7 @@ case class CircularBorder(levelCenter: Point, collisionRule: CollisionRules.Valu
 
   override protected def computeNewSpeed(newPosition: Point): Vector = {
     /* For better understanding see the second answer:
-     * https://stackoverflow.com/questions/573084/bounce-angle
+     * https://stackoverflow.com/questions/573084/how-to-calculate-bounce-angle/573206#573206
      */
     val v = entitySpeed
     val n = newPosition subtract levelCenter normalized()
