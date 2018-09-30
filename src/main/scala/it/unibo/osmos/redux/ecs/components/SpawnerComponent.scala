@@ -49,6 +49,7 @@ trait SpawnerComponent extends Component {
   def copy(): SpawnerComponent
 }
 
+/** Companion object */
 object SpawnerComponent {
   def apply(canSpawn: Boolean): SpawnerComponent = SpawnerComponentImpl(canSpawn)
 

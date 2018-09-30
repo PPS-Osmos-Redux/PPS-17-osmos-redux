@@ -131,6 +131,7 @@ trait Server {
   def addPlayerToLobby(actorRef: ActorRef, player: BasePlayer): Boolean
 }
 
+/** Companion object */
 object Server {
 
   /** The server username in the lobby.

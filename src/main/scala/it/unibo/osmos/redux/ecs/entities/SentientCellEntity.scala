@@ -6,6 +6,7 @@ import it.unibo.osmos.redux.ecs.entities.properties.composed.SentientProperty
 /** Trait representing a sentient cell */
 trait SentientCellEntity extends CellEntity with SentientProperty {}
 
+/** Companion object */
 object SentientCellEntity {
   def apply(acceleration: AccelerationComponent,
             collidable: CollidableComponent,

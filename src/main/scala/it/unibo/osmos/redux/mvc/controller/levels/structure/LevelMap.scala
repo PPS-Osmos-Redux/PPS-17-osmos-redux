@@ -13,7 +13,7 @@ sealed trait MapShape {
   val center: Point
 }
 
-
+/** MapShape's companion object */
 object MapShape {
 
   /** Rectangular level map.

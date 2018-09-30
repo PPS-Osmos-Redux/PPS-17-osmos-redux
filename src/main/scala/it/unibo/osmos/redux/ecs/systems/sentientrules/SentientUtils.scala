@@ -1,4 +1,4 @@
-package it.unibo.osmos.redux.ecs.systems.sentientRule
+package it.unibo.osmos.redux.ecs.systems.sentientrules
 
 import it.unibo.osmos.redux.ecs.entities.properties.composed.SentientProperty
 import it.unibo.osmos.redux.utils.Constants.Sentient._

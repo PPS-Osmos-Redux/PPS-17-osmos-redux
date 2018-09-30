@@ -38,6 +38,7 @@ trait Point {
 
 }
 
+/** Companion object */
 object Point {
   def apply(x: Double, y: Double): Point = PointImpl(x, y)
 

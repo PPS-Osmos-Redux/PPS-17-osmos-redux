@@ -14,11 +14,11 @@ object MathUtils {
     */
   def normalize(number: Double, min: Double, max: Double): Double = (number - min) / (max - min)
 
-  /** unitVector from point2 to point1
+  /** Returns the unit vector from point2 to point1
     *
-    * @param point1
-    * @param point2
-    * @return unitVector
+    * @param point1 the unit vector's ending point
+    * @param point2 the unit vector's starting point
+    * @return unitVector the unit vector from point2 to point1
     */
   def unitVector(point1: Point, point2: Point): Vector = {
     point1 subtract point2 normalized()

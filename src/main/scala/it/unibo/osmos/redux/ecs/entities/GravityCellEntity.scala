@@ -7,6 +7,7 @@ import it.unibo.osmos.redux.ecs.entities.properties.composed.GravityProperty
 /** Trait representing a CellEntity with gravity force */
 trait GravityCellEntity extends CellEntity with GravityProperty with SpecificWeight {}
 
+/** Companion object */
 object GravityCellEntity {
 
   def apply(acceleration: AccelerationComponent,

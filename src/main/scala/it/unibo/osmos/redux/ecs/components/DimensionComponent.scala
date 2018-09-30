@@ -22,6 +22,7 @@ trait DimensionComponent extends Component {
   override def copy(): DimensionComponent = DimensionComponent(radius)
 }
 
+/** Companion object */
 object DimensionComponent {
   def apply(radius: Double): DimensionComponent = DimensionComponentImpl(radius)
 

@@ -63,7 +63,7 @@ trait GameEngine {
   def changeSpeed(increment: Boolean = false): Unit
 }
 
-/** Game engine object companion. */
+/** Game engine companion object. */
 object GameEngine {
 
   def apply(): GameEngine = GameEngineImpl()
@@ -84,9 +84,7 @@ object GameEngine {
       clear()
 
       //register InputEventStack to the mouse event listener to collect input events
-      levelContext.subscribe(e => {
-        InputEventQueue.enqueue(e)
-      })
+      levelContext.subscribe(InputEventQueue enqueue _)
 
       //create systems, add to list, the order in this collection is the final system order in the game loop
       val systems = ListBuffer[System]()
@@ -94,12 +92,39 @@ object GameEngine {
       systems ++= initMainSystems(level, levelContext)
       if (!(levelContext.levelContextType == LevelContextType.simulation)) systems += EndGameSystem(levelContext, level.levelInfo.victoryRule)
 
+      //add all entities in the entity manager (systems are subscribed to EntityManager event when created)
+      level.entities foreach (EntityManager add _)
+
+      //init the gameloop
+      gameLoop = Some(new GameLoop(this, systems.toList))
+    }
+
+    override def init(level: Level, server: Server): MultiPlayerLevelContext = {
+
+      //clear all
+      clear()
+
+      //obtain server entity cell uuid
+      val serverPlayer = level.entities.find(_.isInstanceOf[PlayerCellEntity])
+      if (serverPlayer.isEmpty) throw new IllegalArgumentException("Game Engine cannot initialize multi-player game because no player cell entity is present in the level definition.")
+
+      //create the level context
+      val levelContext = LevelContext(serverPlayer.get.getUUID)
+
+      //register InputEventQueue to the mouse event listener to collect input events
+      levelContext.subscribe(InputEventQueue enqueue _)
+
+      //create systems, add to list, the order in this collection is the final system order in the game loop
+      val systems = ListBuffer[System](InputSystem())
+      systems ++= initMainSystems(level, levelContext) :+ MultiPlayerEndGameSystem(server, levelContext, level.levelInfo.victoryRule) :+ MultiPlayerUpdateSystem(server)
 
       //add all entities in the entity manager (systems are subscribed to EntityManager event when created)
       level.entities foreach (EntityManager add _)
 
       //init the gameloop
       gameLoop = Some(new GameLoop(this, systems.toList))
+
+      levelContext
     }
 
     override def clear(): Unit = {
@@ -118,46 +143,6 @@ object GameEngine {
         case _ => //do nothing if it's not present
       }
       gameLoop = None
-    }
-
-    /** Initializes the main game systems
-      *
-      * @param level        The level
-      * @param levelContext The level context
-      * @return The list of all main systems
-      */
-    private def initMainSystems(level: Level, levelContext: LevelContext): List[System] = {
-      List(SpawnSystem(), GravitySystem(), MovementSystem(), CollisionSystem(level), CellsEliminationSystem(), SentientSystem(level), DrawSystem(levelContext))
-    }
-
-    override def init(level: Level, server: Server): MultiPlayerLevelContext = {
-
-      //clear all
-      clear()
-
-      //obtain server entity cell uuid
-      val serverPlayer = level.entities.find(_.isInstanceOf[PlayerCellEntity])
-      if (serverPlayer.isEmpty) throw new IllegalArgumentException("Game Engine cannot initialize multi-player game because no player cell entity is present in the level definition.")
-
-      //create the level context
-      val levelContext = LevelContext(serverPlayer.get.getUUID)
-
-      //register InputEventQueue to the mouse event listener to collect input events
-      levelContext.subscribe {
-        InputEventQueue enqueue _
-      }
-
-      //create systems, add to list, the order in this collection is the final system order in the game loop
-      val systems = ListBuffer[System](InputSystem())
-      systems ++= initMainSystems(level, levelContext) :+ MultiPlayerEndGameSystem(server, levelContext, level.levelInfo.victoryRule) :+ MultiPlayerUpdateSystem(server)
-
-      //add all entities in the entity manager (systems are subscribed to EntityManager event when created)
-      level.entities foreach (EntityManager add _)
-
-      //init the gameloop
-      gameLoop = Some(new GameLoop(this, systems.toList))
-
-      levelContext
     }
 
     override def start(): Unit = {
@@ -207,9 +192,17 @@ object GameEngine {
       } else if (!increment && frameRate > Constants.Engine.MinimumFps) {
         frameRate -= Constants.Engine.FpsChangeStep
       }
-      Logger.log(s"changedSpeed: $frameRate")("GameEngine")
     }
-  }
 
+    /** Initializes the main game systems
+      *
+      * @param level        The level
+      * @param levelContext The level context
+      * @return The list of all main systems
+      */
+    private def initMainSystems(level: Level, levelContext: LevelContext): List[System] =
+      List(SpawnSystem(), GravitySystem(), MovementSystem(), CollisionSystem(level), CellsEliminationSystem(), SentientSystem(level), DrawSystem(levelContext))
+
+  }
 }
 

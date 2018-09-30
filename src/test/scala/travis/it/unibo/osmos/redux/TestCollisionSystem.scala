@@ -5,17 +5,17 @@ import it.unibo.osmos.redux.ecs.entities.{CellBuilder, EntityManager, EntityType
 import it.unibo.osmos.redux.ecs.systems.CollisionSystem
 import it.unibo.osmos.redux.mvc.controller.levels.structure.MapShape.{Circle, Rectangle}
 import it.unibo.osmos.redux.mvc.controller.levels.structure._
-import it.unibo.osmos.redux.utils.Point
+import it.unibo.osmos.redux.utils.{Point, Vector}
 import org.scalactic.Tolerance._
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 class TestCollisionSystem extends FunSuite with BeforeAndAfter {
 
-  val TOLERANCE = 0.01
-  val dimension:Double = 5
-  val dimension1:Double = 2
+  private val TOLERANCE = 0.01
+  private val dimension: Double = 5
+  private val dimension1: Double = 2
 
-  var levelInfo: Level = _
+  private var levelInfo: Level = _
 
   before {
     setupLevelInfo(Rectangle(Point(100, 100), 100, 150), CollisionRules.bouncing)
@@ -34,7 +34,7 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
   test("CollisionSystem should not collide the entity with herself") {
     val system = CollisionSystem(levelInfo)
 
-    val entity = CellBuilder().withPosition(70,50).withDimension(dimension).buildCellEntity()
+    val entity = CellBuilder().withPosition(70, 50).withDimension(dimension).buildCellEntity()
 
     val originalDim = entity.getDimensionComponent.copy()
     val originalAccel = entity.getAccelerationComponent.copy()
@@ -109,11 +109,11 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
     val system = CollisionSystem(levelInfo)
 
     val entity = CellBuilder().withPosition(60, 80).withDimension(dimension).buildCellEntity()
-    val antiMatterEntity =  CellBuilder().withPosition(65, 81).withDimension(dimension1)
-                                              .withEntityType(EntityType.AntiMatter).buildCellEntity()
+    val antiMatterEntity = CellBuilder().withPosition(65, 81).withDimension(dimension1)
+      .withEntityType(EntityType.AntiMatter).buildCellEntity()
 
     val originalDim = entity.getDimensionComponent.copy()
-    val originalAccel =entity.getAccelerationComponent.copy()
+    val originalAccel = entity.getAccelerationComponent.copy()
     val originalDim1 = antiMatterEntity.getDimensionComponent.copy()
     val originalAccel1 = antiMatterEntity.getAccelerationComponent.copy()
 
@@ -236,7 +236,7 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
     system.update()
 
     assert(cellEntity.getPositionComponent.point == Point(120.04654311426577, 304.09308622853155))
-    assert(cellEntity.getSpeedComponent.vector == utils.Vector(9.080318896799085, -20.43398660889337))
+    assert(cellEntity.getSpeedComponent.vector == Vector(9.080318896799085, -20.43398660889337))
   }
 
   test("Collision with circular shape border, using instant death collision rule, reduces entities' radius") {
@@ -256,7 +256,7 @@ class TestCollisionSystem extends FunSuite with BeforeAndAfter {
     system.update()
 
     assert(cellEntity.getPositionComponent.point == Point(108.0, 280.0))
-    assert(cellEntity.getSpeedComponent.vector == utils.Vector(-10.0, -20.0))
+    assert(cellEntity.getSpeedComponent.vector == Vector(-10.0, -20.0))
     assert(cellEntity.getDimensionComponent.radius == 6.961143807781525)
   }
 

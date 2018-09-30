@@ -12,6 +12,7 @@ trait SpeedComponent extends VectorComponent {
   override def copy(): SpeedComponent = SpeedComponent(vector.x, vector.y)
 }
 
+/** Companion object */
 object SpeedComponent {
   def apply(speedX: Double, speedY: Double): SpeedComponent = SpeedComponentImpl(Vector(speedX, speedY))
 

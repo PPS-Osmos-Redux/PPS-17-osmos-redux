@@ -34,6 +34,7 @@ trait ClientsManager {
   def clearClients(): Unit
 }
 
+/** Companion object */
 object ClientsManager {
 
   /** Creates a new clients manager instance.

@@ -47,7 +47,7 @@ class TestSentientSystem extends FunSuite with BeforeAndAfter {
 
   test("Acceleration of SentientCellEntity should not change without any target") {
     val sentientCellEntity = CellBuilder().withDimension(dimension).withPosition(position).withSpeed(speed).buildSentientEntity()
-      //SentientCellEntity(acceleration, collidable, dimension, position, speed, visible, spawner)
+    //SentientCellEntity(acceleration, collidable, dimension, position, speed, visible, spawner)
     val sentientSystem = SentientSystem(levelInfo)
     EntityManager.add(sentientCellEntity)
     val originalAcceleration = sentientCellEntity.getAccelerationComponent.copy()
@@ -87,7 +87,7 @@ class TestSentientSystem extends FunSuite with BeforeAndAfter {
   test("Acceleration of SentientCellEntity should change to avoid enemies") {
     val cellEntity = CellBuilder().withDimension(dimension2).withPosition(position1)
       .withSpeed(speed1).buildCellEntity()
-    val cellEntity1 =  CellBuilder().withDimension(dimension2).withPosition(position2)
+    val cellEntity1 = CellBuilder().withDimension(dimension2).withPosition(position2)
       .withSpeed(speed1).buildCellEntity()
     val sentientCellEntity = CellBuilder().withDimension(dimension).withPosition(position)
       .withSpeed(speed).buildSentientEntity()
@@ -124,9 +124,9 @@ class TestSentientSystem extends FunSuite with BeforeAndAfter {
   }
 
   test("If a SentientCellEntity have a acceleration and a radius is less than the min to lose radius, the radius is not decreased") {
-    val cellEntity =  CellBuilder().withDimension(dimension2).withPosition(position1)
+    val cellEntity = CellBuilder().withDimension(dimension2).withPosition(position1)
       .withSpeed(speed1).buildCellEntity()
-    val cellEntity1 =  CellBuilder().withDimension(dimension2).withPosition(position2)
+    val cellEntity1 = CellBuilder().withDimension(dimension2).withPosition(position2)
       .withSpeed(speed1).buildCellEntity()
     val sentientCellEntity = CellBuilder().withPosition(position).withSpeed(speed)
       .withDimension(DimensionComponent(Constants.Sentient.MinRadiusForLostRadiusBehaviour - 1))
@@ -144,7 +144,7 @@ class TestSentientSystem extends FunSuite with BeforeAndAfter {
 
   test("If a SentientCellEntity have a acceleration and a radius is greater than the min to lose radius, the radius is decreased") {
     setupLevelInfo(Rectangle(Point(100, 150), 300, 200), CollisionRules.bouncing)
-    val cellEntity =  CellBuilder().withDimension(dimension2).withPosition(17, 100).buildCellEntity()
+    val cellEntity = CellBuilder().withDimension(dimension2).withPosition(17, 100).buildCellEntity()
     val cellEntity1 = CellBuilder().withDimension(dimension2).withPosition(40, 40).buildCellEntity()
     val sentientCellEntity = CellBuilder().withPosition(17, 21).withSpeed(0, 1)
       .withDimension(DimensionComponent(Constants.Sentient.MinRadiusForLostRadiusBehaviour + 1))
@@ -159,5 +159,20 @@ class TestSentientSystem extends FunSuite with BeforeAndAfter {
     assert(sentientCellEntity.getAccelerationComponent.vector.x == originalAcceleration.vector.x)
     assert(sentientCellEntity.getAccelerationComponent.vector.y == Constants.Sentient.MaxAcceleration)
     assert(sentientCellEntity.getDimensionComponent.radius < originalRadius)
+  }
+
+  test("If a SentientSystem apply a acceleration to SentientCellEntity, this can spawn an entity") {
+    setupLevelInfo(Rectangle(Point(100, 150), 300, 200), CollisionRules.bouncing)
+    val cellEntity1 = CellBuilder().withDimension(dimension2).withPosition(11, 11).buildCellEntity()
+    val sentientCellEntity = CellBuilder().withPosition(149, 249)
+      .withDimension(50)
+      .buildSentientEntity()
+    val system = SentientSystem(levelInfo)
+    EntityManager.add(cellEntity1)
+    EntityManager.add(sentientCellEntity)
+    Range(0, 10).foreach(_ => system.update())
+    assert(sentientCellEntity.getSpawnerComponent.dequeueAction().isEmpty)
+    system.update()
+    assert(sentientCellEntity.getSpawnerComponent.dequeueAction().isDefined)
   }
 }
